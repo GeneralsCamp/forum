@@ -50,7 +50,7 @@ function LocationModify() {
 
 function Calculate() {
     CalculateBonuses();
-    const buildings = ["b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8"];
+    const buildings = ["b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10"];
     buildings.forEach(updateBuilding);
 }
 
@@ -170,6 +170,8 @@ function generateBuildingCards() {
         { id: "b6", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
         { id: "b7", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
         { id: "b8", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
+        { id: "b9", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
+        { id: "b10", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
     ];
 
     const container = document.getElementById("buildings-container");
@@ -479,7 +481,7 @@ function updateBuilding(buildingId) {
     document.getElementById(`${buildingId}lbl`).innerText = production;
 
     let totalProduction = 0;
-    const buildingIds = ["b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8"];
+    const buildingIds =  ["b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10"];
     buildingIds.forEach(id => {
         const buildingProd = parseInt(document.getElementById(`${id}lbl`).innerText);
         if (!isNaN(buildingProd)) {
@@ -517,3 +519,27 @@ function updateBuilding(buildingId) {
 }
 
 generateBuildingCards();
+
+
+//Save & load from cache
+function saveToCache() {
+    document.querySelectorAll('input, select').forEach(input => {
+        localStorage.setItem(input.id, input.value);
+    });
+}
+
+function loadFromCache() {
+    document.querySelectorAll('input, select').forEach(input => {
+        if (localStorage.getItem(input.id)) {
+            input.value = localStorage.getItem(input.id);
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadFromCache();
+
+    document.querySelectorAll('input, select').forEach(input => {
+        input.addEventListener('change', saveToCache);
+    });
+});
