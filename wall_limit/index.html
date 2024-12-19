@@ -30,7 +30,8 @@
           <form class="calculator-bonuses-form row" onsubmit="return false;">
             <div class="col-6 col-lg-3 form-group">
               <label for="towers">Tower amount</label>
-              <input type="number" id="towers" min="0" max="23" value="0" class="form-control2" onchange="calculateDefenders()">
+              <input type="number" id="towers" min="0" max="23" value="0" class="form-control2"
+                onchange="calculateDefenders()">
             </div>
             <div class="col-6 col-lg-3 form-group">
               <label for="level">Tower level</label>
@@ -71,31 +72,37 @@
 
             <div class="col-md-3 col-6 col-sm-4 form-group">
               <label for="tools">Tools (%)</label>
-              <input type="number" value="0" id="tools" class="form-control2" min="0" max="40" step="0.1" onchange="calculateDefenders()">
+              <input type="number" value="0" id="tools" class="form-control2" min="0" max="40" step="0.1"
+                onchange="calculateDefenders()">
             </div>
-            
+
             <div class="col-md-3 col-6 col-sm-4 form-group">
               <label for="equipment1">Equipments (%)</label>
-              <input type="number" value="0" id="equipment1" class="form-control2" min="0" step="0.1" onchange="calculateDefenders()">
+              <input type="number" value="0" id="equipment1" class="form-control2" min="0" step="0.1"
+                onchange="calculateDefenders()">
             </div>
-            
+
             <div class="col-md-3 col-6 col-sm-4 form-group">
               <label for="hol">Hall of Legends (%)</label>
-              <input type="number" value="0" id="hol" class="form-control2" min="0" step="0.1" onchange="calculateDefenders()">
+              <input type="number" value="0" id="hol" class="form-control2" min="0" step="0.1"
+                onchange="calculateDefenders()">
             </div>
-            
+
             <div class="col-md-3 col-6 col-sm-4 form-group">
               <label for="generals">Generals (%)</label>
-              <input type="number" value="0" id="generals" class="form-control2" min="0" step="0.1" onchange="calculateDefenders()">
+              <input type="number" value="0" id="generals" class="form-control2" min="0" step="0.1"
+                onchange="calculateDefenders()">
             </div>
-            
+
             <div class="col-md-3 col-6 col-sm-4 form-group">
               <label for="deco">Effect decos (%)</label>
-              <input type="number" value="0" id="deco" class="form-control2" min="0" step="0.1" onchange="calculateDefenders()">
+              <input type="number" value="0" id="deco" class="form-control2" min="0" step="0.1"
+                onchange="calculateDefenders()">
             </div>
-            
+
+
+          </form>
         </div>
-        </form>
       </div>
 
       <div class="col-12 collapse-area">
@@ -103,8 +110,10 @@
           <span class="header-title">RESULTS</span>
         </h2>
         <div class="collapse show results">
-          <p>WALL UNIT LIMIT: <span id="total-defenders">0</span></p><hr>
-          <p>All bonuses: <span id="total-percentage-bonus">-</span></p><hr>
+          <p>WALL UNIT LIMIT: <span id="total-defenders">0</span></p>
+          <hr>
+          <p>All bonuses: <span id="total-percentage-bonus">-</span></p>
+          <hr>
           <p>All bonuses: <span id="total-soldiers-bonus">-</span></p>
         </div>
       </div>
