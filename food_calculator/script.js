@@ -513,7 +513,7 @@ function updateBuilding(buildingId) {
 
     let totalProductionWithBonuses = totalProduction + cast + decobonus + tcibonus;
 
-    document.getElementById("finalProduction").innerText = "TOTAL FOOD PRODUCTION: " + totalProductionWithBonuses + " /hour";
+    document.getElementById("finalProduction").innerText = "TOTAL PRODUCTION: " + totalProductionWithBonuses + " /hour";
 }
 
 generateBuildingCards();
