@@ -158,3 +158,10 @@ p {
 ::-webkit-scrollbar-thumb:hover {
     background-color: #f2d9bb;
 }
+
+.box[disabled] {
+    filter: blur(1px);
+    pointer-events: none;
+    cursor: not-allowed;
+    transition: all 0.3s ease;
+}
