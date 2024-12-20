@@ -240,33 +240,6 @@ for (let i = 0; i < gridSize * gridSize; i++) {
     gridContainer.appendChild(cell);
 }
 
-const widthInput = document.getElementById('widthInput');
-const heightInput = document.getElementById('heightInput');
-const widthValue = document.getElementById('widthValue');
-const heightValue = document.getElementById('heightValue');
-
-widthValue.innerHTML = widthInput.value;
-heightValue.innerHTML = heightInput.value;
-
-widthInput.oninput = function () {
-    widthValue.innerHTML = this.value;
-};
-
-heightInput.oninput = function () {
-    heightValue.innerHTML = this.value;
-};
-function takeScreenshot() {
-    html2canvas(document.querySelector('.container')).then(canvas => {
-        const dataUrl = canvas.toDataURL();
-
-        const link = document.createElement('a');
-        link.href = dataUrl;
-        link.download = 'gge-castle-layout-editor.png';
-
-        link.click();
-    });
-}
-
 function startMovingBuilding(e) {
     if (e.type === 'mousedown' || e.type === 'touchstart') {
         isBuildingMoving = true;
@@ -328,12 +301,12 @@ const isExpand = localStorage.getItem('gridExpand') === 'true';
 document.addEventListener('DOMContentLoaded', (event) => {
     const body = document.body;
     const gridExpandToggle = document.getElementById('grid-expand-toggle');
-    
+
     function toggleGridExpansion() {
         body.classList.toggle('gridExpand');
         const currentMode = body.classList.contains('gridExpand');
         localStorage.setItem('gridExpand', currentMode.toString());
-    
+
         if (currentMode) {
             gridExpandToggle.classList.add('expanded');
             gridExpandToggle.textContent = 'ON';
@@ -344,7 +317,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     }
 
     gridExpandToggle.addEventListener('click', toggleGridExpansion);
-    
+
     const isExpand = localStorage.getItem('gridExpand') === 'true';
     if (isExpand) {
         toggleGridExpansion();
@@ -489,38 +462,7 @@ function placeBuilding(grid, startX, startY, widthCells, heightCells) {
     }
 }
 
-function createPredefinedBuilding(building) {
-    const width = building.width * 14.4;
-    const height = building.height * 14.4;
-    const color = building.color.split(' ').join(',');
-    const name = building.name;
 
-    const newBuilding = document.createElement('div');
-    newBuilding.className = 'building predefined';
-    newBuilding.style.width = width + 'px';
-    newBuilding.style.height = height + 'px';
-    newBuilding.style.backgroundColor = `rgb(${color})`;
-    newBuilding.style.position = 'absolute';
-
-    const nameLayer = document.createElement('div');
-    nameLayer.style.pointerEvents = 'none';
-    nameLayer.innerHTML = `<div style="text-align: center;">${name}</div>`;
-    newBuilding.appendChild(nameLayer);
-
-    container.appendChild(newBuilding);
-
-    buildingData.push({ name: name, color: color, width: width, height: height, element: newBuilding, infoElement: null });
-}
-
-
-const colorPicker = document.getElementById('color-picker');
-const colorInput = document.getElementById('colorInput');
-
-colorPicker.addEventListener('input', function () {
-    const hexColor = this.value;
-    const rgbColor = hexToRgb(hexColor);
-    colorInput.value = rgbColor.join(' ');
-});
 
 function hexToRgb(hex) {
     hex = hex.replace('#', '');
@@ -554,10 +496,6 @@ function updateName() {
 function setPresetSizeAndUpdateName() {
     updateName();
     setPresetSize();
-}
-
-function sendHelp() {
-    window.open('https://youtu.be/FstQ9Cq4mZs', '_blank');
 }
 
 //FIX REMOVE BUILDING - RIGHT CLICK
@@ -759,31 +697,542 @@ window.addEventListener('DOMContentLoaded', () => {
     loadSavedSlotsUI();
 });
 
-//Default layout
-/*
-function initializeBuildings() {
-    const predefinedBuildings = [
-        { width: 12, height: 12, color: "100 100 100", name: "The Keep" },
-    ];
 
-    predefinedBuildings.forEach(building => {
-        createPredefinedBuilding(building);
-        optimizeBuildings();
+
+
+const predefinedBuildings = [
+    // 5x5 buildings
+    {
+        name: "Stone works",
+        width: 5,
+        height: 5,
+        color: "128 128 128", // Gray
+        image: "images/stoneWorks.webp",
+        description: "Size: 5x5"
+    },
+    {
+        name: "Forest lodge",
+        width: 5,
+        height: 5,
+        color: "34 85 34", // Dark forest green
+        image: "images/forestLodge.webp",
+        description: "Size: 5x5"
+    },
+    {
+        name: "Granary",
+        width: 5,
+        height: 5,
+        color: "204 153 0", // Dark golden yellow
+        image: "images/granary.webp",
+        description: "Size: 5x5"
+    },
+    {
+        name: "Relic apiary",
+        width: 5,
+        height: 5,
+        color: "204 179 0", // Dark honey yellow
+        image: "images/relicApiary.png",
+        description: "Size: 5x5"
+    },
+    {
+        name: "Relic mead distillery",
+        width: 5,
+        height: 5,
+        color: "102 51 0", // Dark brown
+        image: "images/relicMeadDistillery.png",
+        description: "Size: 5x5"
+    },
+    {
+        name: "Relic honey gardens",
+        width: 5,
+        height: 5,
+        color: "204 179 102", // Soft amber
+        image: "images/relicHoneyGardens.png",
+        description: "Size: 5x5"
+    },
+    {
+        name: "Relic barrel workshop",
+        width: 5,
+        height: 5,
+        color: "102 51 0", // Dark wood brown
+        image: "images/relicBarrelWorkshop.png",
+        description: "Size: 5x5"
+    },
+    {
+        name: "Hunting lodge",
+        width: 5,
+        height: 5,
+        color: "139 69 19", // Saddle brown
+        image: "images/huntingLodge.webp",
+        description: "Size: 5x5"
+    },
+    {
+        name: "Refinery",
+        width: 5,
+        height: 5,
+        color: "112 112 112", // Medium gray
+        image: "images/refinery.png",
+        description: "Size: 5x5"
+    },
+    {
+        name: "Construction yard",
+        width: 5,
+        height: 5,
+        color: "204 102 0", // Construction orange
+        image: "images/constructionYard.png",
+        description: "Size: 5x5"
+    },
+    {
+        name: "Relic brewery",
+        width: 5,
+        height: 5,
+        color: "204 102 51", // Warm amber
+        image: "images/relicBrewery.png",
+        description: "Size: 5x5"
+    },
+    {
+        name: "Toolsmith",
+        width: 5,
+        height: 5,
+        color: "169 169 169", // Light gray
+        image: "images/toolsmith.png",
+        description: "Size: 5x5"
+    },
+    {
+        name: "Imperial Council Hall",
+        width: 5,
+        height: 5,
+        color: "204 153 0", // Golden yellow
+        image: "images/imperialCouncilHall.webp",
+        description: "Size: 5x5"
+    },
+    {
+        name: "Reinforced Vault",
+        width: 5,
+        height: 5,
+        color: "112 112 112", // Medium gray
+        image: "images/reinforcedVault.webp",
+        description: "Size: 5x5"
+    },
+    {
+        name: "Decoration",
+        width: 5,
+        height: 5,
+        color: "200 200 200", // Soft gray
+        image: "images/decoration5x5.png",
+        description: "Size: 5x5"
+    },
+    {
+        name: "Stronghold",
+        width: 5,
+        height: 5,
+        color: "178 34 34", // Firebrick red
+        image: "images/stronghold.png",
+        description: "Size: 5x5"
+    },
+    {
+        name: "Forge",
+        width: 5,
+        height: 5,
+        color: "139 0 0", // Dark red
+        image: "images/forge.png",
+        description: "Size: 5x5"
+    },
+    {
+        name: "University",
+        width: 5,
+        height: 5,
+        color: "0 0 139", // Dark blue
+        image: "images/university.png",
+        description: "Size: 5x5"
+    },
+    {
+        name: "Armory",
+        width: 5,
+        height: 5,
+        color: "0 0 102", // Dark navy blue
+        image: "images/armory.png",
+        description: "Size: 5x5"
+    },
+    {
+        name: "Military hospital",
+        width: 5,
+        height: 5,
+        color: "204 85 68", // Rusty red
+        image: "images/militaryHospital.png",
+        description: "Size: 5x5"
+    },
+    {
+        name: "Stables",
+        width: 5,
+        height: 5,
+        color: "139 69 19", // Saddle brown
+        image: "images/stables.png",
+        description: "Size: 5x5"
+    },
+    {
+        name: "Watchtower",
+        width: 5,
+        height: 5,
+        color: "169 169 169", // Steel gray
+        image: "images/watchtower.png",
+        description: "Size: 5x5"
+    },
+    {
+        name: "Relicus",
+        width: 5,
+        height: 5,
+        color: "204 204 0", // Dark yellow
+        image: "images/relicus.webp",
+        description: "Size: 5x5"
+    },
+
+    // 5x10 buildings
+    {
+        name: "Decoration",
+        width: 5,
+        height: 10,
+        color: "200 200 200", // Soft gray
+        image: "images/decoration5x10.png",
+        description: "Size: 5x10"
+    },
+    {
+        name: "Relic woodcutter",
+        width: 5,
+        height: 10,
+        color: "34 85 34", // Dark forest green
+        image: "images/relicWoodcutter.png",
+        description: "Size: 5x10"
+    },
+    {
+        name: "Relic quarry",
+        width: 5,
+        height: 10,
+        color: "102 51 0", // Earth brown
+        image: "images/relicQuarry.png",
+        description: "Size: 5x10"
+    },
+    {
+        name: "Relic cattle farm",
+        width: 5,
+        height: 10,
+        color: "204 179 102", // Soft amber
+        image: "images/relicCattleFarm.webp",
+        description: "Size: 5x10"
+    },
+    {
+        name: "Storehouse",
+        width: 5,
+        height: 10,
+        color: "128 128 128", // Gray
+        image: "images/storehouse.png",
+        description: "Size: 5x10"
+    },
+    {
+        name: "Relic greenhouse",
+        width: 5,
+        height: 10,
+        color: "34 139 34", // Dark green
+        image: "images/relicGreenhouse.png",
+        description: "Size: 5x10"
+    },
+    {
+        name: "Relic conservatory",
+        width: 5,
+        height: 10,
+        color: "102 255 102", // Light green
+        image: "images/relicConservatory.png",
+        description: "Size: 5x10"
+    },
+    {
+        name: "Drill ground",
+        width: 5,
+        height: 10,
+        color: "204 85 0", // Dark orange
+        image: "images/drillGround.png",
+        description: "Size: 5x10"
+    },
+    {
+        name: "Hall of legends",
+        width: 5,
+        height: 10,
+        color: "204 153 0", // Golden yellow
+        image: "images/hol.webp",
+        description: "Size: 5x10"
+    },
+
+    // Other sizes
+    {
+        name: "Stonemason",
+        width: 9,
+        height: 6,
+        color: "112 112 112", // Medium gray
+        image: "images/stonemason.png",
+        description: "Size: 9x6"
+    },
+    {
+        name: "Marketplace",
+        width: 9,
+        height: 6,
+        color: "204 85 68", // Rusty red
+        image: "images/marketplace.png",
+        description: "Size: 9x6"
+    },
+    {
+        name: "Sawmill",
+        width: 9,
+        height: 6,
+        color: "102 51 0", // Wood brown
+        image: "images/sawmill.png",
+        description: "Size: 9x6"
+    },
+    {
+        name: "Bakery",
+        width: 9,
+        height: 6,
+        color: "255 204 153", // Light cream
+        image: "images/bakery.png",
+        description: "Size: 9x6"
+    },
+    {
+        name: "Flour mill",
+        width: 9,
+        height: 6,
+        color: "245 245 220", // Soft beige
+        image: "images/flourMill.png",
+        description: "Size: 9x6"
+    },
+    {
+        name: "Dragon hoard",
+        width: 10,
+        height: 8,
+        color: "204 0 0", // Dark red
+        image: "images/dragonHoard.webp",
+        description: "Size: 10x8"
+    },
+    {
+        name: "Dragon breath forge",
+        width: 10,
+        height: 8,
+        color: "204 85 0", // Fiery orange
+        image: "images/dragonBreathForge.webp",
+        description: "Size: 10x8"
+    },
+    {
+        name: "Defense workshop",
+        width: 10,
+        height: 8,
+        color: "169 169 169", // Workshop gray
+        image: "images/defenseWorkshop.png",
+        description: "Size: 10x8"
+    },
+    {
+        name: "Offense workshop",
+        width: 10,
+        height: 8,
+        color: "204 0 204", // Purple
+        image: "images/offenseWorkshop.png",
+        description: "Size: 10x8"
+    },
+    {
+        name: "Guardhouse",
+        width: 8,
+        height: 8,
+        color: "0 0 102", // Dark blue
+        image: "images/guardhouse.png",
+        description: "Size: 8x8"
+    },
+    {
+        name: "Tavern",
+        width: 8,
+        height: 8,
+        color: "204 102 0", // Tavern orange
+        image: "images/tavern.png",
+        description: "Size: 8x8"
+    },
+    {
+        name: "Estate",
+        width: 8,
+        height: 8,
+        color: "0 0 204", // Luxurious blue
+        image: "images/estate.png",
+        description: "Size: 8x8"
+    },
+    {
+        name: "District",
+        width: 10,
+        height: 10,
+        color: "128 128 128", // Urban gray
+        image: "images/district.png",
+        description: "Size: 10x10"
+    },
+    {
+        name: "The Keep",
+        width: 12,
+        height: 12,
+        color: "178 34 34", // Strong red
+        image: "images/theKeep.png",
+        description: "Size: 12x12"
+    },
+    {
+        name: "RT",
+        width: 3,
+        height: 4,
+        color: "200 200 200", // Soft gray
+        image: "images/rt.png",
+        description: "Size: 3x4"
+    },
+    {
+        name: "Deco",
+        width: 3,
+        height: 3,
+        color: "200 200 200", // Soft gray
+        image: "images/deco3x3.png",
+        description: "Size: 3x3"
+    },
+    {
+        name: "Deco",
+        width: 2,
+        height: 2,
+        color: "200 200 200", // Soft gray
+        image: "images/deco2x2.webp",
+        description: "Size: 2x2"
+    },
+    {
+        name: "Deco",
+        width: 4,
+        height: 3,
+        color: "200 200 200", // Soft gray
+        image: "images/deco3x4.png",
+        description: "Size: 3x4"
+    },
+    {
+        name: "Decoration",
+        width: 10,
+        height: 20,
+        color: "200 200 200", // Soft gray
+        image: "images/decoration10x20.webp",
+        description: "Size: 10x20"
+    },
+    {
+        name: "Decoration",
+        width: 20,
+        height: 20,
+        color: "200 200 200", // Soft gray
+        image: "images/decoration20x20.webp",
+        description: "Size: 20x20"
+    },
+    {
+        name: "Encampment",
+        width: 8,
+        height: 8,
+        color: "0 0 102", // Dark blue
+        image: "images/encampment.png",
+        description: "Size: 8x8"
+    },
+    {
+        name: "Loot warehouse",
+        width: 10,
+        height: 8,
+        color: "128 128 128", // Medium gray
+        image: "images/lootWarehouse.png",
+        description: "Size: 10x8"
+    },
+    {
+        name: "Barracks",
+        width: 6,
+        height: 6,
+        color: "128 128 128", // Military gray
+        image: "images/barracks.png",
+        description: "Size: 6x6"
+    }
+];
+
+
+
+function populateBuildingsModal() {
+    const buildingsGrid = document.getElementById("buildingsGrid");
+    buildingsGrid.innerHTML = "";
+
+    const filters = Array.from(document.querySelectorAll(".filter-checkbox"))
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => checkbox.value);
+
+    predefinedBuildings.forEach((building) => {
+        const size = `${building.width}x${building.height}`;
+        if (
+            (filters.includes(size)) ||
+            (filters.includes("other") && size !== "5x5" && size !== "5x10")
+        ) {
+            const buildingCol = document.createElement("div");
+            buildingCol.className = "col-md-6 col-sm-12 mb-4";
+
+            buildingCol.innerHTML = `
+            <div class="box">
+                <div class="box-icon">
+                    ${building.image ?
+                    `<img src="${building.image}" alt="${building.name}" class="building-icon">` :
+                    `<i class="bi bi-house"></i>`
+                }
+                </div>
+                <div class="box-content bugfix1">
+                    <h2>${building.name}</h2>
+                    <hr>
+                    <p>${building.description || "No description available."}</p>
+                </div>
+            </div>
+        `;
+
+
+            buildingCol.querySelector('.box').addEventListener('click', () => {
+                createCustomBuildingFromPredefined(building);
+            });
+
+            buildingsGrid.appendChild(buildingCol);
+        }
     });
 }
 
-function createPredefinedBuilding(building) {
-    const width = building.width * 14.4;
-    const height = building.height * 14.4;
-    const color = building.color.split(' ').join(',');
-    const name = building.name;
+document.querySelectorAll(".filter-checkbox").forEach(checkbox => {
+    checkbox.addEventListener("change", populateBuildingsModal);
+});
+
+
+function swapBuildingDimensionsOnCreate(building) {
+    const { width, height, color, name } = building;
+
+
+    const swappedWidth = height;
+    const swappedHeight = width;
 
     const newBuilding = document.createElement('div');
-    newBuilding.className = 'building predefined';
-    newBuilding.style.width = width + 'px';
-    newBuilding.style.height = height + 'px';
+    newBuilding.className = 'building custom';
+    newBuilding.style.width = `${swappedWidth * 14.4}px`;
+    newBuilding.style.height = `${swappedHeight * 14.4}px`;
     newBuilding.style.backgroundColor = `rgb(${color})`;
     newBuilding.style.position = 'absolute';
+
+    if (!activeOptimize) {
+        const gridWidth = container.clientWidth;
+        const gridHeight = container.clientHeight;
+
+        const leftPosition = (gridWidth - swappedWidth * 14.4) / 2;
+        const topPosition = (gridHeight - swappedHeight * 14.4) / 2;
+
+        newBuilding.style.left = `${leftPosition}px`;
+        newBuilding.style.top = `${topPosition}px`;
+    } else {
+        const existingBuildings = document.querySelectorAll('.building.custom');
+        if (existingBuildings.length > 0) {
+            const lastBuilding = existingBuildings[existingBuildings.length - 1];
+            const lastBuildingRect = lastBuilding.getBoundingClientRect();
+            newBuilding.style.left = `${lastBuildingRect.left + lastBuildingRect.width + 10}px`;
+            newBuilding.style.top = lastBuilding.style.top;
+        } else {
+            newBuilding.style.left = '0px';
+            newBuilding.style.top = '0px';
+        }
+    }
 
     const nameLayer = document.createElement('div');
     nameLayer.style.pointerEvents = 'none';
@@ -791,6 +1240,103 @@ function createPredefinedBuilding(building) {
     newBuilding.appendChild(nameLayer);
 
     container.appendChild(newBuilding);
+    buildingCount++;
 
-    buildingData.push({ name: name, color: color, width: width, height: height, element: newBuilding, infoElement: null });
-}*/
+    const buildingInfo = document.createElement('div');
+    buildingInfo.className = 'row building-info';
+    buildingInfo.innerHTML = `
+        <div class="col">${name}</div>
+        <div class="col">${swappedWidth}x${swappedHeight}</div>
+        <div class="col"><div class="color-square" style="background-color: rgb(${color});"></div></div>
+        <div class="col"><button class="btn btn-dark remove-building-btn" onclick="removeBuildingFromList(this)">Delete</button></div>
+    `;
+    buildingList.appendChild(buildingInfo);
+
+    buildingData.push({ name, color, width: swappedWidth * 14.4, height: swappedHeight * 14.4, element: newBuilding, infoElement: buildingInfo });
+
+    if (activeOptimize) {
+        optimizeBuildings();
+    }
+}
+
+function createCustomBuildingFromPredefined(building) {
+    const { width, height, color, name } = building;
+
+    if (buildingCount >= 200) {
+        alert('A maximum of 200 buildings are allowed at one time.');
+        return;
+    }
+
+    if (isSwappedDimensions) {
+        swapBuildingDimensionsOnCreate(building);
+    } else {
+        const newBuilding = document.createElement('div');
+        newBuilding.className = 'building custom';
+        newBuilding.style.width = `${width * 14.4}px`;
+        newBuilding.style.height = `${height * 14.4}px`;
+        newBuilding.style.backgroundColor = `rgb(${color})`;
+        newBuilding.style.position = 'absolute';
+
+        if (!activeOptimize) {
+            const gridWidth = container.clientWidth;
+            const gridHeight = container.clientHeight;
+
+            const leftPosition = (gridWidth - width * 14.4) / 2;
+            const topPosition = (gridHeight - height * 14.4) / 2;
+
+            newBuilding.style.left = `${leftPosition}px`;
+            newBuilding.style.top = `${topPosition}px`;
+        } else {
+            const existingBuildings = document.querySelectorAll('.building.custom');
+            if (existingBuildings.length > 0) {
+                const lastBuilding = existingBuildings[existingBuildings.length - 1];
+                const lastBuildingRect = lastBuilding.getBoundingClientRect();
+                newBuilding.style.left = `${lastBuildingRect.left + lastBuildingRect.width + 10}px`;
+                newBuilding.style.top = lastBuilding.style.top;
+            } else {
+                newBuilding.style.left = '0px';
+                newBuilding.style.top = '0px';
+            }
+        }
+
+        const nameLayer = document.createElement('div');
+        nameLayer.style.pointerEvents = 'none';
+        nameLayer.innerHTML = `<div style="text-align: center;">${name}</div>`;
+        newBuilding.appendChild(nameLayer);
+
+        container.appendChild(newBuilding);
+        buildingCount++;
+
+        const buildingInfo = document.createElement('div');
+        buildingInfo.className = 'row building-info';
+        buildingInfo.innerHTML = `
+            <div class="col">${name}</div>
+            <div class="col">${width}x${height}</div>
+            <div class="col"><div class="color-square" style="background-color: rgb(${color});"></div></div>
+            <div class="col"><button class="btn btn-dark remove-building-btn" onclick="removeBuildingFromList(this)">Delete</button></div>
+        `;
+        buildingList.appendChild(buildingInfo);
+
+        buildingData.push({ name, color, width: width * 14.4, height: height * 14.4, element: newBuilding, infoElement: buildingInfo });
+
+        if (activeOptimize) {
+            optimizeBuildings();
+        }
+    }
+}
+
+let isSwappedDimensions = false;
+
+document.getElementById("swapButton").addEventListener("click", () => {
+    isSwappedDimensions = !isSwappedDimensions;
+
+    const swapButton = document.getElementById("swapButton");
+    if (isSwappedDimensions) {
+        swapButton.innerHTML = '<i class="bi bi-arrow-repeat"></i>';
+    } else {
+        swapButton.innerHTML = '<i class="bi bi-arrow-repeat"></i>';
+    }
+});
+
+
+document.addEventListener("DOMContentLoaded", populateBuildingsModal);

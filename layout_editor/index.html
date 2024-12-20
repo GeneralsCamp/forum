@@ -16,7 +16,7 @@
 </head>
 
 <body>
-    
+
     <div class="container">
         <div class="row">
             <div class="col-12" onmousemove="moveBuilding(event)" onmouseup="stopMovingBuilding()"
@@ -27,91 +27,59 @@
     </div>
     <!-- Bottom navbar -->
     <div class="bottom-buttons-container">
-        <button class="btn" data-bs-toggle="modal" data-bs-target="#editorModal" aria-label="Open editor">
-            <i class="bi bi-pencil-square fs-3"></i>
+        <button class="btn" data-bs-toggle="modal" data-bs-target="#buildingsModal" aria-label="Open buildings">
+            <i class="bi bi-house fs-3"></i>
         </button>
         <button class="btn" data-bs-toggle="modal" data-bs-target="#storageModal" aria-label="Open storage">
             <i class="bi bi-box-seam fs-3"></i>
         </button>
-        <button class="btn" aria-label="Remove all buildings" onclick="clearAllBuildings()">
-            <i class="bi bi-trash fs-3"></i>
+        <button class="btn" data-bs-toggle="modal" data-bs-target="#savesModal" aria-label="Open saves">
+            <i class="bi bi-save fs-3"></i>
         </button>
         <button class="btn" data-bs-toggle="modal" data-bs-target="#settingsModal" aria-label="Open settings">
             <i class="bi bi-sliders fs-3"></i>
         </button>
-        <button class="btn" data-bs-toggle="modal" data-bs-target="#savesModal" aria-label="Open saves">
-            <i class="bi bi-save fs-3"></i>
-        </button>
-        <button class="btn" aria-label="Help" onclick="sendHelp()">
-            <i class="bi bi-question-circle fs-3"></i>
-        </button>
     </div>
-    
-    <!-- Editor Modal -->
-    <div class="modal fade" id="editorModal" tabindex="-1" aria-labelledby="editorModalLabel" aria-hidden="true">
+
+    <!-- Buildings Modal -->
+    <div class="modal fade" id="buildingsModal" tabindex="-1" aria-labelledby="buildingsModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content bugfix1">
+            <div class="modal-content bugfix1 buildingList">
                 <div class="modal-header bugfix1">
-                    <h5 class="modal-title" id="editorModalLabel">BUILDING EDITOR</h5>
-                    <!-- Close -->
-                    <button class="btn" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                        <i class="bi bi-x fs-3"></i>
-                    </button>
+                    <h5 class="modal-title" id="buildingsModalLabel">Buildings</h5>
+                    <div class="d-flex justify-content-end align-items-center w-100">
+                        <div class="dropdown me-2">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="filterDropdown"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-funnel"></i> Filter
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="filterDropdown">
+                                <li>
+                                    <label class="dropdown-item">
+                                        <input type="checkbox" value="5x5" class="filter-checkbox" checked> 5x5
+                                    </label>
+                                </li>
+                                <li>
+                                    <label class="dropdown-item">
+                                        <input type="checkbox" value="5x10" class="filter-checkbox" checked> 5x10
+                                    </label>
+                                </li>
+                                <li>
+                                    <label class="dropdown-item">
+                                        <input type="checkbox" value="other" class="filter-checkbox" checked> Other
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+                        <!-- Swap button placed next to the dropdown -->
+                        <button class="btn btn-outline-secondary" id="swapButton">
+                            <i class="bi bi-arrow-repeat"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="modal-body bugfix1">
-                    <!-- Name -->
-                    <div class="form-group">
-                        <label for="nameInput">NAME:&nbsp&nbsp
-                            <input class="form-control" type="text" id="nameInput" maxlength="12"
-                                value="Default" /></label>
-                    </div>
-                    <!-- Color -->
-                    <div class="form-group">
-                        <label for="colorInput">COLOR:
-                            <input id="color-picker" type="color">
-                        </label>
-                        <input class="form-control" type="text" id="colorInput" value="100 100 100"
-                            style="display: none;">
-                    </div>
-                    <!-- Width -->
-                    <div class="form-group">
-                        <div class="slider-container">
-                            <label for="widthInput">WIDTH: <span id="widthValue">5</span></label>
-                            <input class="slider" type="range" id="widthInput" min="2" max="30" value="5" />
-                        </div>
-                    </div>
-                    <!-- Height -->
-                    <div class="form-group">
-                        <div class="slider-container">
-                            <label for="heightInput">HEIGHT: <span id="heightValue">5</span></label>
-                            <input class="slider" type="range" id="heightInput" min="2" max="30" value="5" />
-                        </div>
-                    </div>
-                    <!-- Preset -->
-                    <div class="form-group">
-                        <label for="">PRESET:
-                            <select id="presetSizes" onchange="setPresetSizeAndUpdateName()" class="select">
-                                <option value="5x5">Default</option>
-                                <option value="10x5">Decoration</option>
-                                <option value="3x3">Small</option>
-                                <option value="10x10">District</option>
-                                <option value="8x10">Workshops</option>
-                                <option value="8x8">Estate</option>
-                                <option value="6x6">Barracks</option>
-                                <option value="6x9">Bakery</option>
-                                <option value="3x4">R-T</option>
-                                <option value="12x12">The keep</option>
-                            </select>
-                        </label>
-                    </div>
-                    <!-- Create -->
-                    <div class="form-group">
-                        <label for="">
-                            <button class="create-button" onclick="validateAndCreateBuilding()" id="create-button"
-                                aria-label="Create building" style="color: black;">
-                                 CREATE
-                            </button>
-                        </label>
+                    <div class="row" id="buildingsGrid">
+                        <!-- Dinamic items -->
                     </div>
                 </div>
             </div>
@@ -124,29 +92,28 @@
             <div class="modal-content bugfix1">
                 <div class="modal-header bugfix1">
                     <h5 class="modal-title" id="settingsModalLabel">SETTINGS</h5>
-                    <!-- Close -->
-                    <button class="btn" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                        <i class="bi bi-x fs-3"></i>
-                    </button>
                 </div>
                 <div class="modal-body bugfix1">
                     <!-- Optimize -->
                     <div class="form-group">
                         <label for="optimizeBtn">Optimize:</label>
-                        <button id="optimizeBtn" class="btn btn-black" onclick="toggleOptimization()" style="font-weight: bolder;">ON</button>
+                        <button id="optimizeBtn" class="btn btn-black" onclick="toggleOptimization()"
+                            style="font-weight: bolder;">ON</button>
                     </div>
                     <!-- Expansion -->
                     <div class="form-group">
                         <label for="grid-expand-toggle">Expansion:</label>
-                        <button id="grid-expand-toggle" aria-label="Expansion" class="btn btn-black" style="font-weight: bolder;">OFF</button>
+                        <button id="grid-expand-toggle" aria-label="Expansion" class="btn btn-black"
+                            style="font-weight: bolder;">OFF</button>
                     </div>
                     <!-- Fullscreen -->
                     <div class="form-group mobileOnly">
                         <label for="fullscreenBtn">Fullscreen:</label>
-                        <button id="fullscreenBtn" onclick="toggleFullscreen()" aria-label="Fullscreen" class="btn btn-black" style="font-weight: bolder;">OFF</button>
+                        <button id="fullscreenBtn" onclick="toggleFullscreen()" aria-label="Fullscreen"
+                            class="btn btn-black" style="font-weight: bolder;">OFF</button>
                     </div>
                 </div>
-                
+
             </div>
         </div>
     </div>
@@ -157,10 +124,6 @@
             <div class="modal-content bugfix1">
                 <div class="modal-header bugfix1">
                     <h5 class="modal-title" id="storageModalLabel">BUILDING STORAGE</h5>
-                    <!-- Close -->
-                    <button class="btn" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                        <i class="bi bi-x fs-3"></i>
-                    </button>
                 </div>
                 <div class="modal-body bugfix1">
                     <div id="buildingList" class="grid-container">
@@ -176,22 +139,21 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Saves Modal -->
     <div class="modal fade" id="savesModal" tabindex="-1" aria-labelledby="savesModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content bugfix1">
                 <div class="modal-header bugfix1">
                     <h5 class="modal-title" id="savesModalLabel">Saves</h5>
-                    <button class="btn" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                        <i class="bi bi-x fs-3"></i>
-                    </button>
                 </div>
                 <div class="modal-body bugfix1">
                     <div id="save-slots">
                         <div class="save-slot" id="slot-1">
-                            <input type="text" class="form-control slot-name" id="slot-1-name" placeholder="Layout name">
-                            <button class="btn btn-dark" onclick="saveToSlot()" style="font-weight: bolder;">Save</button>
+                            <input type="text" class="form-control slot-name" id="slot-1-name"
+                                placeholder="Layout name">
+                            <button class="btn btn-dark" onclick="saveToSlot()"
+                                style="font-weight: bolder;">Save</button>
                         </div>
                     </div>
                     <!-- Save slots -->
