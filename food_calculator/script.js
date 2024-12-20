@@ -50,7 +50,7 @@ function LocationModify() {
 
 function Calculate() {
     CalculateBonuses();
-    const buildings = ["b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10"];
+    const buildings = ["b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10", "b11", "b12"];
     buildings.forEach(updateBuilding);
 }
 
@@ -161,35 +161,39 @@ function CalculateBonuses() {
 
 //Generate buildings
 function generateBuildingCards() {
-    const buildingsData = [
-        { id: "b1", name: "Conservatory", type: "conservatory", imgSrc: "./img/conservatory.webp" },
-        { id: "b2", name: "Conservatory", type: "conservatory", imgSrc: "./img/conservatory.webp" },
-        { id: "b3", name: "Greenhouse", type: "greenhouse", imgSrc: "./img/greenhouse.webp" },
-        { id: "b4", name: "Greenhouse", type: "greenhouse", imgSrc: "./img/greenhouse.webp" },
-        { id: "b5", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
-        { id: "b6", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
-        { id: "b7", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
-        { id: "b8", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
-        { id: "b9", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
-        { id: "b10", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
-    ];
+
+const buildingsData = [
+    { id: "b1", name: "Conservatory", type: "conservatory", imgSrc: "./img/conservatory.webp" },
+    { id: "b2", name: "Conservatory", type: "conservatory", imgSrc: "./img/conservatory.webp" },
+    { id: "b3", name: "Greenhouse", type: "greenhouse", imgSrc: "./img/greenhouse.webp" },
+    { id: "b4", name: "Greenhouse", type: "greenhouse", imgSrc: "./img/greenhouse.webp" },
+    { id: "b5", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
+    { id: "b6", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
+    { id: "b7", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
+    { id: "b8", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
+    { id: "b9", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
+    { id: "b10", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
+    { id: "b11", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
+    { id: "b12", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
+];
+
 
     const container = document.getElementById("buildings-container");
     container.innerHTML = "";
 
-    buildingsData.forEach((building) => {
+    buildingsData.forEach((building, index) => {
         const buildingCard = `
-            <div class="col-md-6 col-sm-12 col-lg-6">
-                <div class="box">
+            <div class="col-md-6 col-sm-12 col-lg-6" id="card-${building.id}" draggable="true" ondragstart="handleDragStart(event)" ondragover="handleDragOver(event)" ondrop="handleDrop(event)" ondragend="handleDragEnd(event)">
+                <div class="box" data-index="${index}">
                     <div class="box-icon">
                         <img src="${building.imgSrc}" class="img-fluid">
                     </div>
                     <div class="box-content">
                         <h2>
-                        ${building.name} |
-                        <select class="fixSelector" name="${building.id}lvl" id="${building.id}lvl" onchange="updateBuilding('${building.id}')">
-                            ${generateLevelOptions(building.type)}
-                        </select>
+                            ${building.name} |
+                            <select class="fixSelector" name="${building.id}lvl" id="${building.id}lvl" onchange="updateBuilding('${building.id}')">
+                                ${generateLevelOptions(building.type)}
+                            </select>
                         </h2>
                         <hr>
                         <p>Productivity: <span id="${building.id}prod">-</span></p>
@@ -210,6 +214,41 @@ function generateBuildingCards() {
     buildingsData.forEach((building) => updateBuilding(building.id));
 }
 
+function handleDragStart(event) {
+    event.dataTransfer.setData("text/plain", event.target.id);
+    event.target.classList.add("dragging");
+}
+
+function handleDragOver(event) {
+    event.preventDefault();
+}
+
+function handleDrop(event) {
+    event.preventDefault();
+    const draggedId = event.dataTransfer.getData("text/plain");
+    const draggedElement = document.getElementById(draggedId);
+    const targetElement = event.target.closest(".col-md-6");
+
+    if (draggedElement !== targetElement) {
+        const draggedIndex = draggedElement.dataset.index;
+        const targetIndex = targetElement.dataset.index;
+
+        swapElements(draggedElement, targetElement);
+
+        draggedElement.dataset.index = targetIndex;
+        targetElement.dataset.index = draggedIndex;
+
+    }
+}
+
+function handleDragEnd(event) {
+    event.target.classList.remove("dragging");
+}
+
+function swapElements(draggedElement, targetElement) {
+    const parent = draggedElement.parentNode;
+    parent.insertBefore(draggedElement, targetElement);
+}
 
 function generateLevelOptions(buildingType) {
     let levels = [];
@@ -453,13 +492,13 @@ function updateBuilding(buildingId) {
     const selectLocation = document.getElementById('location');
 
     if (selectLocation.value == "main") {
-        work = [0, 1, 1, 1, 0.75, 0.56, 0.42, 0.31, 0.23, 0.17, 0.13, 0.10];
+        work = [0, 1, 1, 1, 0.75, 0.56, 0.42, 0.31, 0.23, 0.17, 0.13, 0.10, 0.07];
     } else if (selectLocation.value == "op6") {
-        work = [0, 1, 1, 1, 1, 1, 1, 0.75, 0.56, 0.42, 0.31, 0.23];
+        work = [0, 1, 1, 1, 1, 1, 1, 0.75, 0.56, 0.42, 0.31, 0.23, 0.17];
     } else if (selectLocation.value == "op8") {
-        work = [0, 1, 1, 1, 1, 1, 1, 1, 1, 0.75, 0.56, 0.42];
+        work = [0, 1, 1, 1, 1, 1, 1, 1, 1, 0.75, 0.56, 0.42, 0.31];
     } else if (selectLocation.value == "kingdom") {
-        work = [0, 1, 1, 0.75, 0.56, 0.42, 0.31, 0.23, 0.17, 0.13, 0.10, 0.07];
+        work = [0, 1, 1, 0.75, 0.56, 0.42, 0.31, 0.23, 0.17, 0.13, 0.10, 0.07, 0.05];
     }
 
     const buildingIndex = parseInt(buildingId.replace(/[^\d]/g, ''));
@@ -477,11 +516,11 @@ function updateBuilding(buildingId) {
         labelElement.textContent = `${production.toLocaleString()}/h`;
     }
 
-
     document.getElementById(`${buildingId}lbl`).innerText = production;
 
     let totalProduction = 0;
-    const buildingIds =  ["b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10"];
+    const buildingIds = ["b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10", "b11", "b12"];
+    
     buildingIds.forEach(id => {
         const buildingProd = parseInt(document.getElementById(`${id}lbl`).innerText);
         if (!isNaN(buildingProd)) {
@@ -518,9 +557,6 @@ function updateBuilding(buildingId) {
     document.getElementById("finalProduction").innerText = "TOTAL PRODUCTION: " + totalProductionWithBonuses + " /hour";
 }
 
-generateBuildingCards();
-
-
 //Save & load from cache
 function saveToCache() {
     document.querySelectorAll('input, select').forEach(input => {
@@ -543,3 +579,5 @@ document.addEventListener('DOMContentLoaded', () => {
         input.addEventListener('change', saveToCache);
     });
 });
+
+generateBuildingCards();

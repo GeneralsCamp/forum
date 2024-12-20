@@ -241,3 +241,13 @@ p {
   margin-left: 0;
   font-size: 16px;
 }
+
+.box {
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+}
+
+.dragging {
+  opacity: 0.5;
+  transform: scale(1.05);
+}
