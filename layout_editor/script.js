@@ -100,6 +100,80 @@ function showAlert(message) {
     alert(message);
 }
 
+
+function createCustomBuilding() {
+    const widthInput = document.getElementById('widthInput');
+    const heightInput = document.getElementById('heightInput');
+    const colorInput = document.getElementById('colorInput');
+    const nameInput = document.getElementById('nameInput');
+
+    const width = parseInt(widthInput.value) * 14.4;
+    const height = parseInt(heightInput.value) * 14.4;
+    const color = colorInput.value.split(' ').join(',');
+    let name = nameInput.value.trim() || "noName";
+
+    if (buildingCount >= 200) {
+        alert('A maximum of 200 buildings are allowed at one time.');
+        return;
+    }
+
+    const newBuilding = document.createElement('div');
+    newBuilding.className = 'building custom';
+    newBuilding.style.width = width + 'px';
+    newBuilding.style.height = height + 'px';
+    newBuilding.style.backgroundColor = `rgb(${color})`;
+    newBuilding.style.position = 'absolute';
+
+    if (!activeOptimize) {
+        const gridWidth = container.clientWidth;
+        const gridHeight = container.clientHeight;
+
+        const leftPosition = (gridWidth - width) / 2;
+        const topPosition = (gridHeight - height) / 2;
+
+        newBuilding.style.left = leftPosition + 'px';
+        newBuilding.style.top = topPosition + 'px';
+    } else {
+        const existingBuildings = document.querySelectorAll('.building.custom');
+        if (existingBuildings.length > 0) {
+            const lastBuilding = existingBuildings[existingBuildings.length - 1];
+            const lastBuildingRect = lastBuilding.getBoundingClientRect();
+            newBuilding.style.left = (lastBuildingRect.left + lastBuildingRect.width + 10) + 'px';
+            newBuilding.style.top = lastBuilding.style.top;
+        } else {
+            newBuilding.style.left = '0px';
+            newBuilding.style.top = '0px';
+        }
+    }
+
+    const nameLayer = document.createElement('div');
+    nameLayer.style.pointerEvents = 'none';
+    nameLayer.innerHTML = `<div style="text-align: center;">${name}</div>`;
+    newBuilding.appendChild(nameLayer);
+
+    container.appendChild(newBuilding);
+    buildingCount++;
+
+    document.addEventListener('mousemove', moveBuilding);
+    document.addEventListener('mouseup', stopMovingBuilding);
+
+    const buildingInfo = document.createElement('div');
+    buildingInfo.className = 'row building-info';
+    buildingInfo.innerHTML = `
+        <div class="col">${name}</div>
+        <div class="col">${width / 14.4}x${height / 14.4}</div>
+        <div class="col"><div class="color-square" style="background-color: rgb(${color});"></div></div>
+        <div class="col"><button class="btn btn-dark remove-building-btn" onclick="removeBuildingFromList(this)">Delete</button></div>
+    `;
+    buildingList.appendChild(buildingInfo);
+
+    buildingData.push({ name: name, color: color, width: width, height: height, element: newBuilding, infoElement: buildingInfo });
+
+    if (activeOptimize) {
+        optimizeBuildings();
+    }
+}
+
 function removeBuildingFromList(button) {
     const buildingInfo = button.parentNode.parentNode;
     const index = buildingData.findIndex(data => data.infoElement === buildingInfo);
@@ -166,6 +240,21 @@ for (let i = 0; i < gridSize * gridSize; i++) {
     gridContainer.appendChild(cell);
 }
 
+const widthInput = document.getElementById('widthInput');
+const heightInput = document.getElementById('heightInput');
+const widthValue = document.getElementById('widthValue');
+const heightValue = document.getElementById('heightValue');
+
+widthValue.innerHTML = widthInput.value;
+heightValue.innerHTML = heightInput.value;
+
+widthInput.oninput = function () {
+    widthValue.innerHTML = this.value;
+};
+
+heightInput.oninput = function () {
+    heightValue.innerHTML = this.value;
+};
 function takeScreenshot() {
     html2canvas(document.querySelector('.container')).then(canvas => {
         const dataUrl = canvas.toDataURL();
@@ -238,23 +327,29 @@ const isExpand = localStorage.getItem('gridExpand') === 'true';
 //Expansion
 document.addEventListener('DOMContentLoaded', (event) => {
     const body = document.body;
-    const gridExpandSwitch = document.getElementById('gridExpandSwitch');
-
+    const gridExpandToggle = document.getElementById('grid-expand-toggle');
+    
     function toggleGridExpansion() {
         body.classList.toggle('gridExpand');
         const currentMode = body.classList.contains('gridExpand');
         localStorage.setItem('gridExpand', currentMode.toString());
-
-        gridExpandSwitch.checked = currentMode;
+    
+        if (currentMode) {
+            gridExpandToggle.classList.add('expanded');
+            gridExpandToggle.textContent = 'ON';
+        } else {
+            gridExpandToggle.classList.remove('expanded');
+            gridExpandToggle.textContent = 'OFF';
+        }
     }
 
-    gridExpandSwitch.addEventListener('change', toggleGridExpansion);
-
+    gridExpandToggle.addEventListener('click', toggleGridExpansion);
+    
     const isExpand = localStorage.getItem('gridExpand') === 'true';
     if (isExpand) {
         toggleGridExpansion();
     } else {
-        gridExpandSwitch.checked = false;
+        gridExpandToggle.textContent = 'OFF';
     }
 });
 
@@ -310,15 +405,17 @@ function placeBuilding(grid, startX, startY, width, height) {
 let activeOptimize = true;
 
 function toggleOptimization() {
-    const optimizeSwitch = document.getElementById('optimizeSwitch');
-    activeOptimize = optimizeSwitch.checked;
-    localStorage.setItem('optimizeState', JSON.stringify(activeOptimize));
+    activeOptimize = !activeOptimize;
+    const optimizeBtn = document.getElementById('optimizeBtn');
 
     if (activeOptimize) {
+        optimizeBtn.textContent = 'ON';
         optimizeBuildings();
     } else {
-        resetOptimization();
+        optimizeBtn.textContent = 'OFF';
     }
+
+    saveOptimizeStateToCache();
 }
 
 function saveOptimizeStateToCache() {
@@ -333,16 +430,15 @@ function loadOptimizeStateFromCache() {
     const cachedOptimizeState = localStorage.getItem('optimizeState');
     if (cachedOptimizeState !== null) {
         activeOptimize = JSON.parse(cachedOptimizeState);
-        const optimizeSwitch = document.getElementById('optimizeSwitch');
-        optimizeSwitch.checked = activeOptimize;
+        const optimizeBtn = document.getElementById('optimizeBtn');
+        optimizeBtn.textContent = activeOptimize ? 'ON' : 'OFF';
 
         if (activeOptimize) {
             optimizeBuildings();
         }
-    } else {
-        activeOptimize = false;
     }
 }
+
 
 function optimizeBuildings() {
     const sortedBuildings = buildingData.slice().sort((a, b) => b.width * b.height - a.width * a.height);
@@ -393,6 +489,60 @@ function placeBuilding(grid, startX, startY, widthCells, heightCells) {
     }
 }
 
+function createPredefinedBuilding(building) {
+    const width = building.width * 14.4;
+    const height = building.height * 14.4;
+    const color = building.color.split(' ').join(',');
+    const name = building.name;
+
+    const newBuilding = document.createElement('div');
+    newBuilding.className = 'building predefined';
+    newBuilding.style.width = width + 'px';
+    newBuilding.style.height = height + 'px';
+    newBuilding.style.backgroundColor = `rgb(${color})`;
+    newBuilding.style.position = 'absolute';
+
+    const nameLayer = document.createElement('div');
+    nameLayer.style.pointerEvents = 'none';
+    nameLayer.innerHTML = `<div style="text-align: center;">${name}</div>`;
+    newBuilding.appendChild(nameLayer);
+
+    container.appendChild(newBuilding);
+
+    buildingData.push({ name: name, color: color, width: width, height: height, element: newBuilding, infoElement: null });
+}
+
+
+const colorPicker = document.getElementById('color-picker');
+const colorInput = document.getElementById('colorInput');
+
+colorPicker.addEventListener('input', function () {
+    const hexColor = this.value;
+    const rgbColor = hexToRgb(hexColor);
+    colorInput.value = rgbColor.join(' ');
+});
+
+function hexToRgb(hex) {
+    hex = hex.replace('#', '');
+
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+
+    return [r, g, b];
+}
+function swapWidthAndHeight() {
+    const widthInput = document.getElementById('widthInput');
+    const heightInput = document.getElementById('heightInput');
+    const widthValue = widthInput.value;
+    const heightValue = heightInput.value;
+
+    widthInput.value = heightValue;
+    heightInput.value = widthValue;
+
+    document.getElementById('widthValue').textContent = heightValue;
+    document.getElementById('heightValue').textContent = widthValue;
+}
 function updateName() {
     const presetSizes = document.getElementById("presetSizes");
     const nameInput = document.getElementById("nameInput");
@@ -445,16 +595,18 @@ function exitFullscreen() {
 }
 
 function toggleFullscreen() {
-    const fullscreenSwitch = document.getElementById('fullscreenSwitch');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const icon = document.getElementById('fullscreenBtn');
 
     if (!document.fullscreenElement) {
         requestFullscreen();
-        fullscreenSwitch.checked = true;
+        fullscreenBtn.textContent = 'ON';
     } else {
         exitFullscreen();
-        fullscreenSwitch.checked = false;
+        fullscreenBtn.textContent = 'OFF';
     }
 }
+
 
 function enterFullscreen() {
     const modal = bootstrap.Modal.getInstance(document.getElementById('fullscreenModal'));
@@ -465,6 +617,14 @@ function enterFullscreen() {
     icon.classList.remove('bi-fullscreen');
     icon.classList.add('bi-fullscreen-exit');
 }
+
+/*
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = new bootstrap.Modal(document.getElementById('fullscreenModal'));
+    modal.show();
+});
+*/
+
 
 //Save function
 function createCustomBuildingFromCache(data) {
@@ -485,7 +645,7 @@ function createCustomBuildingFromCache(data) {
     container.appendChild(newBuilding);
 
     const buildingInfo = document.createElement('div');
-    buildingInfo.className = 'row building-info player-flank';
+    buildingInfo.className = 'row building-info';
 
     buildingInfo.innerHTML = `
         <div class="col">${data.name}</div>
@@ -576,11 +736,11 @@ function updateSaveSlotsUI(slotName) {
     const slotsList = document.getElementById('slotsList');
 
     const slotItem = document.createElement('div');
-    slotItem.className = 'row slot-item player-flank';
+    slotItem.className = 'row slot-item';
     slotItem.innerHTML = `
         <div class="col castle-name">${slotName}</div>
-        <div class="col"><button class="btn load-btn" onclick="loadFromSlot(this)">Load</button></div>
-        <div class="col"><button class="btn delete-btn" onclick="deleteSlot(this)">Delete</button></div>
+        <div class="col"><button class="btn btn-dark load-btn" onclick="loadFromSlot(this)">Load</button></div>
+        <div class="col"><button class="btn btn-dark delete-btn" onclick="deleteSlot(this)">Delete</button></div>
     `;
 
     slotsList.appendChild(slotItem);
@@ -599,105 +759,38 @@ window.addEventListener('DOMContentLoaded', () => {
     loadSavedSlotsUI();
 });
 
+//Default layout
+/*
+function initializeBuildings() {
+    const predefinedBuildings = [
+        { width: 12, height: 12, color: "100 100 100", name: "The Keep" },
+    ];
 
-
-
-//Modal1
-function storageModal() {
-    const storageModal = new bootstrap.Modal(document.getElementById('storageModal'));
-    storageModal.show();
-}
-//Modal2
-function settingsModal() {
-    const settingsModal = new bootstrap.Modal(document.getElementById('settingsModal'));
-    settingsModal.show();
-}
-//Modal3
-function savesModal() {
-    const savesModal = new bootstrap.Modal(document.getElementById('savesModal'));
-    savesModal.show();
-}
-//Modal4
-function buildingsModal() {
-    generateBuildingsModal();
-    const buildingsModal = new bootstrap.Modal(document.getElementById('buildingsModal'));
-    buildingsModal.show();
-}
-
-const buildings = [
-    {
-        name: "Kastély",
-        width: 100,
-        height: 100,
-        color: "red",
-        image: "./img/building1.png",
-    },
-    {
-        name: "Torony",
-        width: 50,
-        height: 150,
-        color: "blue",
-        image: "./img/building2.png",
-    },
-    {
-        name: "Kastély",
-        width: 100,
-        height: 100,
-        color: "red",
-        image: "./img/building1.png",
-    },
-    {
-        name: "Torony",
-        width: 50,
-        height: 150,
-        color: "blue",
-        image: "./img/building2.png",
-    },
-];
-
-function generateBuildingsModal() {
-    const container = document.getElementById('buildingsContainer');
-    container.innerHTML = ''; // Tisztítjuk a tartalmat.
-
-    buildings.forEach((building, index) => {
-        const buildingDiv = document.createElement('div');
-        buildingDiv.className = 'col-md-6 col-sm-12';
-
-        buildingDiv.innerHTML = `
-            <div class="box">
-                <div class="box-icon">
-                    <img src="${building.image}" class="img-fluid">
-                </div>
-                <div class="box-content">
-                    <h2>${building.name}</h2>
-                    <hr>
-                    <button class="btn btn-primary" onclick="placeBuilding(${index})">Elhelyezés</button>
-                </div>
-            </div>
-        `;
-
-        container.appendChild(buildingDiv);
+    predefinedBuildings.forEach(building => {
+        createPredefinedBuilding(building);
+        optimizeBuildings();
     });
 }
-function placeBuilding(index) {
-    const building = buildings[index];
+
+function createPredefinedBuilding(building) {
+    const width = building.width * 14.4;
+    const height = building.height * 14.4;
+    const color = building.color.split(' ').join(',');
+    const name = building.name;
 
     const newBuilding = document.createElement('div');
-    newBuilding.className = 'building custom';
-    newBuilding.style.width = `${building.width}px`;
-    newBuilding.style.height = `${building.height}px`;
-    newBuilding.style.backgroundColor = building.color;
+    newBuilding.className = 'building predefined';
+    newBuilding.style.width = width + 'px';
+    newBuilding.style.height = height + 'px';
+    newBuilding.style.backgroundColor = `rgb(${color})`;
     newBuilding.style.position = 'absolute';
-    newBuilding.style.left = '0px';
-    newBuilding.style.top = '0px';
 
-    // Az épület nevének megjelenítése
-    const nameDiv = document.createElement('div');
-    nameDiv.style.pointerEvents = 'none';
-    nameDiv.textContent = building.name;
-    newBuilding.appendChild(nameDiv);
+    const nameLayer = document.createElement('div');
+    nameLayer.style.pointerEvents = 'none';
+    nameLayer.innerHTML = `<div style="text-align: center;">${name}</div>`;
+    newBuilding.appendChild(nameLayer);
 
-    grid.appendChild(newBuilding);
-    snapToGrid(newBuilding);
-    buildingData.push({ ...building, element: newBuilding });
-}
+    container.appendChild(newBuilding);
+
+    buildingData.push({ name: name, color: color, width: width, height: height, element: newBuilding, infoElement: null });
+}*/
