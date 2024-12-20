@@ -182,7 +182,7 @@ body {
     .modal-content {
         max-height: 520px;
         min-height: 520px;
-        transform: scale(1.5) !important;
+        transform: scale(1.8) !important;
     }
 
     .grid {
