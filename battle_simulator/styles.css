@@ -869,3 +869,14 @@ input[type="number"] {
     font-size: 20px;
   }
   
+  .sides img {
+    width: auto;
+    height: 20px;
+    filter: brightness(0) invert(1);
+    transition: filter 0.2s ease-in-out;
+  }
+  
+  .sides.active img {
+    filter: none;
+  }
+  

@@ -45,9 +45,15 @@
         <!-- Attack Sections -->
         <div class="player-flanks d-flex justify-content-between align-items-center">
             <div class="row flanks ms-1">
-                <button class="btn flanks-button" data-section="left" onclick="switchSide('left')">L</button>
-                <button class="btn flanks-button active" data-section="front" onclick="switchSide('front')">F</button>
-                <button class="btn flanks-button" data-section="right" onclick="switchSide('right')">R</button>
+                <button class="btn flanks-button sides" data-section="left" onclick="switchSide('left')">
+                    <img src="./img/left-icon.webp" alt="Left Icon">
+                  </button>
+                  <button class="btn flanks-button sides active" data-section="front" onclick="switchSide('front')">
+                    <img src="./img/front-icon.webp" alt="Front Icon">
+                  </button>
+                  <button class="btn flanks-button sides" data-section="right" onclick="switchSide('right')">
+                    <img src="./img/right-icon.webp" alt="Right Icon">
+                  </button>
             </div>
             <button class="btn btn-danger flanks-button red-button" onclick="battleSimulation()">
                 <img src="./img/icon_attack.png" alt="Icon" class="icon" />
