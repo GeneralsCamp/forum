@@ -46,14 +46,14 @@
         <div class="player-flanks d-flex justify-content-between align-items-center">
             <div class="row flanks ms-1">
                 <button class="btn flanks-button sides" data-section="left" onclick="switchSide('left')">
-                    <img src="./img/left-icon.webp" alt="Left Icon">
-                  </button>
-                  <button class="btn flanks-button sides active" data-section="front" onclick="switchSide('front')">
-                    <img src="./img/front-icon.webp" alt="Front Icon">
-                  </button>
-                  <button class="btn flanks-button sides" data-section="right" onclick="switchSide('right')">
-                    <img src="./img/right-icon.webp" alt="Right Icon">
-                  </button>
+                    <img src="./img/left-icon.webp" alt="L">
+                </button>
+                <button class="btn flanks-button sides active" data-section="front" onclick="switchSide('front')">
+                    <img src="./img/front-icon.webp" alt="F">
+                </button>
+                <button class="btn flanks-button sides" data-section="right" onclick="switchSide('right')">
+                    <img src="./img/right-icon.webp" alt="R">
+                </button>
             </div>
             <button class="btn btn-danger flanks-button red-button" onclick="battleSimulation()">
                 <img src="./img/icon_attack.png" alt="Icon" class="icon" />
@@ -88,14 +88,22 @@
                     <div class="modal-body">
                         <div class="player-flanks d-flex justify-content-between align-items-center">
                             <div class="row flanks ms-1">
-                                <button class="btn flanks-button-report" data-section="left"
-                                    onclick="switchReportSide('left')">L</button>
-                                <button class="btn flanks-button-report active" data-section="front"
-                                    onclick="switchReportSide('front')">F</button>
-                                <button class="btn flanks-button-report" data-section="right"
-                                    onclick="switchReportSide('right')">R</button>
-                                <button class="btn flanks-button-report" data-section="cy"
-                                    onclick="switchReportSide('cy')">CY</button>
+                                <button class="btn flanks-button-report sides" data-section="left"
+                                    onclick="switchReportSide('left')">
+                                    <img src="./img/left-icon.webp" alt="L">
+                                </button>
+                                <button class="btn flanks-button-report sides active" data-section="front"
+                                    onclick="switchReportSide('front')">
+                                    <img src="./img/front-icon.webp" alt="F">
+                                </button>
+                                <button class="btn flanks-button-report sides" data-section="right"
+                                    onclick="switchReportSide('right')">
+                                    <img src="./img/right-icon.webp" alt="R">
+                                </button>
+                                <button class="btn flanks-button-report sides" data-section="cy"
+                                    onclick="switchReportSide('cy')">
+                                    <img src="./img/cy-icon.webp" alt="CY">
+                                </button>
                             </div>
                         </div>
                         <!-- Battle Summary -->
