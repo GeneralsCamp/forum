@@ -1650,7 +1650,6 @@ function switchToNextSide() {
   switchSide(sides[newIndex]);
 }
 
-
 function createUnitIcon(slot) {
   const unitIconContainer = document.createElement('div');
   unitIconContainer.classList.add('unit-icon-container');
@@ -2723,6 +2722,18 @@ function changeWave(direction) {
   }
 
   document.getElementById('currentWaveText').textContent = `Wave ${currentWaveIndex} / ${attackBasics.maxWaves}`;
+}
+
+function selectPreset(presetNumber) {
+  selectedPreset = presetNumber;
+
+  const presetItems = document.querySelectorAll('.preset-item');
+  presetItems.forEach(item => item.classList.remove('selected-preset'));
+
+  const selectedRadioButton = document.getElementById('preset' + presetNumber);
+  selectedRadioButton.checked = true;
+
+  selectedRadioButton.parentNode.classList.add('selected-preset');
 }
 
 function saveToPreset() {
