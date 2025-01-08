@@ -1625,13 +1625,13 @@ waveContainer.addEventListener('touchend', (event) => {
 
 function handleSwipe() {
   const swipeDistance = touchEndX - touchStartX;
-  const threshold = 50; // Minimum swipe distance in pixels to register as a swipe
+  const threshold = 50;
 
   if (swipeDistance > threshold) {
-    // Swipe right
+
     switchToPreviousSide();
   } else if (swipeDistance < -threshold) {
-    // Swipe left
+
     switchToNextSide();
   }
 }
@@ -1649,7 +1649,6 @@ function switchToNextSide() {
   const newIndex = (currentIndex + 1) % sides.length;
   switchSide(sides[newIndex]);
 }
-
 
 
 function createUnitIcon(slot) {
@@ -2714,21 +2713,16 @@ function openWaveCopyModal() {
 
 function changeWave(direction) {
   currentWaveIndex += direction;
-  if (currentWaveIndex < 1) currentWaveIndex = 1;
-  if (currentWaveIndex > attackBasics.maxWaves) currentWaveIndex = attackBasics.maxWaves;
+
+  if (currentWaveIndex > attackBasics.maxWaves) {
+    currentWaveIndex = 1;
+  }
+
+  if (currentWaveIndex < 1) {
+    currentWaveIndex = attackBasics.maxWaves;
+  }
+
   document.getElementById('currentWaveText').textContent = `Wave ${currentWaveIndex} / ${attackBasics.maxWaves}`;
-}
-
-function selectPreset(presetNumber) {
-  selectedPreset = presetNumber;
-
-  const presetItems = document.querySelectorAll('.preset-item');
-  presetItems.forEach(item => item.classList.remove('selected-preset'));
-
-  const selectedRadioButton = document.getElementById('preset' + presetNumber);
-  selectedRadioButton.checked = true;
-
-  selectedRadioButton.parentNode.classList.add('selected-preset');
 }
 
 function saveToPreset() {
