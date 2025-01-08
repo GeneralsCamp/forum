@@ -2985,10 +2985,18 @@ const modalsData = [
     body: `
         <div class="player-flanks d-flex justify-content-between align-items-center">
             <div class="row flanks ms-1">
-                <button class="btn flanks-button-defense" data-section="left" onclick="switchDefenseSide('left')">L</button>
-                <button class="btn flanks-button-defense active" data-section="front" onclick="switchDefenseSide('front')">F</button>
-                <button class="btn flanks-button-defense" data-section="right" onclick="switchDefenseSide('right')">R</button>
-                <button class="btn flanks-button-defense" data-section="cy" onclick="switchDefenseSide('cy')">CY</button>
+                <button class="btn flanks-button-defense sides" data-section="left" onclick="switchDefenseSide('left')">
+                    <img src="./img/left-icon.webp" alt="L">
+                </button>
+                <button class="btn flanks-button-defense sides active" data-section="front" onclick="switchDefenseSide('front')">
+                    <img src="./img/front-icon.webp" alt="F">
+                </button>
+                <button class="btn flanks-button-defense sides" data-section="right" onclick="switchDefenseSide('right')">
+                    <img src="./img/right-icon.webp" alt="R">
+                </button>
+                <button class="btn flanks-button-defense sides" data-section="cy" onclick="switchDefenseSide('cy')">
+                    <img src="./img/cy-icon.webp" alt="CY">
+                </button>
             </div>
         </div>
         <div class="player-flank d-flex">
