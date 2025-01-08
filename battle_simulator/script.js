@@ -1637,18 +1637,19 @@ function handleSwipe() {
 }
 
 function switchToPreviousSide() {
-  const sides = ['left', 'front', 'right', 'cy'];
+  const sides = ['left', 'front', 'right'];
   const currentIndex = sides.indexOf(currentSide);
   const newIndex = (currentIndex - 1 + sides.length) % sides.length;
   switchSide(sides[newIndex]);
 }
 
 function switchToNextSide() {
-  const sides = ['left', 'front', 'right', 'cy'];
+  const sides = ['left', 'front', 'right'];
   const currentIndex = sides.indexOf(currentSide);
   const newIndex = (currentIndex + 1) % sides.length;
   switchSide(sides[newIndex]);
 }
+
 
 
 function createUnitIcon(slot) {
