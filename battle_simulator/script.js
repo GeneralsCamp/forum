@@ -1610,6 +1610,47 @@ function switchSide(side) {
   }
 }
 
+const waveContainer = document.getElementById('wave-container');
+let touchStartX = 0;
+let touchEndX = 0;
+
+waveContainer.addEventListener('touchstart', (event) => {
+  touchStartX = event.touches[0].clientX;
+});
+
+waveContainer.addEventListener('touchend', (event) => {
+  touchEndX = event.changedTouches[0].clientX;
+  handleSwipe();
+});
+
+function handleSwipe() {
+  const swipeDistance = touchEndX - touchStartX;
+  const threshold = 50; // Minimum swipe distance in pixels to register as a swipe
+
+  if (swipeDistance > threshold) {
+    // Swipe right
+    switchToPreviousSide();
+  } else if (swipeDistance < -threshold) {
+    // Swipe left
+    switchToNextSide();
+  }
+}
+
+function switchToPreviousSide() {
+  const sides = ['left', 'front', 'right', 'cy'];
+  const currentIndex = sides.indexOf(currentSide);
+  const newIndex = (currentIndex - 1 + sides.length) % sides.length;
+  switchSide(sides[newIndex]);
+}
+
+function switchToNextSide() {
+  const sides = ['left', 'front', 'right', 'cy'];
+  const currentIndex = sides.indexOf(currentSide);
+  const newIndex = (currentIndex + 1) % sides.length;
+  switchSide(sides[newIndex]);
+}
+
+
 function createUnitIcon(slot) {
   const unitIconContainer = document.createElement('div');
   unitIconContainer.classList.add('unit-icon-container');
