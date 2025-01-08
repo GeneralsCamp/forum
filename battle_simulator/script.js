@@ -3074,7 +3074,7 @@ const modalsData = [
     body: `<div class="modal-body p-0"></div>`,
     footer: `
         <button type="button" id="confirmDefenseTools" class="btn btn-success btn-confirm">
-          <span class="icon">&#10004;</span> Confirm
+          Confirm
         </button>
     `
   },
@@ -3085,7 +3085,7 @@ const modalsData = [
     body: `<div class="modal-body p-0"></div>`,
     footer: `
         <button type="button" id="confirmDefenseUnits" class="btn btn-success btn-confirm">
-          <span class="icon">&#10004;</span> Confirm
+          Confirm
         </button>
     `
   },
@@ -3096,7 +3096,7 @@ const modalsData = [
     body: `<div class="modal-body p-0"></div>`,
     footer: `
         <button type="button" id="confirmUnits" class="btn btn-success btn-confirm">
-          <span class="icon">&#10004;</span> Confirm
+          Confirm
         </button>
     `
   },
@@ -3107,7 +3107,7 @@ const modalsData = [
     body: `<div class="modal-body p-0 tool-modal-body"></div>`,
     footer: `
         <button type="button" id="confirmTools" class="btn btn-success btn-confirm">
-          <span class="icon">&#10004;</span> Confirm
+          Confirm
         </button>
     `
   },
@@ -3119,7 +3119,7 @@ const modalsData = [
     body: `<div class="modal-body p-0 support-tool-modal-body"></div>`,
     footer: `
         <button type="button" id="confirmSupportTools" class="btn btn-success btn-confirm">
-          <span class="icon">&#10004;</span> Confirm
+          Confirm
         </button>
     `
   },
@@ -3186,7 +3186,7 @@ const modalsData = [
     `,
     footer: `
         <button type="button" id="confirmBasics" class="btn btn-success btn-confirm">
-          <span class="icon">&#10004;</span> Confirm
+          Confirm
         </button>
     `
   },
@@ -3268,7 +3268,7 @@ const modalsData = [
     `,
     footer: `
         <button type="button" id="confirmCommanderStats" class="btn btn-success btn-confirm">
-          <span class="icon">&#10004;</span> Confirm
+          Confirm
         </button>
     `
   },
@@ -3320,7 +3320,7 @@ const modalsData = [
   `,
     footer: `
       <button type="button" id="confirmCastellanStats" class="btn btn-success btn-confirm">
-        <span class="icon">&#10004;</span> Confirm
+        Confirm
       </button>
   `
   }
