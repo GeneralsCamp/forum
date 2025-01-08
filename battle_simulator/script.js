@@ -2850,7 +2850,14 @@ function switchReportSide(side) {
 }
 
 function populateBattleReportModal(side) {
-  const attackers = totalUnits[side] || [];
+  let attackers = [];
+  
+  if (side === 'cy' && waves['CY']) {
+    attackers = waves['CY'][0].slots;
+  } else if (side === 'left' || side === 'right' || side === 'front') {
+    attackers = totalUnits[side] || [];
+  }
+
   const defenders = defenseSlots[side]?.units || [];
 
   const attackerSummary = attackers.flat().reduce((acc, unit) => {
@@ -2873,11 +2880,13 @@ function populateBattleReportModal(side) {
   Object.entries(attackerSummary).forEach(([key, count]) => {
     const unitImage = unitImages[key] || 'default-attack-icon.png';
     const attackerHTML = `
-          <div class="unit-slot" id="unit-slot-front-1-2">
-          <div class="unit-icon-container">
+      <div class="unit-slot" id="unit-slot-front-1-2">
+        <div class="unit-icon-container">
           <img src="./img/${unitImage}" class="unit-icon" alt="Unit1">
-          <div class="unit-count">${count}</div></div></div>
-      `;
+          <div class="unit-count">${count}</div>
+        </div>
+      </div>
+    `;
     attackerContainer.insertAdjacentHTML('beforeend', attackerHTML);
   });
 
@@ -2886,11 +2895,13 @@ function populateBattleReportModal(side) {
   Object.entries(defenderSummary).forEach(([key, count]) => {
     const unitImage = unitImagesDefense[key] || 'default-defense-icon.png';
     const defenderHTML = `
-          <div class="unit-slot" id="unit-slot-front-1-2">
-          <div class="unit-icon-container">
+      <div class="unit-slot" id="unit-slot-front-1-2">
+        <div class="unit-icon-container">
           <img src="./img/${unitImage}" class="unit-icon" alt="Unit1">
-          <div class="unit-count">${count}</div></div></div>
-      `;
+          <div class="unit-count">${count}</div>
+        </div>
+      </div>
+    `;
     defenderContainer.insertAdjacentHTML('beforeend', defenderHTML);
   });
 }
