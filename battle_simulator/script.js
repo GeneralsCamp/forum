@@ -482,31 +482,39 @@ function generateWaves(side, numberOfWaves) {
 
     let totalUnitCount = 0;
     for (let j = 1; j <= numberOfUnitSlots; j++) {
-      let unitData = totalUnits[side][i - 1] ? totalUnits[side][i - 1][j - 1] : { type: '', count: 0 };
-
-      totalUnitCount += unitData.count;
+      let unitData = (totalUnits[side] && totalUnits[side][i - 1] && totalUnits[side][i - 1][j - 1]) 
+        ? totalUnits[side][i - 1][j - 1] 
+        : { type: '', count: 0 };
+    
+      totalUnitCount += unitData.count || 0;
+    
       if (totalUnitCount > maxUnits) {
         const excessUnits = totalUnitCount - maxUnits;
-        unitData.count -= excessUnits;
+        unitData.count = Math.max(0, unitData.count - excessUnits);
         totalUnitCount = maxUnits;
       }
-
+    
       wave.slots.push({ ...unitData, id: `unit-slot-${side}-${i}-${j}` });
     }
+    
 
     let totalToolCount = 0;
     for (let j = 1; j <= numberOfToolSlots; j++) {
-      let toolData = totalTools[side][i - 1] ? totalTools[side][i - 1][j - 1] : { type: '', count: 0 };
-
-      totalToolCount += toolData.count;
+      let toolData = (totalTools[side] && totalTools[side][i - 1] && totalTools[side][i - 1][j - 1]) 
+        ? totalTools[side][i - 1][j - 1] 
+        : { type: '', count: 0 };
+    
+      totalToolCount += toolData.count || 0;
+    
       if (totalToolCount > maxTools) {
         const excessTools = totalToolCount - maxTools;
-        toolData.count -= excessTools;
+        toolData.count = Math.max(0, toolData.count - excessTools);
         totalToolCount = maxTools;
       }
-
+    
       wave.tools.push({ ...toolData, id: `tool-slot-${side}-${i}-${j}` });
     }
+    
 
     waves[side].push(wave);
 
@@ -1946,15 +1954,20 @@ function loadDefenseTools(side) {
     wallSlots.forEach((slot, index) => {
       const slotElement = document.getElementById(`tool-slot-${side}-wall-${index + 1}`);
       if (slotElement) {
-        slotElement.dataset.count = slot.count || 0;
-        if (slot.count > 0) {
-          slotElement.innerHTML = createDefenseToolIcon(slot);
+        if (slot && slot.count >= 0) {
+          slotElement.dataset.count = slot.count;
+          if (slot.count > 0) {
+            slotElement.innerHTML = createDefenseToolIcon(slot);
+          } else {
+            slotElement.innerHTML = `<img src="${getToolIcon('wall')}" alt="wall tool" class="tool-icon" />`;
+          }
         } else {
+          slotElement.dataset.count = 0;
           slotElement.innerHTML = `<img src="${getToolIcon('wall')}" alt="wall tool" class="tool-icon" />`;
         }
       }
     });
-
+    
     gateSlots.forEach((slot, index) => {
       const slotElement = document.getElementById(`tool-slot-${side}-gate-${index + 1}`);
       if (slotElement) {
@@ -2161,7 +2174,12 @@ function openDefenseUnitsModal(side, slotNumber) {
 
   const totalUnitsInDefense = Object.keys(defenseSlots).reduce((total, key) => {
     if (key !== 'cy') {
-      return total + defenseSlots[key].units.reduce((acc, slot) => acc + (slot.count || 0), 0);
+      return total + defenseSlots[key].units.reduce((acc, slot) => {
+        if (slot && slot.count) {
+          return acc + slot.count;
+        }
+        return acc;
+      }, 0);
     }
     return total;
   }, 0);
@@ -2707,9 +2725,9 @@ function calculateTroopDistribution() {
 
 function saveDefenseState() {
   const defenseState = {
-      defense_units,
-      defense_tools,
-      defenseSlots
+    defense_units,
+    defense_tools,
+    defenseSlots
   };
   localStorage.setItem('defenseState', JSON.stringify(defenseState));
 }
@@ -2767,23 +2785,6 @@ function saveToPreset() {
     displayNotification("Please select a preset to save to.");
     return;
   }
-  const hasUnits = (totalUnits.left[currentWaveIndex - 1] || []).length > 0 &&
-    (totalUnits.front[currentWaveIndex - 1] || []).length > 0 &&
-    (totalUnits.right[currentWaveIndex - 1] || []).length > 0;
-
-  const hasTools = (totalTools.left[currentWaveIndex - 1] || []).length > 0 &&
-    (totalTools.front[currentWaveIndex - 1] || []).length > 0 &&
-    (totalTools.right[currentWaveIndex - 1] || []).length > 0;
-
-  if (!hasUnits) {
-    displayNotification("You must have at least 1 unit on all sides to save.");
-    return;
-  }
-
-  if (!hasTools) {
-    displayNotification("You must have at least 1 tool on all sides to save.");
-    return;
-  }
 
   presets[selectedPreset] = {
     units: {
@@ -2802,6 +2803,7 @@ function saveToPreset() {
 
   displayNotification(`Saved current wave to preset ${selectedPreset}`);
 }
+
 
 function loadPresets() {
   const storedPresets = localStorage.getItem('presets');
@@ -2877,7 +2879,7 @@ function switchReportSide(side) {
 
 function populateBattleReportModal(side) {
   let attackers = [];
-  
+
   if (side === 'cy' && waves['CY']) {
     attackers = waves['CY'][0].slots;
   } else if (side === 'left' || side === 'right' || side === 'front') {
@@ -2894,7 +2896,7 @@ function populateBattleReportModal(side) {
   }, {});
 
   const defenderSummary = defenders.reduce((acc, unit) => {
-    if (unit.count > 0) {
+    if (unit && unit.count > 0) {
       const key = unit.type || unit.id;
       acc[key] = (acc[key] || 0) + unit.count;
     }
@@ -3631,14 +3633,9 @@ function logResults(defenseStrengths, totalAttackUnits) {
   console.log(`Összes támadó katona: ${totalAttackUnits}`);
 }
 
-//LOAD WAVES
+//LOAD WAVES & DEFENSE
 window.onload = function () {
   generateWaves('front', attackBasics.maxWaves);
   loadPresets();
-};
-//LOAD DEFENSE
-window.addEventListener('load', () => {
   loadDefenseState();
-  initializeDefenseUnits(defense_units);
-  initializeTools(defense_tools);
-});
+};
