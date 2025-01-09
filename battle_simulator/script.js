@@ -482,39 +482,39 @@ function generateWaves(side, numberOfWaves) {
 
     let totalUnitCount = 0;
     for (let j = 1; j <= numberOfUnitSlots; j++) {
-      let unitData = (totalUnits[side] && totalUnits[side][i - 1] && totalUnits[side][i - 1][j - 1]) 
-        ? totalUnits[side][i - 1][j - 1] 
+      let unitData = (totalUnits[side] && totalUnits[side][i - 1] && totalUnits[side][i - 1][j - 1])
+        ? totalUnits[side][i - 1][j - 1]
         : { type: '', count: 0 };
-    
+
       totalUnitCount += unitData.count || 0;
-    
+
       if (totalUnitCount > maxUnits) {
         const excessUnits = totalUnitCount - maxUnits;
         unitData.count = Math.max(0, unitData.count - excessUnits);
         totalUnitCount = maxUnits;
       }
-    
+
       wave.slots.push({ ...unitData, id: `unit-slot-${side}-${i}-${j}` });
     }
-    
+
 
     let totalToolCount = 0;
     for (let j = 1; j <= numberOfToolSlots; j++) {
-      let toolData = (totalTools[side] && totalTools[side][i - 1] && totalTools[side][i - 1][j - 1]) 
-        ? totalTools[side][i - 1][j - 1] 
+      let toolData = (totalTools[side] && totalTools[side][i - 1] && totalTools[side][i - 1][j - 1])
+        ? totalTools[side][i - 1][j - 1]
         : { type: '', count: 0 };
-    
+
       totalToolCount += toolData.count || 0;
-    
+
       if (totalToolCount > maxTools) {
         const excessTools = totalToolCount - maxTools;
         toolData.count = Math.max(0, toolData.count - excessTools);
         totalToolCount = maxTools;
       }
-    
+
       wave.tools.push({ ...toolData, id: `tool-slot-${side}-${i}-${j}` });
     }
-    
+
 
     waves[side].push(wave);
 
@@ -1967,7 +1967,7 @@ function loadDefenseTools(side) {
         }
       }
     });
-    
+
     gateSlots.forEach((slot, index) => {
       const slotElement = document.getElementById(`tool-slot-${side}-gate-${index + 1}`);
       if (slotElement) {
@@ -2735,15 +2735,15 @@ function saveDefenseState() {
 function loadDefenseState() {
   const savedState = localStorage.getItem('defenseState');
   if (savedState) {
-      const parsedState = JSON.parse(savedState);
-      defense_units = parsedState.defense_units || [];
-      defense_tools = parsedState.defense_tools || [];
-      defenseSlots = parsedState.defenseSlots || {
-          front: { units: [], wallTools: [], gateTools: [], moatTools: [] },
-          left: { units: [], wallTools: [], gateTools: [], moatTools: [] },
-          right: { units: [], wallTools: [], gateTools: [], moatTools: [] },
-          cy: { units: [], cyTools: [] }
-      };
+    const parsedState = JSON.parse(savedState);
+    defense_units = parsedState.defense_units || [];
+    defense_tools = parsedState.defense_tools || [];
+    defenseSlots = parsedState.defenseSlots || {
+      front: { units: [], wallTools: [], gateTools: [], moatTools: [] },
+      left: { units: [], wallTools: [], gateTools: [], moatTools: [] },
+      right: { units: [], wallTools: [], gateTools: [], moatTools: [] },
+      cy: { units: [], cyTools: [] }
+    };
   }
 }
 
@@ -2803,7 +2803,6 @@ function saveToPreset() {
 
   displayNotification(`Saved current wave to preset ${selectedPreset}`);
 }
-
 
 function loadPresets() {
   const storedPresets = localStorage.getItem('presets');
@@ -2878,18 +2877,16 @@ function switchReportSide(side) {
 }
 
 function populateBattleReportModal(side) {
-  let attackers = [];
-
-  if (side === 'cy' && waves['CY']) {
-    attackers = waves['CY'][0].slots;
-  } else if (side === 'left' || side === 'right' || side === 'front') {
-    attackers = totalUnits[side] || [];
-  }
+  const attackerContainer = document.querySelector('.report-attackers .row');
+  attackerContainer.innerHTML = '';
 
   const defenders = defenseSlots[side]?.units || [];
+  const attackers = (side === 'cy' && waves['CY'])
+    ? waves['CY'][0].slots
+    : totalUnits[side] || [];
 
   const attackerSummary = attackers.flat().reduce((acc, unit) => {
-    if (unit.count > 0 && unit.type) {
+    if (unit && unit.count > 0 && unit.type) {
       acc[unit.type] = (acc[unit.type] || 0) + unit.count;
     }
     return acc;
@@ -2903,14 +2900,12 @@ function populateBattleReportModal(side) {
     return acc;
   }, {});
 
-  const attackerContainer = document.querySelector('.report-attackers .row');
-  attackerContainer.innerHTML = '';
   Object.entries(attackerSummary).forEach(([key, count]) => {
     const unitImage = unitImages[key] || 'default-attack-icon.png';
     const attackerHTML = `
-      <div class="unit-slot" id="unit-slot-front-1-2">
+      <div class="unit-slot">
         <div class="unit-icon-container">
-          <img src="./img/${unitImage}" class="unit-icon" alt="Unit1">
+          <img src="./img/${unitImage}" class="unit-icon" alt="${key}">
           <div class="unit-count">${count}</div>
         </div>
       </div>
@@ -2923,14 +2918,74 @@ function populateBattleReportModal(side) {
   Object.entries(defenderSummary).forEach(([key, count]) => {
     const unitImage = unitImagesDefense[key] || 'default-defense-icon.png';
     const defenderHTML = `
-      <div class="unit-slot" id="unit-slot-front-1-2">
+      <div class="unit-slot">
         <div class="unit-icon-container">
-          <img src="./img/${unitImage}" class="unit-icon" alt="Unit1">
+          <img src="./img/${unitImage}" class="unit-icon" alt="${key}">
           <div class="unit-count">${count}</div>
         </div>
       </div>
     `;
     defenderContainer.insertAdjacentHTML('beforeend', defenderHTML);
+  });
+
+  const waveSummaryContainer = document.getElementById('wave-summary-container');
+  waveSummaryContainer.innerHTML = '';
+
+  if (!waves[side] || waves[side].length === 0) {
+    const maxWaves = attackBasics.maxWaves;
+    waves[side] = Array.from({ length: maxWaves }, (_, i) => ({
+      slots: Array.from({ length: 3 }, (_, j) => ({
+        type: '',
+        count: 0,
+        id: `unit-slot-${side}-${i + 1}-${j + 1}`,
+      })),
+      tools: Array.from({ length: 3 }, (_, j) => ({
+        type: '',
+        count: 0,
+        id: `tool-slot-${side}-${i + 1}-${j + 1}`,
+      })),
+    }));
+  }
+
+  waves[side].forEach((wave, index) => {
+    const hasUnits = wave.slots.some(slot => slot.count > 0);
+    if (hasUnits) {
+      const waveHTML = `
+      <div class="player-flank text-center">
+        <span>WAVE ${index + 1}</span>
+      </div>
+      <div class="card-body margin-bug-fix report-wave">
+        <div class="row">
+          <div class="col bugfix report-attackers" style="border-right: 1px solid rgb(180, 140, 100);">
+            <div class="row">
+              ${wave.slots
+          .map(slot => {
+            if (slot && slot.count > 0) {
+              const unitImage = unitImages[slot.type] || 'default-attack-icon.png';
+              return `
+                      <div class="unit-slot">
+                        <div class="unit-icon-container">
+                          <img src="./img/${unitImage}" class="unit-icon" alt="${slot.type}">
+                          <div class="unit-count">${slot.count}</div>
+                        </div>
+                      </div>
+                    `;
+            }
+            return '';
+          })
+          .join('')}
+            </div>
+          </div>
+          <div class="col bugfix report-defenders">
+            <div class="row">
+              <!-- Defenders are not displayed per wave -->
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+      waveSummaryContainer.insertAdjacentHTML('beforeend', waveHTML);
+    }
   });
 }
 

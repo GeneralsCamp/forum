@@ -879,4 +879,12 @@ input[type="number"] {
   .sides.active img {
     filter: none;
   }
-  
+
+  .no-padding-fix{
+    padding: 0 !important;
+  }
+
+  .battle-modal{
+    max-height: 50vh !important;
+    min-height: 50vh !important;
+  }

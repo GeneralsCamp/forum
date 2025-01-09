@@ -85,34 +85,34 @@
                     <div class="modal-header d-flex justify-content-center">
                         <h5 class="modal-title" id="battleReportLabel">Battle Report</h5>
                     </div>
-                    <div class="modal-body">
-                        <div class="player-flanks d-flex justify-content-between align-items-center">
-                            <div class="row flanks ms-1">
-                                <button class="btn flanks-button-report sides" data-section="left"
-                                    onclick="switchReportSide('left')">
-                                    <img src="./img/left-icon.webp" alt="L">
-                                </button>
-                                <button class="btn flanks-button-report sides active" data-section="front"
-                                    onclick="switchReportSide('front')">
-                                    <img src="./img/front-icon.webp" alt="F">
-                                </button>
-                                <button class="btn flanks-button-report sides" data-section="right"
-                                    onclick="switchReportSide('right')">
-                                    <img src="./img/right-icon.webp" alt="R">
-                                </button>
-                                <button class="btn flanks-button-report sides" data-section="cy"
-                                    onclick="switchReportSide('cy')">
-                                    <img src="./img/cy-icon.webp" alt="CY">
-                                </button>
-                            </div>
+                    <div class="player-flanks d-flex justify-content-between align-items-center">
+                        <div class="row flanks ms-1">
+                            <button class="btn flanks-button-report sides" data-section="left"
+                                onclick="switchReportSide('left')">
+                                <img src="./img/left-icon.webp" alt="L">
+                            </button>
+                            <button class="btn flanks-button-report sides active" data-section="front"
+                                onclick="switchReportSide('front')">
+                                <img src="./img/front-icon.webp" alt="F">
+                            </button>
+                            <button class="btn flanks-button-report sides" data-section="right"
+                                onclick="switchReportSide('right')">
+                                <img src="./img/right-icon.webp" alt="R">
+                            </button>
+                            <button class="btn flanks-button-report sides" data-section="cy"
+                                onclick="switchReportSide('cy')">
+                                <img src="./img/cy-icon.webp" alt="CY">
+                            </button>
                         </div>
+                    </div>
+                    <div class="player-flank no-padding-fix margin-bug-fix d-flex">
+                        <div class="row section-header">
+                            <div class="col-6" style="background-color: #D73A31;">ATTACKER</div>
+                            <div class="col-6" style="background-color: #357ABD;">DEFENDER</div>
+                        </div>
+                    </div>
+                    <div class="modal-body battle-modal">
                         <!-- Battle Summary -->
-                        <div class="player-flank margin-bug-fix d-flex">
-                            <div class="row section-header">
-                                <div class="col-6" style="border-right: 1px solid rgb(180, 140, 100);">ATTACKER</div>
-                                <div class="col-6">DEFENDER</div>
-                            </div>
-                        </div>
                         <div class="player-flank text-center">
                             <span>SUMMARIZE</span>
                         </div>
@@ -132,6 +132,9 @@
                                 </div>
 
                             </div>
+                        </div>
+                        <div id="wave-summary-container" class="player-flank margin-bug-fix">
+                            <!-- WAVES -->
                         </div>
                     </div>
                     <div class="modal-footer d-flex justify-content-center">
