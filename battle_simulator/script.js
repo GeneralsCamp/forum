@@ -2229,6 +2229,7 @@ function openDefenseUnitsModal(side, slotNumber) {
       count: totalUnitsInSlot
     }) : '+';
     calculateTroopDefenseStrength(side);
+    saveDefenseState();
     modal.hide();
   };
 
@@ -2418,6 +2419,7 @@ function openDefenseToolsModal(side, toolType, slotIndex) {
     }
     displayDefenseBonuses(side);
     calculateTroopDefenseStrength(side);
+    saveDefenseState();
     modal.hide();
   };
 
@@ -2701,6 +2703,30 @@ function calculateTroopDistribution() {
   document.getElementById('leftFlank').textContent = `${Math.round(leftPercentage)}%`;
   document.getElementById('front').textContent = `${Math.round(frontPercentage)}%`;
   document.getElementById('rightFlank').textContent = `${Math.round(rightPercentage)}%`;
+}
+
+function saveDefenseState() {
+  const defenseState = {
+      defense_units,
+      defense_tools,
+      defenseSlots
+  };
+  localStorage.setItem('defenseState', JSON.stringify(defenseState));
+}
+
+function loadDefenseState() {
+  const savedState = localStorage.getItem('defenseState');
+  if (savedState) {
+      const parsedState = JSON.parse(savedState);
+      defense_units = parsedState.defense_units || [];
+      defense_tools = parsedState.defense_tools || [];
+      defenseSlots = parsedState.defenseSlots || {
+          front: { units: [], wallTools: [], gateTools: [], moatTools: [] },
+          left: { units: [], wallTools: [], gateTools: [], moatTools: [] },
+          right: { units: [], wallTools: [], gateTools: [], moatTools: [] },
+          cy: { units: [], cyTools: [] }
+      };
+  }
 }
 
 //PRESETS
@@ -3610,3 +3636,9 @@ window.onload = function () {
   generateWaves('front', attackBasics.maxWaves);
   loadPresets();
 };
+//LOAD DEFENSE
+window.addEventListener('load', () => {
+  loadDefenseState();
+  initializeDefenseUnits(defense_units);
+  initializeTools(defense_tools);
+});
