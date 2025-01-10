@@ -282,13 +282,13 @@ body {
 }
 
 .general-bg1 {
-    background: radial-gradient(circle, rgb(101, 132, 141) 0%, rgb(40, 68, 77) 100%);
+    background: radial-gradient(circle, rgb(179, 109, 109) 0%, rgb(133, 61, 61) 100%);
     display: inline-block;
     cursor: pointer;
 }
 
 .general-bg2 {
-    background: radial-gradient(circle, rgb(179, 109, 109) 0%, rgb(133, 61, 61) 100%);
+    background: radial-gradient(circle, rgb(101, 132, 141) 0%, rgb(40, 68, 77) 100%);
     display: inline-block;
     cursor: pointer;
 }
@@ -312,14 +312,14 @@ body {
 
 .square2:nth-child(1) {
     background-image: url('./img/icon_commander_0.png');
-    background-color: rgb(88, 117, 114);
-    border: 2px solid rgb(58, 77, 75);
+    background-color: rgb(179, 109, 109);
+    border: 2px solid rgb(133, 61, 61);
 }
 
 .square2:nth-child(2) {
     background-image: url('./img/icon_basics.png');
-    background-color: rgb(88, 117, 114);
-    border: 2px solid rgb(58, 77, 75);
+    background-color: rgb(179, 109, 109);
+    border: 2px solid rgb(133, 61, 61);
 }
 
 .square2:nth-child(3) {
@@ -330,14 +330,14 @@ body {
 
 .square2:nth-child(4) {
     background-image: url('./img/icon_basics.png');
-    background-color: rgb(179, 109, 109);
-    border: 2px solid rgb(133, 61, 61);
+    background-color: rgb(88, 117, 114);
+    border: 2px solid rgb(58, 77, 75);
 }
 
 .square2:nth-child(5) {
     background-image: url('./img/icon_castellan_0.png');
-    background-color: rgb(179, 109, 109);
-    border: 2px solid rgb(133, 61, 61);
+    background-color: rgb(88, 117, 114);
+    border: 2px solid rgb(58, 77, 75);
 }
 
 .general-bg1,

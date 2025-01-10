@@ -2817,6 +2817,8 @@ function applyPreset() {
     return;
   }
 
+  const previousSide = currentSide;
+
   totalUnits.left[currentWaveIndex - 1] = JSON.parse(JSON.stringify(presets[selectedPreset].units.left));
   totalUnits.front[currentWaveIndex - 1] = JSON.parse(JSON.stringify(presets[selectedPreset].units.front));
   totalUnits.right[currentWaveIndex - 1] = JSON.parse(JSON.stringify(presets[selectedPreset].units.right));
@@ -2825,7 +2827,14 @@ function applyPreset() {
   totalTools.front[currentWaveIndex - 1] = JSON.parse(JSON.stringify(presets[selectedPreset].tools.front));
   totalTools.right[currentWaveIndex - 1] = JSON.parse(JSON.stringify(presets[selectedPreset].tools.right));
 
+  ['front', 'left', 'right'].forEach(side => {
+    switchSide(side);
+  });
+
+  switchSide(previousSide);
+
   generateWaves(currentSide, attackBasics.maxWaves);
+
   displayNotification(`Applied Preset ${selectedPreset} to Wave ${currentWaveIndex}`);
 }
 
@@ -2834,6 +2843,8 @@ function applyPresetToAll() {
     displayNotification("Please select a valid preset to apply.");
     return;
   }
+
+  const previousSide = currentSide;
 
   for (let i = 0; i < attackBasics.maxWaves; i++) {
     totalUnits.left[i] = JSON.parse(JSON.stringify(presets[selectedPreset].units.left));
@@ -2844,6 +2855,12 @@ function applyPresetToAll() {
     totalTools.front[i] = JSON.parse(JSON.stringify(presets[selectedPreset].tools.front));
     totalTools.right[i] = JSON.parse(JSON.stringify(presets[selectedPreset].tools.right));
   }
+
+  ['front', 'left', 'right'].forEach(side => {
+    switchSide(side);
+  });
+
+  switchSide(previousSide);
 
   generateWaves(currentSide, attackBasics.maxWaves);
   displayNotification(`Applied Preset ${selectedPreset} to all waves`);
@@ -2880,25 +2897,74 @@ function populateBattleReportModal(side) {
   const attackerContainer = document.querySelector('.report-attackers .row');
   attackerContainer.innerHTML = '';
 
-  const defenders = defenseSlots[side]?.units || [];
+  const defenderContainer = document.querySelector('.report-defenders .row');
+  defenderContainer.innerHTML = '';
+
+  const waveSummaryContainer = document.getElementById('wave-summary-container');
+  waveSummaryContainer.innerHTML = '';
+
+  let totalAttackers = 0;
+  let totalDefenders = 0;
+
+  ['front', 'left', 'right'].forEach(sideKey => {
+    if (waves[sideKey]) {
+      waves[sideKey].forEach(wave => {
+        wave.slots.forEach(slot => {
+          if (slot && slot.count > 0) {
+            totalAttackers += slot.count;
+          }
+        });
+      });
+    }
+  });
+
+  if (waves['CY']) {
+    waves['CY'][0].slots.forEach(slot => {
+      if (slot && slot.count > 0) {
+        totalAttackers += slot.count;
+      }
+    });
+  }
+
+  ['front', 'left', 'right', 'cy'].forEach(sideKey => {
+    if (defenseSlots[sideKey]?.units) {
+      defenseSlots[sideKey].units.forEach(unit => {
+        if (unit && unit.count > 0) {
+          totalDefenders += unit.count;
+        }
+      });
+    }
+  });
+
+  const attackerCountElement = document.querySelector('.report-troops-sum .col-6:nth-child(1)');
+  const defenderCountElement = document.querySelector('.report-troops-sum .col-6:nth-child(2)');
+
+  if (attackerCountElement) {
+    attackerCountElement.textContent = `${totalAttackers}`;
+  }
+
+  if (defenderCountElement) {
+    defenderCountElement.textContent = `${totalDefenders}`;
+  }
+
   const attackers = (side === 'cy' && waves['CY'])
     ? waves['CY'][0].slots
-    : totalUnits[side] || [];
+    : (waves[side] || []).flatMap(wave => wave.slots);
 
-  const attackerSummary = attackers.flat().reduce((acc, unit) => {
+  const attackerSummary = attackers.reduce((acc, unit) => {
     if (unit && unit.count > 0 && unit.type) {
       acc[unit.type] = (acc[unit.type] || 0) + unit.count;
     }
     return acc;
   }, {});
 
-  const defenderSummary = defenders.reduce((acc, unit) => {
+  const defenderSummary = defenseSlots[side]?.units?.reduce((acc, unit) => {
     if (unit && unit.count > 0) {
       const key = unit.type || unit.id;
       acc[key] = (acc[key] || 0) + unit.count;
     }
     return acc;
-  }, {});
+  }, {}) || {};
 
   Object.entries(attackerSummary).forEach(([key, count]) => {
     const unitImage = unitImages[key] || 'default-attack-icon.png';
@@ -2913,8 +2979,6 @@ function populateBattleReportModal(side) {
     attackerContainer.insertAdjacentHTML('beforeend', attackerHTML);
   });
 
-  const defenderContainer = document.querySelector('.report-defenders .row');
-  defenderContainer.innerHTML = '';
   Object.entries(defenderSummary).forEach(([key, count]) => {
     const unitImage = unitImagesDefense[key] || 'default-defense-icon.png';
     const defenderHTML = `
@@ -2928,62 +2992,47 @@ function populateBattleReportModal(side) {
     defenderContainer.insertAdjacentHTML('beforeend', defenderHTML);
   });
 
-  const waveSummaryContainer = document.getElementById('wave-summary-container');
-  waveSummaryContainer.innerHTML = '';
-
   if (!waves[side] || waves[side].length === 0) {
-    const maxWaves = attackBasics.maxWaves;
-    waves[side] = Array.from({ length: maxWaves }, (_, i) => ({
-      slots: Array.from({ length: 3 }, (_, j) => ({
-        type: '',
-        count: 0,
-        id: `unit-slot-${side}-${i + 1}-${j + 1}`,
-      })),
-      tools: Array.from({ length: 3 }, (_, j) => ({
-        type: '',
-        count: 0,
-        id: `tool-slot-${side}-${i + 1}-${j + 1}`,
-      })),
-    }));
+    return;
   }
 
   waves[side].forEach((wave, index) => {
     const hasUnits = wave.slots.some(slot => slot.count > 0);
     if (hasUnits) {
       const waveHTML = `
-      <div class="player-flank text-center">
-        <span>WAVE ${index + 1}</span>
-      </div>
-      <div class="card-body margin-bug-fix report-wave">
-        <div class="row">
-          <div class="col bugfix report-attackers" style="border-right: 1px solid rgb(180, 140, 100);">
-            <div class="row">
-              ${wave.slots
+        <div class="player-flank text-center">
+          <span>WAVE ${index + 1}</span>
+        </div>
+        <div class="card-body margin-bug-fix report-wave">
+          <div class="row">
+            <div class="col bugfix report-attackers" style="border-right: 1px solid rgb(180, 140, 100);">
+              <div class="row">
+                ${wave.slots
           .map(slot => {
             if (slot && slot.count > 0) {
               const unitImage = unitImages[slot.type] || 'default-attack-icon.png';
               return `
-                      <div class="unit-slot">
-                        <div class="unit-icon-container">
-                          <img src="./img/${unitImage}" class="unit-icon" alt="${slot.type}">
-                          <div class="unit-count">${slot.count}</div>
+                        <div class="unit-slot">
+                          <div class="unit-icon-container">
+                            <img src="./img/${unitImage}" class="unit-icon" alt="${slot.type}">
+                            <div class="unit-count">${slot.count}</div>
+                          </div>
                         </div>
-                      </div>
-                    `;
+                      `;
             }
             return '';
           })
           .join('')}
+              </div>
             </div>
-          </div>
-          <div class="col bugfix report-defenders">
-            <div class="row">
-              <!-- Defenders are not displayed per wave -->
+            <div class="col bugfix report-defenders">
+              <div class="row">
+                <!-- Defenders are not displayed per wave -->
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    `;
+      `;
       waveSummaryContainer.insertAdjacentHTML('beforeend', waveHTML);
     }
   });
