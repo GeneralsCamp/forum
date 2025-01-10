@@ -312,14 +312,16 @@ function endTouchPresets(event) {
   }
 }
 //Battle report
-const battleReportContainer = document.getElementById('battle-report');
+const battleReportContainer = document.getElementById('battle-modal');
 let startTouchXreport = 0;
 let endTouchXreport = 0;
-waveContainer.addEventListener('touchstart', (event) => {
+let currentSideReport = 'front';
+
+battleReportContainer.addEventListener('touchstart', (event) => {
   startTouchXreport = event.touches[0].clientX;
 });
 
-waveContainer.addEventListener('touchend', (event) => {
+battleReportContainer.addEventListener('touchend', (event) => {
   endTouchXreport = event.changedTouches[0].clientX;
   handleSwipeReport();
 });
@@ -329,25 +331,25 @@ function handleSwipeReport() {
   const threshold = 50;
 
   if (swipeDistance > threshold) {
-
     switchToPreviousSideReport();
   } else if (swipeDistance < -threshold) {
-
     switchToNextSideReport();
   }
 }
 
 function switchToPreviousSideReport() {
   const sides = ['left', 'front', 'right', 'cy'];
-  const currentIndex = sides.indexOf(currentSide);
+  const currentIndex = sides.indexOf(currentSideReport);
   const newIndex = (currentIndex - 1 + sides.length) % sides.length;
+  currentSideReport = sides[newIndex];
   switchReportSide(sides[newIndex]);
 }
 
 function switchToNextSideReport() {
   const sides = ['left', 'front', 'right', 'cy'];
-  const currentIndex = sides.indexOf(currentSide);
+  const currentIndex = sides.indexOf(currentSideReport);
   const newIndex = (currentIndex + 1) % sides.length;
+  currentSideReport = sides[newIndex];
   switchReportSide(sides[newIndex]);
 }
 
