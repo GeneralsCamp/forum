@@ -2886,12 +2886,12 @@ function displayNotification(message) {
 let startTouchX = 0;
 let endTouchX = 0;
 
-function startTouch(event) {
+function startTouchPresets(event) {
   const touch = event.touches[0];
   startTouchX = touch.pageX;
 }
 
-function endTouch(event) {
+function endTouchPresets(event) {
   const touch = event.changedTouches[0];
   endTouchX = touch.pageX;
 
@@ -2907,6 +2907,17 @@ function endTouch(event) {
       changeWave(1);
     }
   }
+}
+
+const waveCopyModal = document.getElementById('waveCopyModal');
+
+if (waveCopyModal) {
+  waveCopyModal.ontouchstart = function(event) {
+    startTouchPreset(event);
+  };
+  waveCopyModal.ontouchend = function(event) {
+    endTouchPreset(event);
+  };
 }
 
 //BATTLE REPORT MODAL (...)
@@ -3119,8 +3130,7 @@ const modalsData = [
     id: 'waveCopyModal',
     title: 'Presets',
     body: `
-<div class="wave-navigation mb-2" id="waveNavigation"
-     ontouchstart="startTouch(event)" ontouchend="endTouch(event)">
+          <div class="wave-navigation mb-2" id="waveNavigation">
               <button class="nav-btn" onclick="changeWave(-1)">&#9664;</button>
               <span id="currentWaveText">Wave 1 / X</span>
               <button class="nav-btn" onclick="changeWave(1)">&#9654;</button>
