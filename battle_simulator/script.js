@@ -2886,29 +2886,26 @@ function displayNotification(message) {
 let startTouchX = 0;
 let endTouchX = 0;
 
-function startTouchPresets(event) {
+// Érintés kezdete: rögzítjük az érintés kezdő X pozícióját
+function startTouch(event) {
   const touch = event.touches[0];
   startTouchX = touch.pageX;
 }
 
-function endTouchPresets(event) {
+function endTouch(event) {
   const touch = event.changedTouches[0];
   endTouchX = touch.pageX;
 
   const deltaX = endTouchX - startTouchX;
 
-
   if (Math.abs(deltaX) > 50) {
     if (deltaX > 0) {
-
       changeWave(-1);
     } else {
-
       changeWave(1);
     }
   }
 }
-
 
 //BATTLE REPORT MODAL (...)
 function switchReportSide(side) {
@@ -3125,7 +3122,7 @@ const modalsData = [
               <span id="currentWaveText">Wave 1 / X</span>
               <button class="nav-btn" onclick="changeWave(1)">&#9654;</button>
           </div>
-          <div class="preset-list" ontouchstart="startTouchPreset(event)" ontouchend="endTouchPreset(event)">
+          <div class="preset-list" ontouchstart="startTouch(event)" ontouchend="endTouch(event)">
               ${[...Array(8)].map(
       (_, i) => `
                   <div class="preset-item" onclick="selectPreset(${i + 1})">
