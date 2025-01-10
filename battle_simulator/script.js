@@ -2883,7 +2883,7 @@ function displayNotification(message) {
   }, 2000);
 }
 
-const waveContainerPreset = document.querySelector('#waveCopyModal .modal-body');
+const waveContainerPreset = document.getElementById('waveCopyModal');
 let touchStartXPreset = 0;
 let touchEndXPreset = 0;
 
