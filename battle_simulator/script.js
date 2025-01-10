@@ -311,6 +311,28 @@ function endTouchPresets(event) {
     }
   }
 }
+//Battle report
+let startTouchXreport = 0;
+let endTouchXreport = 0;
+function startTouchReport(event) {
+  const touch = event.touches[0];
+  startTouchXreport = touch.pageX;
+}
+
+function endTouchReport(event) {
+  const touch = event.changedTouches[0];
+  endTouchXreport = touch.pageX;
+
+  const deltaX = endTouchXreport - startTouchXreport;
+
+  if (Math.abs(deltaX) > 50) {
+    if (deltaX > 0) {
+      changeWave(-1);
+    } else {
+      changeWave(1);
+    }
+  }
+}
 
 /// FUNCTIONS
 function updateUnitStrengths() {
