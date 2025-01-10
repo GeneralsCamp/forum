@@ -2909,15 +2909,6 @@ function endTouchPresets(event) {
   }
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-  var modalBody = document.getElementById("waveCopyModal");
-
-  if (modalBody) {
-      modalBody.setAttribute("ontouchstart", "startTouchPreset(event)");
-      modalBody.setAttribute("ontouchend", "endTouchPreset(event)");
-  }
-});
-
 
 //BATTLE REPORT MODAL (...)
 function switchReportSide(side) {
@@ -3134,7 +3125,7 @@ const modalsData = [
               <span id="currentWaveText">Wave 1 / X</span>
               <button class="nav-btn" onclick="changeWave(1)">&#9654;</button>
           </div>
-          <div class="preset-list">
+          <div class="preset-list" ontouchstart="startTouchPreset(event)" ontouchend="endTouchPreset(event)">
               ${[...Array(8)].map(
       (_, i) => `
                   <div class="preset-item" onclick="selectPreset(${i + 1})">
