@@ -2883,27 +2883,29 @@ function displayNotification(message) {
   }, 2000);
 }
 
-const waveContainerPreset = document.getElementById('waveCopyModal');
-let touchStartXPreset = 0;
-let touchEndXPreset = 0;
+let startTouchX = 0;
+let endTouchX = 0;
 
-waveContainer.addEventListener('touchstart', (event) => {
-  touchStartXPreset = event.touches[0].clientX;
-});
+function startTouch(event) {
+  const touch = event.touches[0];
+  startTouchX = touch.pageX;
+}
 
-waveContainer.addEventListener('touchend', (event) => {
-  touchEndXPreset = event.changedTouches[0].clientX;
-  handleSwipePreset();
-});
+function endTouch(event) {
+  const touch = event.changedTouches[0];
+  endTouchX = touch.pageX;
 
-function handleSwipePreset() {
-  const swipeDistance = touchEndXPreset - touchStartXPreset;
-  const threshold = 50;
+  const deltaX = endTouchX - startTouchX;
 
-  if (swipeDistance > threshold) {
-    changeWave(-1);
-  } else if (swipeDistance < -threshold) {
-    changeWave(1);
+
+  if (Math.abs(deltaX) > 50) {
+    if (deltaX > 0) {
+
+      changeWave(-1);
+    } else {
+
+      changeWave(1);
+    }
   }
 }
 
@@ -3117,7 +3119,8 @@ const modalsData = [
     id: 'waveCopyModal',
     title: 'Presets',
     body: `
-          <div class="wave-navigation mb-2">
+<div class="wave-navigation mb-2" id="waveNavigation"
+     ontouchstart="startTouch(event)" ontouchend="endTouch(event)">
               <button class="nav-btn" onclick="changeWave(-1)">&#9664;</button>
               <span id="currentWaveText">Wave 1 / X</span>
               <button class="nav-btn" onclick="changeWave(1)">&#9654;</button>
