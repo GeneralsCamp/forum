@@ -312,26 +312,43 @@ function endTouchPresets(event) {
   }
 }
 //Battle report
+const battleReportContainer = document.getElementById('battle-report');
 let startTouchXreport = 0;
 let endTouchXreport = 0;
-function startTouchReport(event) {
-  const touch = event.touches[0];
-  startTouchXreport = touch.pageX;
+waveContainer.addEventListener('touchstart', (event) => {
+  startTouchXreport = event.touches[0].clientX;
+});
+
+waveContainer.addEventListener('touchend', (event) => {
+  endTouchXreport = event.changedTouches[0].clientX;
+  handleSwipe();
+});
+
+function handleSwipeReport() {
+  const swipeDistance = endTouchXreport - startTouchXreport;
+  const threshold = 50;
+
+  if (swipeDistance > threshold) {
+
+    switchToPreviousSideReport();
+  } else if (swipeDistance < -threshold) {
+
+    switchToNextSideReport();
+  }
 }
 
-function endTouchReport(event) {
-  const touch = event.changedTouches[0];
-  endTouchXreport = touch.pageX;
+function switchToPreviousSideReport() {
+  const sides = ['left', 'front', 'right', 'cy'];
+  const currentIndex = sides.indexOf(currentSide);
+  const newIndex = (currentIndex - 1 + sides.length) % sides.length;
+  switchDefenseSide(sides[newIndex]);
+}
 
-  const deltaX = endTouchXreport - startTouchXreport;
-
-  if (Math.abs(deltaX) > 50) {
-    if (deltaX > 0) {
-      changeWave(-1);
-    } else {
-      changeWave(1);
-    }
-  }
+function switchToNextSideReport() {
+  const sides = ['left', 'front', 'right', 'cy'];
+  const currentIndex = sides.indexOf(currentSide);
+  const newIndex = (currentIndex + 1) % sides.length;
+  switchDefenseSide(sides[newIndex]);
 }
 
 /// FUNCTIONS
