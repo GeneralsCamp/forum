@@ -249,6 +249,69 @@ collapseButtons.forEach(button => {
   });
 });
 
+///Scrolling (mobile only)
+//Waves
+const waveContainer = document.getElementById('wave-container');
+let startTouchXwaves = 0;
+let endTouchXwaves = 0;
+waveContainer.addEventListener('touchstart', (event) => {
+  startTouchXwaves = event.touches[0].clientX;
+});
+
+waveContainer.addEventListener('touchend', (event) => {
+  endTouchXwaves = event.changedTouches[0].clientX;
+  handleSwipe();
+});
+
+function handleSwipe() {
+  const swipeDistance = endTouchXwaves - startTouchXwaves;
+  const threshold = 50;
+
+  if (swipeDistance > threshold) {
+
+    switchToPreviousSide();
+  } else if (swipeDistance < -threshold) {
+
+    switchToNextSide();
+  }
+}
+
+function switchToPreviousSide() {
+  const sides = ['left', 'front', 'right'];
+  const currentIndex = sides.indexOf(currentSide);
+  const newIndex = (currentIndex - 1 + sides.length) % sides.length;
+  switchSide(sides[newIndex]);
+}
+
+function switchToNextSide() {
+  const sides = ['left', 'front', 'right'];
+  const currentIndex = sides.indexOf(currentSide);
+  const newIndex = (currentIndex + 1) % sides.length;
+  switchSide(sides[newIndex]);
+}
+//Presets
+let startTouchXpresets = 0;
+let endTouchXpresets = 0;
+function startTouchPresets(event) {
+  const touch = event.touches[0];
+  startTouchXpresets = touch.pageX;
+}
+
+function endTouchPresets(event) {
+  const touch = event.changedTouches[0];
+  endTouchXpresets = touch.pageX;
+
+  const deltaX = endTouchXpresets - startTouchXpresets;
+
+  if (Math.abs(deltaX) > 50) {
+    if (deltaX > 0) {
+      changeWave(-1);
+    } else {
+      changeWave(1);
+    }
+  }
+}
+
 /// FUNCTIONS
 function updateUnitStrengths() {
   units.forEach(unit => {
@@ -1618,46 +1681,6 @@ function switchSide(side) {
   }
 }
 
-const waveContainer = document.getElementById('wave-container');
-let touchStartX = 0;
-let touchEndX = 0;
-
-waveContainer.addEventListener('touchstart', (event) => {
-  touchStartX = event.touches[0].clientX;
-});
-
-waveContainer.addEventListener('touchend', (event) => {
-  touchEndX = event.changedTouches[0].clientX;
-  handleSwipe();
-});
-
-function handleSwipe() {
-  const swipeDistance = touchEndX - touchStartX;
-  const threshold = 50;
-
-  if (swipeDistance > threshold) {
-
-    switchToPreviousSide();
-  } else if (swipeDistance < -threshold) {
-
-    switchToNextSide();
-  }
-}
-
-function switchToPreviousSide() {
-  const sides = ['left', 'front', 'right'];
-  const currentIndex = sides.indexOf(currentSide);
-  const newIndex = (currentIndex - 1 + sides.length) % sides.length;
-  switchSide(sides[newIndex]);
-}
-
-function switchToNextSide() {
-  const sides = ['left', 'front', 'right'];
-  const currentIndex = sides.indexOf(currentSide);
-  const newIndex = (currentIndex + 1) % sides.length;
-  switchSide(sides[newIndex]);
-}
-
 function createUnitIcon(slot) {
   const unitIconContainer = document.createElement('div');
   unitIconContainer.classList.add('unit-icon-container');
@@ -2883,30 +2906,6 @@ function displayNotification(message) {
   }, 2000);
 }
 
-let startTouchX = 0;
-let endTouchX = 0;
-
-// Érintés kezdete: rögzítjük az érintés kezdő X pozícióját
-function startTouch(event) {
-  const touch = event.touches[0];
-  startTouchX = touch.pageX;
-}
-
-function endTouch(event) {
-  const touch = event.changedTouches[0];
-  endTouchX = touch.pageX;
-
-  const deltaX = endTouchX - startTouchX;
-
-  if (Math.abs(deltaX) > 50) {
-    if (deltaX > 0) {
-      changeWave(-1);
-    } else {
-      changeWave(1);
-    }
-  }
-}
-
 //BATTLE REPORT MODAL (...)
 function switchReportSide(side) {
   document.querySelectorAll('.flanks-button-report').forEach(button => {
@@ -3122,7 +3121,7 @@ const modalsData = [
               <span id="currentWaveText">Wave 1 / X</span>
               <button class="nav-btn" onclick="changeWave(1)">&#9654;</button>
           </div>
-          <div class="preset-list" ontouchstart="startTouch(event)" ontouchend="endTouch(event)">
+          <div class="preset-list" ontouchstart="startTouchPresets(event)" ontouchend="endTouchPresets(event)">
               ${[...Array(8)].map(
       (_, i) => `
                   <div class="preset-item" onclick="selectPreset(${i + 1})">
