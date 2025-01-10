@@ -3807,3 +3807,60 @@ window.onload = function () {
   loadPresets();
   loadDefenseState();
 };
+
+//FULLSCREEN (temp function)
+const generalImage = document.querySelector('.general-img');
+const enemyImage = document.querySelector('.enemy-img');
+
+let generalClicked = false;
+let enemyClicked = false;
+let clickTimeout;
+
+generalImage.addEventListener('click', () => {
+  generalClicked = true;
+  checkBothClicked();
+});
+
+enemyImage.addEventListener('click', () => {
+  enemyClicked = true;
+  checkBothClicked();
+});
+
+function checkBothClicked() {
+  if (generalClicked && enemyClicked) {
+    toggleFullscreen();
+    resetClickFlags();
+  } else {
+    clearTimeout(clickTimeout);
+    clickTimeout = setTimeout(resetClickFlags, 300);
+  }
+}
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen();
+    } else if (document.documentElement.mozRequestFullScreen) { // Firefox
+      document.documentElement.mozRequestFullScreen();
+    } else if (document.documentElement.webkitRequestFullscreen) { // Chrome, Safari
+      document.documentElement.webkitRequestFullscreen();
+    } else if (document.documentElement.msRequestFullscreen) { // Internet Explorer/Edge
+      document.documentElement.msRequestFullscreen();
+    }
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+      document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) {
+      document.msExitFullscreen();
+    }
+  }
+}
+
+function resetClickFlags() {
+  generalClicked = false;
+  enemyClicked = false;
+}
