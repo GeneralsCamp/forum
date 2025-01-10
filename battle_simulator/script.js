@@ -2158,6 +2158,44 @@ function getToolIcon(tool) {
   }
 }
 
+function openAllWaves() {
+  let anyOpen = false;
+  const openAllWavesButton = document.querySelector('.openAllWaves-button');
+
+  for (let i = 1; i <= attackBasics.maxWaves; i++) {
+    const collapseElement = document.getElementById(`collapse-${currentSide}-${i}`);
+    if (collapseElement && collapseElement.classList.contains('show')) {
+      anyOpen = true;
+      break;
+    }
+  }
+
+  const action = anyOpen ? 'close' : 'open';
+
+  for (let i = 1; i <= attackBasics.maxWaves; i++) {
+    const collapseElement = document.getElementById(`collapse-${currentSide}-${i}`);
+    const arrow = document.querySelector(`#heading-${currentSide}-${i} .arrow`);
+
+    if (collapseElement && arrow) {
+      if (action === 'open') {
+        collapseElement.classList.add('show');
+        arrow.style.transform = 'rotate(90deg)';
+        openWaves[i] = true;
+        switchSide(currentSide);
+        openAllWavesButton.classList.add('active');
+
+      } else {
+        collapseElement.classList.remove('show');
+        arrow.style.transform = 'rotate(0deg)';
+        openWaves[i] = false;
+        switchSide(currentSide);
+        openAllWavesButton.classList.remove('active');
+      }
+    }
+  }
+  
+}
+
 //DEFENSE MODALS
 function openDefenseBasicsModal() {
   var myModal = new bootstrap.Modal(document.getElementById('defenseBasicsModal'), {});

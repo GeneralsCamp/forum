@@ -9,7 +9,7 @@ body {
 
 .container {
     background-color: rgb(67, 51, 38);
-    padding: 10px;
+    padding: 5px;
     margin-top: 20px;
     max-width: 450px;
     min-height: 100vh;
@@ -242,7 +242,7 @@ body {
     border-top: 8px solid transparent;
     border-bottom: 8px solid transparent;
     transition: transform 0.2s ease;
-    margin-right: 5px;
+    margin-right: 10px;
     transform: rotate(0deg);
 }
 
@@ -294,8 +294,8 @@ body {
 }
 
 .square2 {
-    width: 35px;
-    height: 35px;
+    width: 40px;
+    height: 40px;
     display: inline-block;
     margin: 0 auto;
     background-size: cover;
@@ -349,7 +349,6 @@ body {
     color: white;
     background-color: green;
     min-width: 110px;
-    ;
 }
 
 .btn-attack:hover {
@@ -626,8 +625,9 @@ input[type="number"] {
 }
 
 .red-button {
-    background-color: none;
-    border: none;
+    background-color: rgb(172,39,14,255);
+    border: 1px solid rgb(58, 77, 75);
+    border-radius: 10%;
 }
 
 .red-button .icon {
@@ -636,31 +636,38 @@ input[type="number"] {
 }
 
 .red-button:hover {
-    background-color: rgba(255, 73, 73, 0.7);
-}
-
-.red-button.active {
-    background-color: rgba(255, 73, 73, 0.7);
-}
-
-.preset-button {
-    background-color: rgb(88, 117, 114);
+    background-color: rgb(172,39,14,255);
+    border-radius: 10%;
     border: 1px solid rgb(58, 77, 75);
 }
 
-.preset-button .icon {
+.preset-button, .openAllWaves-button {
+    background-color: rgb(88, 117, 114);
+    border: 1px solid rgb(58, 77, 75);
+    border-radius: 10%;
+}
+
+.preset-button .icon, .openAllWaves-button .icon {
     width: 22px;
     height: auto;
 }
 
-.preset-button:hover {
+.preset-button:hover, .openAllWaves-button:hover {
     background-color: rgb(101, 132, 141);
+    border-radius: 10%;
 }
 
-.red-button.active {
-    background-color: rgb(101, 132, 141);
+.openAllWaves-button.active {
+    background-color: rgb(243, 194, 74);
+    background-image: url('./img/openallwaves-icon2.webp');
 }
 
+.openAllWaves-button {
+    background-image: url('./img/openallwaves-icon1.webp');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 80%;
+}
 
 .wave-navigation {
     display: flex;
@@ -758,7 +765,6 @@ input[type="number"] {
     align-items: center;
     justify-content: space-between;
     white-space: nowrap;
-    margin-right: 10px;
     opacity: 1;
     visibility: visible;
     font-weight: bold;
