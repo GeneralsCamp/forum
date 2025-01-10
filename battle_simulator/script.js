@@ -2888,16 +2888,16 @@ let touchStartXPreset = 0;
 let touchEndXPreset = 0;
 
 waveContainer.addEventListener('touchstart', (event) => {
-  touchStartX = event.touches[0].clientX;
+  touchStartXPreset = event.touches[0].clientX;
 });
 
 waveContainer.addEventListener('touchend', (event) => {
-  touchEndX = event.changedTouches[0].clientX;
+  touchEndXPreset = event.changedTouches[0].clientX;
   handleSwipePreset();
 });
 
 function handleSwipePreset() {
-  const swipeDistance = touchEndX - touchStartX;
+  const swipeDistance = touchEndXPreset - touchStartXPreset;
   const threshold = 50;
 
   if (swipeDistance > threshold) {
