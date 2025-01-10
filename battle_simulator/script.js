@@ -2883,6 +2883,30 @@ function displayNotification(message) {
   }, 2000);
 }
 
+const waveContainerPreset = document.querySelector('#waveCopyModal .modal-body');
+let touchStartXPreset = 0;
+let touchEndXPreset = 0;
+
+waveContainer.addEventListener('touchstart', (event) => {
+  touchStartX = event.touches[0].clientX;
+});
+
+waveContainer.addEventListener('touchend', (event) => {
+  touchEndX = event.changedTouches[0].clientX;
+  handleSwipePreset();
+});
+
+function handleSwipePreset() {
+  const swipeDistance = touchEndX - touchStartX;
+  const threshold = 50;
+
+  if (swipeDistance > threshold) {
+    changeWave(-1);
+  } else if (swipeDistance < -threshold) {
+    changeWave(1);
+  }
+}
+
 //BATTLE REPORT MODAL (...)
 function switchReportSide(side) {
   document.querySelectorAll('.flanks-button-report').forEach(button => {
