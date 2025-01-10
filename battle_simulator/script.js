@@ -321,7 +321,7 @@ waveContainer.addEventListener('touchstart', (event) => {
 
 waveContainer.addEventListener('touchend', (event) => {
   endTouchXreport = event.changedTouches[0].clientX;
-  handleSwipe();
+  handleSwipeReport();
 });
 
 function handleSwipeReport() {
