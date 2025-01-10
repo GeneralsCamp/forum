@@ -2248,7 +2248,11 @@ function openDefenseUnitsModal(side, slotNumber) {
     return total;
   }, 0);
 
-  let totalUnitsInCourtyard = defenseSlots.cy.units.reduce((acc, slot) => acc + (slot.count || 0), 0);
+  let totalUnitsInCourtyard = (defenseSlots.cy?.units || []).reduce(
+    (acc, slot) => acc + (slot?.count || 0),
+    0
+  );
+  
 
   let availableUnits;
   const currentSlotData = defenseSlots[side].units[slotNumber - 1] || { type: '', count: 0 };
