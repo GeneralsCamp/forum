@@ -341,14 +341,14 @@ function switchToPreviousSideReport() {
   const sides = ['left', 'front', 'right', 'cy'];
   const currentIndex = sides.indexOf(currentSide);
   const newIndex = (currentIndex - 1 + sides.length) % sides.length;
-  switchDefenseSide(sides[newIndex]);
+  switchReportSide(sides[newIndex]);
 }
 
 function switchToNextSideReport() {
   const sides = ['left', 'front', 'right', 'cy'];
   const currentIndex = sides.indexOf(currentSide);
   const newIndex = (currentIndex + 1) % sides.length;
-  switchDefenseSide(sides[newIndex]);
+  switchReportSide(sides[newIndex]);
 }
 
 /// FUNCTIONS
