@@ -2909,16 +2909,15 @@ function endTouchPresets(event) {
   }
 }
 
-const waveCopyModal = document.getElementById('waveCopyModal');
+document.addEventListener("DOMContentLoaded", function () {
+  var modalBody = document.getElementById("waveCopyModal");
 
-if (waveCopyModal) {
-  waveCopyModal.ontouchstart = function(event) {
-    startTouchPreset(event);
-  };
-  waveCopyModal.ontouchend = function(event) {
-    endTouchPreset(event);
-  };
-}
+  if (modalBody) {
+      modalBody.setAttribute("ontouchstart", "startTouchPreset(event)");
+      modalBody.setAttribute("ontouchend", "endTouchPreset(event)");
+  }
+});
+
 
 //BATTLE REPORT MODAL (...)
 function switchReportSide(side) {
