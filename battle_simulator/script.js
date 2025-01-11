@@ -253,26 +253,33 @@ collapseButtons.forEach(button => {
 //Waves
 const waveContainer = document.getElementById('wave-container');
 let startTouchXwaves = 0;
+let startTouchYwaves = 0;
 let endTouchXwaves = 0;
+let endTouchYwaves = 0;
+
 waveContainer.addEventListener('touchstart', (event) => {
   startTouchXwaves = event.touches[0].clientX;
+  startTouchYwaves = event.touches[0].clientY;
 });
 
 waveContainer.addEventListener('touchend', (event) => {
   endTouchXwaves = event.changedTouches[0].clientX;
+  endTouchYwaves = event.changedTouches[0].clientY;
   handleSwipe();
 });
 
 function handleSwipe() {
-  const swipeDistance = endTouchXwaves - startTouchXwaves;
-  const threshold = 50;
+  const swipeDistanceX = endTouchXwaves - startTouchXwaves;
+  const swipeDistanceY = endTouchYwaves - startTouchYwaves;
+  const threshold = 50; // Minimális vízszintes elmozdulás
+  const verticalTolerance = 30; // Maximális függőleges elmozdulás
 
-  if (swipeDistance > threshold) {
-
-    switchToPreviousSide();
-  } else if (swipeDistance < -threshold) {
-
-    switchToNextSide();
+  if (Math.abs(swipeDistanceX) > threshold && Math.abs(swipeDistanceY) < verticalTolerance) {
+    if (swipeDistanceX > 0) {
+      switchToPreviousSide();
+    } else {
+      switchToNextSide();
+    }
   }
 }
 
@@ -289,6 +296,7 @@ function switchToNextSide() {
   const newIndex = (currentIndex + 1) % sides.length;
   switchSide(sides[newIndex]);
 }
+
 //Presets
 let startTouchXpresets = 0;
 let endTouchXpresets = 0;
