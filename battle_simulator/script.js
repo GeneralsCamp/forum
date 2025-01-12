@@ -2178,30 +2178,70 @@ function openAllWaves() {
     }
   }
 
+  const supportCollapse = document.getElementById('collapseSupp');
+  const courtyardCollapse = document.getElementById('collapseCY');
+  if ((supportCollapse && supportCollapse.classList.contains('show')) || 
+      (courtyardCollapse && courtyardCollapse.classList.contains('show'))) {
+    anyOpen = true;
+  }
+
   const action = anyOpen ? 'close' : 'open';
 
   for (let i = 1; i <= attackBasics.maxWaves; i++) {
     const collapseElement = document.getElementById(`collapse-${currentSide}-${i}`);
+    const headerElement = document.getElementById(`heading-${currentSide}-${i}`);
     const arrow = document.querySelector(`#heading-${currentSide}-${i} .arrow`);
 
-    if (collapseElement && arrow) {
+    if (collapseElement && headerElement && arrow) {
       if (action === 'open') {
         collapseElement.classList.add('show');
+        headerElement.classList.add('collapsed');
         arrow.style.transform = 'rotate(90deg)';
         openWaves[i] = true;
-        switchSide(currentSide);
-        openAllWavesButton.classList.add('active');
-
       } else {
         collapseElement.classList.remove('show');
+        
+        headerElement.classList.remove('collapsed');
         arrow.style.transform = 'rotate(0deg)';
         openWaves[i] = false;
-        switchSide(currentSide);
-        openAllWavesButton.classList.remove('active');
       }
     }
   }
-  
+
+  if (supportCollapse) {
+    const supportHeader = document.getElementById('headingSupp');
+    const supportArrow = document.querySelector('#headingSupp .arrow');
+    if (action === 'open') {
+      supportCollapse.classList.add('show');
+      supportHeader.classList.add('collapsed');
+      if (supportArrow) supportArrow.style.transform = 'rotate(90deg)';
+    } else {
+      supportCollapse.classList.remove('show');
+      
+      supportHeader.classList.remove('collapsed');
+      if (supportArrow) supportArrow.style.transform = 'rotate(0deg)';
+    }
+  }
+
+  if (courtyardCollapse) {
+    const courtyardHeader = document.getElementById('headingCY');
+    const courtyardArrow = document.querySelector('#headingCY .arrow');
+    if (action === 'open') {
+      courtyardCollapse.classList.add('show');
+      courtyardHeader.classList.add('collapsed');
+      if (courtyardArrow) courtyardArrow.style.transform = 'rotate(90deg)';
+    } else {
+      courtyardCollapse.classList.remove('show');
+      courtyardHeader.classList.remove('collapsed');
+      if (courtyardArrow) courtyardArrow.style.transform = 'rotate(0deg)';
+    }
+  }
+
+  if (action === 'open') {
+    openAllWavesButton.classList.add('active');
+  } else {
+    openAllWavesButton.classList.remove('active');
+  }
 }
 
 //DEFENSE MODALS
