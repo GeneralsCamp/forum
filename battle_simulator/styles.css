@@ -387,8 +387,8 @@ body {
 .modal-body {
     background-color: rgb(68, 51, 38);
     padding: 0;
-    max-height: 53vh;
-    min-height: 45vh;
+    max-height: 50vh;
+    min-height: 40vh;
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -420,7 +420,7 @@ body {
     width: auto;
 }
 
-.modal-image{
+.modal-image {
     padding: 2px;
     background-color: rgb(180, 140, 100);
     display: flex;
@@ -428,7 +428,7 @@ body {
     align-items: center;
     border-right: 2px solid rgb(119, 80, 54);
     margin-left: 2px;
-    
+
     max-height: 64px;
     min-height: 64px;
     max-width: 65px;
@@ -625,7 +625,7 @@ input[type="number"] {
 }
 
 .red-button {
-    background-color: rgb(172,39,14,255);
+    background-color: rgb(172, 39, 14, 255);
     border: 1px solid rgb(58, 77, 75);
     border-radius: 10%;
 }
@@ -636,23 +636,26 @@ input[type="number"] {
 }
 
 .red-button:hover {
-    background-color: rgb(172,39,14,255);
+    background-color: rgb(172, 39, 14, 255);
     border-radius: 10%;
     border: 1px solid rgb(58, 77, 75);
 }
 
-.preset-button, .openAllWaves-button {
+.preset-button,
+.openAllWaves-button {
     background-color: rgb(88, 117, 114);
     border: 1px solid rgb(58, 77, 75);
     border-radius: 10%;
 }
 
-.preset-button .icon, .openAllWaves-button .icon {
+.preset-button .icon,
+.openAllWaves-button .icon {
     width: 22px;
     height: auto;
 }
 
-.preset-button:hover, .openAllWaves-button:hover {
+.preset-button:hover,
+.openAllWaves-button:hover {
     background-color: rgb(101, 132, 141);
     border-radius: 10%;
 }
@@ -795,12 +798,12 @@ input[type="number"] {
     transition: bottom 0.3s ease-in-out;
     z-index: 9999;
     font-weight: bolder;
-  }
+}
 
-  .notification-bar.show {
+.notification-bar.show {
     bottom: 0;
-  }
-  
+}
+
 .flanks-button-report {
     width: 32px;
     height: 32px;
@@ -828,15 +831,15 @@ input[type="number"] {
     color: black;
 }
 
-.section-header{
+.section-header {
     text-align: center;
 }
 
-.margin-bug-fix .row{
+.margin-bug-fix .row {
     margin-left: 0 !important;
 }
 
-.report-wave{
+.report-wave {
     min-height: 50px;
 }
 
@@ -855,42 +858,72 @@ input[type="number"] {
     cursor: pointer;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     transition: all 0.2s ease-in-out;
-  }
-  
-  .btn-confirm:hover {
+}
+
+.btn-confirm:hover {
     background-color: #218838;
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
     transform: scale(1.025);
-  }
-  
-  .btn-confirm:active {
+}
+
+.btn-confirm:active {
     background-color: #1e7e34;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     transform: scale(0.98);
-  }
-  
-  .btn-confirm .icon {
+}
+
+.btn-confirm .icon {
     display: inline-block;
     margin-right: 10px;
     font-size: 20px;
-  }
-  
-  .sides img {
+}
+
+.sides img {
     width: auto;
     height: 20px;
     filter: brightness(0) invert(1);
     transition: filter 0.2s ease-in-out;
-  }
-  
-  .sides.active img {
+}
+
+.sides.active img {
     filter: none;
-  }
+}
 
-  .no-padding-fix{
+.no-padding-fix {
     padding: 0 !important;
-  }
+}
 
-  .battle-modal{
+.battle-modal {
     max-height: 50vh !important;
     min-height: 50vh !important;
-  }
+}
+
+.presets-footer {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0 !important;
+}
+
+.presets-footer .col-6 {
+    display: flex;
+    align-items: center;
+    flex: 0 0 50%;
+    max-width: 50%;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+.presets-footer .btn {
+    margin-right: 10px;
+    margin-left: 0px;
+}
+
+.presets-footer .col-6 .btn img {
+    height: 39px !important;
+    width: 39px !important;
+}
+
+.presets-footer p {
+    margin: 0;
+    color: white;
+}
