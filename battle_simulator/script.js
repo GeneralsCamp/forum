@@ -2180,8 +2180,8 @@ function openAllWaves() {
 
   const supportCollapse = document.getElementById('collapseSupp');
   const courtyardCollapse = document.getElementById('collapseCY');
-  if ((supportCollapse && supportCollapse.classList.contains('show')) || 
-      (courtyardCollapse && courtyardCollapse.classList.contains('show'))) {
+  if ((supportCollapse && supportCollapse.classList.contains('show')) ||
+    (courtyardCollapse && courtyardCollapse.classList.contains('show'))) {
     anyOpen = true;
   }
 
@@ -2200,7 +2200,7 @@ function openAllWaves() {
         openWaves[i] = true;
       } else {
         collapseElement.classList.remove('show');
-        
+
         headerElement.classList.remove('collapsed');
         arrow.style.transform = 'rotate(0deg)';
         openWaves[i] = false;
@@ -2217,7 +2217,7 @@ function openAllWaves() {
       if (supportArrow) supportArrow.style.transform = 'rotate(90deg)';
     } else {
       supportCollapse.classList.remove('show');
-      
+
       supportHeader.classList.remove('collapsed');
       if (supportArrow) supportArrow.style.transform = 'rotate(0deg)';
     }
@@ -2338,7 +2338,7 @@ function openDefenseUnitsModal(side, slotNumber) {
     (acc, slot) => acc + (slot?.count || 0),
     0
   );
-  
+
 
   let availableUnits;
   const currentSlotData = defenseSlots[side].units[slotNumber - 1] || { type: '', count: 0 };
@@ -3264,15 +3264,26 @@ const modalsData = [
           </div>
       `,
     footer: `
-          <button class="btn btn-save presets-button" onclick="saveToPreset()">
-              <img src="./img/icon_save.webp" alt="Save" class="icon" />
-          </button>
-          <button class="btn btn-apply presets-button" onclick="applyPreset()">
-              <img src="./img/icon_applyOne.webp" alt="Apply" class="icon" />
-          </button>
-          <button class="btn btn-apply-all presets-button" onclick="applyPresetToAll()">
-              <img src="./img/icon_applyAll.webp" alt="Apply to All" class="icon" />
-          </button>
+<div class="row presets-footer">
+    <div class="col-6">
+        <button class="btn btn-apply presets-button" onclick="applyPreset()">
+            <img src="./img/icon_applyOne.webp" alt="Apply" class="icon" />
+        </button>
+        <p>Apply preset to wave</p>
+    </div>
+    <div class="col-6">
+        <button class="btn btn-apply-all presets-button" onclick="applyPresetToAll()">
+            <img src="./img/icon_applyAll.webp" alt="Apply to All" class="icon" />
+        </button>
+        <p>Apply preset to all wave</p>
+    </div>
+        <div class="col-6">
+        <button class="btn btn-save presets-button" onclick="saveToPreset()">
+            <img src="./img/icon_save.webp" alt="Save" class="icon" />
+        </button>
+        <p>Save selected wave to preset</p>
+    </div>
+</div>
       `
   },
   //Defense basics modal
