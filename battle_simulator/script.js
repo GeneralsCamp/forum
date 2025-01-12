@@ -2192,7 +2192,14 @@ function openAllWaves() {
     const headerElement = document.getElementById(`heading-${currentSide}-${i}`);
     const arrow = document.querySelector(`#heading-${currentSide}-${i} .arrow`);
 
-    if (collapseElement && headerElement && arrow) {
+    const wave = waves[currentSide]?.[i - 1];
+    const hasUnits = wave?.slots?.some(slot => slot.count > 0);
+
+    if (headerElement) {
+      headerElement.style.backgroundColor = hasUnits ? 'rgb(255, 255, 150)' : '';
+    }
+
+    if (collapseElement && arrow) {
       if (action === 'open') {
         collapseElement.classList.add('show');
         headerElement.classList.add('collapsed');
@@ -2200,7 +2207,6 @@ function openAllWaves() {
         openWaves[i] = true;
       } else {
         collapseElement.classList.remove('show');
-
         headerElement.classList.remove('collapsed');
         arrow.style.transform = 'rotate(0deg)';
         openWaves[i] = false;
