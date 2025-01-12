@@ -387,8 +387,8 @@ body {
 .modal-body {
     background-color: rgb(68, 51, 38);
     padding: 0;
-    max-height: 50vh;
-    min-height: 40vh;
+    max-height: 53vh;
+    min-height: 46vh;
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -926,4 +926,5 @@ input[type="number"] {
 .presets-footer p {
     margin: 0;
     color: white;
+    font-size: 14px;
 }
