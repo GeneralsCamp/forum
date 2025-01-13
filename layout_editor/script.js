@@ -1124,11 +1124,11 @@ const predefinedBuildings = [
     },
     {
         name: "Encampment",
-        width: 8,
-        height: 8,
+        width: 6,
+        height: 6,
         color: "0 0 102", // Dark blue
         image: "images/encampment.png",
-        description: "Size: 8x8"
+        description: "Size: 6x6"
     },
     {
         name: "Loot warehouse",
