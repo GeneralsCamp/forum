@@ -1040,7 +1040,7 @@ const predefinedBuildings = [
         height: 6,
         color: "0 0 102", // Dark blue
         image: "images/guardhouse.png",
-        description: "Size: 8x8"
+        description: "Size: 6x6"
     },
     {
         name: "Tavern",
@@ -1048,7 +1048,7 @@ const predefinedBuildings = [
         height: 6,
         color: "204 102 0", // Tavern orange
         image: "images/tavern.png",
-        description: "Size: 8x8"
+        description: "Size: 6x6"
     },
     {
         name: "Estate",
