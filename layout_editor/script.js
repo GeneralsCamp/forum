@@ -1036,16 +1036,16 @@ const predefinedBuildings = [
     },
     {
         name: "Guardhouse",
-        width: 8,
-        height: 8,
+        width: 6,
+        height: 6,
         color: "0 0 102", // Dark blue
         image: "images/guardhouse.png",
         description: "Size: 8x8"
     },
     {
         name: "Tavern",
-        width: 8,
-        height: 8,
+        width: 6,
+        height: 6,
         color: "204 102 0", // Tavern orange
         image: "images/tavern.png",
         description: "Size: 8x8"
