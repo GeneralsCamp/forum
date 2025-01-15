@@ -50,10 +50,11 @@
                 <div class="modal-header bugfix1">
                     <h5 class="modal-title" id="buildingsModalLabel">Buildings</h5>
                     <div class="d-flex justify-content-end align-items-center w-100">
+                        <input type="text" id="buildingSearch" class="form-control me-2" placeholder="Search buildings">
                         <div class="dropdown me-2">
                             <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="filterDropdown"
                                 data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-funnel"></i> Filter
+                                <i class="bi bi-funnel"></i>
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="filterDropdown">
                                 <li>
@@ -73,12 +74,12 @@
                                 </li>
                             </ul>
                         </div>
-                        <!-- Swap button placed next to the dropdown -->
                         <button class="btn btn-outline-secondary" id="swapButton">
-                            <i class="bi bi-arrow-repeat"></i>
+                            <i class="bi bi-arrow-repeat"></i> Rotate
                         </button>
                     </div>
                 </div>
+                
                 <div class="modal-body bugfix1">
                     <div class="row" id="buildingsGrid">
                         <!-- Dinamic items -->

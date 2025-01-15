@@ -1330,13 +1330,50 @@ let isSwappedDimensions = false;
 document.getElementById("swapButton").addEventListener("click", () => {
     isSwappedDimensions = !isSwappedDimensions;
 
-    const swapButton = document.getElementById("swapButton");
-    if (isSwappedDimensions) {
-        swapButton.innerHTML = '<i class="bi bi-arrow-repeat"></i>';
-    } else {
-        swapButton.innerHTML = '<i class="bi bi-arrow-repeat"></i>';
-    }
 });
 
-
 document.addEventListener("DOMContentLoaded", populateBuildingsModal);
+
+function filterBuildingsBySearch() {
+    const searchQuery = document.getElementById("buildingSearch").value.toLowerCase();
+    const buildingsGrid = document.getElementById("buildingsGrid");
+
+    buildingsGrid.innerHTML = "";
+
+    const filters = Array.from(document.querySelectorAll(".filter-checkbox"))
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => checkbox.value);
+
+    predefinedBuildings.forEach(building => {
+        const size = `${building.width}x${building.height}`;
+        const matchesSearch = building.name.toLowerCase().includes(searchQuery);
+
+        if (matchesSearch && (filters.includes(size) || (filters.includes("other") && size !== "5x5" && size !== "5x10"))) {
+            const buildingCol = document.createElement("div");
+            buildingCol.className = "col-md-6 col-sm-12 mb-4";
+
+            buildingCol.innerHTML = `
+                <div class="box">
+                    <div class="box-icon">
+                        ${building.image ?
+                        `<img src="${building.image}" alt="${building.name}" class="building-icon">` :
+                        `<i class="bi bi-house"></i>`}
+                    </div>
+                    <div class="box-content bugfix1">
+                        <h2>${building.name}</h2>
+                        <hr>
+                        <p>${building.description || "No description available."}</p>
+                    </div>
+                </div>
+            `;
+
+            buildingCol.querySelector('.box').addEventListener('click', () => {
+                createCustomBuildingFromPredefined(building);
+            });
+
+            buildingsGrid.appendChild(buildingCol);
+        }
+    });
+}
+
+document.getElementById("buildingSearch").addEventListener("input", filterBuildingsBySearch);
