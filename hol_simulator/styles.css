@@ -275,6 +275,17 @@ body {
 
 }
 
+.scrollable-content {
+    height: calc(100vh - 125px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 100%;
+}
+
+.scrollable-content::-webkit-scrollbar {
+    display: none !important;
+}
+
 /* Home button */
 .home-icon-link {
     position: fixed;
