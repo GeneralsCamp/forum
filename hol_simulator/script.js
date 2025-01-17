@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
     calculatePointsPerRow('defense');
     updateSlotStates();
     switchView("attack");
+    updateTotalAllocatedPoints();
 });
 
 let selectedSlot = null;
@@ -292,6 +293,7 @@ const allocatePoint = (slot, state, increment) => {
     calculatePointsPerRow(state);
     updateSlotStates();
     saveState();
+    updateTotalAllocatedPoints();
 };
 
 
@@ -345,6 +347,43 @@ document.querySelectorAll(".slot").forEach(slot => {
             allocatePoint(slot, currentState, false);
         }
     });
+});
+
+document.getElementById("reset-button").addEventListener("click", () => {
+    ["attack", "defense"].forEach(state => {
+        states[state].rows.forEach(row => {
+            const rowSlots = row.querySelectorAll(".slot");
+
+            rowSlots.forEach(slot => {
+                const badge = slot.querySelector(".badge");
+                const badgeBottom = slot.querySelector(".badge-bottom");
+                const [current, max] = badge.textContent.split("/").map(Number);
+                const slotValue = badgeBottom ? parseInt(badgeBottom.textContent) : 0;
+
+                states[state].totalPoints -= current * slotValue;
+
+                badge.textContent = `0/${max}`;
+            });
+        });
+
+        calculatePointsPerRow(state);
+        updateSlotStates();
+    });
+    updateTotalAllocatedPoints();
+    saveState();
+});
+
+const updateTotalAllocatedPoints = () => {
+    const totalAllocatedPoints =
+        states.attack.totalPoints + states.defense.totalPoints;
+    document.getElementById("total-allocated-points").textContent =
+        totalAllocatedPoints;
+};
+
+["attack", "defense"].forEach(state => {
+    calculatePointsPerRow(state);
+    updateSlotStates();
+    updateTotalAllocatedPoints();
 });
 
 ["attack", "defense"].forEach(state => calculatePointsPerRow(state));

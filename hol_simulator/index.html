@@ -17,20 +17,32 @@
 
 <body>
     <div class="container">
+        <a href="https://generalscamp.github.io/forum/" class="home-icon-link">
+            <div class="home-icon">
+                <i class="bi bi-house"></i>
+            </div>
+        </a>
         <!-- Details -->
         <div class="details d-flex justify-content-center">
             <span id="details-text">Click on a skill to view its description.</span>
-        </div>              
-        <a href="https://generalscamp.github.io/forum/" class="home-icon-link">
-            <div class="home-icon">
-              <i class="bi bi-house"></i>
+            <div id="reset-container">
+                <button id="reset-button">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </button>
             </div>
-          </a>
+        </div>
+        <!-- Total Points Display -->
+        <div class="text-center total-points-display">
+            <span>Total Allocated Points: <span id="total-allocated-points">0</span></span>
+        </div>
+        <!-- Toggle Sections -->
         <div class="mb-3 text-center details2">
             <div class="d-flex justify-content-between">
-                <span class="section-title" id="attack-toggle">Attack (<span id="total-points-attack">0</span> points)</span>
+                <span class="section-title" id="attack-toggle">Attack (<span id="total-points-attack">0</span>
+                    points)</span>
                 <div class="vertical-line"></div>
-                <span class="section-title" id="defense-toggle">Defense (<span id="total-points-defense">0</span> points)</span>
+                <span class="section-title" id="defense-toggle">Defense (<span id="total-points-defense">0</span>
+                    points)</span>
             </div>
         </div>
         <div id="attack-container" class="containerr active">
@@ -278,7 +290,7 @@
         </div>
 
 
-    <div id="defense-container" class="containerr">
+        <div id="defense-container" class="containerr">
             <!-- Row 1 -->
             <div class="row justify-content-left position-relative row-real mb-4" id="row-1">
                 <div class="col-2 text-center">
@@ -522,7 +534,7 @@
             </div>
         </div>
     </div>
-</div>
+    </div>
     <script src="./script.js"></script>
 </body>
 
