@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
     updateSlotStates();
     switchView("attack");
     updateTotalAllocatedPoints();
+    updateWarnings();
 });
 
 let selectedSlot = null;
@@ -294,6 +295,7 @@ const allocatePoint = (slot, state, increment) => {
     updateSlotStates();
     saveState();
     updateTotalAllocatedPoints();
+    updateWarnings();
 };
 
 
@@ -370,6 +372,7 @@ document.getElementById("reset-button").addEventListener("click", () => {
         updateSlotStates();
     });
     updateTotalAllocatedPoints();
+    updateWarnings();
     saveState();
 });
 
@@ -385,5 +388,35 @@ const updateTotalAllocatedPoints = () => {
     updateSlotStates();
     updateTotalAllocatedPoints();
 });
+
+const updateWarnings = () => {
+    document.querySelectorAll(".warning").forEach(warning => warning.remove());
+
+    ["attack", "defense"].forEach(state => {
+        const pointsPerRow = states[state].pointsPerRow;
+        let warningDisplayed = false;
+
+        states[state].rows.forEach((row, index) => {
+            if (warningDisplayed) return;
+
+            if (index < states[state].rows.length - 1) {
+                const requiredPoints = rowRequirements[index + 1];
+                const currentPoints = pointsPerRow[index];
+
+                if (currentPoints < requiredPoints) {
+                    const pointsNeeded = requiredPoints - currentPoints;
+
+                    const warningDiv = document.createElement("div");
+                    warningDiv.classList.add("text-center", "warning", "mb-3");
+                    warningDiv.innerHTML = `<span>Allocate another ${pointsNeeded} points to this level to unlock the next one!</span>`;
+
+                    row.parentNode.insertBefore(warningDiv, row.nextSibling);
+
+                    warningDisplayed = true;
+                }
+            }
+        });
+    });
+};
 
 ["attack", "defense"].forEach(state => calculatePointsPerRow(state));

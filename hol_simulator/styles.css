@@ -30,7 +30,7 @@ body {
     transition: all 0.3s ease-in-out;
 }
 
-.row{
+.row {
     margin-top: 0 !important;
     margin-right: 0 !important;
 }
@@ -135,7 +135,7 @@ body {
     border-radius: 3px;
 }
 
-#details-text{
+#details-text {
     margin-left: 1%;
 }
 
@@ -261,6 +261,18 @@ body {
     font-weight: bolder;
     border-radius: 3px;
     margin-top: 2px;
+}
+
+.warning {
+    background-color: #ffe3cc;
+    border: 2px solid #4c473b;
+    padding: 0px;
+    color: black;
+    font-weight: bolder;
+    border-radius: 3px;
+    margin-top: 2px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+
 }
 
 /* Home button */
