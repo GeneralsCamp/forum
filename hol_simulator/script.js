@@ -3,7 +3,71 @@ document.addEventListener('DOMContentLoaded', function () {
     calculatePointsPerRow('attack');
     calculatePointsPerRow('defense');
     updateSlotStates();
+    switchView("attack");
 });
+
+let selectedSlot = null;
+const skillDescriptions = {
+    //Attack
+    "o-1-1": "Gate protection reduction (-3%)",
+    "o-1-2": "Loot bonus (+6%)",
+    "o-1-3": "Honor (+5%)",
+    "o-1-4": "Melee strength in attack (+0,5%)",
+
+    "o-2-1": "Additional agents (+1)",
+    "o-2-2": "Reduced cooldown (+2%)",
+    "o-2-3": "Ranged strength in attack (+0.5%)",
+    "o-2-4": "Reduced movement costs (-18%)",
+    "o-2-5": "Chance of destroying a building (+1%)",
+
+    "o-3-1": "Units on the front (+5%)",
+    "o-3-2": "Additional fire damage (+5%)",
+    "o-3-3": "Experience (+4%)",
+    "o-3-4": "Melee strength in attack (+1%)",
+    "o-3-5": "Wall protection reduction (-3%)",
+
+    "o-4-1": "Strength on courtyard in attack (+1%)",
+    "o-4-2": "Outbound speed (+10%)",
+    "o-4-3": "Glory bonus in attack (+10%)",
+    "o-4-4": "Return speed from castle lords (+10%)",
+    "o-4-5": "Units on the flanks (+3%)",
+
+    "o-5-1": "Looting capacity (+500)",
+    "o-5-2": "Tool on the flanks (+2)",
+    "o-5-3": "Ranged strength in attack (+2%)",
+    "o-5-4": "6th wave of attack (+1)",
+    "o-5-5": "Moat protection reduction (-5%)",
+
+    //Defense
+    "d-1-1": "Gate protection (+3%)",
+    "d-1-2": "Resources lost reduction (-2%)",
+    "d-1-3": "Experience for construction (+5%)",
+    "d-1-4": "Melee strength in defense (+0,5%)",
+
+    "d-2-1": "City guards (+4%)",
+    "d-2-2": "Experience when defending (+3%)",
+    "d-2-3": "Ranged strength in defense (+0.5%)",
+    "d-2-4": "Occupations movement speed (+8%)",
+    "d-2-5": "Citizens/Population (+10%)",
+
+    "d-3-1": "Units on the castle wall (+0.5%)",
+    "d-3-2": "Reduced fire damage (+5%)",
+    "d-3-3": "Experience for attacking NPCs (+4%)",
+    "d-3-4": "Melee strength in defense (+1%)",
+    "d-3-5": "Wall protection (+6%)",
+
+    "d-4-1": "Strength on courtyard in defense (+0.5%)",
+    "d-4-2": "Chance for better equipment (+20%)",
+    "d-4-3": "Glory bonus in defense (+20%)",
+    "d-4-4": "Return speed from NPCs (+25%)",
+    "d-4-5": "Units on the castle wall (+1%)",
+
+    "d-5-1": "Safe storage (+500)",
+    "d-5-2": "Additional defense flank tool slot (+1)",
+    "d-5-3": "Ranged strength in defense (+2%)",
+    "d-5-4": "Strength on courtyard in defense (+6%)",
+    "d-5-5": "Moat protection (+5%)",
+};
 
 const saveState = () => {
     const state = {
@@ -123,7 +187,18 @@ const updateSlotStates = () => {
                     slot.classList.remove("inactive");
 
                     const badge = slot.querySelector(".badge");
+                    const badgeBottom = slot.querySelector(".badge-bottom");
                     const [current, max] = badge.textContent.split("/").map(Number);
+                    const slotValue = badgeBottom ? parseInt(badgeBottom.textContent) : 0;
+
+                    const totalAllocatedPoints = states.attack.totalPoints + states.defense.totalPoints;
+
+                    if (totalAllocatedPoints + slotValue > maxPoints) {
+                        badgeBottom.classList.add("insufficient-points");
+                    } else {
+                        badgeBottom.classList.remove("insufficient-points");
+                    }
+
                     if (current === max) {
                         slot.classList.add("maxed");
                     } else {
@@ -147,6 +222,7 @@ const updateSlotStates = () => {
                         const pointsToRemove = current * slotValue;
                         states[state].totalPoints -= pointsToRemove;
                         badge.textContent = `0/${max}`;
+                        badgeBottom.classList.remove("insufficient-points");
                     }
                 });
                 rowSquares.forEach(square => square.classList.add("inactive"));
@@ -221,14 +297,18 @@ const allocatePoint = (slot, state, increment) => {
 
 const switchView = (state) => {
     currentState = state;
+    document.getElementById("attack-toggle").classList.remove("active-tab");
+    document.getElementById("defense-toggle").classList.remove("active-tab");
     ["attack", "defense"].forEach(state => calculatePointsPerRow(state));
     updateSlotStates();
     if (state === "attack") {
         document.getElementById("attack-container").classList.add("active");
         document.getElementById("defense-container").classList.remove("active");
+        document.getElementById("attack-toggle").classList.add("active-tab");
     } else {
         document.getElementById("defense-container").classList.add("active");
         document.getElementById("attack-container").classList.remove("active");
+        document.getElementById("defense-toggle").classList.add("active-tab");
     }
 };
 
@@ -237,14 +317,31 @@ document.getElementById("defense-toggle").addEventListener("click", () => switch
 
 document.querySelectorAll(".slot").forEach(slot => {
     slot.addEventListener("click", () => {
-        if (!slot.classList.contains("inactive")) {
+        if (slot.classList.contains("inactive")) return;
+
+        if (slot === selectedSlot) {
             allocatePoint(slot, currentState, true);
+            return;
         }
+
+        if (selectedSlot) {
+            selectedSlot.classList.remove("selected");
+        }
+
+        selectedSlot = slot;
+        selectedSlot.classList.add("selected");
+
+        const imgSrc = selectedSlot.querySelector("img").getAttribute("src");
+        const skillId = imgSrc.split("/").pop().split(".")[0];
+        const description = skillDescriptions[skillId] || "No description available.";
+        document.getElementById("details-text").textContent = description;
     });
 
     slot.addEventListener("contextmenu", (e) => {
         e.preventDefault();
-        if (!slot.classList.contains("inactive")) {
+        if (slot.classList.contains("inactive")) return;
+
+        if (slot === selectedSlot) {
             allocatePoint(slot, currentState, false);
         }
     });

@@ -200,3 +200,17 @@ body {
 .containerr.active {
     display: block !important;
 }
+
+.insufficient-points {
+    color: red !important;
+}
+
+.active-tab {
+    color: #f8bc00;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.slot.selected {
+    transform: scale(1.1);
+    z-index: 3;
+}
