@@ -276,10 +276,11 @@ body {
 }
 
 .scrollable-content {
-    height: calc(100vh - 125px);
+    height: calc(100vh - 110px);
     overflow-y: auto;
     overflow-x: hidden;
     width: 100%;
+    padding-top: 10px;
 }
 
 .scrollable-content::-webkit-scrollbar {
