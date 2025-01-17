@@ -225,34 +225,37 @@ p {
   padding-left: 10px;
 }
 
-
+/* Home button */
 .home-icon-link {
   position: fixed;
   right: 10px;
-  top: 50%;
+  top: 95%;
   transform: translateY(-50%);
   width: 50px;
   height: 50px;
   z-index: 1000;
   text-decoration: none;
+  opacity: 0.8;
+  transition: opacity 0.3s ease-in-out;
 }
 
 .home-icon {
-  background-color: #f8f9fa;
-  border: 1px solid #ccc;
+  background-color: #7e4606;
+  border: 1px solid #f8bc00;
   border-radius: 50%;
   width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .home-icon i {
-  color: #333;
+  color: #4c473b;
+  font-size: 18px;
 }
 
-.home-icon-link:hover .home-icon i {
-  color: #007bff;
+.home-icon-link .home-icon i {
+  color: #f8bc00;
 }
