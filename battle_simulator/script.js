@@ -1866,10 +1866,10 @@ function openCommanderStatsModal() {
   const modal = new bootstrap.Modal(document.getElementById('commanderStatsModal'));
 
   const slidersAndValues = [
-    { sliderId: 'melee-strength-slider', valueId: 'melee-strength-value', value: commanderStats.melee, max: 800 },
-    { sliderId: 'ranged-strength-slider', valueId: 'ranged-strength-value', value: commanderStats.ranged, max: 800 },
+    { sliderId: 'melee-strength-slider', valueId: 'melee-strength-value', value: commanderStats.melee, max: 1500 },
+    { sliderId: 'ranged-strength-slider', valueId: 'ranged-strength-value', value: commanderStats.ranged, max: 1500 },
     { sliderId: 'universal-strength-slider', valueId: 'universal-strength-value', value: commanderStats.universal, max: 20 },
-    { sliderId: 'courtyard-strength-slider', valueId: 'courtyard-strength-value', value: commanderStats.courtyard, max: 800 },
+    { sliderId: 'courtyard-strength-slider', valueId: 'courtyard-strength-value', value: commanderStats.courtyard, max: 1500 },
     { sliderId: 'wall-reduction-slider', valueId: 'wall-reduction-value', value: commanderStats.wallReduction, max: 280 },
     { sliderId: 'moat-reduction-slider', valueId: 'moat-reduction-value', value: commanderStats.moatReduction, max: 180 },
     { sliderId: 'gate-reduction-slider', valueId: 'gate-reduction-value', value: commanderStats.gateReduction, max: 280 },
@@ -3051,6 +3051,9 @@ function switchReportSide(side) {
   populateBattleReportModal(side);
   const activeButton = document.querySelector(`.flanks-button-report[data-section="${side}"]`);
   activeButton.classList.add('active');
+
+  console.log(simulateBattle());
+
 }
 
 function populateBattleReportModal(side) {
@@ -3519,13 +3522,13 @@ const modalsData = [
     body: `
         ${generateInputCard(
       'Melee strength (%)', './img/melee-icon.png', 'melee-strength',
-      'melee-strength-slider', 0, 800, commanderStats.meleeStrength,
-      'melee-strength-value', 0, 800, commanderStats.meleeStrength
+      'melee-strength-slider', 0, 1500, commanderStats.meleeStrength,
+      'melee-strength-value', 0, 1500, commanderStats.meleeStrength
     )}
         ${generateInputCard(
       'Ranged strength (%)', './img/ranged-icon.png', 'ranged-strength',
-      'ranged-strength-slider', 0, 800, commanderStats.rangedStrength,
-      'ranged-strength-value', 0, 800, commanderStats.rangedStrength
+      'ranged-strength-slider', 0, 1500, commanderStats.rangedStrength,
+      'ranged-strength-value', 0, 1500, commanderStats.rangedStrength
     )}
         ${generateInputCard(
       'Combat strength (%)', './img/universal-icon.png', 'universal-strength',
@@ -3534,8 +3537,8 @@ const modalsData = [
     )}
         ${generateInputCard(
       'Courtyard strength (%)', './img/cy-icon.png', 'courtyard-strength',
-      'courtyard-strength-slider', 0, 800, commanderStats.courtyardStrength,
-      'courtyard-strength-value', 0, 800, commanderStats.courtyardStrength
+      'courtyard-strength-slider', 0, 1500, commanderStats.courtyardStrength,
+      'courtyard-strength-value', 0, 1500, commanderStats.courtyardStrength
     )}
         ${generateInputCard(
       'Wall reduction (%)', './img/commander-modal1.png', 'wall-reduction',
@@ -3653,11 +3656,12 @@ modalsData.forEach(modal => {
 });
 
 //CALCULATIONS (...)
+
 function battleSimulation() {
   console.clear();
   const defenseStrengths = calculateDefenseStrength();
   const totalAttackUnits = calculateAttackStrength();
-  logResults(defenseStrengths, totalAttackUnits);
+  //logResults(defenseStrengths, totalAttackUnits);
 
   const battleReportModal = new bootstrap.Modal(document.getElementById('battleReportModal'));
   battleReportModal.show();
@@ -3971,3 +3975,210 @@ function resetClickFlags() {
   generalClicked = false;
   enemyClicked = false;
 }
+
+
+
+//TESZTELÉS
+function calculateDefenseBonusesForSide(side) {
+  const bonuses = {
+    melee: castellanStats.melee,
+    ranged: castellanStats.ranged,
+    wall: castellanStats.wallProtection,
+    moat: castellanStats.moatProtection,
+    gate: castellanStats.gateProtection,
+    courtyard: castellanStats.courtyard,
+  };
+
+  if (side !== 'cy') {
+    ['wallTools', 'moatTools', 'gateTools'].forEach(slotType => {
+      const tools = defenseSlots[side][slotType] || [];
+
+      tools.forEach(tool => {
+        if (tool && tool.count > 0) {
+          const toolId = tool.type.replace('DefenseTool', '');
+          const effectData = toolEffectsDefense[toolId];
+
+          if (effectData) {
+            if (effectData.effect1.name) {
+              bonuses[effectData.effect1.name.toLowerCase()] += tool.count * effectData.effect1.value;
+            }
+            if (effectData.effect2.name) {
+              bonuses[effectData.effect2.name.toLowerCase()] += tool.count * effectData.effect2.value;
+            }
+          }
+        }
+      });
+    });
+  }
+
+  return bonuses;
+}
+//Kell a wall,moat,gate is!!!
+function calculateAttackBonusesForWave(wave, side) {
+  let toolMeleeBonus = 0;
+  let toolRangedBonus = 0;
+
+  wave.tools.forEach(tool => {
+    const effectData = toolEffects[tool.type];
+    if (effectData) {
+      if (effectData.effect1.name === 'MeleeStrength') {
+        toolMeleeBonus += tool.count * effectData.effect1.value;
+      } else if (effectData.effect1.name === 'RangedStrength') {
+        toolRangedBonus += tool.count * effectData.effect1.value;
+      }
+      if (effectData.effect2.name === 'MeleeStrength') {
+        toolMeleeBonus += tool.count * effectData.effect2.value;
+      } else if (effectData.effect2.name === 'RangedStrength') {
+        toolRangedBonus += tool.count * effectData.effect2.value;
+      }
+    }
+  });
+
+  return {
+    meleeBonus: toolMeleeBonus,
+    rangedBonus: toolRangedBonus,
+  };
+}
+
+function calculateDefenderStrength(units, bonuses) {
+  let meleeStrength = 0;
+  let rangedStrength = 0;
+
+  units.forEach(unit => {
+    if (unit && unit.count > 0) {
+      const unitStat = unitStats.find(u => u.type === unit.type);
+      if (unitStat) {
+        meleeStrength += unit.count * unitStat.meleeDefenseStrength * (1 + bonuses.melee / 100);
+        rangedStrength += unit.count * unitStat.rangedDefenseStrength * (1 + bonuses.ranged / 100);
+      }
+    }
+  });
+
+  return {
+    melee: Math.round(meleeStrength),
+    ranged: Math.round(rangedStrength),
+  };
+}
+function calculateAttackerStrength(wave, side, bonuses) {
+  let meleeStrength = 0;
+  let rangedStrength = 0;
+
+  wave.slots.forEach(unit => {
+    if (unit && unit.count > 0) {
+      const unitStat = unitStats.find(u => u.type === unit.type);
+      if (unitStat) {
+        meleeStrength += unit.count * unitStat.meleeCombatStrength * (1 + bonuses.meleeBonus / 100);
+        rangedStrength += unit.count * unitStat.rangedCombatStrength * (1 + bonuses.rangedBonus / 100);
+      }
+    }
+  });
+
+  return {
+    melee: Math.round(meleeStrength),
+    ranged: Math.round(rangedStrength),
+  };
+}
+
+
+
+function simulateBattle() {
+  console.clear();
+  const sides = ['left', 'front', 'right'];
+
+  sides.forEach(side => {
+    console.log(`\n--- ${side.toUpperCase()} oldal harc kezdete ---`);
+
+    // Védelmi bónuszok kiszámítása az oldalhoz
+    let defenseBonuses = calculateDefenseBonusesForSide(side);
+
+    // Kezdő védők mentése
+    let defenders = defenseSlots[side].units.map(unit => ({ ...unit })); // Másolat a védőkről
+
+    waves[side].forEach((wave, waveIndex) => {
+      if (!defenders.some(unit => unit.count > 0)) {
+        console.log(`Nincsenek megmaradt védők a ${waveIndex + 1}. hullámhoz.`);
+        return; // Ha elfogytak a védők, az oldal veszít
+      }
+
+      console.log(`\n${waveIndex + 1}. hullám támadói vs. védők:`);
+      
+      // Támadó bónuszok kiszámítása a hullámhoz
+      const waveBonuses = calculateAttackBonusesForWave(wave, side);
+
+      // Védelem csökkentése támadó bónuszokkal
+      defenseBonuses.wall = Math.max(0, defenseBonuses.wall - (waveBonuses.wallBonus || 0));
+      defenseBonuses.moat = Math.max(0, defenseBonuses.moat - (waveBonuses.moatBonus || 0));
+      defenseBonuses.gate = Math.max(0, defenseBonuses.gate - (waveBonuses.gateBonus || 0));
+
+      console.log(`Védők fal bónusza: ${defenseBonuses.wall}`);
+      console.log(`Védők árok bónusza: ${defenseBonuses.moat}`);
+      console.log(`Védők kapu bónusza: ${defenseBonuses.gate}`);
+
+      // Védők harcereje
+      const defenderStrength = calculateDefenderStrength(defenders, defenseBonuses);
+
+      // Támadók harcereje
+      const attackerStrength = calculateAttackerStrength(wave, side, waveBonuses);
+
+      console.log(`Védők: ${defenderStrength.melee} közelharci erő, ${defenderStrength.ranged} távolsági erő`);
+      console.log(`Támadók: ${attackerStrength.melee} közelharci erő, ${attackerStrength.ranged} távolsági erő`);
+
+      // Harc: veszteségek számítása
+      const totalDefenderStrength = defenderStrength.melee + defenderStrength.ranged;
+      const totalAttackerStrength = attackerStrength.melee + attackerStrength.ranged;
+
+      // A közelharci és távolsági arányok
+      const meleeRatio = defenderStrength.melee / totalDefenderStrength || 0;
+      const rangedRatio = defenderStrength.ranged / totalDefenderStrength || 0;
+
+      // Veszteségek kiszámítása
+      const defenderLossMelee = Math.min(defenderStrength.melee, attackerStrength.melee) * meleeRatio;
+      const defenderLossRanged = Math.min(defenderStrength.ranged, attackerStrength.ranged) * rangedRatio;
+
+      const attackerLossMelee = Math.min(attackerStrength.melee, defenderStrength.melee) * (attackerStrength.melee / totalAttackerStrength || 0);
+      const attackerLossRanged = Math.min(attackerStrength.ranged, defenderStrength.ranged) * (attackerStrength.ranged / totalAttackerStrength || 0);
+
+      console.log(`Védő veszteségek: ${Math.round(defenderLossMelee)} közelharcos, ${Math.round(defenderLossRanged)} távolsági harcos`);
+      console.log(`Támadó veszteségek: ${Math.round(attackerLossMelee)} közelharcos, ${Math.round(attackerLossRanged)} távolsági harcos`);
+
+      // Védők számának csökkentése arányosan
+      defenders = defenders.map(unit => {
+        const unitStat = unitStats.find(u => u.type === unit.type);
+        if (unit && unitStat) {
+          const meleeLoss = defenderLossMelee * (unitStat.meleeDefenseStrength / defenderStrength.melee || 0);
+          const rangedLoss = defenderLossRanged * (unitStat.rangedDefenseStrength / defenderStrength.ranged || 0);
+          const totalLoss = Math.round(meleeLoss + rangedLoss);
+
+          return {
+            ...unit,
+            count: Math.max(0, unit.count - totalLoss),
+          };
+        }
+        return unit;
+      });
+
+      // Támadók számának csökkentése arányosan
+      wave.slots = wave.slots.map(unit => {
+        const unitStat = unitStats.find(u => u.type === unit.type);
+        if (unit && unitStat) {
+          const meleeLoss = attackerLossMelee * (unitStat.meleeCombatStrength / attackerStrength.melee || 0);
+          const rangedLoss = attackerLossRanged * (unitStat.rangedCombatStrength / attackerStrength.ranged || 0);
+          const totalLoss = Math.round(meleeLoss + rangedLoss);
+
+          return {
+            ...unit,
+            count: Math.max(0, unit.count - totalLoss),
+          };
+        }
+        return unit;
+      });
+
+      // Frissített egységállapot kiírása
+      console.log(`Megmaradt védők: ${JSON.stringify(defenders)}`);
+      console.log(`Megmaradt támadók hullámban: ${JSON.stringify(wave.slots)}`);
+    });
+
+    console.log(`\n--- ${side.toUpperCase()} oldal harc vége ---`);
+  });
+}
+
