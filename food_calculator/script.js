@@ -72,12 +72,14 @@ function CalculateBonuses() {
 
     po = document.getElementById("po").value;
     if (po > 0) {
-        PObonus = Math.sqrt(parseInt(po)) * 2 + 100;
-        PObonus = PObonus / 100;
+        PObonus = 1 + 0.02 * Math.sqrt(po);
     }
-    else {
-        PObonus = (100 / (100 + 2 * Math.sqrt(-po)))
+    else if (po < 0) {
+        PObonus = 1 / (1 + 0.02 * Math.sqrt(- po));
+    } else {
+        PObonus = 1;
     }
+
     coat = document.getElementById("coat").value;
     if (selectedLocation == "kingdom") {
         hunt = document.getElementById("hunt-kingdom").value;
@@ -150,36 +152,35 @@ function CalculateBonuses() {
     }
 
     if (selectedLocation == "main" || selectedLocation == "op6" || selectedLocation == "op8") {
-        percentBonus = (parseFloat(PObonus)) * (1 + beriGreen) * (parseFloat(coat) + parseFloat(mill) + parseFloat(deco2) + parseFloat(overseer) + parseFloat(vip) + parseFloat(res2) + parseFloat(sub) + parseFloat(hunt));
+        percentBonus = parseFloat(PObonus) * (1+parseFloat(hunt)) * (1 + parseFloat(beriGreen) + parseFloat(coat) + parseFloat(mill) + parseFloat(deco2) + parseFloat(overseer) + parseFloat(vip) + parseFloat(res2) + parseFloat(sub));
         constBonus = parseFloat(cast) + parseFloat(res1) + parseFloat(decobonus) + parseFloat(tcibonus);
     }
     else if (selectedLocation == "kingdom") {
-        percentBonus = (parseFloat(PObonus)) * (parseFloat(coat) + parseFloat(mill) + parseFloat(deco2) + parseFloat(overseer) + parseFloat(vip) + parseFloat(res2) + parseFloat(sub) + parseFloat(hunt) + parseFloat(beriKingdoms) + parseFloat(villages));
+        percentBonus = (parseFloat(PObonus)) * (1 + parseFloat(coat) + parseFloat(mill) + parseFloat(deco2) + parseFloat(overseer) + parseFloat(vip) + parseFloat(res2) + parseFloat(sub) + parseFloat(hunt) + parseFloat(beriKingdoms) + parseFloat(villages));
         constBonus = parseFloat(cast) + parseFloat(res1) + parseFloat(decobonus) + parseFloat(tcibonus);
     }
 
     document.getElementById("percentBonus").innerHTML = Math.round(percentBonus * 100) + "%";
     document.getElementById("constBonus").innerHTML = constBonus + "&nbsp;/hour";
-
 }
 
 //Generate buildings
 function generateBuildingCards() {
 
-const buildingsData = [
-    { id: "b1", name: "Conservatory", type: "conservatory", imgSrc: "./img/conservatory.webp" },
-    { id: "b2", name: "Conservatory", type: "conservatory", imgSrc: "./img/conservatory.webp" },
-    { id: "b3", name: "Greenhouse", type: "greenhouse", imgSrc: "./img/greenhouse.webp" },
-    { id: "b4", name: "Greenhouse", type: "greenhouse", imgSrc: "./img/greenhouse.webp" },
-    { id: "b5", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
-    { id: "b6", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
-    { id: "b7", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
-    { id: "b8", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
-    { id: "b9", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
-    { id: "b10", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
-    { id: "b11", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
-    { id: "b12", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
-];
+    const buildingsData = [
+        { id: "b1", name: "Conservatory", type: "conservatory", imgSrc: "./img/conservatory.webp" },
+        { id: "b2", name: "Conservatory", type: "conservatory", imgSrc: "./img/conservatory.webp" },
+        { id: "b3", name: "Greenhouse", type: "greenhouse", imgSrc: "./img/greenhouse.webp" },
+        { id: "b4", name: "Greenhouse", type: "greenhouse", imgSrc: "./img/greenhouse.webp" },
+        { id: "b5", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
+        { id: "b6", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
+        { id: "b7", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
+        { id: "b8", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
+        { id: "b9", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
+        { id: "b10", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
+        { id: "b11", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
+        { id: "b12", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
+    ];
 
 
     const container = document.getElementById("buildings-container");
@@ -468,7 +469,7 @@ function generateRelicOptions() {
         { value: 3900, label: "Premium 29" },
         { value: 4000, label: "Premium 30" }
     ];
-    
+
     return options.map(option => `<option value="${option.value}">${option.label}</option>`).join("");
 }
 
@@ -524,7 +525,7 @@ function updateBuilding(buildingId) {
 
     let totalProduction = 0;
     const buildingIds = ["b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10", "b11", "b12"];
-    
+
     buildingIds.forEach(id => {
         const buildingProd = parseInt(document.getElementById(`${id}lbl`).innerText);
         if (!isNaN(buildingProd)) {
