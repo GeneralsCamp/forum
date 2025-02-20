@@ -90,16 +90,16 @@ function CalculateBonuses() {
     deco2 = document.getElementById("deco2").value / 100;
 
     if (selectBeri.value == "weaponmaster") {
-        beriKingdoms = 0.40;
-        beriGreen = 0.20;
+        beriKingdoms = 0.20;
+        beriGreen = 0.40;
     }
     else if (selectBeri.value == "deathclaw") {
         beriKingdoms = 0.20;
         beriGreen = 0.20;
     }
     else if (selectBeri.value == "widowmaker") {
-        beriKingdoms = 0;
-        beriGreen = 0.20;
+        beriKingdoms = 0.20;
+        beriGreen = 0;
     }
     else {
         beriGreen = 0;
