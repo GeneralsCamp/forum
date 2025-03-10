@@ -138,13 +138,13 @@ function checkIfInGrid(building) {
 
 function initializeGrid() {
     const gridContainer = document.getElementById('grid');
-    gridContainer.innerHTML = ''; // Törli az esetlegesen meglévő cellákat
+    gridContainer.innerHTML = '';
 
-    const gridSize = 70; // A rács mérete (70x70)
+    const gridSize = 70;
     
     for (let i = 0; i < gridSize * gridSize; i++) {
         const cell = document.createElement('div');
-        cell.classList.add('cell'); // CSS-ben a cellák formázásához
+        cell.classList.add('cell');
         gridContainer.appendChild(cell);
     }
 }
@@ -395,13 +395,20 @@ function removeBuildingFromList(button) {
 }
 
 function removeBuilding(e) {
-    e.preventDefault();
-    const targetBuilding = e.target.closest('.building');
-    const buildingName = targetBuilding.querySelector('div').textContent.trim();
-    if (targetBuilding && !targetBuilding.classList.contains('predefined')) {
+    let targetBuilding;
+    if (e instanceof Event) {
+        e.preventDefault();
+        targetBuilding = e.target.closest('.building');
+    } 
+    else if (e instanceof HTMLElement) {
+        targetBuilding = e;
+    } 
+    if (!targetBuilding) return;
+    
+    if (!targetBuilding.classList.contains('predefined')) {
         const removedBuilding = buildingData.find(data => data.element === targetBuilding);
         if (removedBuilding) {
-            removedBuilding.infoElement.remove();
+            removedBuilding.infoElement?.remove();
             const index = buildingData.indexOf(removedBuilding);
             if (index > -1) {
                 buildingData.splice(index, 1);
@@ -486,12 +493,7 @@ function toggleOptimization() {
 }
 
 function optimizeBuildings() {
-    if (!container) {
-        console.error("Error: 'container' is not defined.");
-        return;
-    }
-
-    const sortedBuildings = buildingData.slice().sort((a, b) => (b.width * b.height) - (a.width * a.height));
+    const sortedBuildings = buildingData.slice().sort((a, b) => b.width * b.height - a.width * a.height);
     const rect = container.getBoundingClientRect();
     const cellWidth = 14.4;
     const cellHeight = 14.4;
@@ -516,7 +518,7 @@ function optimizeBuildings() {
         }
 
         if (!placed) {
-            console.warn(`Warning: Not enough space for building: ${building.name}`);
+            alert(`Not enough space for building: ${building.name}`);
             removeBuilding(building.element);
         }
     });
@@ -746,7 +748,6 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error("Error: '.container' element not found!");
     }
 });
-
 
 document.addEventListener('touchstart', startMovingBuilding);
 document.addEventListener('touchmove', moveBuilding);
