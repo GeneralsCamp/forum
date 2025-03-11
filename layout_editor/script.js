@@ -222,6 +222,10 @@ function createAndOptimizeBuilding(width, height) {
     }
 }
 
+function formatBuildingName(name) {
+    return name.split(' ').join('<br>');
+}
+
 function createCustomBuildingFromCache(data) {
     const newBuilding = document.createElement('div');
     newBuilding.className = 'building custom';
@@ -234,7 +238,7 @@ function createCustomBuildingFromCache(data) {
 
     const nameLayer = document.createElement('div');
     nameLayer.style.pointerEvents = 'none';
-    nameLayer.innerHTML = `<div style="text-align: center;">${data.name}</div>`;
+    nameLayer.innerHTML = `<div style="word-wrap: break-word;">${formatBuildingName(data.name)}</div>`;
     newBuilding.appendChild(nameLayer);
 
     container.appendChild(newBuilding);
@@ -297,7 +301,7 @@ function createCustomBuildingFromPredefined(building) {
 
         const nameLayer = document.createElement('div');
         nameLayer.style.pointerEvents = 'none';
-        nameLayer.innerHTML = `<div style="text-align: center;">${name}</div>`;
+        nameLayer.innerHTML = `<div style="word-wrap: break-word;">${formatBuildingName(name)}</div>`;
         newBuilding.appendChild(nameLayer);
 
         container.appendChild(newBuilding);
@@ -624,43 +628,17 @@ function populateBuildingsModal() {
 }
 
 function filterBuildingsBySearch() {
+    populateBuildingsModal();
+
     const searchQuery = document.getElementById("buildingSearch").value.toLowerCase();
-    const buildingsGrid = document.getElementById("buildingsGrid");
+    const buildings = document.querySelectorAll("#buildingsGrid .col-md-6");
 
-    buildingsGrid.innerHTML = "";
-
-    const filters = Array.from(document.querySelectorAll(".filter-checkbox"))
-        .filter(checkbox => checkbox.checked)
-        .map(checkbox => checkbox.value);
-
-    predefinedBuildings.forEach(building => {
-        const size = `${building.width}x${building.height}`;
-        const matchesSearch = building.name.toLowerCase().includes(searchQuery);
-
-        if (matchesSearch && (filters.includes(size) || (filters.includes("other") && size !== "5x5" && size !== "5x10"))) {
-            const buildingCol = document.createElement("div");
-            buildingCol.className = "col-md-6 col-sm-12 mb-4";
-
-            buildingCol.innerHTML = `
-                <div class="box">
-                    <div class="box-icon">
-                        ${building.image ?
-                    `<img src="${building.image}" alt="${building.name}" class="building-icon">` :
-                    `<i class="bi bi-house"></i>`}
-                    </div>
-                    <div class="box-content bugfix1">
-                        <h2>${building.name}</h2>
-                        <hr>
-                        <p>${building.description || "No description available."}</p>
-                    </div>
-                </div>
-            `;
-
-            buildingCol.querySelector('.box').addEventListener('click', () => {
-                createCustomBuildingFromPredefined(building);
-            });
-
-            buildingsGrid.appendChild(buildingCol);
+    buildings.forEach(building => {
+        const name = building.querySelector("h2").textContent.toLowerCase();
+        if (name.includes(searchQuery)) {
+            building.style.display = "block";
+        } else {
+            building.style.display = "none";
         }
     });
 }
@@ -735,6 +713,12 @@ document.addEventListener('DOMContentLoaded', function () {
         isSwappedDimensions = !isSwappedDimensions;
     });
 
+    /*** SEARCH & FILTER LISTENERS ***/
+    document.getElementById("buildingSearch").addEventListener("input", filterBuildingsBySearch);
+    document.querySelectorAll(".filter-checkbox").forEach(checkbox => {
+        checkbox.addEventListener("change", filterBuildingsBySearch);
+    });
+
     /*** LOAD OPTIMIZATION STATE ***/
     loadOptimizeStateFromCache();
 
@@ -747,12 +731,28 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
         console.error("Error: '.container' element not found!");
     }
+
+    /*** TOUCH & MOUSE EVENTS FOR MOVING BUILDINGS ***/
+    document.addEventListener('touchstart', startMovingBuilding);
+    document.addEventListener('touchmove', moveBuilding);
+    document.addEventListener('touchend', stopMovingBuilding);
+    
+    document.addEventListener('mousedown', startMovingBuilding);
+    document.addEventListener('mousemove', moveBuilding);
+    document.addEventListener('mouseup', stopMovingBuilding);
+
+    /*** MODAL EVENT TO POPULATE BUILDINGS ***/
+    document.getElementById("buildingsModal").addEventListener("show.bs.modal", populateBuildingsModal);
+
+    /*** LOAD EXPANSION STATE ***/
+    const savedGridState = localStorage.getItem('gridExpand') === 'true';
+    if (savedGridState) {
+        body.classList.add('gridExpand');
+        gridExpandToggle.classList.add('expanded');
+        gridExpandToggle.textContent = 'ON';
+    } else {
+        body.classList.remove('gridExpand');
+        gridExpandToggle.classList.remove('expanded');
+        gridExpandToggle.textContent = 'OFF';
+    }
 });
-
-document.addEventListener('touchstart', startMovingBuilding);
-document.addEventListener('touchmove', moveBuilding);
-document.addEventListener('touchend', stopMovingBuilding);
-
-document.addEventListener('mousedown', startMovingBuilding);
-document.addEventListener('mousemove', moveBuilding);
-document.addEventListener('mouseup', stopMovingBuilding);

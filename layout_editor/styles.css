@@ -67,6 +67,11 @@ body {
     border: 1px solid black;
     color: aliceblue;
     align-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 14px;
 }
 
 .slider-container {
@@ -513,7 +518,6 @@ body {
     margin-left: 5px;
 }
 
-
 .modal-header .d-flex {
     display: flex;
     justify-content: flex-end;
@@ -527,4 +531,9 @@ body {
 
 .modal-header .btn {
     margin-left: 5px;
+}
+
+.building div {
+    word-break: break-word;
+    white-space: pre-line;
 }
