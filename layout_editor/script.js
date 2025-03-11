@@ -785,7 +785,7 @@ function share() {
     document.execCommand("copy");
     document.body.removeChild(tempInput);
 
-    alert("Megosztási link a vágólapra másolva!");
+    alert("Shareable link copied to clipboard!");
 }
 
 function loadSharedLayout() {
@@ -796,9 +796,9 @@ function loadSharedLayout() {
             const decodedData = JSON.parse(atob(layoutData));
             clearAllBuildings();
             decodedData.forEach(createCustomBuildingFromCache);
-            alert("Megosztott elrendezés betöltve!");
+            alert("Shared layout loaded!");
         } catch (err) {
-            console.error("Hiba az elrendezés betöltésekor:", err);
+            console.error("Error:", err);
         }
     }
 }
