@@ -590,15 +590,17 @@ function populateBuildingsModal() {
     const buildingsGrid = document.getElementById("buildingsGrid");
     buildingsGrid.innerHTML = "";
 
-    const filters = Array.from(document.querySelectorAll(".filter-checkbox"))
+    // Mentett szűrők és keresési lekérdezés visszatöltése
+    const searchQuery = document.getElementById("buildingSearch").value.toLowerCase();
+    const activeFilters = Array.from(document.querySelectorAll(".filter-checkbox"))
         .filter(checkbox => checkbox.checked)
         .map(checkbox => checkbox.value);
 
     predefinedBuildings.forEach((building) => {
         const size = `${building.width}x${building.height}`;
         if (
-            (filters.includes(size)) ||
-            (filters.includes("other") && size !== "5x5" && size !== "5x10")
+            (activeFilters.includes(size)) ||
+            (activeFilters.includes("other") && size !== "5x5" && size !== "5x10")
         ) {
             const buildingCol = document.createElement("div");
             buildingCol.className = "col-md-6 col-sm-12 mb-4";
@@ -606,7 +608,7 @@ function populateBuildingsModal() {
             buildingCol.innerHTML = `
             <div class="box">
                 <div class="box-icon">
-                    ${building.image ?
+                    ${building.image ? 
                     `<img src="${building.image}" alt="${building.name}" class="building-icon">` :
                     `<i class="bi bi-house"></i>`
                 }
@@ -622,7 +624,10 @@ function populateBuildingsModal() {
                 createCustomBuildingFromPredefined(building);
             });
 
-            buildingsGrid.appendChild(buildingCol);
+            // Alkalmazzuk a keresési szűrőt
+            if (building.name.toLowerCase().includes(searchQuery)) {
+                buildingsGrid.appendChild(buildingCol);
+            }
         }
     });
 }
@@ -756,3 +761,46 @@ document.addEventListener('DOMContentLoaded', function () {
         gridExpandToggle.textContent = 'OFF';
     }
 });
+
+
+/*** DEVELOPER FUNCTIONS ***/
+function share() {
+    const layoutData = buildingData.map(data => ({
+        name: data.name,
+        color: data.color,
+        width: data.width,
+        height: data.height,
+        left: data.element.style.left,
+        top: data.element.style.top
+    }));
+
+    const jsonString = JSON.stringify(layoutData);
+    const encodedData = btoa(jsonString);
+    const shareLink = `${window.location.origin}${window.location.pathname}?layout=${encodedData}`;
+
+    const tempInput = document.createElement("textarea");
+    tempInput.value = shareLink;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    document.execCommand("copy");
+    document.body.removeChild(tempInput);
+
+    alert("Megosztási link a vágólapra másolva!");
+}
+
+function loadSharedLayout() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const layoutData = urlParams.get("layout");
+    if (layoutData) {
+        try {
+            const decodedData = JSON.parse(atob(layoutData));
+            clearAllBuildings();
+            decodedData.forEach(createCustomBuildingFromCache);
+            alert("Megosztott elrendezés betöltve!");
+        } catch (err) {
+            console.error("Hiba az elrendezés betöltésekor:", err);
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', loadSharedLayout);
