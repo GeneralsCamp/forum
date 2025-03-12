@@ -220,7 +220,7 @@ body {
         right: 0;
         background-color: #f8f9fa;
         z-index: 1000;
-        border-radius: 0px;
+        border-radius: 0px !important;
     }
 
     .bottom-buttons-container .btn {
