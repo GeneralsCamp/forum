@@ -183,6 +183,7 @@ body {
 
     .bottom-buttons-container .btn {
         transform: scale(1.5);
+        max-width: 100px;
     }
 
     .modal-content {
