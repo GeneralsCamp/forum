@@ -3,7 +3,7 @@ let buildingCount = 0;
 let buildingData = [];
 let predefinedBuildings = [];
 let isSwappedDimensions = false;
-let activeOptimize = true;
+let activeOptimize = false;
 let isBuildingMoving = false;
 let startX, startY, currentBuilding;
 
@@ -437,6 +437,9 @@ function clearAllBuildings() {
 
 /*** DRAG & DROP FUNCTIONALITY ***/
 function startMovingBuilding(e) {
+    // Középső egérgomb esetén nem indítjuk el a mozgatást
+    if (e.button === 1) return;
+
     if (e.type === 'mousedown' || e.type === 'touchstart') {
         isBuildingMoving = true;
         const rect = container.getBoundingClientRect();
@@ -804,3 +807,25 @@ function loadSharedLayout() {
 }
 
 document.addEventListener('DOMContentLoaded', loadSharedLayout);
+
+document.addEventListener('mousedown', function (e) {
+    if (e.button === 1) {
+        const clickedBuilding = e.target.closest('.building');
+        if (clickedBuilding) {
+            e.preventDefault();
+            const buildingDataItem = buildingData.find(data => data.element === clickedBuilding);
+
+            if (buildingDataItem) {
+                const building = {
+                    name: buildingDataItem.name,
+                    color: buildingDataItem.color,
+                    width: buildingDataItem.width / 14.4,
+                    height: buildingDataItem.height / 14.4
+                };
+                createCustomBuildingFromPredefined(building);
+            } else {
+                console.error("Error!");
+            }
+        }
+    }
+});
