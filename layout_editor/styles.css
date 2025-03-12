@@ -181,11 +181,6 @@ body {
         display: none;
     }
 
-    .bottom-buttons-container .btn {
-        transform: scale(1.5);
-        max-width: 100px;
-    }
-
     .modal-content {
         max-height: 520px;
         min-height: 520px;
@@ -218,13 +213,14 @@ body {
     .bottom-buttons-container {
         width: 100%;
         justify-content: space-between;
-        padding: 10px;
+        padding: 2px;
         position: fixed;
         bottom: 0;
         left: 0;
         right: 0;
         background-color: #f8f9fa;
         z-index: 1000;
+        border-radius: 0px;
     }
 
     .bottom-buttons-container .btn {
@@ -241,15 +237,16 @@ body {
 
 .bottom-buttons-container {
     background-color: #443326;
-    padding: 10px;
+    padding: 2px;
     display: flex;
     gap: 5px;
     position: fixed;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
+    bottom: 0px !important;
+    left: 50% !important;
+    top: 91% !important;
+    transform: translateX(-50%) !important;
     z-index: 1000;
-    border-radius: 5px;
+    border-radius: 20px;
 }
 
 .bottom-buttons-container .btn {
@@ -260,14 +257,6 @@ body {
 
 .bottom-buttons-container .btn:hover {
     color: #F3C24A;
-}
-
-.bottom-buttons-container {
-    position: fixed !important;
-    bottom: 0px !important;
-    left: 50% !important;
-    top: 91% !important;
-    transform: translateX(-50%) !important;
 }
 
 .modal {
