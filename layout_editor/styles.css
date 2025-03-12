@@ -65,13 +65,14 @@ body {
     user-select: none;
     z-index: 1;
     border: 1px solid black;
-    color: aliceblue;
+    color: white;
     align-content: center;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     font-size: 14px;
+    text-shadow: 2px 2px 4px black;
 }
 
 .slider-container {
