@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Várak távolsága</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #353535;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+        }
+
+        input,
+        button {
+            padding: 10px;
+            margin: 5px;
+            font-size: 16px;
+        }
+
+        .castle-list {
+            margin-top: 20px;
+        }
+
+        .castle {
+            background: white;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Ellenfelek távolsága</h1>
+    <input type="text" id="coords" placeholder="pl.:608:256">
+    <button onclick="calculateDistances()">Számolás</button>
+
+    <div class="castle-list" id="castleList"></div>
+
+    <script>
+        const castles = [
+            { name: "Diman2807", coords: [1016, 1010], troops: "420K" },
+            { name: "Дики", coords: [859, 451], troops: "412K" },
+            { name: "Artemon", coords: [705, 480], troops: "430K" },
+            { name: "Zlaya Zaya", coords: [646, 677], troops: "460K" },
+            { name: "этгар", coords: [737, 459], troops: "357K" },
+            { name: "Lady Selena", coords: [725, 447], troops: "460K" },
+            { name: "Ванечка", coords: [739, 431], troops: "493K" },
+            { name: "Волордеран", coords: [794, 844], troops: "450K" },
+            { name: "manax 3", coords: [545, 449], troops: "370K" },
+            { name: "Bess", coords: [553, 881], troops: "281K" },
+            { name: "Realns", coords: [522, 919], troops: "214K" },
+            { name: "Вадим", coords: [268, 644], troops: "492K" },
+            { name: "Арон", coords: [346, 705], troops: "502K" },
+            { name: "дикий бобер", coords: [510, 447], troops: "415K" },
+            { name: "игорь42", coords: [608, 786], troops: "428K" },
+            { name: "KING JOKER", coords: [728, 436], troops: "516K" },
+            { name: "Heu3Bectnoctb", coords: [562, 466], troops: "340K" },
+            { name: "Dimonchiys", coords: [680, 707], troops: "266K" },
+            { name: "Nesbru", coords: [647, 669], troops: "333K" },
+            { name: "Kazakh empire", coords: [737, 864], troops: "260K" },
+            { name: "ЗлатаSiria", coords: [500, 599], troops: "244K" },
+            { name: "PGRM", coords: [322, 620], troops: "240K" },
+            { name: "Zlaya Anya", coords: [784, 535], troops: "167K" },
+            { name: "Жнец душ", coords: [730, 457], troops: "149K" }
+        ];
+
+        function calculateDistances() {
+            const input = document.getElementById("coords").value.trim();
+            const [x, y] = input.split(":").map(Number);
+            if (isNaN(x) || isNaN(y)) {
+                alert("Helytelen formátum! Pl.: 608:256");
+                return;
+            }
+
+            const result = castles.map(castle => {
+                const dx = castle.coords[0] - x;
+                const dy = castle.coords[1] - y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                return { ...castle, distance: distance.toFixed(2) };
+            }).sort((a, b) => a.distance - b.distance);
+
+            const listDiv = document.getElementById("castleList");
+            listDiv.innerHTML = "";
+
+            result.forEach(castle => {
+                const div = document.createElement("div");
+                div.className = "castle";
+                div.innerHTML = `<strong>${castle.name}</strong> - Koordináta: ${castle.coords.join(":")} - Katonák: ${castle.troops} - Távolság: ${castle.distance}`;
+                listDiv.appendChild(div);
+            });
+        }
+    </script>
+
+</body>
+
+</html>
