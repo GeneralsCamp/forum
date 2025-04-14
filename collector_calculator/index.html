@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collector Event Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css"
+        rel="stylesheet">
+    <link rel="icon" type="image/webp" href="../img_base/favicon.ico">
+    <link rel="stylesheet" href="./styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h1>COLLECTOR EVENT CALCULATOR</h1>
+            </div>
+
+            <a href="https://generalscamp.github.io/forum/" class="home-icon-link">
+                <div class="home-icon">
+                    <i class="bi bi-house"></i>
+                </div>
+            </a>
+
+            <div class="col-12 collapse-area mb-2">
+                <h2 class="collapse-header">
+                    <span class="header-title">INPUT</span>
+                </h2>
+                <div class="collapse show">
+                    <form class="calculator-bonuses-form" onsubmit="return false;">
+
+                        <div class="col-lg-4 col-md-6 col-sm-12 form-group">
+                            <label for="pointsTarget">How many points you want at the end:</label>
+                            <input type="number" id="pgge-points" class="form-control2" placeholder="e.g., 80000" min="0" max="1000000" oninput="calculate()">
+                        </div>
+
+                        <div class="col-lg-4 col-md-6 col-sm-12 form-group">
+                            <label for="remainingTime">Remaining event time (days):</label>
+                            <input type="number" id="pgge-time" class="form-control2" placeholder="e.g., 4.6" min="0" max="7" step="1" oninput="calculate()">
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-12 collapse-area">
+                <h2 class="collapse-header">
+                    <span class="header-title">RESULTS</span>
+                </h2>
+                <div class="collapse show results">
+                    <p class="il" id="result">You need X points now to reach the target at the end.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
