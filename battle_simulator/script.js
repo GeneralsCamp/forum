@@ -271,8 +271,8 @@ waveContainer.addEventListener('touchend', (event) => {
 function handleSwipe() {
   const swipeDistanceX = endTouchXwaves - startTouchXwaves;
   const swipeDistanceY = endTouchYwaves - startTouchYwaves;
-  const threshold = 50; // Minimális vízszintes elmozdulás
-  const verticalTolerance = 30; // Maximális függőleges elmozdulás
+  const threshold = 50;
+  const verticalTolerance = 30;
 
   if (Math.abs(swipeDistanceX) > threshold && Math.abs(swipeDistanceY) < verticalTolerance) {
     if (swipeDistanceX > 0) {
@@ -1794,7 +1794,7 @@ function openBasicsModal() {
   const modal = new bootstrap.Modal(document.getElementById('basicsModal'));
 
   const slidersAndValues = [
-    { sliderId: 'waves-slider', valueId: 'waves-value', value: attackBasics.maxWaves, min: 4, max: 18 },
+    { sliderId: 'waves-slider', valueId: 'waves-value', value: attackBasics.maxWaves, min: 4, max: 20 },
     { sliderId: 'front-unit-slider', valueId: 'front-unit-value', value: attackBasics.maxUnits.front, min: 192, max: 1600 },
     { sliderId: 'flank-unit-slider', valueId: 'flank-unit-value', value: attackBasics.maxUnits.left, min: 64, max: 800 },
     { sliderId: 'courtyard-unit-slider', valueId: 'courtyard-unit-value', value: attackBasics.maxUnitsCY, min: 2089, max: 6000 },
@@ -1935,8 +1935,8 @@ function openCastellanStatsModal() {
   const slidersAndValues = [
     { sliderId: 'defense-melee-strength-slider', valueId: 'defense-melee-strength-value', value: castellanStats.melee, max: 500 },
     { sliderId: 'defense-ranged-strength-slider', valueId: 'defense-ranged-strength-value', value: castellanStats.ranged, max: 500 },
-    { sliderId: 'defense-courtyard-strength-slider', valueId: 'defense-courtyard-strength-value', value: castellanStats.courtyard, max: 500 },
-    { sliderId: 'wall-unit-limit-slider', valueId: 'wall-unit-limit-value', value: castellanStats.wallUnitLimit, max: 15000 },
+    { sliderId: 'defense-courtyard-strength-slider', valueId: 'defense-courtyard-strength-value', value: castellanStats.courtyard, max: 600 },
+    { sliderId: 'wall-unit-limit-slider', valueId: 'wall-unit-limit-value', value: castellanStats.wallUnitLimit, max: 30000 },
     { sliderId: 'cy-unit-limit-slider', valueId: 'cy-unit-limit-value', value: castellanStats.cyUnitLimit, max: 1000000 },
     { sliderId: 'defense-wall-protection-slider', valueId: 'defense-wall-protection-value', value: castellanStats.wallProtection, max: 480 },
     { sliderId: 'defense-moat-protection-slider', valueId: 'defense-moat-protection-value', value: castellanStats.moatProtection, max: 260 },
@@ -3453,8 +3453,8 @@ const modalsData = [
     body: `
         ${generateInputCard(
       'Waves', './img/attack-modal1.png', 'wave',
-      'waves-slider', 4, 18, attackBasics.maxWaves,
-      'waves-value', 4, 18, attackBasics.maxWaves
+      'waves-slider', 4, 20, attackBasics.maxWaves,
+      'waves-value', 4, 20, attackBasics.maxWaves
     )}
         ${generateInputCard(
       'Front unit limit', './img/attack-modal2.png', 'front-unit-limit',
@@ -3612,13 +3612,13 @@ const modalsData = [
     )}
       ${generateInputCard(
       'Courtyard strength (%)', './img/cy-icon.png', 'courtyard-strength',
-      'defense-courtyard-strength-slider', 0, 500, castellanStats.courtyardStrength,
-      'defense-courtyard-strength-value', 0, 500, castellanStats.courtyardStrength
+      'defense-courtyard-strength-slider', 0, 600, castellanStats.courtyardStrength,
+      'defense-courtyard-strength-value', 0, 600, castellanStats.courtyardStrength
     )}
       ${generateInputCard(
       'Wall unit limit', './img/castellan-modal3.png', 'wall-unit-limit',
-      'wall-unit-limit-slider', 100, 15000, castellanStats.wallUnitLimit,
-      'wall-unit-limit-value', 100, 15000, castellanStats.wallUnitLimit
+      'wall-unit-limit-slider', 100, 30000, castellanStats.wallUnitLimit,
+      'wall-unit-limit-value', 100, 30000, castellanStats.wallUnitLimit
     )}
       ${generateInputCard(
       'Courtyard unit limit', './img/attack-modal4.png', 'cy-unit-limit',
