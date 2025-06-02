@@ -212,7 +212,7 @@
 
     <script>
         const allQuestions = [
-            { q: "Hány aranydarabba kerül a 'Mézsör körzet' a kovács mesternél?", options: ["200 ezer", "125 ezer", "150 ezer", "125 ezer"], answer: [1], type: "single" },
+            { q: "Hány aranydarabba kerül a 'Mézsör körzet' a kovács mesternél?", options: ["200 ezer", "125 ezer", "150 ezer", "75 ezer"], answer: [1], type: "single" },
             { q: "Hány ezüstdarabba kerül az 'Északi védelmező' a kovács mesternél?", options: ["650", "480", "440", "520"], answer: [2], type: "single" },
             { q: "Igaz vagy hamis? A nomád esemény adhatnak 'Szövet' jutalmat.", options: ["Igaz", "Hamis"], answer: [1], type: "truefalse" },
             { q: "Válaszd ki azokat az épületeket, amelyek növelik az élelem termelést.", options: ["Csűr", "Relikvia farm", "Malom", "Pékség"], answer: [0, 2], type: "multiple" },
@@ -414,9 +414,7 @@
             <p>Elért pontszám: ${(score * 100).toFixed(0)}%</p>
             <p>A kódod (másold ki és küldd el Discordon):</p>
             <div id="resultCode">${generateCode(playerName, server, totalQuestions, Math.round(score * 100))}</div>
-            <button id="restartBtn" class="btn btn-warning btn-fixed mt-3">Új kvíz</button>
         `;
-                document.getElementById('restartBtn').onclick = () => location.reload();
             } else {
                 retryView.style.display = 'flex';
             }
