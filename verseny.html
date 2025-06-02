@@ -223,12 +223,12 @@
             { q: "Hány ezüstdarabba kerül az 'Északi védelmező' a kovács mesternél?", options: ["650", "480", "440", "520"], answer: [2], type: "single" },
             { q: "Mennyi a fogyasztása 1320 mézsört fogyasztó katonának 4-es szintű 'Relikvia mézsör-desztiláló' épülettel?", options: ["1584", "2640", "2376", "1056"], answer: [2], type: "single" },
             { q: "Mennyi a maximális támadási hullám jelenleg a játékban?", options: ["18", "19", "20", "21"], answer: [2], type: "single" },
-            { q: "Mennyibe kerül a legdrágább dukátos kutatás a legendák csarnokában?", options: ["250", "800", "300", "900"], answer: [2], type: "single" },
+            { q: "Mennyibe kerül a legdrágább dukátos kutatás a legendák csarnokában?", options: ["250", "800", "300", "900"], answer: [3], type: "single" },
 
             { q: "Válaszd ki azokat az épületeket, amelyek növelik az élelem termelést.", options: ["Csűr", "Relikvia farm", "Malom", "Pékség"], answer: [0, 2], type: "multiple" },
             { q: "Válaszd ki azokat a királyságokat, amelyek a játékban vannak.", options: ["A tüzes királyság", "A nagy Birodalom", "Örök tél gleccser", "A perzselő homok földje"], answer: [1, 2], type: "multiple" },
             { q: "Válaszd ki, milyen közrendű díszeket lehet venni a Nomád mágszállás alatt.", options: ["3750", "4000", "700", "1750"], answer: [0, 2], type: "multiple" },
-            { q: "Válaszd ki, melyik események adnak 'mester+' módban +6 hullámos megjelenést.", options: ["Nomád", "Szamuráj", "Idegen", "Vérvarjú"], answer: [2, 3], type: "multiple" },
+            { q: "Válaszd ki, melyik események adnak 'mester+' módban +6 hullámos megjelenést.", options: ["Nomád", "Szamuráj", "Idegen", "Vérvarjú"], answer: [1, 3], type: "multiple" },
             { q: "Válaszd ki, azokat a katonákat, amik megtalálhatóak a játékban.", options: ["Galád veterán alabárdos", "Jeges nyilas", "Erdőírtó", "Veterán gnómád harcos"], answer: [0, 1], type: "multiple" },
 
             { q: "Igaz vagy hamis? A nomád esemény adhatnak 'Szövet' jutalmat.", options: ["Igaz", "Hamis"], answer: [1], type: "truefalse" },
@@ -439,7 +439,11 @@
                 mainView.innerHTML = `
             <h2>Gratulálunk, sikeresen teljesítetted a kvízt ${(score * 100).toFixed(0)}% eredménnyel!</h2>
             <p>Ez az egyedi kódod, másold ki és küldd el Discordon:</p>
-            <div id="resultCode">${generateCode(playerName, server, totalQuestions, Math.round(score * 100))}</div>
+            <div id="resultCode" class="code-box">${generateCode(playerName, server, totalQuestions, Math.round(score * 100))}</div>
+            <div class="mt-4 text-center">
+                <a href="https://discord.com/channels/602832237146406914/1379164927444521180" target="_blank" class="btn btn-primary me-2">📬 E4K csatornára</a>
+                <a href="https://discord.com/channels/602832237146406914/1379165321797042298" target="_blank" class="btn btn-primary">📬 Küldés EMPIRE csatornára</a>
+            </div>
         `;
             } else {
                 retryView.style.display = 'flex';
