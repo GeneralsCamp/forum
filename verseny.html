@@ -161,12 +161,18 @@
             max-width: 100%;
             box-sizing: border-box;
         }
+
+        #resultCode {
+            word-break: break-word;
+            display: inline-block;
+            max-width: 100%;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <h1>Goodgame Empire Kvíz (HU)</h1>
+        <h1>Goodgame Empire Kvíz</h1>
 
         <div class="col-12 mb-2" id="retryView" style="display:none; flex-direction: column; align-items:center;">
             <p class="note">
@@ -210,7 +216,7 @@
             { q: "Hány ezüstdarabba kerül az 'Északi védelmező' a kovács mesternél?", options: ["650", "480", "440", "520"], answer: [2], type: "single" },
             { q: "Igaz vagy hamis? A nomád esemény adhatnak 'Szövet' jutalmat.", options: ["Igaz", "Hamis"], answer: [1], type: "truefalse" },
             { q: "Válaszd ki azokat az épületeket, amelyek növelik az élelem termelést.", options: ["Csűr", "Relikvia farm", "Malom", "Pékség"], answer: [0, 2], type: "multiple" },
-            { q: "Válaszd ki azokat a királyságokat, amelyek a játékban vannak.", options: ["A tüzes királyság", "A nagy Birodalom", "Örök tél gleccser", "A perszelő homok földje"], answer: [1, 2], type: "multiple" },
+            { q: "Válaszd ki azokat a királyságokat, amelyek a játékban vannak.", options: ["A tüzes királyság", "A nagy Birodalom", "Örök tél gleccser", "A perzselő homok földje"], answer: [1, 2], type: "multiple" },
         ];
 
         const totalQuestions = 3;
