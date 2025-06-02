@@ -2,10 +2,15 @@
 <html lang="hu">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Goodgame Empire Kvíz</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GGE Discord Verseny (2025.06)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="icon" type="image/webp" href="./img_base/favicon.ico">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css"
+        rel="stylesheet">
+
     <style>
         body {
             background-color: #bd9a79;
@@ -110,7 +115,6 @@
             font-family: monospace;
             background: #e9ecef;
             padding: 10px;
-            margin-top: 15px;
             user-select: all;
             color: #433120;
             border-radius: 10px;
@@ -179,22 +183,23 @@
                 <span class="warning-icon">!</span>
                 Sajnos nem érted el a 80%-ot...<br>
                 Próbáld újra, sok szerencsét!
-
             </p>
             <button id="retryBtn" class="btn btn-warning btn-fixed mt-3">Újraindítás</button>
         </div>
 
-        <div id="mainView">
-            <div class="mb-3 text-center">
-                <label for="playerName" class="form-label">Játékosnév:</label>
-                <input type="text" class="form-control w-50 mx-auto" id="playerName" placeholder="rotkiv" required />
+        <div id="mainView" class="note row">
+            <div class="mb-3 text-center col-12">
+                <label for="playerName" class="form-label">Játékosnév</label>
+                <input type="text" class="form-control w-50 mx-auto text-center" id="playerName" placeholder="Dániel"
+                    required />
             </div>
-            <div class="mb-3 text-center">
-                <label for="server" class="form-label">Szerver:</label>
-                <input type="text" class="form-control w-50 mx-auto" id="server" placeholder="HU2" required />
+            <div class="mb-3 text-center col-12">
+                <label for="server" class="form-label">Szerver</label>
+                <input type="text" class="form-control w-50 mx-auto text-center" id="server" placeholder="INT4"
+                    required />
             </div>
 
-            <div class="d-flex justify-content-center">
+            <div class="d-flex justify-content-center col-12">
                 <button id="startBtn" class="btn btn-warning btn-fixed">Indítás</button>
             </div>
         </div>
@@ -211,19 +216,31 @@
     </div>
 
     <script>
+        //3*5 kérdés (10 megjelenítve)
         const allQuestions = [
             { q: "Hány aranydarabba kerül a 'Mézsör körzet' a kovács mesternél?", options: ["200 ezer", "125 ezer", "150 ezer", "75 ezer"], answer: [1], type: "single" },
             { q: "Hány ezüstdarabba kerül az 'Északi védelmező' a kovács mesternél?", options: ["650", "480", "440", "520"], answer: [2], type: "single" },
-            { q: "Igaz vagy hamis? A nomád esemény adhatnak 'Szövet' jutalmat.", options: ["Igaz", "Hamis"], answer: [1], type: "truefalse" },
+            { q: "Mennyi a fogyasztása 1320 mézsört fogyasztó katonának 4-es szintű 'Mézsör desztiláló' épülettel?", options: ["1584", "2640", "2376", "1056"], answer: [2], type: "single" },
+            { q: "Mennyi a maximális támadási hullám jelenleg a játékban?", options: ["18", "19", "20", "21"], answer: [2], type: "single" },
+            { q: "Mennyibe kerül a legdrágább dukátos kutatás a legendák csarnokában?", options: ["250", "800", "300", "900"], answer: [2], type: "single" },
+
             { q: "Válaszd ki azokat az épületeket, amelyek növelik az élelem termelést.", options: ["Csűr", "Relikvia farm", "Malom", "Pékség"], answer: [0, 2], type: "multiple" },
             { q: "Válaszd ki azokat a királyságokat, amelyek a játékban vannak.", options: ["A tüzes királyság", "A nagy Birodalom", "Örök tél gleccser", "A perzselő homok földje"], answer: [1, 2], type: "multiple" },
+            { q: "Válaszd ki, milyen közrendű díszeket lehet venni a Nomád mágszállás alatt.", options: ["3750", "4000", "700", "1750"], answer: [0, 2], type: "multiple" },
+            { q: "Válaszd ki, melyik események adnak 'mester+' módban +6 hullámos megjelenést.", options: ["Nomád", "Szamuráj", "Idegen", "Vérvarjú"], answer: [2, 3], type: "multiple" },
+            { q: "Válaszd ki, azokat a katonákat, amik megtalálhatóak a játékban.", options: ["Galád veterán alabárdos", "Jeges nyilas", "Erdőírtó", "Veterán gnómád harcos"], answer: [0, 1], type: "multiple" },
+
+            { q: "Igaz vagy hamis? A nomád esemény adhatnak 'Szövet' jutalmat.", options: ["Igaz", "Hamis"], answer: [1], type: "truefalse" },
+            { q: "Igaz vagy hamis? Van olyan nemességi verseny, ahol támadási eszközt kell szerezni.", options: ["Igaz", "Hamis"], answer: [0], type: "truefalse" },
+            { q: "Igaz vagy hamis? A királysági ligában a legmagasabb címet 'Pusztító'-nak hívják.", options: ["Igaz", "Hamis"], answer: [1], type: "truefalse" },
+            { q: "Igaz vagy hamis? A 100-as szintű 'Dicsőségemlékmű' 500% dicsőségpont bónuszt ad.", options: ["Igaz", "Hamis"], answer: [1], type: "truefalse" },
+            { q: "Igaz vagy hamis? A 7-es szintű 'Őrház' 30 városőrt ad.", options: ["Igaz", "Hamis"], answer: [1], type: "truefalse" },
         ];
 
-        const totalQuestions = 3;
+        const totalQuestions = 10;
         let selectedQuestions = [];
         let currentQuestionIndex = 0;
         let userAnswers = new Array(totalQuestions).fill(null);
-        const secretKey = "GGEmpire2025";
         let playerName = "";
         let server = "";
 
@@ -305,7 +322,14 @@
                 const shuffled = [...allQuestions].sort(() => 0.5 - Math.random());
                 selectedQuestions = shuffled.slice(0, totalQuestions);
             }
+
             const q = selectedQuestions[currentQuestionIndex];
+
+            if (!q.shuffledOptions) {
+                const indexedOptions = q.options.map((opt, idx) => ({ opt, idx }));
+                q.shuffledOptions = indexedOptions.sort(() => 0.5 - Math.random());
+            }
+
             quizContent.innerHTML = "";
             const qNum = document.createElement('div');
             qNum.className = "question-number";
@@ -320,7 +344,7 @@
             list.className = "list-group";
             quizContent.appendChild(list);
 
-            q.options.forEach((opt, i) => {
+            q.shuffledOptions.forEach(({ opt, idx }, i) => {
                 const li = document.createElement('li');
                 li.className = "list-group-item";
 
@@ -332,21 +356,23 @@
                 const input = document.createElement('input');
                 input.type = (q.type === "multiple") ? "checkbox" : "radio";
                 input.name = "option";
-                input.value = i;
+                input.value = idx;
                 input.id = `option_${i}`;
-                if (userAnswers[currentQuestionIndex] !== null) {
+
+                const ua = userAnswers[currentQuestionIndex];
+                if (ua !== null) {
                     if (q.type === "multiple") {
-                        if (userAnswers[currentQuestionIndex].includes(i)) input.checked = true;
+                        if (ua.includes(idx)) input.checked = true;
                     } else {
-                        if (userAnswers[currentQuestionIndex] === i) input.checked = true;
+                        if (ua === idx) input.checked = true;
                     }
                 }
 
                 input.onchange = () => {
                     if (q.type === "multiple") {
                         const checked = [];
-                        list.querySelectorAll('input[type=checkbox]').forEach((cb, idx) => {
-                            if (cb.checked) checked.push(idx);
+                        list.querySelectorAll('input[type=checkbox]').forEach((cb) => {
+                            if (cb.checked) checked.push(parseInt(cb.value));
                         });
                         userAnswers[currentQuestionIndex] = checked.length > 0 ? checked : null;
                     } else {
@@ -410,9 +436,8 @@
             if (success) {
                 mainView.style.display = 'block';
                 mainView.innerHTML = `
-            <h2>Gratulálunk! Sikeresen teljesítetted a kvízt.</h2>
-            <p>Elért pontszám: ${(score * 100).toFixed(0)}%</p>
-            <p>A kódod (másold ki és küldd el Discordon):</p>
+            <h2>Gratulálunk, sikeresen teljesítetted a kvízt ${(score * 100).toFixed(0)}% eredménnyel!</h2>
+            <p>Ez az egyedi kódod, másold ki és küldd el Discordon:</p>
             <div id="resultCode">${generateCode(playerName, server, totalQuestions, Math.round(score * 100))}</div>
         `;
             } else {
@@ -421,28 +446,32 @@
         }
 
         document.addEventListener("keydown", function (e) {
-            if (e.key === "ű" || e.key === "Ű") {
+            if (e.key === "ő" || e.key === "Ő") {
                 highlightCorrectAnswer();
             }
         });
 
         function highlightCorrectAnswer() {
             const q = selectedQuestions[currentQuestionIndex];
-            const listItems = quizContent.querySelectorAll(".list-group-item");
+            const inputs = quizContent.querySelectorAll("input");
 
-            listItems.forEach((li, idx) => {
-                li.style.backgroundColor = "";
+            inputs.forEach(input => {
+                const value = parseInt(input.value);
+                const li = input.closest("li");
+
+                if (q.type === "multiple") {
+                    if (q.answer.includes(value)) {
+                        li.style.backgroundColor = "#d4edda";
+                    }
+                } else {
+                    const correctIndex = Array.isArray(q.answer) ? q.answer[0] : q.answer;
+                    if (value === correctIndex) {
+                        li.style.backgroundColor = "#d4edda";
+                    }
+                }
             });
-
-            if (q.type === "multiple") {
-                q.answer.forEach(idx => {
-                    if (listItems[idx]) listItems[idx].style.backgroundColor = "#d4edda";
-                });
-            } else {
-                const idx = Array.isArray(q.answer) ? q.answer[0] : q.answer;
-                if (listItems[idx]) listItems[idx].style.backgroundColor = "#d4edda";
-            }
         }
+
         function decodeCode(code) {
             try {
                 const raw = base64DecodeUnicode(code);
