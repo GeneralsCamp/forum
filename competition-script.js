@@ -9,7 +9,7 @@ async function loadQuestions() {
     try {
         const { data, error } = await supabaseClient
             .from('questions')
-            .select('id, question, options, answer, type')
+            .select('id, question, options, type')
             .limit(50);
 
         if (error) {
@@ -38,6 +38,7 @@ let currentQuestionIndex = 0;
 let userAnswers = new Array(totalQuestions).fill(null);
 let playerName = '';
 let server = '';
+let discordName = '';
 
 const mainView = document.getElementById('mainView');
 const quizView = document.getElementById('quizView');
@@ -49,6 +50,7 @@ const submitBtn = document.getElementById('submitBtn');
 const startBtn = document.getElementById('startBtn');
 const retryBtn = document.getElementById('retryBtn');
 const resultDiv = document.getElementById('result');
+const discordServerInput = document.getElementById('discordServer');
 
 startBtn.onclick = () => {
     if (allQuestions.length === 0) {
@@ -57,10 +59,12 @@ startBtn.onclick = () => {
     }
     playerName = document.getElementById('playerName').value.trim();
     server = document.getElementById('server').value.trim();
-    if (!playerName || !server) {
-        alert('Kérlek add meg a játékosneved és a szervert!');
+    discordName = discordServerInput.value.trim();
+    if (!playerName || !server || !discordName) {
+        alert('Kérlek add meg a játékosneved, a szervert és a Discord neved!');
         return;
     }
+
     resetQuiz();
     mainView.style.display = 'none';
     retryView.style.display = 'none';
@@ -98,32 +102,43 @@ nextBtn.onclick = () => {
 };
 
 submitBtn.onclick = async () => {
-    if (!userAnswers.includes(null)) {
-        const score = calculateScore();
-
-        try {
-            const { data, error } = await supabaseClient.from('quiz_results').insert([
-                {
-                    player_name: playerName,
-                    server: server,
-                    score: Math.round(score * 100),
-                    total_questions: totalQuestions,
-                },
-            ]);
-            if (error) throw error;
-
-            if (score >= 0.8) {
-                showResult(true, score);
-            } else {
-                showResult(false, score);
-            }
-        } catch (err) {
-            alert('Hiba történt az eredmény mentésekor: ' + err.message);
-        }
-    } else {
+    if (userAnswers.includes(null)) {
         alert('Kérlek válaszolj az összes kérdésre!');
+        return;
+    }
+
+    const questionIds = selectedQuestions.map(q => q.id);
+    const userAnswerMap = {};
+
+    for (let i = 0; i < totalQuestions; i++) {
+        const qid = selectedQuestions[i].id;
+        userAnswerMap[qid] = userAnswers[i];
+    }
+
+    try {
+        const { data, error } = await supabaseClient.rpc('evaluate_quiz', {
+            question_ids: questionIds,
+            user_answers: userAnswerMap,
+            player_name: playerName,
+            server: server,
+            discord_name: document.getElementById('discordServer').value.trim(),
+        });
+
+        if (error) {
+            console.error(error);
+            alert('Hiba történt az eredmény kiértékelésekor!');
+            return;
+        }
+
+        const correctCount = data;
+        const score = correctCount / totalQuestions;
+        showResult(score >= 0.8, score);
+    } catch (err) {
+        console.error(err);
+        alert('Ismeretlen hiba történt!');
     }
 };
+
 
 function resetQuiz() {
     selectedQuestions = [];
