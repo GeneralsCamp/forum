@@ -8,8 +8,8 @@ let allQuestions = [];
 async function loadQuestions() {
     try {
         const { data, error } = await supabaseClient
-            .from('questions')
-            .select('id, question, options, type')
+            .from('public_questions')
+            .select('*')
             .limit(50);
 
         if (error) {
@@ -303,7 +303,7 @@ function showResult(passed, score) {
         retryView.innerHTML = `
             <p class="note">
                 <span class="warning-icon">!</span>
-                Gratulálunk, sikeresen megoldottan a kvízt.<br/>
+                Gratulálunk, sikeresen megoldottad a kvízt.<br/>
                 Nincsen több tennivalód!
             </p> 
         `;
