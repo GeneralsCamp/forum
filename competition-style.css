@@ -1,0 +1,160 @@
+body {
+    background-color: #bd9a79;
+    color: #433120;
+    margin: 0;
+    font-weight: 500;
+}
+
+@media only screen and (max-width: 700px) {
+    body {
+        margin: 0 !important;
+    }
+}
+
+h1 {
+    background-color: rgb(119, 80, 54);
+    color: #F3C24A;
+    padding: 4px;
+    border-radius: 10px;
+    font-weight: bolder;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-weight: bolder;
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 1.6rem;
+}
+
+.container {
+    background-color: rgb(67, 51, 38);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin-top: 0 !important;
+}
+
+.note {
+    background-color: rgb(119, 80, 54);
+    color: white;
+    font-weight: bolder;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.btn-fixed {
+    width: 120px;
+    min-height: 42px;
+    font-weight: bold;
+}
+
+#quizContent {
+    background-color: rgb(145, 98, 65);
+    border-radius: 20px;
+    padding: 20px;
+    flex-grow: 1;
+    min-height: 400px;
+    max-height: 400px;
+    overflow-y: auto;
+    color: white;
+}
+
+.question-number {
+    font-weight: bolder;
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+}
+
+.list-group {
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+.list-group-item {
+    list-style: none;
+    background-color: transparent;
+    border: 1px solid #F3C24A;
+    color: white;
+    cursor: pointer;
+    user-select: none;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.list-group-item:hover {
+    background-color: rgba(243, 194, 74, 0.2);
+}
+
+.list-group-item input {
+    margin: 0;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+#resultCode {
+    font-family: monospace;
+    background: #e9ecef;
+    padding: 10px;
+    user-select: all;
+    color: #433120;
+    border-radius: 10px;
+}
+
+.btn-group {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.btn[disabled] {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.centered-text {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.fixed-height-buttons {
+    min-height: 52px;
+}
+
+#mainView,
+#retryView {
+    color: white;
+}
+
+.warning-icon {
+    font-size: 30px;
+    margin-right: 20px;
+    font-weight: bold;
+}
+
+.note {
+    background-color: rgb(119, 80, 54);
+    color: white;
+    font-weight: bolder;
+    padding: 10px;
+    border-radius: 10px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+#resultCode {
+    word-break: break-word;
+    display: inline-block;
+    max-width: 100%;
+}
