@@ -24,8 +24,8 @@ h1 {
 h2 {
     font-weight: bolder;
     text-align: center;
-    margin-bottom: 10px;
-    font-size: 1.6rem;
+    margin-bottom: 20px;
+    font-size: 1.45rem;
 }
 
 .container {
@@ -82,10 +82,10 @@ h2 {
     color: white;
     cursor: pointer;
     user-select: none;
-    padding: 10px 15px;
+    padding: 5px 10px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    font-size:large;
 }
 
 .list-group-item:hover {
@@ -157,4 +157,14 @@ h2 {
     word-break: break-word;
     display: inline-block;
     max-width: 100%;
+}
+
+.input-responsive {
+    width: 80%;
+}
+
+@media (min-width: 768px) {
+    .input-responsive {
+        width: 50%;
+    }
 }

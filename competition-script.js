@@ -271,63 +271,6 @@ function checkSubmitAvailability() {
     submitBtn.disabled = userAnswers.includes(null);
 }
 
-function calculateScore() {
-    let correctCount = 0;
-
-    for (let i = 0; i < totalQuestions; i++) {
-        const question = selectedQuestions[i];
-        const userAnswer = userAnswers[i];
-
-        if (question.type === 'multiple') {
-            if (Array.isArray(userAnswer) && Array.isArray(question.answer)) {
-                const sortedUser = [...userAnswer].sort();
-                const sortedCorrect = [...question.answer].sort();
-
-                const allMatch = sortedUser.length === sortedCorrect.length &&
-                    sortedUser.every((val, idx) => val === sortedCorrect[idx]);
-
-                if (allMatch) {
-                    correctCount++;
-                }
-            }
-        } else {
-            if (userAnswer != null && question.answer.length === 1 && userAnswer === question.answer[0]) {
-                correctCount++;
-            }
-        }
-    }
-
-    return correctCount / totalQuestions;
-}
-function calculateScore() {
-    let correctCount = 0;
-
-    for (let i = 0; i < totalQuestions; i++) {
-        const question = selectedQuestions[i];
-        const userAnswer = userAnswers[i];
-
-        if (question.type === 'multiple') {
-            if (Array.isArray(userAnswer) && Array.isArray(question.answer)) {
-                const sortedUser = [...userAnswer].sort();
-                const sortedCorrect = [...question.answer].sort();
-
-                const allMatch = sortedUser.length === sortedCorrect.length &&
-                    sortedUser.every((val, idx) => val === sortedCorrect[idx]);
-
-                if (allMatch) {
-                    correctCount++;
-                }
-            }
-        } else {
-            if (userAnswer != null && question.answer.length === 1 && userAnswer === question.answer[0]) {
-                correctCount++;
-            }
-        }
-    }
-
-    return correctCount / totalQuestions;
-}
-
 function showResult(passed, score) {
     quizView.style.display = 'none';
 
