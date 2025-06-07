@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadQuestions();
 });
 
-const totalQuestions = 10;
+const totalQuestions = 1;
 let selectedQuestions = [];
 let currentQuestionIndex = 0;
 let userAnswers = new Array(totalQuestions).fill(null);
@@ -150,12 +150,12 @@ submitBtn.onclick = async () => {
 
     try {
         const { data, error } = await supabaseClient.rpc('evaluate_quiz', {
-            question_ids: questionIds,
-            user_answers: userAnswerMap,
-            player_name: playerName,
-            server: server,
-            discord_name: document.getElementById('discordServer').value.trim(),
-            game: gameSelect.value
+            p_question_ids: questionIds,
+            p_user_answers: userAnswerMap,
+            p_player_name: playerName,
+            p_server: server,
+            p_discord_name: document.getElementById('discordServer').value.trim(),
+            p_game: gameSelect.value
         });
 
         if (error) {
