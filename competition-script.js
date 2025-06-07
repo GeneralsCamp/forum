@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadQuestions();
 });
 
-const totalQuestions = 1;
+const totalQuestions = 10;
 let selectedQuestions = [];
 let currentQuestionIndex = 0;
 let userAnswers = new Array(totalQuestions).fill(null);
