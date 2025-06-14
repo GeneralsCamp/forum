@@ -35,14 +35,17 @@ async function getItems(version) {
 }
 
 function extractDecorations(buildings) {
-  return buildings.filter(b =>
-    b.buildingGroundType === "DECO" &&
+  const decorations = buildings.filter(b =>
+    b.name?.toLowerCase() === "deco" &&
     getPO(b) > 0 &&
     !(
       (b.comment1 && b.comment1.toLowerCase().includes("test")) ||
       (b.comment2 && b.comment2.toLowerCase().includes("test"))
     )
   );
+
+  console.log(`Found ${decorations.length} decorations`);
+  return decorations;
 }
 
 function getName(item) {
@@ -58,6 +61,14 @@ function getPO(item) {
   if (item.decoPoints !== undefined && item.decoPoints !== null) {
     return parseInt(item.decoPoints);
   }
+
+  if (item.initialFusionLevel !== undefined && item.initialFusionLevel !== null) {
+    const level = parseInt(item.initialFusionLevel);
+    if (!isNaN(level)) {
+      return 100 + level * 5;
+    }
+  }
+
   return 0;
 }
 
@@ -76,8 +87,9 @@ function parseEffects(effectsStr) {
 
   const effectMap = {
     "61": { name: "Melee strength in attack", percent: true },
-    "62": { name: "Range strength in attack", percent: true },
+    "62": { name: "Ranged strength in attack", percent: true },
     "370": { name: "Courtyard strength in defense", percent: true },
+    "386": { name: "Courtyard strength in attack", percent: true },
     "387": { name: "Wall amount in defense", percent: true },
     "413": { name: "Troop recruitment speed", percent: true },
     "414": { name: "Troop recruitment cost decrease", percent: true },
@@ -86,15 +98,47 @@ function parseEffects(effectsStr) {
     "379": { name: "Honey storage capacity", percent: false },
     "361": { name: "Food production", percent: false },
     "380": { name: "Food storage capacity", percent: false },
-    "381": { name: "Market barrow speed (own castles)", percent: true },
-    "362": { name: "Mead production", percent: false }, //bad
+    "381": { name: "Market barrow speed between your castles", percent: true },
+    "382": { name: "Market barrow capacity", percent: true },
+    "362": { name: "Mead production", percent: false },
+    "405": { name: "Mead production", percent: false },
+    "408": { name: "Mead production", percent: true },
+    "406": { name: "Mead storage capacity", percent: false },
     "383": { name: "XP earned in attacks", percent: true },
     "384": { name: "XP earned by building", percent: true },
+    "82": { name: "XP earned in attacks", percent: true },
+    "83": { name: "XP earned by building", percent: true },
+    "90": { name: "Market barrow capacity", percent: false },
     "371": { name: "Defense courtyard unit limit", percent: false },
     "385": { name: "Defense alliance courtyard unit limit", percent: false },
-    "501": { name: "Unknown effect", percent: true },
-    "705": { name: "Unknown effect", percent: true },
-    "382": { name: "Market barrow capacity ", percent: true }
+    "388": { name: "Wood production bonus (Great Empire)", percent: true },
+    "389": { name: "Stone production bonus (Great Empire)", percent: true },
+    "390": { name: "Iron production bonus (Great Empire)", percent: true },
+    "391": { name: "Wood production bonus (Everwinter Glacier)", percent: true },
+    "392": { name: "Stone production bonus (Everwinter Glacier)", percent: true },
+    "393": { name: "Charcoal production bonus (Everwinter Glacier)", percent: true },
+    "409": { name: "Food production boost (Everwinter Glacier)", percent: true },
+    "394": { name: "Wood production bonus (Burning Sands)", percent: true },
+    "395": { name: "Stone production bonus (Burning Sands)", percent: true },
+    "396": { name: "Oil production bonus (Burning Sands)", percent: true },
+    "416": { name: "Food production boost (Burning Sands)", percent: true },
+    "397": { name: "Wood production bonus (Fire Peaks)", percent: true },
+    "398": { name: "Stone production bonus (Fire Peaks)", percent: true },
+    "399": { name: "Glass production bonus (Fire Peaks)", percent: true },
+    "417": { name: "Food production boost (Fire Peaks)", percent: true },
+    "369": { name: "Front unit limit when attacking", percent: true },
+    "368": { name: "Flank unit limit when attacking", percent: true },
+    "410": { name: "Courtyard strength in attack", percent: true },
+    "411": { name: "Melee strength in attack", percent: true },
+    "412": { name: "Ranged strength in attack", percent: true },
+    "423": { name: "Ranged strength in attack", percent: true },
+    "424": { name: "Melee strength in attack", percent: true },
+    "407": { name: "Food production", percent: false },
+    "378": { name: "Beef production", percent: false }
+    //705 1%
+    //501 15%
+    //612 Green 3%
+    //611 Green 3%
   };
 
   const formatter = new Intl.NumberFormat(navigator.language);
@@ -112,7 +156,6 @@ function parseEffects(effectsStr) {
     }
   });
 }
-
 
 function formatNumber(num) {
   return Number(num).toLocaleString(undefined);
@@ -134,49 +177,42 @@ function createCard(item) {
     isFusionSource ? "Source" :
       isFusionTarget ? "Target" : "-";
 
-  const sellPrice = item.sellC1 || "0";
+  const sellPriceRaw = item.sellC1 || "0";
+  let sellPriceDisplay;
+
+  if (Number(sellPriceRaw) === 0 && item.sellSoldierBiscuit) {
+    sellPriceDisplay = `${formatNumber(item.sellSoldierBiscuit)} biscuits`;
+  } else {
+    sellPriceDisplay = `${formatNumber(sellPriceRaw)} coins`;
+  }
+
   const sources = [item.comment1, item.comment2].filter(Boolean);
   const id = item.wodID || "???";
 
   const effects = parseEffects(item.areaSpecificEffects || "");
   const effectsHTML = effects.length > 0
-    ? `<div class="row"><div class="col-12"><strong>Effects:</strong><ul>${effects.map(e => `<li>${e}</li>`).join("")}</ul></div></div>`
-    : "";
+    ? `<p>Effects:<br>${effects.map(e => `- ${e}`).join("<br>")}</p>`
+    : `<p>Effects:</p>`;
 
   const sourceHTML = sources.length > 0
-    ? `<div class="row"><div class="col-12"><strong>Developer comments:</strong><ul>${sources.map(s => `<li>${s}</li>`).join("")}</ul></div></div>`
-    : `<div class="row"><div class="col-12"><strong>Developer comments:</strong> -</div></div>`;
+    ? `<p>Developer comments:<br>${sources.map(s => `- ${s}`).join("<br>")}</p>`
+    : `<p>Developer comments:</p>`;
 
   return `
-    <div class="col-lg-4 col-md-6 col-12 d-flex">
-      <div class="card w-100 h-100">
-        <div class="card-header text-center bg-secondary text-light">
-          <h4>${name}</h4> <p>(ID: ${id})</p>
-        </div>
-        <div class="card-body d-flex flex-column">
-          <div class="row">
-            <div class="col-12"><strong>Public order:</strong> ${formatNumber(po)} (${poPerTile} PO/tile)</div>
-          </div>
-
-          <div class="row">
-            <div class="col-12"><strong>Size:</strong> ${size}</div>
-          </div>
-
-          <div class="row">
-            <div class="col-12"><strong>Might points:</strong> ${formatNumber(might)}</div>
-          </div>
-
-          <div class="row">
-            <div class="col-12"><strong>Fusion:</strong> ${fusion}</div>
-          </div>
-
-          <div class="row">
-            <div class="col-12"><strong>Sale price:</strong> ${formatNumber(sellPrice)} coins</div>
-          </div>
+    <div class="col-md-6 col-sm-12">
+      <a href="#" class="box">
+        <div class="box-content">
+          <h2>${name} (wodID: ${id})</h2>
+          <hr>
+          <p>Public order: ${formatNumber(po)} (${poPerTile} PO/tile)</p>
+          <p>Size: ${size}</p>
+          <p>Might points: ${formatNumber(might)}</p>
+          <p>Fusion: ${fusion}</p>
+          <p>Sale price: ${sellPriceDisplay}</p>
           ${sourceHTML}
           ${effectsHTML}
         </div>
-      </div>
+      </a>
     </div>
   `;
 }
@@ -186,32 +222,61 @@ function renderDecorations(decos) {
   container.innerHTML = decos.map(createCard).join("");
 }
 
-function renderSizeFilters(decos) {
-  const sizes = [...new Set(decos.map(d => getSize(d)))].sort();
-  const filterBox = document.getElementById("sizeFilters");
-
-  const items = sizes.map(size => `
-    <div class="col-6 mb-1">
-      <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="${size}" id="size-${size}" checked>
-        <label class="form-check-label" for="size-${size}">${size}</label>
-      </div>
-    </div>
-  `).join("");
-
-  filterBox.innerHTML = `<div class="row">${items}</div>`;
-
-  selectedSizes = new Set(sizes);
-
-  filterBox.querySelectorAll("input").forEach(cb => {
-    cb.addEventListener("change", () => {
-      if (cb.checked) selectedSizes.add(cb.value);
-      else selectedSizes.delete(cb.value);
-      applyFiltersAndSorting();
-    });
+function getAvailableSizes(items) {
+  const sizes = new Set();
+  items.forEach(item => {
+    const size = getSize(item);
+    if (size) sizes.add(size);
   });
+  return [...sizes].sort();
 }
 
+function renderSizeFilters(allDecorations) {
+  const sizeFiltersContainer = document.getElementById("sizeFilters");
+  sizeFiltersContainer.innerHTML = "";
+
+  const sizes = getAvailableSizes(allDecorations);
+  sizes.forEach(size => {
+    const li = document.createElement("li");
+
+    const div = document.createElement("div");
+    div.className = "form-check";
+
+    const checkbox = document.createElement("input");
+    checkbox.className = "form-check-input";
+    checkbox.type = "checkbox";
+    checkbox.value = size;
+    checkbox.id = `size-${size}`;
+    checkbox.checked = true;
+
+    checkbox.addEventListener("change", () => {
+      updateSelectedSizes();
+      applyFiltersAndSorting();
+    });
+
+    const label = document.createElement("label");
+    label.className = "form-check-label";
+    label.htmlFor = `size-${size}`;
+    label.textContent = size;
+
+    div.appendChild(checkbox);
+    div.appendChild(label);
+    li.appendChild(div);
+    sizeFiltersContainer.appendChild(li);
+  });
+
+  updateSelectedSizes();
+}
+
+function updateSelectedSizes() {
+  const checkboxes = document.querySelectorAll("#sizeFilters input[type='checkbox']");
+  selectedSizes.clear();
+  checkboxes.forEach(cb => {
+    if (cb.checked) {
+      selectedSizes.add(cb.value);
+    }
+  });
+}
 
 function setupEventListeners() {
   const searchInput = document.getElementById("searchInput");
