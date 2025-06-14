@@ -192,7 +192,7 @@ function createCard(item) {
   const effects = parseEffects(item.areaSpecificEffects || "");
   const effectsHTML = effects.length > 0
     ? `<p>Effects:<br>${effects.map(e => `- ${e}`).join("<br>")}</p>`
-    : `<p>Effects:</p>`;
+    : `<p>No effects!</p>`;
 
   const sourceHTML = sources.length > 0
     ? `<p>Developer comments:<br>${sources.map(s => `- ${s}`).join("<br>")}</p>`
@@ -213,6 +213,7 @@ function createCard(item) {
         <p><strong>Fusion:</strong> ${fusion}</p>
         <hr>
         <p><strong>Sale price:</strong> ${sellPriceDisplay}</p>
+        <hr>
         ${sourceHTML}
         <hr>
         ${effectsHTML}
