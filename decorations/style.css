@@ -6,7 +6,7 @@ body,
     padding: 0;
     background-color: #121212;
     color: #e0e0e0;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 #app {
@@ -67,11 +67,13 @@ body,
 .navbar .navbar-brand,
 .navbar .nav-link,
 .navbar .dropdown-toggle,
-.navbar .form-control {
+.navbar .form-control,
+.navbar select.form-select {
     color: #e0e0e0 !important;
 }
 
-.navbar .form-control {
+.navbar .form-control,
+.navbar select.form-select {
     background-color: #2a2a2a !important;
     border-color: #444 !important;
     color: #e0e0e0 !important;
@@ -81,7 +83,8 @@ body,
     color: #bbb;
 }
 
-.navbar .form-control:focus {
+.navbar .form-control:focus,
+.navbar select.form-select:focus {
     background-color: #3a3a3a !important;
     border-color: #666 !important;
     color: #fff !important;
@@ -101,15 +104,36 @@ body,
     color: #e0e0e0 !important;
 }
 
-select.form-select {
-    background-color: #2a2a2a !important;
-    color: #e0e0e0 !important;
-    border-color: #444 !important;
+form.d-flex {
+    max-width: 300px;
+    flex-grow: 0;
+    flex-shrink: 1;
 }
 
-select.form-select:focus {
-    background-color: #3a3a3a !important;
-    border-color: #666 !important;
-    color: #fff !important;
-    box-shadow: none !important;
+.navbar-nav {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+
+.navbar-nav .nav-item {
+    margin-right: 1rem;
+}
+
+@media (max-width: 991.98px) {
+    .navbar-nav {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .navbar-nav .nav-item {
+        margin-right: 0;
+        margin-bottom: 0.5rem;
+        width: 100%;
+    }
+
+    .dropdown-menu {
+        min-width: 100% !important;
+    }
 }
