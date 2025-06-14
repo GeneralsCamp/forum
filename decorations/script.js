@@ -228,7 +228,14 @@ function getAvailableSizes(items) {
     const size = getSize(item);
     if (size) sizes.add(size);
   });
-  return [...sizes].sort();
+
+  return [...sizes].sort((a, b) => {
+    const [aW, aH] = a.split('x').map(Number);
+    const [bW, bH] = b.split('x').map(Number);
+    const aArea = aW * aH;
+    const bArea = bW * bH;
+    return bArea - aArea;
+  });
 }
 
 function renderSizeFilters(allDecorations) {
@@ -294,8 +301,9 @@ function applyFiltersAndSorting() {
 
   const filtered = allDecorations.filter(item => {
     const name = getName(item).toLowerCase();
+    const wodID = (item.wodID || "").toString().toLowerCase();
     const size = getSize(item);
-    return name.includes(search) && selectedSizes.has(size);
+    return (name.includes(search) || wodID.includes(search)) && selectedSizes.has(size);
   });
 
   filtered.sort((a, b) => {
