@@ -114,7 +114,6 @@ p {
     transition: all 0.3s ease;
 }
 
-/* Scrollbar */
 ::-webkit-scrollbar {
     width: 10px;
     background-color: #f2d9bb;
@@ -221,6 +220,12 @@ p {
   height: 84vh;
   display: flex;
   flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  #content {
+    height: 74vh;
+  }
 }
 
 #content {

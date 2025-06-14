@@ -191,16 +191,16 @@ function createCard(item) {
 
   const effects = parseEffects(item.areaSpecificEffects || "");
   const effectsHTML = effects.length > 0
-    ? `<p>Effects:<br>${effects.map(e => `- ${e}`).join("<br>")}</p>`
-    : `<p>No effects!</p>`;
+    ? `<p><strong>Effects:</strong><br>${effects.map(e => `- ${e}`).join("<br>")}</p>`
+    : `<p><strong>No effects!</strong></p>`;
 
   const sourceHTML = sources.length > 0
-    ? `<p>Developer comments:<br>${sources.map(s => `- ${s}`).join("<br>")}</p>`
-    : `<p>Developer comments:</p>`;
+    ? `<p><strong>Developer comments:</strong><br>${sources.map(s => `- ${s}`).join("<br>")}</p>`
+    : `<p><strong>No developer comments!</strong></p>`;
 
-  return `
-  <div class="col-md-6 col-sm-12">
-    <a href="#" class="box">
+return `
+  <div class="col-md-6 col-sm-12 d-flex flex-column">
+    <a href="#" class="box flex-fill">
       <div class="box-content">
         <h2>${name} (wodID: ${id})</h2>
         <hr>
@@ -221,6 +221,7 @@ function createCard(item) {
     </a>
   </div>
 `;
+
 
 }
 
