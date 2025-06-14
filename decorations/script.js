@@ -80,20 +80,39 @@ function parseEffects(effectsStr) {
     "370": { name: "Courtyard strength in defense", percent: true },
     "387": { name: "Wall amount in defense", percent: true },
     "413": { name: "Troop recruitment speed", percent: true },
-    "414": { name: "Troop recruitment cost decrease", percent: true }
+    "414": { name: "Troop recruitment cost decrease", percent: true },
+    "415": { name: "Tool production speed", percent: true },
+    "360": { name: "Honey production", percent: false },
+    "379": { name: "Honey storage capacity", percent: false },
+    "361": { name: "Food production", percent: false },
+    "380": { name: "Food storage capacity", percent: false },
+    "381": { name: "Market barrow speed (own castles)", percent: true },
+    "362": { name: "Mead production", percent: false }, //bad
+    "383": { name: "XP earned in attacks", percent: true },
+    "384": { name: "XP earned by building", percent: true },
+    "371": { name: "Defense courtyard unit limit", percent: false },
+    "385": { name: "Defense alliance courtyard unit limit", percent: false },
+    "501": { name: "Unknown effect", percent: true },
+    "705": { name: "Unknown effect", percent: true },
+    "382": { name: "Market barrow capacity ", percent: true }
   };
+
+  const formatter = new Intl.NumberFormat(navigator.language);
 
   return effectsStr.split(",").map(eff => {
     const [id, valRaw] = eff.split("&");
     const val = Number(valRaw);
     const entry = effectMap[id];
+
     if (entry) {
-      return `${entry.name}: ${val}${entry.percent ? "%" : ""}`;
+      const formatted = formatter.format(val);
+      return `${entry.name}: ${formatted}${entry.percent ? "%" : ""}`;
     } else {
-      return `Effect ID ${id}: To be updated soon!`;
+      return `Effect ID ${id} (info coming soon)`;
     }
   });
 }
+
 
 function formatNumber(num) {
   return Number(num).toLocaleString(undefined);
@@ -121,33 +140,45 @@ function createCard(item) {
 
   const effects = parseEffects(item.areaSpecificEffects || "");
   const effectsHTML = effects.length > 0
-    ? `<p><strong>Effects:</strong><ul>${effects.map(e => `<li>${e}</li>`).join("")}</ul></p>`
+    ? `<div class="row"><div class="col-12"><strong>Effects:</strong><ul>${effects.map(e => `<li>${e}</li>`).join("")}</ul></div></div>`
     : "";
 
   const sourceHTML = sources.length > 0
-    ? `<p><strong>Comment:</strong><ul>${sources.map(s => `<li>${s}</li>`).join("")}</ul></p>`
-    : `<p><strong>Comment:</strong> -</p>`;
+    ? `<div class="row"><div class="col-12"><strong>Developer comments:</strong><ul>${sources.map(s => `<li>${s}</li>`).join("")}</ul></div></div>`
+    : `<div class="row"><div class="col-12"><strong>Developer comments:</strong> -</div></div>`;
 
   return `
-    <div class="col-md-3 col-12 deco-card" data-name="${name.toLowerCase()}" data-size="${size}" data-po="${po}" data-pot="${poPerTile}">
-      <div class="card mb-3">
-        <div class="card-body">
-          <h5 class="card-title text-center">${name} <br> (ID: ${id})</h5>
+    <div class="col-lg-4 col-md-6 col-12 d-flex">
+      <div class="card w-100 h-100">
+        <div class="card-header text-center bg-secondary text-light">
+          <h4>${name}</h4> <p>(ID: ${id})</p>
+        </div>
+        <div class="card-body d-flex flex-column">
           <div class="row">
-            <div class="col-12">
-              <p><strong>Public order:</strong> ${formatNumber(po)} (${poPerTile} PO/tile)</p>
-              <p><strong>Size:</strong> ${size}</p>
-              <p><strong>Might point:</strong> ${formatNumber(might)}</p>
-              <p><strong>Fusion:</strong> ${fusion}</p>
-              <p><strong>Sale price:</strong> ${formatNumber(sellPrice)} coins</p>
-              ${sourceHTML}
-              ${effectsHTML}
-            </div>
+            <div class="col-12"><strong>Public order:</strong> ${formatNumber(po)} (${poPerTile} PO/tile)</div>
           </div>
+
+          <div class="row">
+            <div class="col-12"><strong>Size:</strong> ${size}</div>
+          </div>
+
+          <div class="row">
+            <div class="col-12"><strong>Might points:</strong> ${formatNumber(might)}</div>
+          </div>
+
+          <div class="row">
+            <div class="col-12"><strong>Fusion:</strong> ${fusion}</div>
+          </div>
+
+          <div class="row">
+            <div class="col-12"><strong>Sale price:</strong> ${formatNumber(sellPrice)} coins</div>
+          </div>
+          ${sourceHTML}
+          ${effectsHTML}
         </div>
       </div>
     </div>
-    `;
+  `;
 }
 
 function renderDecorations(decos) {
@@ -158,14 +189,17 @@ function renderDecorations(decos) {
 function renderSizeFilters(decos) {
   const sizes = [...new Set(decos.map(d => getSize(d)))].sort();
   const filterBox = document.getElementById("sizeFilters");
-  filterBox.innerHTML = sizes.map(size => `
-    <li>
+
+  const items = sizes.map(size => `
+    <div class="col-6 mb-1">
       <div class="form-check">
         <input class="form-check-input" type="checkbox" value="${size}" id="size-${size}" checked>
         <label class="form-check-label" for="size-${size}">${size}</label>
       </div>
-    </li>
+    </div>
   `).join("");
+
+  filterBox.innerHTML = `<div class="row">${items}</div>`;
 
   selectedSizes = new Set(sizes);
 
@@ -177,6 +211,7 @@ function renderSizeFilters(decos) {
     });
   });
 }
+
 
 function setupEventListeners() {
   const searchInput = document.getElementById("searchInput");
