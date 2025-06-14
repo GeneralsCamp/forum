@@ -199,22 +199,28 @@ function createCard(item) {
     : `<p>Developer comments:</p>`;
 
   return `
-    <div class="col-md-6 col-sm-12">
-      <a href="#" class="box">
-        <div class="box-content">
-          <h2>${name} (wodID: ${id})</h2>
-          <hr>
-          <p>Public order: ${formatNumber(po)} (${poPerTile} PO/tile)</p>
-          <p>Size: ${size}</p>
-          <p>Might points: ${formatNumber(might)}</p>
-          <p>Fusion: ${fusion}</p>
-          <p>Sale price: ${sellPriceDisplay}</p>
-          ${sourceHTML}
-          ${effectsHTML}
-        </div>
-      </a>
-    </div>
-  `;
+  <div class="col-md-6 col-sm-12">
+    <a href="#" class="box">
+      <div class="box-content">
+        <h2>${name} (wodID: ${id})</h2>
+        <hr>
+        <p><strong>Public order:</strong> ${formatNumber(po)} (${poPerTile} PO/tile)</p>
+        <hr>
+        <p><strong>Size:</strong> ${size}</p>
+        <hr>
+        <p><strong>Might points:</strong> ${formatNumber(might)}</p>
+        <hr>
+        <p><strong>Fusion:</strong> ${fusion}</p>
+        <hr>
+        <p><strong>Sale price:</strong> ${sellPriceDisplay}</p>
+        ${sourceHTML}
+        <hr>
+        ${effectsHTML}
+      </div>
+    </a>
+  </div>
+`;
+
 }
 
 function renderDecorations(decos) {
