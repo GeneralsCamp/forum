@@ -342,3 +342,27 @@ async function init() {
 }
 
 init();
+
+//Image URL finder
+async function getDecorationImageUrl(decoName) {
+  const url = "https://empire-html5.goodgamestudios.com/default/dll/ggs.dll.8cc6e9e2a8c23eb3f206.js";
+
+  try {
+    const res = await fetch(proxy + url);
+    if (!res.ok) throw new Error("Fetch failed: " + res.status);
+
+    const text = await res.text();
+    const regex = new RegExp(`${decoName}--(\\d+)`, "g");
+    const matches = [...text.matchAll(regex)];
+
+    if (matches.length > 0) {
+      const timestamp = matches[0][1];
+      return `https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/Deco/${decoName}/${decoName}--${timestamp}.webp`;
+    } else {
+      throw new Error(`Nem található timestamp a ${decoName} dekorhoz.`);
+    }
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
