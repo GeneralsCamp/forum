@@ -133,7 +133,7 @@ function parseEffects(effectsStr) {
     "412": { name: "Ranged strength in attack", percent: true },
     "423": { name: "Ranged strength in attack", percent: true },
     "424": { name: "Melee strength in attack", percent: true },
-    "407": { name: "Food production", percent: false },
+    "407": { name: "Food production", percent: true },
     "378": { name: "Beef production", percent: false }
     //705 1%
     //501 15%
@@ -221,8 +221,6 @@ return `
     </a>
   </div>
 `;
-
-
 }
 
 function renderDecorations(decos) {
