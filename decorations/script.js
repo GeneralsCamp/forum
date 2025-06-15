@@ -343,11 +343,18 @@ async function init() {
 
 init();
 
-//Image URL finder
+//Image URL finder (demo)
+function toPascalCase(str) {
+  return str
+    .split(/\s+/)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join('');
+}
+
 async function getDecorationImageUrl(decoName) {
   const url = "https://empire-html5.goodgamestudios.com/default/dll/ggs.dll.8cc6e9e2a8c23eb3f206.js";
-  const cleanedName = decoName.replace(/\s+/g, "");
-
+  const cleanedName = toPascalCase(decoName);
+  console.log(cleanedName);
   try {
     const res = await fetch(proxy + url);
     if (!res.ok) throw new Error("Failed to fetch ggs.dll.js: " + res.status);
@@ -384,3 +391,4 @@ async function getDecorationImageUrl(decoName) {
     return null;
   }
 }
+
