@@ -349,7 +349,7 @@ async function getDecorationImageUrl(decoName) {
 
   try {
     const res = await fetch(proxy + url);
-    if (!res.ok) throw new Error("Fetch failed: " + res.status);
+    if (!res.ok) throw new Error("Failed to fetch ggs.dll.js: " + res.status);
 
     const text = await res.text();
     const regex = new RegExp(`${decoName}--(\\d+)`, "g");
@@ -357,9 +357,21 @@ async function getDecorationImageUrl(decoName) {
 
     if (matches.length > 0) {
       const timestamp = matches[0][1];
-      return `https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/Deco/Deco_Building_${decoName}/Deco_Building_${decoName}--${timestamp}.webp`;
+
+      // Try primary path
+      const primaryUrl = `https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/Deco/Deco_Building_${decoName}/Deco_Building_${decoName}--${timestamp}.webp`;
+      const check = await fetch(proxy + primaryUrl);
+      if (check.ok) return primaryUrl;
+
+      // Try fallback path
+      const fallbackUrl = `https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/Deco/DecoDistrict2x2/Deco_Building_${decoName}/Deco_Building_${decoName}--${timestamp}.webp`;
+      const fallbackCheck = await fetch(proxy + fallbackUrl);
+      if (fallbackCheck.ok) return fallbackUrl;
+
+      // Neither worked
+      throw new Error(`Image not found for decoration "${decoName}" in either default or fallback path.`);
     } else {
-      throw new Error(`Nem található timestamp a ${decoName} dekorhoz.`);
+      throw new Error(`No timestamp found in ggs.dll for decoration "${decoName}".`);
     }
   } catch (error) {
     console.error(error);
