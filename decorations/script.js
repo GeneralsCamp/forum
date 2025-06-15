@@ -357,7 +357,7 @@ async function getDecorationImageUrl(decoName) {
 
     if (matches.length > 0) {
       const timestamp = matches[0][1];
-      return `https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/Deco/${decoName}/${decoName}--${timestamp}.webp`;
+      return `https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/Deco/Deco_Building_${decoName}/Deco_Building_${decoName}--${timestamp}.webp`;
     } else {
       throw new Error(`Nem található timestamp a ${decoName} dekorhoz.`);
     }
