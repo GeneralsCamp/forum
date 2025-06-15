@@ -121,10 +121,12 @@ function parseEffects(effectsStr) {
     "394": { name: "Wood production bonus (Burning Sands)", percent: true },
     "395": { name: "Stone production bonus (Burning Sands)", percent: true },
     "396": { name: "Oil production bonus (Burning Sands)", percent: true },
+    "611": { name: "Oil production bonus (Burning Sands)", percent: true },
     "416": { name: "Food production boost (Burning Sands)", percent: true },
     "397": { name: "Wood production bonus (Fire Peaks)", percent: true },
     "398": { name: "Stone production bonus (Fire Peaks)", percent: true },
     "399": { name: "Glass production bonus (Fire Peaks)", percent: true },
+    "612": { name: "Glass production bonus (Fire Peaks)", percent: true },
     "417": { name: "Food production boost (Fire Peaks)", percent: true },
     "369": { name: "Front unit limit when attacking", percent: true },
     "368": { name: "Flank unit limit when attacking", percent: true },
@@ -135,10 +137,8 @@ function parseEffects(effectsStr) {
     "424": { name: "Melee strength in attack", percent: true },
     "407": { name: "Food production", percent: true },
     "378": { name: "Beef production", percent: false }
-    //705 1%
-    //501 15%
-    //612 Green 3%
-    //611 Green 3%
+    //705 TriumphalArch1 (wodID: 2568) 1%
+    //501 TriumphalArch2 (wodID: 2569) 15%
   };
 
   const formatter = new Intl.NumberFormat(navigator.language);
@@ -198,7 +198,7 @@ function createCard(item) {
     ? `<p><strong>Developer comments:</strong><br>${sources.map(s => `- ${s}`).join("<br>")}</p>`
     : `<p><strong>No developer comments!</strong></p>`;
 
-return `
+  return `
   <div class="col-md-6 col-sm-12 d-flex flex-column">
     <a href="#" class="box flex-fill">
       <div class="box-content">
