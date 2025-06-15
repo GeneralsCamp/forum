@@ -62,7 +62,7 @@ h1 {
 .box {
     display: flex;
     align-items: stretch;
-    border-radius: 30px;
+    border-radius: 10px;
     margin-bottom: 10px;
     text-decoration: none;
     color: #000;
@@ -78,7 +78,7 @@ h1 {
     position: relative;
     background-color: rgb(145, 98, 65);
     min-height: 100px;
-    border-radius: 30px;
+    border-radius: 10px;
 }
 
 .box-content h2 {
@@ -224,7 +224,7 @@ p {
 
 @media (max-width: 768px) {
   #content {
-    height: 72vh;
+    height: 70vh;
   }
 }
 

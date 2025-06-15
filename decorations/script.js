@@ -200,9 +200,9 @@ function createCard(item) {
 
   return `
   <div class="col-md-6 col-sm-12 d-flex flex-column">
-    <a href="#" class="box flex-fill">
+    <div class="box flex-fill">
       <div class="box-content">
-        <h2>${name} (wodID: ${id})</h2>
+        <h2>${name} <br> (wodID: ${id})</h2>
         <hr>
         <p><strong>Public order:</strong> ${formatNumber(po)} (${poPerTile} PO/tile)</p>
         <hr>
@@ -218,7 +218,7 @@ function createCard(item) {
         <hr>
         ${effectsHTML}
       </div>
-    </a>
+    </div>
   </div>
 `;
 }
