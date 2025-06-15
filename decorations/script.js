@@ -346,33 +346,39 @@ init();
 //Image URL finder
 async function getDecorationImageUrl(decoName) {
   const url = "https://empire-html5.goodgamestudios.com/default/dll/ggs.dll.8cc6e9e2a8c23eb3f206.js";
+  const cleanedName = decoName.replace(/\s+/g, "");
 
   try {
     const res = await fetch(proxy + url);
     if (!res.ok) throw new Error("Failed to fetch ggs.dll.js: " + res.status);
 
     const text = await res.text();
-    const regex = new RegExp(`${decoName}--(\\d+)`, "g");
+    const regex = new RegExp(`${cleanedName}--(\\d+)`, "g");
     const matches = [...text.matchAll(regex)];
 
-    if (matches.length > 0) {
-      const timestamp = matches[0][1];
-
-      // Try primary path
-      const primaryUrl = `https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/Deco/Deco_Building_${decoName}/Deco_Building_${decoName}--${timestamp}.webp`;
-      const check = await fetch(proxy + primaryUrl);
-      if (check.ok) return primaryUrl;
-
-      // Try fallback path
-      const fallbackUrl = `https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/Deco/DecoDistrict2x2/Deco_Building_${decoName}/Deco_Building_${decoName}--${timestamp}.webp`;
-      const fallbackCheck = await fetch(proxy + fallbackUrl);
-      if (fallbackCheck.ok) return fallbackUrl;
-
-      // Neither worked
-      throw new Error(`Image not found for decoration "${decoName}" in either default or fallback path.`);
-    } else {
+    if (matches.length === 0) {
       throw new Error(`No timestamp found in ggs.dll for decoration "${decoName}".`);
     }
+
+    const timestamp = matches[0][1];
+    const filename = `Deco_Building_${cleanedName}--${timestamp}.webp`;
+    const folderPaths = [
+      `Building/Deco/Deco_Building_${cleanedName}`,
+      `Building/Deco/EffectDecos/Deco_Building_${cleanedName}`,
+      `Building/Deco/DecoDistrict2x2/Deco_Building_${cleanedName}`
+    ];
+
+    for (const folder of folderPaths) {
+      const fullUrl = `https://empire-html5.goodgamestudios.com/default/assets/itemassets/${folder}/${filename}`;
+      try {
+        const check = await fetch(proxy + fullUrl);
+        if (check.ok) return fullUrl;
+      } catch (e) {
+        console.warn(`Image not found at: ${folder}`);
+      }
+    }
+
+    throw new Error(`Image not found for "${decoName}" in any known path.`);
   } catch (error) {
     console.error(error);
     return null;
