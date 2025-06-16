@@ -6,8 +6,6 @@ Welcome to **Generals Forum**, a collection of tools and simulators for **Goodga
 📺 YouTube: [@GeneralsCamp](https://www.youtube.com/@GeneralsCamp)
 📧 E-mail: generalscampofficial@gmail.com
 
----
-
 ## Tools Included
 
 - **Hall of Legends Simulator**
@@ -15,8 +13,6 @@ Welcome to **Generals Forum**, a collection of tools and simulators for **Goodga
 - **Decoration Overview**
 - **Layout Editor**
 - **Limits & Calculators**
-
----
 
 ## About
 
