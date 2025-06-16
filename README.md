@@ -3,7 +3,7 @@
 Welcome to **Generals Forum**, a collection of tools and simulators for **Goodgame Empire**!
 
 🔗 Website: [generalscamp.github.io/forum](https://generalscamp.github.io/forum/)  
-📺 YouTube: [@GeneralsCamp](https://www.youtube.com/@GeneralsCamp)
+📺 YouTube: [@GeneralsCamp](https://www.youtube.com/@GeneralsCamp)  
 📧 E-mail: generalscampofficial@gmail.com
 
 ## Tools Included
