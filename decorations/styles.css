@@ -251,11 +251,6 @@ p {
     object-fit: contain;
 }
 
-
-
-
-
-
 .image-modal {
     display: none;
     position: fixed;
@@ -267,18 +262,15 @@ p {
     background-color: rgba(0, 0, 0, 0.9);
     opacity: 0;
     transition: opacity 0.3s ease;
-
-    /* Középre igazítás */
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .image-modal.show {
-    display: flex; /* fontos, hogy megmaradjon */
+    display: flex;
     opacity: 1;
 }
-
 
 .image-modal-content {
     margin: auto;

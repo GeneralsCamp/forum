@@ -213,6 +213,8 @@ function createCard(item, imageUrlMap = {}) {
   const cleanedType = normalizeName(item.type);
   const imageUrl = imageUrlMap[cleanedType] || "assets/img/unknown.webp";
 
+  // Escape-eljük a ' karaktereket a name-ben, hogy ne törje meg az inline onclick-et
+  const safeName = name.replace(/'/g, "\\'");
 
   return `
   <div class="col-md-6 col-sm-12 d-flex flex-column">
@@ -220,10 +222,9 @@ function createCard(item, imageUrlMap = {}) {
       <div class="box-content">
         <h2>${name} <br> (wodID: ${id})</h2>
         <hr>
-<div class="image-wrapper">
-  <img src="${imageUrl}" alt="${name}" class="card-image" onclick="openImageModal('${imageUrl}', '${name}')">
-</div>
-
+        <div class="image-wrapper">
+          <img src="${imageUrl}" alt="${name}" class="card-image" onclick="openImageModal('${imageUrl}', '${safeName}')">
+        </div>
         <hr>
         <p><strong>Public order:</strong> ${formatNumber(po)}</p>
         <hr>
@@ -243,8 +244,7 @@ function createCard(item, imageUrlMap = {}) {
       </div>
     </div>
   </div>
-`;
-
+  `;
 }
 
 function renderDecorations(decos) {
@@ -399,7 +399,6 @@ async function init() {
 
 init();
 
-
 function openImageModal(src, caption) {
   const modal = document.getElementById("imageModal");
   const modalImg = document.getElementById("modalImage");
@@ -422,3 +421,9 @@ function closeImageModal() {
     }
   }, 300);
 }
+
+window.addEventListener("DOMContentLoaded", () => {
+  const modal = document.getElementById("imageModal");
+  modal.classList.remove("show");
+  modal.style.display = "none";
+});
