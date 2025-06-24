@@ -3,6 +3,7 @@ let lang = {};
 let selectedSizes = new Set();
 let currentSort = "po";
 let allDecorations = [];
+let imageUrlMap = {};
 
 async function getItemVersion() {
   const url = proxy + encodeURIComponent("https://empire-html5.goodgamestudios.com/default/items/ItemsVersion.properties");
@@ -43,7 +44,6 @@ function extractDecorations(buildings) {
       (b.comment2 && b.comment2.toLowerCase().includes("test"))
     )
   );
-
   console.log(`Found ${decorations.length} decorations`);
   return decorations;
 }
@@ -61,14 +61,12 @@ function getPO(item) {
   if (item.decoPoints !== undefined && item.decoPoints !== null) {
     return parseInt(item.decoPoints);
   }
-
   if (item.initialFusionLevel !== undefined && item.initialFusionLevel !== null) {
     const level = parseInt(item.initialFusionLevel);
     if (!isNaN(level)) {
       return 100 + level * 5;
     }
   }
-
   return 0;
 }
 
@@ -133,8 +131,8 @@ function parseEffects(effectsStr) {
     "410": { name: "Courtyard strength in attack", percent: true },
     "411": { name: "Melee strength in attack", percent: true },
     "412": { name: "Ranged strength in attack", percent: true },
-    "423": { name: "Ranged strength in attack", percent: true },
-    "424": { name: "Melee strength in attack", percent: true },
+    "423": { name: "Combat strength when attacking flanks", percent: true },
+    "424": { name: "Combat strength when attacking front", percent: true },
     "407": { name: "Food production", percent: true },
     "378": { name: "Beef production", percent: false }
     //705 TriumphalArch1 (wodID: 2568) 1%
@@ -161,7 +159,19 @@ function formatNumber(num) {
   return Number(num).toLocaleString(undefined);
 }
 
-function createCard(item) {
+function toPascalCase(str) {
+  return str
+    .replace(/[^a-zA-Z0-9 ]/g, '')
+    .split(/\s+/)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join('');
+}
+
+function normalizeName(str) {
+  return str.toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+function createCard(item, imageUrlMap = {}) {
   const name = getName(item);
   const size = getSize(item);
   const width = parseInt(item.width);
@@ -170,6 +180,11 @@ function createCard(item) {
   const po = getPO(item);
   const poPerTile = area > 0 ? (po / area).toFixed(2) : "N/A";
   const might = item.mightValue || "0";
+
+  let cleanedNamee = toPascalCase(name);
+
+  console.log(`Item name: "${name}" -> cleanedName: "${cleanedNamee}"`);
+  console.log("ImageUrlMap keys:", Object.keys(imageUrlMap));
 
   const isFusionSource = item.isFusionSource === "1";
   const isFusionTarget = item.isFusionTarget === "1";
@@ -198,11 +213,16 @@ function createCard(item) {
     ? `<p><strong>Developer comments:</strong><br>${sources.map(s => `- ${s}`).join("<br>")}</p>`
     : `<p><strong>No developer comments!</strong></p>`;
 
+  const cleanedType = normalizeName(item.type);
+  const imageUrl = imageUrlMap[cleanedType] || "assets/img/unknown.webp";
+
+
   return `
   <div class="col-md-6 col-sm-12 d-flex flex-column">
     <div class="box flex-fill">
       <div class="box-content">
         <h2>${name} <br> (wodID: ${id})</h2>
+        <img src="${imageUrl}" alt="${name}" class="img-fluid my-2" style="max-height: 180px; object-fit: contain;">
         <hr>
         <p><strong>Public order:</strong> ${formatNumber(po)} (${poPerTile} PO/tile)</p>
         <hr>
@@ -220,12 +240,12 @@ function createCard(item) {
       </div>
     </div>
   </div>
-`;
+  `;
 }
 
 function renderDecorations(decos) {
   const container = document.getElementById("cards");
-  container.innerHTML = decos.map(createCard).join("");
+  container.innerHTML = decos.map(item => createCard(item, imageUrlMap)).join("");
 }
 
 function getAvailableSizes(items) {
@@ -321,6 +341,37 @@ function applyFiltersAndSorting() {
   renderDecorations(filtered);
 }
 
+async function getImageUrlMap() {
+  const base = "https://empire-html5.goodgamestudios.com/default/assets/itemassets/";
+  const url = "https://empire-html5.goodgamestudios.com/default/dll/ggs.dll.8cc6e9e2a8c23eb3f206.js";
+
+  try {
+    const res = await fetch(proxy + url);
+    if (!res.ok) throw new Error("Failed to fetch ggs.dll.js: " + res.status);
+
+    const text = await res.text();
+    const regex = /Building\/Deco\/[^\s"'`<>]+?--\d+/g;
+    const matches = [...text.matchAll(regex)];
+
+    const uniquePaths = [...new Set(matches.map(m => m[0]))];
+
+    const imageUrlMap = {};
+    for (const path of uniquePaths) {
+      const fileName = path.split('/').pop();
+      const nameWithTimestamp = fileName.split('--')[0];
+      const cleanNameRaw = nameWithTimestamp.replace(/^Deco_Building_/, '');
+      const cleanName = normalizeName(cleanNameRaw);
+      imageUrlMap[cleanName] = `${base}${path}.webp`;
+    }
+
+    console.log(`${Object.keys(imageUrlMap).length} deco URL map is created.`);
+    return imageUrlMap;
+  } catch (error) {
+    console.error("mageUrlMap error", error);
+    return {};
+  }
+}
+
 async function init() {
   try {
     const itemVersion = await getItemVersion();
@@ -328,12 +379,13 @@ async function init() {
     console.log("Item version:", itemVersion, "| Language version:", langVersion);
 
     await getLanguageData(langVersion);
+    imageUrlMap = await getImageUrlMap();
+
     const json = await getItems(itemVersion);
     allDecorations = extractDecorations(json.buildings);
 
     renderSizeFilters(allDecorations);
     setupEventListeners();
-    renderDecorations(allDecorations);
     applyFiltersAndSorting();
   } catch (err) {
     console.error("Hiba:", err);
@@ -342,53 +394,3 @@ async function init() {
 }
 
 init();
-
-//Image URL finder (demo)
-function toPascalCase(str) {
-  return str
-    .split(/\s+/)
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join('');
-}
-
-async function getDecorationImageUrl(decoName) {
-  const url = "https://empire-html5.goodgamestudios.com/default/dll/ggs.dll.8cc6e9e2a8c23eb3f206.js";
-  const cleanedName = toPascalCase(decoName);
-  console.log(cleanedName);
-  try {
-    const res = await fetch(proxy + url);
-    if (!res.ok) throw new Error("Failed to fetch ggs.dll.js: " + res.status);
-
-    const text = await res.text();
-    const regex = new RegExp(`${cleanedName}--(\\d+)`, "g");
-    const matches = [...text.matchAll(regex)];
-
-    if (matches.length === 0) {
-      throw new Error(`No timestamp found in ggs.dll for decoration "${decoName}".`);
-    }
-
-    const timestamp = matches[0][1];
-    const filename = `Deco_Building_${cleanedName}--${timestamp}.webp`;
-    const folderPaths = [
-      `Building/Deco/Deco_Building_${cleanedName}`,
-      `Building/Deco/EffectDecos/Deco_Building_${cleanedName}`,
-      `Building/Deco/DecoDistrict2x2/Deco_Building_${cleanedName}`
-    ];
-
-    for (const folder of folderPaths) {
-      const fullUrl = `https://empire-html5.goodgamestudios.com/default/assets/itemassets/${folder}/${filename}`;
-      try {
-        const check = await fetch(proxy + fullUrl);
-        if (check.ok) return fullUrl;
-      } catch (e) {
-        console.warn(`Image not found at: ${folder}`);
-      }
-    }
-
-    throw new Error(`Image not found for "${decoName}" in any known path.`);
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-}
-
