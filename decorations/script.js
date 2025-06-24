@@ -183,9 +183,6 @@ function createCard(item, imageUrlMap = {}) {
 
   let cleanedNamee = toPascalCase(name);
 
-  console.log(`Item name: "${name}" -> cleanedName: "${cleanedNamee}"`);
-  console.log("ImageUrlMap keys:", Object.keys(imageUrlMap));
-
   const isFusionSource = item.isFusionSource === "1";
   const isFusionTarget = item.isFusionTarget === "1";
   const fusion = isFusionSource && isFusionTarget ? "Source & Target" :
@@ -222,9 +219,15 @@ function createCard(item, imageUrlMap = {}) {
     <div class="box flex-fill">
       <div class="box-content">
         <h2>${name} <br> (wodID: ${id})</h2>
-        <img src="${imageUrl}" alt="${name}" class="img-fluid my-2" style="max-height: 180px; object-fit: contain;">
         <hr>
-        <p><strong>Public order:</strong> ${formatNumber(po)} (${poPerTile} PO/tile)</p>
+<div class="image-wrapper">
+  <img src="${imageUrl}" alt="${name}" class="card-image" onclick="openImageModal('${imageUrl}', '${name}')">
+</div>
+
+        <hr>
+        <p><strong>Public order:</strong> ${formatNumber(po)}</p>
+        <hr>
+        <p><strong>Public order/tile:</strong> ${poPerTile}</p>
         <hr>
         <p><strong>Size:</strong> ${size}</p>
         <hr>
@@ -240,7 +243,8 @@ function createCard(item, imageUrlMap = {}) {
       </div>
     </div>
   </div>
-  `;
+`;
+
 }
 
 function renderDecorations(decos) {
@@ -394,3 +398,27 @@ async function init() {
 }
 
 init();
+
+
+function openImageModal(src, caption) {
+  const modal = document.getElementById("imageModal");
+  const modalImg = document.getElementById("modalImage");
+  const modalCaption = document.getElementById("modalCaption");
+
+  modalImg.src = src;
+  modalCaption.innerText = caption;
+
+  modal.style.display = "flex";
+  requestAnimationFrame(() => modal.classList.add("show"));
+}
+
+function closeImageModal() {
+  const modal = document.getElementById("imageModal");
+
+  modal.classList.remove("show");
+  setTimeout(() => {
+    if (!modal.classList.contains("show")) {
+      modal.style.display = "none";
+    }
+  }, 300);
+}

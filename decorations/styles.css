@@ -13,7 +13,8 @@ body {
     }
 }
 
-h1, h2 {
+h1,
+h2 {
     font-weight: bolder;
     text-align: center;
 }
@@ -175,7 +176,9 @@ p {
     margin-bottom: 5px;
 }
 
-#searchInput, #sortSelect, .btn-custom {
+#searchInput,
+#sortSelect,
+.btn-custom {
     background-color: #f2d9bb;
     color: #433120;
     border: 2px solid #a97c50;
@@ -186,7 +189,9 @@ p {
     color: #7b5a3b;
 }
 
-#searchInput:focus, #sortSelect:focus, .btn-custom:focus {
+#searchInput:focus,
+#sortSelect:focus,
+.btn-custom:focus {
     border-color: #f3c24a;
     box-shadow: 0 0 0 0.2rem rgba(243, 194, 74, 0.25);
     outline: none;
@@ -217,18 +222,101 @@ p {
 }
 
 #content {
-  height: 84vh;
-  display: flex;
-  flex-direction: column;
+    height: 84vh;
+    display: flex;
+    flex-direction: column;
 }
 
 @media (max-width: 768px) {
-  #content {
-    height: 70vh;
-  }
+    #content {
+        height: 70vh;
+    }
 }
 
 #content {
-  flex: 1 1 auto;
-  overflow-y: auto;
+    flex: 1 1 auto;
+    overflow-y: auto;
+}
+
+.image-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.card-image {
+    max-width: 100%;
+    max-height: 160px;
+    object-fit: contain;
+}
+
+
+
+
+
+
+.image-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.9);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+
+    /* Középre igazítás */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.image-modal.show {
+    display: flex; /* fontos, hogy megmaradjon */
+    opacity: 1;
+}
+
+
+.image-modal-content {
+    margin: auto;
+    display: block;
+    max-width: 90%;
+    max-height: 80vh;
+    transform: scale(0.95);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.image-modal.show .image-modal-content {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.image-modal-close {
+    position: absolute;
+    top: 20px;
+    right: 35px;
+    color: #fff;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    user-select: none;
+    z-index: 10000;
+}
+
+#modalCaption {
+    text-align: center;
+    color: #ccc;
+    margin-top: 10px;
+    font-size: 18px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.image-modal.show #modalCaption {
+    opacity: 1;
 }
