@@ -181,13 +181,11 @@ function createCard(item, imageUrlMap = {}) {
   const poPerTile = area > 0 ? (po / area).toFixed(2) : "N/A";
   const might = item.mightValue || "0";
 
-  let cleanedNamee = toPascalCase(name);
-
   const isFusionSource = item.isFusionSource === "1";
   const isFusionTarget = item.isFusionTarget === "1";
   const fusion = isFusionSource && isFusionTarget ? "Source & Target" :
     isFusionSource ? "Source" :
-      isFusionTarget ? "Target" : "-";
+      isFusionTarget ? "Target" : "none";
 
   const sellPriceRaw = item.sellC1 || "0";
   let sellPriceDisplay;
@@ -202,18 +200,27 @@ function createCard(item, imageUrlMap = {}) {
   const id = item.wodID || "???";
 
   const effects = parseEffects(item.areaSpecificEffects || "");
-  const effectsHTML = effects.length > 0
-    ? `<p><strong>Effects:</strong><br>${effects.map(e => `- ${e}`).join("<br>")}</p>`
-    : `<p><strong>No effects!</strong></p>`;
+  let effectsHTML = "";
+  if (effects.length > 0) {
+    effectsHTML = `
+      <hr>
+      <h5 class="card-section-title">Effects:</h5>
+      <p>${effects.map(e => `- ${e}`).join("<br>")}</p>
+    `;
+  }
 
-  const sourceHTML = sources.length > 0
-    ? `<p><strong>Developer comments:</strong><br>${sources.map(s => `- ${s}`).join("<br>")}</p>`
-    : `<p><strong>No developer comments!</strong></p>`;
+  let sourceHTML = "";
+  if (sources.length > 0) {
+    sourceHTML = `
+      <hr>
+      <h4 class="card-section-title">Developer comments:</h4>
+      <p>${sources.map(s => `- ${s}`).join("<br>")}</p>
+    `;
+  }
 
   const cleanedType = normalizeName(item.type);
   const imageUrl = imageUrlMap[cleanedType] || "assets/img/unknown.webp";
 
-  // Escape-eljük a ' karaktereket a name-ben, hogy ne törje meg az inline onclick-et
   const safeName = name.replace(/'/g, "\\'");
 
   return `
@@ -226,21 +233,36 @@ function createCard(item, imageUrlMap = {}) {
           <img src="${imageUrl}" alt="${name}" class="card-image" onclick="openImageModal('${imageUrl}', '${safeName}')">
         </div>
         <hr>
-        <p><strong>Public order:</strong> ${formatNumber(po)}</p>
-        <hr>
-        <p><strong>Public order/tile:</strong> ${poPerTile}</p>
-        <hr>
-        <p><strong>Size:</strong> ${size}</p>
-        <hr>
-        <p><strong>Might points:</strong> ${formatNumber(might)}</p>
-        <hr>
-        <p><strong>Fusion:</strong> ${fusion}</p>
-        <hr>
-        <p><strong>Sale price:</strong> ${sellPriceDisplay}</p>
-        <hr>
-        ${sourceHTML}
-        <hr>
+        <div class="card-table">
+          <div class="row g-0">
+            <div class="col-6 card-cell border-end">
+              <strong>Public order:</strong><br>${formatNumber(po)}
+            </div>
+            <div class="col-6 card-cell">
+              <strong>Public order/tile:</strong><br>${poPerTile}
+            </div>
+          </div>
+          <hr>
+          <div class="row g-0">
+            <div class="col-6 card-cell border-end">
+              <strong>Size:</strong><br>${size}
+            </div>
+            <div class="col-6 card-cell">
+              <strong>Might points:</strong><br>${formatNumber(might)}
+            </div>
+          </div>
+          <hr>
+          <div class="row g-0">
+            <div class="col-6 card-cell border-end">
+              <strong>Sale price:</strong><br>${sellPriceDisplay}
+            </div>
+            <div class="col-6 card-cell">
+              <strong>Fusion:</strong><br>${fusion}
+            </div>
+          </div>
+        </div>
         ${effectsHTML}
+        ${sourceHTML}
       </div>
     </div>
   </div>
