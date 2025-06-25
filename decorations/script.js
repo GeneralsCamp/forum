@@ -49,8 +49,12 @@ function extractDecorations(buildings) {
 }
 
 function getName(item) {
-  const key = `deco_${item.type}_name`;
-  return lang[key] || item.type || "???";
+  const type = item.type || "";
+  const keyOriginal = `deco_${type}_name`;
+  const keyLower = `deco_${type.toLowerCase()}_name`;
+  const keyFirstLower = `deco_${type.charAt(0).toLowerCase() + type.slice(1)}_name`;
+
+  return lang[keyOriginal] || lang[keyLower] || lang[keyFirstLower] || type || "???";
 }
 
 function getSize(item) {
