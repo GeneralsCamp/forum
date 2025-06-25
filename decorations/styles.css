@@ -325,8 +325,20 @@ p {
 }
 
 .card-section-title {
-  text-align: left;
-  font-size: 15px;
-  font-weight: bold;
-  color: white;
+    text-align: left;
+    font-size: 15px;
+    font-weight: bold;
+    color: white;
+}
+
+.max-bonus {
+    font-style: italic;
+    color: rgb(234, 224, 224);
+    font-size: 12px;
+}
+
+@media (max-width: 768px) {
+    .max-bonus {
+        white-space: nowrap;
+    }
 }

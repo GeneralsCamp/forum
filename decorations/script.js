@@ -32,6 +32,21 @@ async function getItems(version) {
   const url = proxy + encodeURIComponent(`https://empire-html5.goodgamestudios.com/default/items/items_v${version}.json`);
   const res = await fetch(url);
   const data = await res.json();
+
+  if (Array.isArray(data.effects)) {
+    effectDefinitions = {};
+    data.effects.forEach(effect => {
+      effectDefinitions[effect.effectID] = effect;
+    });
+  }
+
+  if (Array.isArray(data.effectCaps)) {
+    effectCapsMap = {};
+    data.effectCaps.forEach(cap => {
+      effectCapsMap[cap.capID] = cap;
+    });
+  }
+
   return data;
 }
 
@@ -84,78 +99,43 @@ function getFusionStatus(item) {
   return "-";
 }
 
+const percentEffectIDs = new Set([
+  "61", "62", "370", "386", "387", "413", "414", "415",
+  "381", "382", "408", "383", "384", "82", "83", "388",
+  "389", "390", "391", "392", "393", "409", "394", "395",
+  "396", "611", "416", "397", "398", "399", "612", "417",
+  "369", "368", "410", "411", "412", "423", "424", "407", "501", "705"
+]);
+
+const effectNameOverrides = {
+  "effect_name_AttackBoostFlankCapped": "Combat strength of units when attacking the flanks"
+};
+
 function parseEffects(effectsStr) {
   if (!effectsStr) return [];
-
-  const effectMap = {
-    "61": { name: "Melee strength in attack", percent: true },
-    "62": { name: "Ranged strength in attack", percent: true },
-    "370": { name: "Courtyard strength in defense", percent: true },
-    "386": { name: "Courtyard strength in attack", percent: true },
-    "387": { name: "Wall amount in defense", percent: true },
-    "413": { name: "Troop recruitment speed", percent: true },
-    "414": { name: "Troop recruitment cost decrease", percent: true },
-    "415": { name: "Tool production speed", percent: true },
-    "360": { name: "Honey production", percent: false },
-    "379": { name: "Honey storage capacity", percent: false },
-    "361": { name: "Food production", percent: false },
-    "380": { name: "Food storage capacity", percent: false },
-    "381": { name: "Market barrow speed between your castles", percent: true },
-    "382": { name: "Market barrow capacity", percent: true },
-    "362": { name: "Mead production", percent: false },
-    "405": { name: "Mead production", percent: false },
-    "408": { name: "Mead production", percent: true },
-    "406": { name: "Mead storage capacity", percent: false },
-    "383": { name: "XP earned in attacks", percent: true },
-    "384": { name: "XP earned by building", percent: true },
-    "82": { name: "XP earned in attacks", percent: true },
-    "83": { name: "XP earned by building", percent: true },
-    "90": { name: "Market barrow capacity", percent: false },
-    "371": { name: "Defense courtyard unit limit", percent: false },
-    "385": { name: "Defense alliance courtyard unit limit", percent: false },
-    "388": { name: "Wood production bonus (Great Empire)", percent: true },
-    "389": { name: "Stone production bonus (Great Empire)", percent: true },
-    "390": { name: "Iron production bonus (Great Empire)", percent: true },
-    "391": { name: "Wood production bonus (Everwinter Glacier)", percent: true },
-    "392": { name: "Stone production bonus (Everwinter Glacier)", percent: true },
-    "393": { name: "Charcoal production bonus (Everwinter Glacier)", percent: true },
-    "409": { name: "Food production boost (Everwinter Glacier)", percent: true },
-    "394": { name: "Wood production bonus (Burning Sands)", percent: true },
-    "395": { name: "Stone production bonus (Burning Sands)", percent: true },
-    "396": { name: "Oil production bonus (Burning Sands)", percent: true },
-    "611": { name: "Oil production bonus (Burning Sands)", percent: true },
-    "416": { name: "Food production boost (Burning Sands)", percent: true },
-    "397": { name: "Wood production bonus (Fire Peaks)", percent: true },
-    "398": { name: "Stone production bonus (Fire Peaks)", percent: true },
-    "399": { name: "Glass production bonus (Fire Peaks)", percent: true },
-    "612": { name: "Glass production bonus (Fire Peaks)", percent: true },
-    "417": { name: "Food production boost (Fire Peaks)", percent: true },
-    "369": { name: "Front unit limit when attacking", percent: true },
-    "368": { name: "Flank unit limit when attacking", percent: true },
-    "410": { name: "Courtyard strength in attack", percent: true },
-    "411": { name: "Melee strength in attack", percent: true },
-    "412": { name: "Ranged strength in attack", percent: true },
-    "423": { name: "Combat strength when attacking flanks", percent: true },
-    "424": { name: "Combat strength when attacking front", percent: true },
-    "407": { name: "Food production", percent: true },
-    "378": { name: "Beef production", percent: false }
-    //705 TriumphalArch1 (wodID: 2568) 1%
-    //501 TriumphalArch2 (wodID: 2569) 15%
-  };
 
   const formatter = new Intl.NumberFormat(navigator.language);
 
   return effectsStr.split(",").map(eff => {
     const [id, valRaw] = eff.split("&");
     const val = Number(valRaw);
-    const entry = effectMap[id];
+    const effectDef = effectDefinitions[id];
 
-    if (entry) {
-      const formatted = formatter.format(val);
-      return `${entry.name}: ${formatted}${entry.percent ? "%" : ""}`;
-    } else {
-      return `Effect ID ${id} (info coming soon)`;
+    const localizedName = effectDef
+      ? (effectNameOverrides[`effect_name_${effectDef.name}`] || lang[`effect_name_${effectDef.name}`] || effectDef.name)
+      : `Effect ID ${id}`;
+
+    const suffix = percentEffectIDs.has(id) ? "%" : "";
+
+    let maxStr = "";
+    if (effectDef && effectDef.capID) {
+      const cap = effectCapsMap[effectDef.capID];
+      if (cap && cap.maxTotalBonus) {
+        maxStr = ` <span class="max-bonus">(Max: ${formatter.format(Number(cap.maxTotalBonus))}${suffix})</span>`;
+      }
     }
+
+    return `${localizedName}: ${formatter.format(val)}${suffix}${maxStr}`;
   });
 }
 
