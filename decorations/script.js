@@ -353,10 +353,22 @@ function applyFiltersAndSorting() {
 
 async function getImageUrlMap() {
   const base = "https://empire-html5.goodgamestudios.com/default/assets/itemassets/";
-  const url = "https://empire-html5.goodgamestudios.com/default/dll/ggs.dll.8cc6e9e2a8c23eb3f206.js";
 
   try {
-    const res = await fetch(proxy + url);
+    const indexUrl = proxy + encodeURIComponent("https://empire-html5.goodgamestudios.com/default/index.html?inGameShop=1&allowFullScreen=true");
+    const indexRes = await fetch(indexUrl);
+    if (!indexRes.ok) throw new Error("Failed to fetch index.html: " + indexRes.status);
+    const indexHtml = await indexRes.text();
+
+    const dllMatch = indexHtml.match(/<link\s+id=["']dll["']\s+rel=["']preload["']\s+href=["']([^"']+)["']/i);
+    if (!dllMatch) throw new Error("DLL preload link not found");
+
+    const dllRelativeUrl = dllMatch[1];
+    console.log("DLL URL:", dllRelativeUrl);
+
+    const dllUrl = `https://empire-html5.goodgamestudios.com/default/${dllRelativeUrl}`;
+
+    const res = await fetch(proxy + dllUrl);
     if (!res.ok) throw new Error("Failed to fetch ggs.dll.js: " + res.status);
 
     const text = await res.text();
@@ -376,8 +388,9 @@ async function getImageUrlMap() {
 
     console.log(`${Object.keys(imageUrlMap).length} deco URL map is created.`);
     return imageUrlMap;
+
   } catch (error) {
-    console.error("mageUrlMap error", error);
+    console.error("getImageUrlMap error", error);
     return {};
   }
 }
