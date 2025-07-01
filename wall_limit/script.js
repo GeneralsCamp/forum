@@ -15,7 +15,8 @@ function calculateDefenders() {
       5: 50,
       6: 65,
       7: 80,
-      8: 100
+      8: 100,
+      9: 105
     };
 
     defenders = defendersTable[level] * towers;
