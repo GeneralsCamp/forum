@@ -411,7 +411,7 @@ async function init() {
     setupEventListeners();
     applyFiltersAndSorting();
   } catch (err) {
-    console.error("Hiba:", err);
+    console.error("Error:", err);
     document.getElementById("cards").innerHTML = "<p class='text-danger'>An error occurred while loading data.</p>";
   }
 }
