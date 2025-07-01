@@ -446,3 +446,50 @@ window.addEventListener("DOMContentLoaded", () => {
   modal.classList.remove("show");
   modal.style.display = "none";
 });
+
+async function compareWithOldVersion(oldVersion = "741.01") {
+  const url = proxy + encodeURIComponent(`https://empire-html5.goodgamestudios.com/default/items/items_v${oldVersion}.json`);
+  const res = await fetch(url);
+  if (!res.ok) {
+    console.warn(`Failed to fetch version ${oldVersion}.`);
+    return;
+  }
+
+  const json = await res.json();
+  const oldDecorations = extractDecorations(json.buildings);
+
+  const oldCounts = countBySize(oldDecorations);
+  const newCounts = countBySize(allDecorations);
+
+  const allSizes = new Set([...Object.keys(oldCounts), ...Object.keys(newCounts)]);
+  const sortedSizes = [...allSizes].sort((a, b) => {
+    const [aw, ah] = a.split("x").map(Number);
+    const [bw, bh] = b.split("x").map(Number);
+    return (bw * bh) - (aw * ah);
+  });
+
+  console.log(`Size comparison between current version and version ${oldVersion}:`);
+  for (const size of sortedSizes) {
+    const oldCount = oldCounts[size] || 0;
+    const newCount = newCounts[size] || 0;
+    const diff = newCount - oldCount;
+    let status;
+    if (diff > 0) {
+      status = `+${diff} (increased)`;
+    } else if (diff < 0) {
+      status = `${diff} (decreased)`;
+    } else {
+      status = `0 (no change)`;
+    }
+    console.log(`${size}: current = ${newCount}, old = ${oldCount} → ${status}`);
+  }
+}
+
+function countBySize(items) {
+  const counts = {};
+  items.forEach(item => {
+    const size = getSize(item);
+    counts[size] = (counts[size] || 0) + 1;
+  });
+  return counts;
+}
