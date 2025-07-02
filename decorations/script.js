@@ -339,7 +339,12 @@ function applyFiltersAndSorting() {
     const name = getName(item).toLowerCase();
     const wodID = (item.wodID || "").toString().toLowerCase();
     const size = getSize(item);
-    return (name.includes(search) || wodID.includes(search)) && selectedSizes.has(size);
+
+    const effectsText = parseEffects(item.areaSpecificEffects || "").join(" ").toLowerCase();
+
+    const matchesSearch = name.includes(search) || wodID.includes(search) || effectsText.includes(search);
+
+    return matchesSearch && selectedSizes.has(size);
   });
 
   filtered.sort((a, b) => {
