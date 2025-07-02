@@ -429,7 +429,7 @@ p {
 
 @media (max-width: 768px) {
     #content {
-        height: 78vh;
+        height: 75vh;
     }
     .page-title {
         display: none;
