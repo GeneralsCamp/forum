@@ -49,8 +49,11 @@ async function getItems(version) {
   return data;
 }
 
-//lootBonusPVE, defenseBonusNotMainCastle, attackUnitAmountReinforcementBonus
-const effectNameOverrides = {};
+const effectNameOverrides = {
+  "lootBonusPVE": "Loot bonus from NPC targets",
+  "defenseBonusNotMainCastle": "Bonus to the strength of defensive units (Not in Main castle!)",
+  "attackUnitAmountReinforcementBonus": "Troop capacity for final assault",
+};
 
 const percentEffectIDs = new Set([
   "61", "62", "370", "386", "387", "413", "414", "415",
@@ -113,31 +116,63 @@ const langKeyOverrides = {
 
 function getCIName(item) {
   const rawName = item.name || "???";
+
+  if (rawName === "natureResearchtower") return lang["ci_appearance_natureResearchTower"] || rawName;
+  if (rawName === "winterResearchtower") return lang["ci_appearance_winterResearchTower"] || rawName;
+
   const pascalName = toPascalCase(rawName);
 
-  if (langKeyOverrides[rawName] && lang[langKeyOverrides[rawName]]) {
-    return lang[langKeyOverrides[rawName]];
+  if (langKeyOverrides[rawName]) {
+    const overriddenKey = langKeyOverrides[rawName];
+    if (lang[overriddenKey]) return lang[overriddenKey];
+    if (lang[overriddenKey.toLowerCase()]) return lang[overriddenKey.toLowerCase()];
   }
 
   const prefixes = ["appearance", "primary", "secondary"];
 
   for (const prefix of prefixes) {
-    const keyRaw = `ci_${prefix}_${rawName}`;
-    if (lang[keyRaw]) return lang[keyRaw];
+    const found = findLangKeyVariations(prefix, rawName);
+    if (found) return found;
   }
 
-  const keyRawPlain = `ci_${rawName}`;
-  if (lang[keyRawPlain]) return lang[keyRawPlain];
+  const keysToTry = [
+    `ci_${rawName}`,
+    `ci_${rawName.toLowerCase()}`,
+    `ci_${rawName.charAt(0).toLowerCase() + rawName.slice(1)}`
+  ];
+  for (const key of keysToTry) {
+    if (lang[key]) return lang[key];
+  }
 
   for (const prefix of prefixes) {
-    const keyPascal = `ci_${prefix}_${pascalName}`;
-    if (lang[keyPascal]) return lang[keyPascal];
+    const foundPascal = findLangKeyVariations(prefix, pascalName);
+    if (foundPascal) return foundPascal;
   }
 
-  const keyPascalPlain = `ci_${pascalName}`;
-  if (lang[keyPascalPlain]) return lang[keyPascalPlain];
+  const keysPascalPlain = [
+    `ci_${pascalName}`,
+    `ci_${pascalName.toLowerCase()}`,
+    `ci_${pascalName.charAt(0).toLowerCase() + pascalName.slice(1)}`
+  ];
+  for (const key of keysPascalPlain) {
+    if (lang[key]) return lang[key];
+  }
 
   return rawName;
+}
+
+function findLangKeyVariations(prefix, name) {
+  const keysToTry = [
+    `ci_${prefix}_${name}`,
+    `ci_${prefix}_${name.toLowerCase()}`,
+    `ci_${prefix}_${name.charAt(0).toLowerCase() + name.slice(1)}`,
+  ];
+
+  for (const key of keysToTry) {
+    if (lang[key]) return lang[key];
+  }
+
+  return null;
 }
 
 function formatNumber(num) {
@@ -175,12 +210,10 @@ function formatDuration(seconds) {
   const days = Math.floor(seconds / 86400);
   const hours = Math.floor((seconds % 86400) / 3600);
   const mins = Math.floor((seconds % 3600) / 60);
-  const secs = seconds % 60;
   let result = "";
-  if (days) result += `${days}d `;
-  if (hours) result += `${hours}h `;
-  if (mins) result += `${mins}m `;
-  if (secs) result += `${secs}s`;
+  if (days) result += `${days} day${days === 1 ? "" : "s"} `;
+  if (hours) result += `${hours} hour${hours === 1 ? "" : "s"} `;
+  if (mins) result += `${mins} minute${mins === 1 ? "" : "s"}`;
   return result.trim();
 }
 
@@ -197,19 +230,6 @@ function createGroupedCard(groupItems, imageUrlMap = {}) {
     5: "Appearance",
     10: "Appearance"
   };
-
-  function formatDuration(seconds) {
-    if (!seconds) return "";
-    seconds = Number(seconds);
-    const days = Math.floor(seconds / 86400);
-    const hours = Math.floor((seconds % 86400) / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
-    let result = "";
-    if (days) result += `${days} day${days === 1 ? "" : "s"} `;
-    if (hours) result += `${hours} hour${hours === 1 ? "" : "s"} `;
-    if (mins) result += `${mins} minute${mins === 1 ? "" : "s"}`;
-    return result.trim();
-  }
 
   function formatNumber(num) {
     return Number(num).toLocaleString();
@@ -489,6 +509,10 @@ function getLocalizedEffectName(effectDef) {
   const lowerFirst = original.charAt(0).toLowerCase() + original.slice(1);
   const allLower = original.toLowerCase();
 
+  if (effectNameOverrides[original]) return effectNameOverrides[original];
+  if (effectNameOverrides[lowerFirst]) return effectNameOverrides[lowerFirst];
+  if (effectNameOverrides[allLower]) return effectNameOverrides[allLower];
+
   const candidates = [
     `effect_name_${original}`,
     `ci_effect_${original}_tt`,
@@ -499,13 +523,11 @@ function getLocalizedEffectName(effectDef) {
   ];
 
   for (const key of candidates) {
-    if (effectNameOverrides[key]) return effectNameOverrides[key];
     if (lang[key]) return lang[key];
   }
 
-  return effectDef.name;
+  return original;
 }
-
 
 function parseEffects(effectsStr) {
   if (!effectsStr) return [];
