@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GGE Construction Items</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"/>
+  <link rel="icon" type="image/webp" href="../img_base/favicon.ico">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css"
+    rel="stylesheet"/>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-12 mb-2">
+        <div class="col-12">
+          <h1>GGE CONSTRUCTION ITEMS</h1>
+        </div>
+
+        <a href="https://generalscamp.github.io/forum/" class="home-icon-link">
+          <div class="home-icon">
+            <i class="bi bi-house"></i>
+          </div>
+        </a>
+
+        <div class="row note gx-3 gy-2 align-items-center pb-3">
+          <div class="col-md-6 col-sm-12">
+            <input id="searchInput" class="form-control custom-input" type="search"
+              placeholder="Search by name or ID" aria-label="Search"/>
+          </div>
+
+          <div class="col-md-6 col-sm-12">
+            <select id="durationFilter" class="form-select custom-select text-center" aria-label="Filter by type">
+              <option value="all" selected>Show All</option>
+              <option value="permanent">Permanent items</option>
+              <option value="temporary">Temporary items</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <main id="content" class="container-fluid">
+        <div id="cards" class="row g-1"></div>
+      </main>
+    </div>
+  </div>
+
+  <div id="imageModal" class="image-modal" onclick="closeImageModal()">
+    <div class="image-modal-inner" onclick="event.stopPropagation()">
+      <span class="image-modal-close" onclick="closeImageModal()">&times;</span>
+      <img id="modalImage" class="image-modal-content"/>
+      <div id="modalCaption"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+</body>
+
+</html>
