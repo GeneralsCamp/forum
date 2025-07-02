@@ -261,9 +261,13 @@ function createGroupedCard(groupItems, imageUrlMap = {}) {
     <h2>${name} <br> (constructionItemID: ${item.constructionItemID})</h2>
     <hr>
     <div class="level-selector d-flex justify-content-between align-items-center mb-2">
-      <button id="${groupId}-prev" class="btn btn-sm btn-outline-primary" ${isFirstLevel ? "disabled" : ""}>&larr;</button>
+      <button id="${groupId}-prev" class="btn btn-sm btn-outline-primary" ${isFirstLevel ? "disabled" : ""}>
+        <i class="bi bi-arrow-left"></i>
+      </button>
       <div><strong>${levelText}</strong></div>
-      <button id="${groupId}-next" class="btn btn-sm btn-outline-primary" ${isLastLevel ? "disabled" : ""}>&rarr;</button>
+      <button id="${groupId}-next" class="btn btn-sm btn-outline-primary" ${isLastLevel ? "disabled" : ""}>
+        <i class="bi bi-arrow-right"></i>
+      </button>
     </div>
     <hr>
     <div class="image-wrapper mb-3">
