@@ -343,18 +343,26 @@ function renderConstructionItems(items) {
 function applyFiltersAndSorting() {
   const search = document.getElementById("searchInput").value.toLowerCase();
   const filterValue = currentFilter;
+  const appearanceFilter = document.getElementById("appearanceFilter").value;
 
   const filtered = allItems.filter(item => {
     const name = getCIName(item).toLowerCase();
     const id = (item.constructionItemID || "").toString().toLowerCase();
 
-    const matchSearch = name.includes(search) || id.includes(search);
+    const effectsText = parseEffects(item.effects || "").join(" ").toLowerCase();
+
+    const matchSearch = name.includes(search) || id.includes(search) || effectsText.includes(search);
 
     let matchFilter = true;
     if (filterValue === "permanent") matchFilter = !item.duration;
     else if (filterValue === "temporary") matchFilter = !!item.duration;
 
-    return matchSearch && matchFilter;
+    let matchAppearance = true;
+    if (appearanceFilter === "hide") {
+      matchAppearance = !item.decoPoints;
+    }
+
+    return matchSearch && matchFilter && matchAppearance;
   });
 
   filtered.sort((a, b) => getCIName(a).localeCompare(getCIName(b)));
@@ -371,6 +379,9 @@ function setupEventListeners() {
     currentFilter = durationFilter.value;
     applyFiltersAndSorting();
   });
+
+  const appearanceFilter = document.getElementById("appearanceFilter");
+  appearanceFilter.addEventListener("change", applyFiltersAndSorting);
 }
 
 async function getImageUrlMap() {
