@@ -111,6 +111,7 @@ const langKeyOverrides = {
 
 function getCIName(item) {
   const rawName = item.name || "???";
+  const pascalName = toPascalCase(rawName);
 
   if (langKeyOverrides[rawName] && lang[langKeyOverrides[rawName]]) {
     return lang[langKeyOverrides[rawName]];
@@ -119,12 +120,20 @@ function getCIName(item) {
   const prefixes = ["appearance", "primary", "secondary"];
 
   for (const prefix of prefixes) {
-    const key = `ci_${prefix}_${rawName}`;
-    if (lang[key]) return lang[key];
+    const keyRaw = `ci_${prefix}_${rawName}`;
+    if (lang[keyRaw]) return lang[keyRaw];
   }
 
-  const keyPlain = `ci_${rawName}`;
-  if (lang[keyPlain]) return lang[keyPlain];
+  const keyRawPlain = `ci_${rawName}`;
+  if (lang[keyRawPlain]) return lang[keyRawPlain];
+
+  for (const prefix of prefixes) {
+    const keyPascal = `ci_${prefix}_${pascalName}`;
+    if (lang[keyPascal]) return lang[keyPascal];
+  }
+
+  const keyPascalPlain = `ci_${pascalName}`;
+  if (lang[keyPascalPlain]) return lang[keyPascalPlain];
 
   return rawName;
 }
