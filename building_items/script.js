@@ -465,31 +465,6 @@ window.addEventListener("DOMContentLoaded", () => {
   modal.style.display = "none";
 });
 
-async function init() {
-  try {
-    const itemVersion = await getItemVersion();
-    const langVersion = await getLangVersion();
-    console.log("Item version:", itemVersion, "| Language version:", langVersion);
-
-    await getLanguageData(langVersion);
-    imageUrlMap = await getImageUrlMap();
-
-    const json = await getItems(itemVersion);
-    allItems = extractConstructionItems(json);
-
-    console.log(`${Object.keys(imageUrlMap).length} construction item URL found.`);
-    console.log(`${allItems.length} construction items found.`);
-
-    setupEventListeners();
-    applyFiltersAndSorting();
-  } catch (err) {
-    console.error("Error:", err);
-    document.getElementById("cards").innerHTML = "<p class='text-danger'>An error occurred while loading data.</p>";
-  }
-}
-
-init();
-
 function getLocalizedEffectName(effectDef) {
   if (!effectDef) return null;
 
@@ -510,18 +485,6 @@ function getLocalizedEffectName(effectDef) {
   return effectDef.name;
 }
 
-function getLocalizedEffectName(effectDef) {
-  if (!effectDef) return null;
-
-  const lowerKey = `ci_effect_${effectDef.name.charAt(0).toLowerCase() + effectDef.name.slice(1)}_tt`;
-  const originalKey = `ci_effect_${effectDef.name}_tt`;
-
-  return effectNameOverrides[lowerKey]
-    || lang[lowerKey]
-    || effectNameOverrides[originalKey]
-    || lang[originalKey]
-    || effectDef.name;
-}
 function parseEffects(effectsStr) {
   if (!effectsStr) return [];
 
@@ -581,3 +544,28 @@ function addLegacyEffects(item, effectsList) {
     }
   });
 }
+
+async function init() {
+  try {
+    const itemVersion = await getItemVersion();
+    const langVersion = await getLangVersion();
+    console.log("Item version:", itemVersion, "| Language version:", langVersion);
+
+    await getLanguageData(langVersion);
+    imageUrlMap = await getImageUrlMap();
+
+    const json = await getItems(itemVersion);
+    allItems = extractConstructionItems(json);
+
+    console.log(`${Object.keys(imageUrlMap).length} construction item URL found.`);
+    console.log(`${allItems.length} construction items found.`);
+
+    setupEventListeners();
+    applyFiltersAndSorting();
+  } catch (err) {
+    console.error("Error:", err);
+    document.getElementById("cards").innerHTML = "<p class='text-danger'>An error occurred while loading data.</p>";
+  }
+}
+
+init();
