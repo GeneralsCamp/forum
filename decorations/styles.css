@@ -221,23 +221,6 @@ p {
     font-weight: 600;
 }
 
-#content {
-    height: 84vh;
-    display: flex;
-    flex-direction: column;
-}
-
-@media (max-width: 768px) {
-    #content {
-        height: 70vh;
-    }
-}
-
-#content {
-    flex: 1 1 auto;
-    overflow-y: auto;
-}
-
 .image-wrapper {
     display: flex;
     justify-content: center;
@@ -376,4 +359,21 @@ p {
 
 .home-icon-link .home-icon i {
   color: #f8bc00;
+}
+
+#content {
+    height: 84vh;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+    #content {
+        height: 74vh;
+    }
+    .page-title {
+        display: none;
+    }
 }
