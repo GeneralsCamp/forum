@@ -49,6 +49,7 @@ async function getItems(version) {
   return data;
 }
 
+//lootBonusPVE, defenseBonusNotMainCastle, attackUnitAmountReinforcementBonus
 const effectNameOverrides = {};
 
 const percentEffectIDs = new Set([
@@ -58,7 +59,7 @@ const percentEffectIDs = new Set([
   "396", "611", "416", "397", "398", "399", "612", "417",
   "369", "368", "410", "411", "412", "423", "424", "407",
   "501", "705", "66", "614", "504", "503", "613", "114",
-  "80", "401", "402", "373", "259", "701"
+  "80", "401", "402", "373", "259", "701", "343"
 ]);
 
 const legacyEffectFields = [
@@ -80,7 +81,7 @@ const legacyEffectFields = [
   ["hospitalCapacity", false],
   ["healSpeed", false],
   ["marketCarriages", false],
-  ["XPBoostBuildBuildings", false],
+  ["XPBoostBuildBuildings", true],
   ["stackSize", false],
   ["glassStorage", false],
   ["Glassproduction", false],
@@ -99,6 +100,7 @@ const legacyEffectFields = [
   ["unboostedWoodProduction", false],
   ["offensiveToolsSpeedBoost", true],
   ["defensiveToolsSpeedBoost", true],
+  ["espionageTravelBoost", false],
 ];
 
 function extractConstructionItems(data) {
@@ -483,22 +485,27 @@ window.addEventListener("DOMContentLoaded", () => {
 function getLocalizedEffectName(effectDef) {
   if (!effectDef) return null;
 
-  const baseKeyOriginal = `effect_name_${effectDef.name}`;
-  const tooltipKeyOriginal = `ci_effect_${effectDef.name}_tt`;
+  const original = effectDef.name;
+  const lowerFirst = original.charAt(0).toLowerCase() + original.slice(1);
+  const allLower = original.toLowerCase();
 
-  const baseKeyLower = `effect_name_${effectDef.name.toLowerCase()}`;
-  const tooltipKeyLower = `ci_effect_${effectDef.name.toLowerCase()}_tt`;
+  const candidates = [
+    `effect_name_${original}`,
+    `ci_effect_${original}_tt`,
+    `effect_name_${lowerFirst}`,
+    `ci_effect_${lowerFirst}_tt`,
+    `effect_name_${allLower}`,
+    `ci_effect_${allLower}_tt`
+  ];
 
-  if (effectNameOverrides[baseKeyOriginal]) return effectNameOverrides[baseKeyOriginal];
-  if (lang[baseKeyOriginal]) return lang[baseKeyOriginal];
-  if (lang[tooltipKeyOriginal]) return lang[tooltipKeyOriginal];
-
-  if (effectNameOverrides[baseKeyLower]) return effectNameOverrides[baseKeyLower];
-  if (lang[baseKeyLower]) return lang[baseKeyLower];
-  if (lang[tooltipKeyLower]) return lang[tooltipKeyLower];
+  for (const key of candidates) {
+    if (effectNameOverrides[key]) return effectNameOverrides[key];
+    if (lang[key]) return lang[key];
+  }
 
   return effectDef.name;
 }
+
 
 function parseEffects(effectsStr) {
   if (!effectsStr) return [];
@@ -534,15 +541,32 @@ function parseEffects(effectsStr) {
 }
 
 function addLegacyEffects(item, effectsList) {
-  function toLangKey(fieldName) {
-    return fieldName.charAt(0).toLowerCase() + fieldName.slice(1);
+  function getLangKey(fieldName) {
+    const original = fieldName;
+    const variants = [
+      original,
+      lowerFirstN(original, 1),
+      lowerFirstN(original, 2),
+      original.toLowerCase()
+    ];
+
+    const candidates = [];
+
+    for (const variant of variants) {
+      candidates.push(`ci_effect_${variant}_tt`);
+    }
+
+    for (const key of candidates) {
+      if (lang[key]) return lang[key];
+    }
+
+    return fieldName;
   }
 
   legacyEffectFields.forEach(([field, hasPercent]) => {
     const val = item[field];
     if (val !== undefined && val !== null && val !== "") {
-      const langKey = `ci_effect_${toLangKey(field)}_tt`;
-      const effectName = lang[langKey] || field;
+      const effectName = getLangKey(field);
 
       const endsWithColon = effectName.trim().endsWith(":");
       const formattedValue = formatNumber(val);
@@ -558,6 +582,10 @@ function addLegacyEffects(item, effectsList) {
       effectsList.push(effectText);
     }
   });
+}
+
+function lowerFirstN(str, n = 1) {
+  return str.slice(0, n).toLowerCase() + str.slice(n);
 }
 
 async function init() {
