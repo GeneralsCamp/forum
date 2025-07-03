@@ -436,7 +436,10 @@ async function getImageUrlMap() {
     if (!dllMatch) throw new Error("DLL preload link not found");
 
     const dllRelativeUrl = dllMatch[1];
-    const dllUrl = `https://empire-html5.goodgamestudios.com/default/${dllRelativeUrl}`;
+    dllVersion = dllRelativeUrl;
+    dllUrl = `https://empire-html5.goodgamestudios.com/default/${dllRelativeUrl}`;
+
+    console.log(`DLL URL: ${dllVersion}`);
 
     const res = await fetch(proxy + dllUrl);
     if (!res.ok) throw new Error("Failed to fetch ggs.dll.js: " + res.status);
@@ -622,8 +625,8 @@ async function init() {
     const json = await getItems(itemVersion);
     allItems = extractConstructionItems(json);
 
-    console.log(`${Object.keys(imageUrlMap).length} construction item URL found.`);
-    console.log(`${allItems.length} construction items found.`);
+    console.log(`${Object.keys(imageUrlMap).length} construction item URL map is created.`);
+    console.log(`Found ${allItems.length} construction items`);
 
     setupEventListeners();
     applyFiltersAndSorting();
