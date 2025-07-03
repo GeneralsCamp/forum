@@ -51,7 +51,7 @@ async function getItems(version) {
 
 const effectNameOverrides = {
   "lootBonusPVE": "Loot bonus from NPC targets",
-  "defenseBonusNotMainCastle": "Bonus to the strength of defensive units (Not in Main castle!)",
+  "defenseBonusNotMainCastle": "Bonus to the strength of defensive units not in the main castle",
   "attackUnitAmountReinforcementBonus": "Troop capacity for final assault",
 };
 
@@ -62,7 +62,7 @@ const percentEffectIDs = new Set([
   "396", "611", "416", "397", "398", "399", "612", "417",
   "369", "368", "410", "411", "412", "423", "424", "407",
   "501", "705", "66", "614", "504", "503", "613", "114",
-  "80", "401", "402", "373", "259", "701", "343"
+  "80", "401", "402", "373", "259", "701", "343", "202"
 ]);
 
 const legacyEffectFields = [
