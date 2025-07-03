@@ -634,3 +634,80 @@ async function init() {
 }
 
 init();
+
+// Console Command: compareWithOldVersion(<version>)
+async function compareWithOldVersion(oldVersion = "741.01") {
+  const url = proxy + encodeURIComponent(`https://empire-html5.goodgamestudios.com/default/items/items_v${oldVersion}.json`);
+  const res = await fetch(url);
+  if (!res.ok) {
+    console.warn(`Failed to fetch version ${oldVersion}.`);
+    return;
+  }
+
+  const json = await res.json();
+  const oldItems = extractConstructionItems(json);
+
+  const currentVersionInfo = await getVersionInfo();
+  const oldVersionInfo = {
+    version: oldVersion,
+    date: json.versionInfo?.date?.["@value"] || "unknown"
+  };
+
+  const categorizedOld = categorizeItemsByDuration(oldItems);
+  const categorizedNew = categorizeItemsByDuration(allItems);
+
+  console.log(`Current Version: ${currentVersionInfo.version} (${currentVersionInfo.date})`);
+  console.log(`Compared Version: ${oldVersionInfo.version} (${oldVersionInfo.date})\n`);
+
+  ["temporary", "permanent"].forEach(type => {
+    const oldList = categorizedOld[type];
+    const newList = categorizedNew[type];
+
+    const oldCount = oldList.length;
+    const newCount = newList.length;
+    const diff = newCount - oldCount;
+
+    if (diff === 0) {
+      console.log(`No changes in ${type} items.`);
+    } else if (diff > 0) {
+      const oldIDs = new Set(oldList.map(i => i.constructionItemID));
+      const added = newList.filter(i => !oldIDs.has(i.constructionItemID));
+      console.log(`Added ${added.length} ${type} item(s) (constructionItemID): ${added.map(i => i.constructionItemID).join(", ")}`);
+    } else {
+      console.log(`${type} items decreased by ${-diff}`);
+    }
+  });
+}
+
+async function getVersionInfo() {
+  try {
+    const urlVersion = proxy + encodeURIComponent("https://empire-html5.goodgamestudios.com/default/items/ItemsVersion.properties");
+    const resVersion = await fetch(urlVersion);
+    if (!resVersion.ok) throw new Error("Failed to fetch current version");
+
+    const text = await resVersion.text();
+    const match = text.match(/CastleItemXMLVersion=(\d+\.\d+)/);
+    if (!match) throw new Error("Version not found");
+    const version = match[1];
+
+    const urlJson = proxy + encodeURIComponent(`https://empire-html5.goodgamestudios.com/default/items/items_v${version}.json`);
+    const resJson = await fetch(urlJson);
+    if (!resJson.ok) throw new Error("Failed to fetch version JSON");
+
+    const json = await resJson.json();
+    const date = json.versionInfo?.date?.["@value"] || "unknown";
+
+    return { version, date };
+
+  } catch (e) {
+    console.warn("Error fetching current version info:", e);
+    return { version: "unknown", date: "unknown" };
+  }
+}
+
+function categorizeItemsByDuration(items) {
+  return {
+    temporary: items.filter(item => item.duration && Number(item.duration) > 0),
+    permanent: items.filter(item => !item.duration || Number(item.duration) === 0)
+  };
+}
