@@ -53,12 +53,20 @@ const effectNameOverrides = {
   "lootBonusPVE": "Loot bonus from NPC targets",
   "defenseBonusNotMainCastle": "Bonus to the strength of defensive units not in the main castle",
   "attackUnitAmountReinforcementBonus": "Troop capacity for final assault",
+  "rangeBonusTCI": "Ranged unit attack strength when attacking",
+  "meleeBonusTCI": "Melee unit attack strength when attacking",
+  "MeadProductionIncrease": "Mead production bonus",
+  "HoneyProductionIncrease": "Honey production bonus",
+  "rangeBonus": "Ranged unit attack strength when attacking",
+  "beefProductionBoost": "Beef production bonus",
+  "defenseUnitAmountYardMinorBoost": "Bonus to courtyard defense troop capacity",
+  "attackUnitAmountReinforcementBoost": "Troop capacity for final assault"
 };
 
 const langKeyOverrides = {
   "XPBoostBuildBuildings": "ci_primary_xpBoostBuildBuildings",
   "natureResearchtower": "ci_appearance_natureResearchTower",
-  "winterResearchtower": "ci_appearance_winterResearchTower"
+  "winterResearchtower": "ci_appearance_winterResearchTower",
 };
 
 const percentEffectIDs = new Set([
@@ -68,7 +76,8 @@ const percentEffectIDs = new Set([
   "396", "611", "416", "397", "398", "399", "612", "417",
   "369", "368", "410", "411", "412", "423", "424", "407",
   "501", "705", "66", "614", "504", "503", "613", "114",
-  "80", "401", "402", "373", "259", "701", "343", "202"
+  "80", "401", "402", "373", "259", "701", "343", "202",
+  "340", "339", "11"
 ]);
 
 const legacyEffectFields = [
@@ -175,7 +184,7 @@ function extractConstructionItems(data) {
 }
 
 function formatNumber(num) {
-  return Number(num).toLocaleString(undefined);
+  return Number(num).toLocaleString();
 }
 
 function normalizeName(str) {
@@ -229,10 +238,6 @@ function createGroupedCard(groupItems, imageUrlMap = {}) {
     5: "Appearance",
     10: "Appearance"
   };
-
-  function formatNumber(num) {
-    return Number(num).toLocaleString();
-  }
 
   function renderLevel(index) {
     const item = groupItems[index];
@@ -504,7 +509,7 @@ window.addEventListener("DOMContentLoaded", () => {
   modal.style.display = "none";
 });
 
-function getLocalizedEffectName(effectDef) {
+function getLocalizedEffectName(effectDef, variant = null) {
   if (!effectDef) return null;
 
   const original = effectDef.name;
@@ -515,14 +520,20 @@ function getLocalizedEffectName(effectDef) {
   if (effectNameOverrides[lowerFirst]) return effectNameOverrides[lowerFirst];
   if (effectNameOverrides[allLower]) return effectNameOverrides[allLower];
 
-  const candidates = [
-    `effect_name_${original}`,
-    `ci_effect_${original}_tt`,
-    `effect_name_${lowerFirst}`,
-    `ci_effect_${lowerFirst}_tt`,
-    `effect_name_${allLower}`,
-    `ci_effect_${allLower}_tt`
-  ];
+  const candidates = [];
+
+  if (variant !== null) {
+    candidates.push(`ci_effect_${original}_${variant}_tt`);
+    candidates.push(`ci_effect_${lowerFirst}_${variant}_tt`);
+    candidates.push(`ci_effect_${allLower}_${variant}_tt`);
+  }
+
+  candidates.push(`effect_name_${original}`);
+  candidates.push(`ci_effect_${original}_tt`);
+  candidates.push(`effect_name_${lowerFirst}`);
+  candidates.push(`ci_effect_${lowerFirst}_tt`);
+  candidates.push(`effect_name_${allLower}`);
+  candidates.push(`ci_effect_${allLower}_tt`);
 
   for (const key of candidates) {
     if (lang[key]) return lang[key];
@@ -539,15 +550,19 @@ function parseEffects(effectsStr) {
   return effectsStr.split(",").map(eff => {
     const [id, valRaw] = eff.split("&");
 
+    let variant = null;
     let val;
+
     if (valRaw.includes("+")) {
-      val = Number(valRaw.split("+")[1]);
+      const [varPart, valPart] = valRaw.split("+");
+      variant = Number(varPart);
+      val = Number(valPart);
     } else {
       val = Number(valRaw);
     }
 
     const effectDef = effectDefinitions[id];
-    const localizedName = getLocalizedEffectName(effectDef) || `Effect ID ${id}`;
+    const localizedName = getLocalizedEffectName(effectDef, variant) || `Effect ID ${id}`;
 
     const suffix = percentEffectIDs.has(id) ? "%" : "";
 
