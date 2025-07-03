@@ -55,6 +55,12 @@ const effectNameOverrides = {
   "attackUnitAmountReinforcementBonus": "Troop capacity for final assault",
 };
 
+const langKeyOverrides = {
+  "XPBoostBuildBuildings": "ci_primary_xpBoostBuildBuildings",
+  "natureResearchtower": "ci_appearance_natureResearchTower",
+  "winterResearchtower": "ci_appearance_winterResearchTower"
+};
+
 const percentEffectIDs = new Set([
   "61", "62", "370", "386", "387", "413", "414", "415",
   "381", "382", "408", "383", "384", "82", "83", "388",
@@ -106,19 +112,8 @@ const legacyEffectFields = [
   ["espionageTravelBoost", false],
 ];
 
-function extractConstructionItems(data) {
-  return data.constructionItems || [];
-}
-
-const langKeyOverrides = {
-  "XPBoostBuildBuildings": "ci_primary_xpBoostBuildBuildings",
-};
-
 function getCIName(item) {
   const rawName = item.name || "???";
-
-  if (rawName === "natureResearchtower") return lang["ci_appearance_natureResearchTower"] || rawName;
-  if (rawName === "winterResearchtower") return lang["ci_appearance_winterResearchTower"] || rawName;
 
   const pascalName = toPascalCase(rawName);
 
@@ -173,6 +168,10 @@ function findLangKeyVariations(prefix, name) {
   }
 
   return null;
+}
+
+function extractConstructionItems(data) {
+  return data.constructionItems || [];
 }
 
 function formatNumber(num) {
