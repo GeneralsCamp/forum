@@ -77,7 +77,7 @@ const percentEffectIDs = new Set([
   "369", "368", "410", "411", "412", "423", "424", "407",
   "501", "705", "66", "614", "504", "503", "613", "114",
   "80", "401", "402", "373", "259", "701", "343", "202",
-  "340", "339", "11", "363"
+  "340", "339", "11", "363", "404"
 ]);
 
 const legacyEffectFields = [
@@ -116,7 +116,7 @@ const legacyEffectFields = [
   ["unboostedStoneProduction", false],
   ["unboostedWoodProduction", false],
   ["offensiveToolsSpeedBoost", true],
-  ["espionageTravelBoost", false],
+  ["espionageTravelBoost", true],
 ];
 
 function getCIName(item) {
@@ -197,17 +197,104 @@ function toPascalCase(str) {
     .join('');
 }
 
-function groupItemsByNameAndGroupID(items) {
+function groupItemsByNameEffectsLegacyAppearanceAndDuration(items) {
   const groups = {};
+
+  const testingRegex = /testing/i;
+
   items.forEach(item => {
-    const key = `${item.name}_${item.constructionItemGroupID}`;
+    if (
+      (item.comment1 && testingRegex.test(item.comment1)) ||
+      (item.comment2 && testingRegex.test(item.comment2))
+    ) {
+      return;
+    }
+
+    const effectIDs = item.effects
+      ? Array.from(new Set(item.effects.split(",").map(eff => eff.split("&")[0])))
+      : [];
+
+    const legacyKeys = [];
+    legacyEffectFields.forEach(([fieldName, _]) => {
+      if (item[fieldName] !== undefined && item[fieldName] !== null && item[fieldName] !== "" && Number(item[fieldName]) !== 0) {
+        legacyKeys.push(fieldName);
+      }
+    });
+
+    const allEffects = [...new Set([...effectIDs, ...legacyKeys])].sort().join(",");
+
+    const appearanceFlag = (Number(item.slotTypeID) === 0 && item.decoPoints) ? "appearance" : "normal";
+
+    const durationFlag = (item.duration && Number(item.duration) > 0) ? "temporary" : "permanent";
+    const key = `${item.name}_${allEffects}_${appearanceFlag}_${durationFlag}`;
+
     if (!groups[key]) groups[key] = [];
     groups[key].push(item);
   });
+
   for (const key in groups) {
-    groups[key].sort((a, b) => parseInt(a.level) - parseInt(b.level));
+    groups[key].sort((a, b) => {
+      const rarA = parseInt(a.rarenessID || 0);
+      const rarB = parseInt(b.rarenessID || 0);
+
+      if (rarA !== rarB) {
+        return rarA - rarB;
+      }
+
+      const totalEffectA = getTotalEffectValue(a);
+      const totalEffectB = getTotalEffectValue(b);
+
+      return totalEffectA - totalEffectB;
+    });
   }
+
+
   return groups;
+}
+
+function getTotalEffectValue(item) {
+  let total = 0;
+
+  if (item.effects) {
+    item.effects.split(",").forEach(eff => {
+      const [, valRaw] = eff.split("&");
+      if (valRaw) {
+        if (valRaw.includes("+")) {
+          const [, valPart] = valRaw.split("+");
+          total += Number(valPart) || 0;
+        } else {
+          total += Number(valRaw) || 0;
+        }
+      }
+    });
+  }
+  legacyEffectFields.forEach(([field, _]) => {
+    if (item[field] !== undefined && item[field] !== null && item[field] !== "") {
+      total += Number(item[field]) || 0;
+    }
+  });
+
+  return total;
+}
+
+function getLevelText(item, rarityName) {
+  const slotTypeID = Number(item.slotTypeID);
+  const duration = item.duration ? Number(item.duration) : 0;
+  const hasDecoPoints = !!item.decoPoints;
+
+  if (slotTypeID === 1) {
+    return `Primary (Level ${item.level})`;
+  } else if (slotTypeID === 0 && hasDecoPoints) {
+    return "Appearance";
+  } else if (slotTypeID === 0 && !hasDecoPoints && duration === 0) {
+    return "Permanent";
+  } else if (slotTypeID === 0 && !hasDecoPoints && duration > 0) {
+    return `${rarityName} (Level ${item.level})`;
+  } else if (slotTypeID === 2) {
+    return `Relic (Level ${item.level})`;
+  } else {
+    return `Level ${item.level}`;
+  }
 }
 
 function formatDuration(seconds) {
@@ -223,9 +310,10 @@ function formatDuration(seconds) {
   return result.trim();
 }
 
-function createGroupedCard(groupItems, imageUrlMap = {}) {
+function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
   let currentLevelIndex = 0;
-  const groupId = `group-${groupItems[0].name}-${groupItems[0].constructionItemGroupID}`;
+  const safeKey = groupKey.replace(/[^a-zA-Z0-9]/g, '-');
+  const groupId = `group-${safeKey}`;
   const name = getCIName(groupItems[0]);
 
   const rarenessNames = {
@@ -256,6 +344,7 @@ function createGroupedCard(groupItems, imageUrlMap = {}) {
     const isLastLevel = index === groupItems.length - 1;
 
     const rarityName = rarenessNames[item.rarenessID] || "Unknown";
+    const levelText = getLevelText(item, rarityName);
 
     let effects = parseEffects(item.effects || "");
     addLegacyEffects(item, effects);
@@ -285,11 +374,6 @@ function createGroupedCard(groupItems, imageUrlMap = {}) {
     </div>
   `;
     }
-    const levelText = item.decoPoints
-      ? "Appearance"
-      : isTemporary
-        ? `${rarityName} (Level ${item.level})`
-        : `Level ${item.level}`;
 
     const typeText = isTemporary ? `Temporary (${formatDuration(item.duration)})` : "Permanent";
 
@@ -379,10 +463,10 @@ function renderConstructionItems(items) {
   const container = document.getElementById("cards");
   container.innerHTML = "";
 
-  const grouped = groupItemsByNameAndGroupID(items);
+  const grouped = groupItemsByNameEffectsLegacyAppearanceAndDuration(items);
 
   for (const key in grouped) {
-    container.insertAdjacentHTML("beforeend", createGroupedCard(grouped[key], imageUrlMap));
+    container.insertAdjacentHTML("beforeend", createGroupedCard(grouped[key], imageUrlMap, key));
   }
 }
 
