@@ -75,7 +75,7 @@ h1 {
     flex: 1;
     flex-direction: column;
     justify-content: space-between;
-    padding: 0px;
+    padding: 0;
     position: relative;
     background-color: rgb(145, 98, 65);
     min-height: 100px;
@@ -95,7 +95,8 @@ h1 {
     border: 0;
     border-top: 2px solid white;
     opacity: 0.5;
-    margin: 2px 0 5px;
+    margin: 0;
+    color: white;
 }
 
 .box-content p {
@@ -385,12 +386,6 @@ p {
 
 .card-sources {
     padding: 5px;
-}
-
-.box-content hr {
-    margin-top: 0;
-    margin-bottom: 0;
-    color: white;
 }
 
 .deco-title {

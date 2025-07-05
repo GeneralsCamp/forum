@@ -428,7 +428,7 @@ async function init() {
     cardsEl.innerHTML = `
       <div class="error-message">
         <h3>Something went wrong...</h3>
-        <p>The page will automatically reload in <span id="retryCountdown">20</span> seconds!</p>
+        <p>The page will automatically reload in <span id="retryCountdown">30</span> seconds!</p>
       </div>
     `;
 
