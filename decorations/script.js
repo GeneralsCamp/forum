@@ -190,19 +190,23 @@ function createCard(item, imageUrlMap = {}) {
   let effectsHTML = "";
   if (effects.length > 0) {
     effectsHTML = `
-      <hr>
+    <hr>
+    <div class="card-section card-effects">
       <h5 class="card-section-title">Effects:</h5>
       <p>${effects.map(e => `- ${e}`).join("<br>")}</p>
-    `;
+    </div>
+  `;
   }
 
   let sourceHTML = "";
   if (sources.length > 0) {
     sourceHTML = `
-      <hr>
+    <hr>
+    <div class="card-section card-sources">
       <h4 class="card-section-title">Developer comments:</h4>
       <p>${sources.map(s => `- ${s}`).join("<br>")}</p>
-    `;
+    </div>
+  `;
   }
 
   const cleanedType = normalizeName(item.type);
@@ -214,7 +218,7 @@ function createCard(item, imageUrlMap = {}) {
   <div class="col-md-6 col-sm-12 d-flex flex-column">
     <div class="box flex-fill">
       <div class="box-content">
-        <h2>${name} <br> (wodID: ${id})</h2>
+        <h2 class="deco-title">${name} <br> (wodID: ${id})</h2>
         <hr>
         <div class="image-wrapper">
           <img src="${imageUrl}" alt="${name}" class="card-image" onclick="openImageModal('${imageUrl}', '${safeName}')">
@@ -248,8 +252,8 @@ function createCard(item, imageUrlMap = {}) {
             </div>
           </div>
         </div>
-        ${effectsHTML}
-        ${sourceHTML}
+          ${effectsHTML}
+          ${sourceHTML}
       </div>
     </div>
   </div>
@@ -420,7 +424,25 @@ async function init() {
     applyFiltersAndSorting();
   } catch (err) {
     console.error("Error:", err);
-    document.getElementById("cards").innerHTML = "<p class='text-danger'>An error occurred while loading data.</p>";
+    const cardsEl = document.getElementById("cards");
+    cardsEl.innerHTML = `
+      <div class="error-message">
+        <h3>Something went wrong...</h3>
+        <p>The page will automatically reload in <span id="retryCountdown">20</span> seconds!</p>
+      </div>
+    `;
+
+    let seconds = 30;
+    const countdownEl = document.getElementById("retryCountdown");
+
+    const interval = setInterval(() => {
+      seconds--;
+      if (countdownEl) countdownEl.textContent = seconds.toString();
+      if (seconds <= 0) {
+        clearInterval(interval);
+        location.reload();
+      }
+    }, 1000);
   }
 }
 
@@ -454,7 +476,6 @@ window.addEventListener("DOMContentLoaded", () => {
   modal.classList.remove("show");
   modal.style.display = "none";
 });
-
 
 // Console Command: compareWithOldVersion(<version>)
 async function compareWithOldVersion(oldVersion = "741.01") {
