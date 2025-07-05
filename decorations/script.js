@@ -108,7 +108,10 @@ const percentEffectIDs = new Set([
 ]);
 
 const effectNameOverrides = {
-  "effect_name_AttackBoostFlankCapped": "Combat strength of units when attacking the flanks"
+  "effect_name_AttackBoostFlankCapped": "Combat strength of units when attacking the flanks",
+  "effect_name_defenseUnitAmountYardMinorBoost": "Bonus to courtyard defense troop capacity",
+  "effect_name_AttackUnitAmountFrontCapped": "Increase front unit limit when attacking",
+  "effect_name_AttackBoostYardCapped": "Bonus to courtyard attack combat strength"
 };
 
 function parseEffects(effectsStr) {
