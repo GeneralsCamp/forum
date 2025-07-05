@@ -109,7 +109,6 @@ const legacyEffectFields = [
   ["Coalproduction", false],
   ["oilStorage", false],
   ["Oilproduction", false],
-  ["defensiveToolsCostsReduction", true],
   ["offensiveToolsCostsReduction", true],
   ["feastCostsReduction", true],
   ["Meadreduction", true],
@@ -117,7 +116,6 @@ const legacyEffectFields = [
   ["unboostedStoneProduction", false],
   ["unboostedWoodProduction", false],
   ["offensiveToolsSpeedBoost", true],
-  ["defensiveToolsSpeedBoost", true],
   ["espionageTravelBoost", false],
 ];
 
