@@ -307,7 +307,7 @@ function createGroupedCard(groupItems, imageUrlMap = {}) {
     </div>
     <h2 class="ci-title">${name} <br> (constructionItemID: ${item.constructionItemID})</h2>
     <hr>
-    <div class="image-wrapper mb-3">
+    <div class="image-wrapper">
       ${placedUrl
         ? `<img src="${placedUrl}" alt="${name}" class="card-image" onclick="openImageModal('${placedUrl}', '${safeName}')">`
         : `<div class="no-image-text">no image</div>`
