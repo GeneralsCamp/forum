@@ -28,14 +28,41 @@
         </a>
 
         <div class="row note gx-3 gy-2 align-items-center pb-3">
-          <div class="col-md-4 col-sm-12">
-            <input id="searchInput" class="form-control custom-input" type="search"
-              placeholder="Search by name, effect or ID" aria-label="Search" />
-          </div>
 
+          <div class="col-md-4 col-sm-12 position-relative">
+            <div class="input-group">
+              <input id="searchInput" class="form-control custom-input" type="search"
+                placeholder="Unavailable to search!" aria-label="Search" />
+              <button class="btn custom-button dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                <i class="bi bi-funnel"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end p-3" style="min-width: 200px;">
+                <li>
+                  <div class="form-check">
+                    <input class="form-check-input search-filter" type="checkbox" value="name" id="filterName" checked>
+                    <label class="form-check-label" for="filterName">Name</label>
+                  </div>
+                </li>
+                <li>
+                  <div class="form-check">
+                    <input class="form-check-input search-filter" type="checkbox" value="id" id="filterID" checked>
+                    <label class="form-check-label" for="filterID">ID</label>
+                  </div>
+                </li>
+                <li>
+                  <div class="form-check">
+                    <input class="form-check-input search-filter" type="checkbox" value="effect" id="filterEffect"
+                      checked>
+                    <label class="form-check-label" for="filterEffect">Effect</label>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
           <div class="col-md-4 col-sm-12">
             <select id="durationFilter" class="form-select custom-select text-center" aria-label="Filter by type">
-              <option value="all" selected>Show All</option>
+              <option value="all" selected>Show all items</option>
               <option value="permanent">Permanent items</option>
               <option value="temporary">Temporary items</option>
             </select>
@@ -44,7 +71,7 @@
           <div class="col-md-4 col-sm-12">
             <select id="appearanceFilter" class="form-select custom-select text-center"
               aria-label="Filter Appearance items">
-              <option value="all" selected>Show Appearance items</option>
+              <option value="all" selected>Show all items</option>
               <option value="hide">Hide Appearance items</option>
             </select>
           </div>

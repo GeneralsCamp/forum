@@ -77,7 +77,7 @@ const percentEffectIDs = new Set([
   "369", "368", "410", "411", "412", "423", "424", "407",
   "501", "705", "66", "614", "504", "503", "613", "114",
   "80", "401", "402", "373", "259", "701", "343", "202",
-  "340", "339", "11", "363", "404"
+  "340", "339", "11", "363", "404", "403"
 ]);
 
 const legacyEffectFields = [
@@ -97,7 +97,7 @@ const legacyEffectFields = [
   ["recruitCostReduction", true],
   ["honeyStorage", false],
   ["hospitalCapacity", false],
-  ["healSpeed", false],
+  ["healSpeed", true],
   ["marketCarriages", false],
   ["XPBoostBuildBuildings", true],
   ["stackSize", false],
@@ -118,6 +118,16 @@ const legacyEffectFields = [
   ["offensiveToolsSpeedBoost", true],
   ["espionageTravelBoost", true],
 ];
+
+const legacyEffectOverrides = {
+  "Woodproduction": "ci_effect_WoodProduction_tt",
+  "Stoneproduction": "ci_effect_StoneProduction_tt",
+  "Foodproduction": "ci_effect_FoodProduction_tt",
+  "Oilproduction": "effect_name_oilProductionBoost",
+  "Ironproduction": "effect_name_ironProductionBoost",
+  "Coalproduction": "effect_name_coalProductionBoost",
+  "Glassproduction": "effect_name_glassProductionBoost",
+};
 
 function getCIName(item) {
   const rawName = item.name || "???";
@@ -224,9 +234,9 @@ function groupItemsByNameEffectsLegacyAppearanceAndDuration(items) {
     const allEffects = [...new Set([...effectIDs, ...legacyKeys])].sort().join(",");
 
     const appearanceFlag = (Number(item.slotTypeID) === 0 && item.decoPoints) ? "appearance" : "normal";
-
     const durationFlag = (item.duration && Number(item.duration) > 0) ? "temporary" : "permanent";
-    const key = `${item.name}_${allEffects}_${appearanceFlag}_${durationFlag}`;
+
+    const key = `${item.name}_${allEffects}_${appearanceFlag}_${durationFlag}_${item.slotTypeID}`;
 
     if (!groups[key]) groups[key] = [];
     groups[key].push(item);
@@ -247,7 +257,6 @@ function groupItemsByNameEffectsLegacyAppearanceAndDuration(items) {
       return totalEffectA - totalEffectB;
     });
   }
-
 
   return groups;
 }
@@ -471,17 +480,46 @@ function renderConstructionItems(items) {
 }
 
 function applyFiltersAndSorting() {
-  const search = document.getElementById("searchInput").value.toLowerCase();
+  const search = document.getElementById("searchInput").value.toLowerCase().trim();
   const filterValue = currentFilter;
   const appearanceFilter = document.getElementById("appearanceFilter").value;
 
+  const selectedFilters = Array.from(document.querySelectorAll(".search-filter:checked")).map(cb => cb.value);
+  const hasSearchText = search.length > 0;
+  const hasFilters = selectedFilters.length > 0;
+  const onlyFullWords = selectedFilters.includes("fullwords");
+
   const filtered = allItems.filter(item => {
-    const name = getCIName(item).toLowerCase();
-    const id = (item.constructionItemID || "").toString().toLowerCase();
+    let matchSearch = true;
 
-    const effectsText = parseEffects(item.effects || "").join(" ").toLowerCase();
+    if (hasSearchText && hasFilters) {
+      matchSearch = false;
 
-    const matchSearch = name.includes(search) || id.includes(search) || effectsText.includes(search);
+      function wordMatch(text) {
+        if (!text) return false;
+        if (onlyFullWords) {
+          const pattern = new RegExp(`\\b${escapeRegExp(search)}\\b`, 'i');
+          return pattern.test(text);
+        } else {
+          return text.includes(search);
+        }
+      }
+
+      if (selectedFilters.includes("name")) {
+        const name = getCIName(item).toLowerCase();
+        if (wordMatch(name)) matchSearch = true;
+      }
+
+      if (selectedFilters.includes("id")) {
+        const id = (item.constructionItemID || "").toString().toLowerCase();
+        if (wordMatch(id)) matchSearch = true;
+      }
+
+      if (selectedFilters.includes("effect")) {
+        const effectsText = parseEffects(item.effects || "").join(" ").toLowerCase();
+        if (wordMatch(effectsText)) matchSearch = true;
+      }
+    }
 
     let matchFilter = true;
     if (filterValue === "permanent") matchFilter = !item.duration;
@@ -500,18 +538,52 @@ function applyFiltersAndSorting() {
   renderConstructionItems(filtered);
 }
 
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 function setupEventListeners() {
   const searchInput = document.getElementById("searchInput");
+  const durationFilter = document.getElementById("durationFilter");
+  const appearanceFilter = document.getElementById("appearanceFilter");
+
   searchInput.addEventListener("input", applyFiltersAndSorting);
 
-  const durationFilter = document.getElementById("durationFilter");
   durationFilter.addEventListener("change", () => {
     currentFilter = durationFilter.value;
     applyFiltersAndSorting();
   });
 
-  const appearanceFilter = document.getElementById("appearanceFilter");
   appearanceFilter.addEventListener("change", applyFiltersAndSorting);
+
+  const searchFilters = document.querySelectorAll(".search-filter");
+
+  function updateSearchInputState() {
+    const selected = Array.from(searchFilters).filter(cb => cb.checked);
+    if (selected.length === 0) {
+      searchInput.disabled = true;
+      searchInput.placeholder = "Unavailable to search!";
+      searchInput.value = "";
+    } else {
+      searchInput.disabled = false;
+      const selectedLabels = selected.map(cb => {
+        if (cb.value === "name") return "Name";
+        if (cb.value === "effect") return "Effect";
+        if (cb.value === "id") return "ID";
+        return cb.value;
+      });
+      searchInput.placeholder = "Search by: " + selectedLabels.join(", ");
+    }
+  }
+
+  searchFilters.forEach(cb => {
+    cb.addEventListener("change", () => {
+      updateSearchInputState();
+      applyFiltersAndSorting();
+    });
+  });
+
+  updateSearchInputState();
 }
 
 async function getImageUrlMap() {
@@ -668,21 +740,23 @@ function parseEffects(effectsStr) {
 
 function addLegacyEffects(item, effectsList) {
   function getLangKey(fieldName) {
-    const original = fieldName;
-    const variants = [
-      original,
-      lowerFirstN(original, 1),
-      lowerFirstN(original, 2),
-      original.toLowerCase()
-    ];
-
-    const candidates = [];
-
-    for (const variant of variants) {
-      candidates.push(`ci_effect_${variant}_tt`);
+    if (legacyEffectOverrides[fieldName]) {
+      const key = legacyEffectOverrides[fieldName];
+      if (lang[key]) return lang[key];
     }
 
-    for (const key of candidates) {
+    const original = fieldName;
+    const variants = [
+      `${original}_capacityBonus_tt`,
+      `${original}CapacityBonus_tt`,
+
+      `ci_effect_${original}_tt`,
+      `ci_effect_${lowerFirstN(original, 1)}_tt`,
+      `ci_effect_${lowerFirstN(original, 2)}_tt`,
+      `ci_effect_${original.toLowerCase()}_tt`,
+    ];
+
+    for (const key of variants) {
       if (lang[key]) return lang[key];
     }
 
