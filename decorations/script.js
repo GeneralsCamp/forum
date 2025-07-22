@@ -4,6 +4,7 @@ let selectedSizes = new Set();
 let currentSort = "po";
 let allDecorations = [];
 let imageUrlMap = {};
+let currentFilter = "all";
 
 async function getItemVersion() {
   const url = proxy + encodeURIComponent("https://empire-html5.goodgamestudios.com/default/items/ItemsVersion.properties");
@@ -328,30 +329,50 @@ function updateSelectedSizes() {
   });
 }
 
-function setupEventListeners() {
-  const searchInput = document.getElementById("searchInput");
-  searchInput.addEventListener("input", applyFiltersAndSorting);
-
-  const sortSelect = document.getElementById("sortSelect");
-  sortSelect.addEventListener("change", () => {
-    currentSort = sortSelect.value === "pot" ? "pot" : "po";
-    applyFiltersAndSorting();
-  });
-}
-
 function applyFiltersAndSorting() {
-  const search = document.getElementById("searchInput").value.toLowerCase();
+  const search = document.getElementById("searchInput").value.toLowerCase().trim();
+
+  const selectedFilters = Array.from(document.querySelectorAll(".search-filter:checked")).map(cb => cb.value);
+  const hasSearchText = search.length > 0;
+  const hasFilters = selectedFilters.length > 0;
+  const onlyFullWords = selectedFilters.includes("fullwords");
 
   const filtered = allDecorations.filter(item => {
-    const name = getName(item).toLowerCase();
-    const wodID = (item.wodID || "").toString().toLowerCase();
     const size = getSize(item);
+    if (!selectedSizes.has(size)) return false;
 
-    const effectsText = parseEffects(item.areaSpecificEffects || "").join(" ").toLowerCase();
+    let matchSearch = true;
 
-    const matchesSearch = name.includes(search) || wodID.includes(search) || effectsText.includes(search);
+    if (hasSearchText && hasFilters) {
+      matchSearch = false;
 
-    return matchesSearch && selectedSizes.has(size);
+      function wordMatch(text) {
+        if (!text) return false;
+        if (onlyFullWords) {
+          const pattern = new RegExp(`\\b${escapeRegExp(search)}\\b`, 'i');
+          return pattern.test(text);
+        } else {
+          return text.includes(search);
+        }
+      }
+
+      if (selectedFilters.includes("name")) {
+        const name = getName(item).toLowerCase();
+        if (wordMatch(name)) matchSearch = true;
+      }
+
+      if (selectedFilters.includes("id")) {
+        const wodID = (item.wodID || "").toString().toLowerCase();
+        if (wordMatch(wodID)) matchSearch = true;
+      }
+
+      if (selectedFilters.includes("effect")) {
+        const effectsText = parseEffects(item.areaSpecificEffects || "").join(" ").toLowerCase();
+        if (wordMatch(effectsText)) matchSearch = true;
+      }
+    }
+
+    return matchSearch;
   });
 
   filtered.sort((a, b) => {
@@ -361,6 +382,50 @@ function applyFiltersAndSorting() {
   });
 
   renderDecorations(filtered);
+}
+
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function setupEventListeners() {
+  const searchInput = document.getElementById("searchInput");
+  const sortSelect = document.getElementById("sortSelect");
+  const searchFilters = document.querySelectorAll(".search-filter");
+
+  searchInput.addEventListener("input", applyFiltersAndSorting);
+
+  function updateSearchInputState() {
+    const selected = Array.from(searchFilters).filter(cb => cb.checked);
+    if (selected.length === 0) {
+      searchInput.disabled = true;
+      searchInput.placeholder = "Unavailable to search!";
+      searchInput.value = "";
+    } else {
+      searchInput.disabled = false;
+      const selectedLabels = selected.map(cb => {
+        if (cb.value === "name") return "Name";
+        if (cb.value === "effect") return "Effect";
+        if (cb.value === "id") return "ID";
+        return cb.value;
+      });
+      searchInput.placeholder = "Search by: " + selectedLabels.join(", ");
+    }
+  }
+
+  sortSelect.addEventListener("change", () => {
+    currentSort = sortSelect.value === "pot" ? "pot" : "po";
+    applyFiltersAndSorting();
+  });
+
+  searchFilters.forEach(cb => {
+    cb.addEventListener("change", () => {
+      updateSearchInputState();
+      applyFiltersAndSorting();
+    });
+  });
+
+  updateSearchInputState();
 }
 
 async function getImageUrlMap() {
