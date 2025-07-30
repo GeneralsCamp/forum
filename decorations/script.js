@@ -415,6 +415,7 @@ function setupEventListeners() {
   const searchInput = document.getElementById("searchInput");
   const sortSelect = document.getElementById("sortSelect");
   const searchFilters = document.querySelectorAll(".search-filter");
+  const showFilter = document.getElementById("showFilter");
 
   searchInput.addEventListener("input", applyFiltersAndSorting);
 
@@ -436,21 +437,28 @@ function setupEventListeners() {
     }
   }
 
-  sortSelect.addEventListener("change", async () => {
+  sortSelect.addEventListener("change", () => {
     const val = sortSelect.value;
-    if (val === "new") {
-      if (newWodIDsSet.size === 0) {
-        await compareWithOldVersion();
+    currentSort = val === "pot" ? "pot" : "po";
+    applyFiltersAndSorting();
+  });
+
+  if (showFilter) {
+    showFilter.addEventListener("change", async () => {
+      const val = showFilter.value;
+      if (val === "new") {
+        if (newWodIDsSet.size === 0) {
+          await compareWithOldVersion();
+        } else {
+          showOnlyNew = true;
+          applyFiltersAndSorting();
+        }
       } else {
-        showOnlyNew = true;
+        showOnlyNew = false;
         applyFiltersAndSorting();
       }
-    } else {
-      showOnlyNew = false;
-      currentSort = val === "pot" ? "pot" : "po";
-      applyFiltersAndSorting();
-    }
-  });
+    });
+  }
 
   searchFilters.forEach(cb => {
     cb.addEventListener("change", () => {

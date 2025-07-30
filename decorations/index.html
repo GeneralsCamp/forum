@@ -28,7 +28,7 @@
         </a>
 
         <div class="row note gx-3 gy-2 align-items-center pb-3">
-          <div class="col-md-4 col-sm-12 position-relative">
+          <div class="col-md-6 col-sm-12 position-relative">
 
             <div class="input-group">
               <input id="searchInput" class="form-control custom-input" type="search"
@@ -61,16 +61,21 @@
             </div>
           </div>
 
-          <div class="col-md-4 col-sm-12">
-            <select id="sortSelect" class="form-select custom-select text-center" aria-label="Sort decorations">
-              <option value="po" selected>Sort by Public Order</option>
-              <option value="pot">Sort by Public Order / Tile</option>
-              <hr>
-              <option value="new" style="font-weight: bold;">Show Only New Decorations</option>
+          <div class="col-md-6 col-sm-12">
+            <select id="showFilter" class="form-select custom-select text-center" aria-label="Show filter">
+              <option value="all" selected>Show all decorations</option>
+              <option value="new">Show only new decorations</option>
             </select>
           </div>
 
-          <div class="col-md-4 col-sm-12">
+          <div class="col-md-6 col-sm-12">
+            <select id="sortSelect" class="form-select custom-select text-center" aria-label="Sort decorations">
+              <option value="po" selected>Sort by Public Order</option>
+              <option value="pot">Sort by Public Order / Tile</option>
+            </select>
+          </div>
+
+          <div class="col-md-6 col-sm-12">
             <div class="dropdown">
               <button class="btn btn-custom dropdown-toggle w-100" type="button" id="sizeDropdown"
                 data-bs-toggle="dropdown" aria-expanded="false">

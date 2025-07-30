@@ -363,7 +363,7 @@ p {
 }
 
 #content {
-    height: 84vh;
+    height: 80vh;
     display: flex;
     flex-direction: column;
     flex: 1 1 auto;
@@ -372,7 +372,7 @@ p {
 
 @media (max-width: 768px) {
     #content {
-        height: 74vh;
+        height: 70vh;
     }
 
     .page-title {
