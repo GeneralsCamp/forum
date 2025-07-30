@@ -48,6 +48,20 @@ async function getItems(version) {
     });
   }
 
+  Object.values(effectDefinitions).forEach(effect => {
+    const descKey = `equip_effect_description_${effect.name}`;
+    const description = lang[descKey];
+    if (description && description.includes('%') && !descKey.includes('Unboosted')) {
+      percentEffectIDs.add(effect.effectID);
+    }
+  });
+
+  hardcodedPercentEffectIDs.forEach(id => {
+    if (!percentEffectIDs.has(id)) {
+      percentEffectIDs.add(id);
+    }
+  });
+
   return data;
 }
 
@@ -100,13 +114,18 @@ function getFusionStatus(item) {
   return "-";
 }
 
-const percentEffectIDs = new Set([
+const hardcodedPercentEffectIDs = new Set([
   "61", "62", "370", "386", "387", "413", "414", "415",
   "381", "382", "408", "383", "384", "82", "83", "388",
   "389", "390", "391", "392", "393", "409", "394", "395",
   "396", "611", "416", "397", "398", "399", "612", "417",
-  "369", "368", "410", "411", "412", "423", "424", "407", "501", "705"
+  "369", "368", "410", "411", "412", "423", "424", "407",
+  "501", "705", "66", "614", "504", "503", "613", "114",
+  "80", "401", "402", "373", "259", "701", "343", "202",
+  "340", "339", "11", "363", "404", "403"
 ]);
+
+const percentEffectIDs = new Set();
 
 const effectNameOverrides = {
   "effect_name_AttackBoostFlankCapped": "Combat strength of units when attacking the flanks",
