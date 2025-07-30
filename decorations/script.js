@@ -668,12 +668,14 @@ function handleResize() {
   }
 
   const note = document.querySelector('.note');
+  const pageTitle = document.querySelector('.page-title');
   const content = document.getElementById('content');
-  if (note && content) {
-    const newHeight = window.innerHeight - note.offsetHeight - 10;
+
+  if (note && pageTitle && content) {
+    const totalHeightToSubtract = note.offsetHeight + pageTitle.offsetHeight + 18;
+    const newHeight = window.innerHeight - totalHeightToSubtract;
     content.style.height = `${newHeight}px`;
   }
 }
-
 window.addEventListener('resize', handleResize);
 window.addEventListener('DOMContentLoaded', handleResize);
