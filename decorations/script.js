@@ -5,6 +5,8 @@ let currentSort = "po";
 let allDecorations = [];
 let imageUrlMap = {};
 let currentFilter = "all";
+let showOnlyNew = false;
+let newWodIDsSet = new Set();
 
 async function getItemVersion() {
   const url = proxy + encodeURIComponent("https://empire-html5.goodgamestudios.com/default/items/ItemsVersion.properties");
@@ -357,6 +359,8 @@ function applyFiltersAndSorting() {
   const onlyFullWords = selectedFilters.includes("fullwords");
 
   const filtered = allDecorations.filter(item => {
+    if (showOnlyNew && !newWodIDsSet.has(item.wodID)) return false;
+
     const size = getSize(item);
     if (!selectedSizes.has(size)) return false;
 
@@ -432,9 +436,20 @@ function setupEventListeners() {
     }
   }
 
-  sortSelect.addEventListener("change", () => {
-    currentSort = sortSelect.value === "pot" ? "pot" : "po";
-    applyFiltersAndSorting();
+  sortSelect.addEventListener("change", async () => {
+    const val = sortSelect.value;
+    if (val === "new") {
+      if (newWodIDsSet.size === 0) {
+        await compareWithOldVersion();
+      } else {
+        showOnlyNew = true;
+        applyFiltersAndSorting();
+      }
+    } else {
+      showOnlyNew = false;
+      currentSort = val === "pot" ? "pot" : "po";
+      applyFiltersAndSorting();
+    }
   });
 
   searchFilters.forEach(cb => {
@@ -561,61 +576,46 @@ window.addEventListener("DOMContentLoaded", () => {
   modal.style.display = "none";
 });
 
-// Console Command: compareWithOldVersion(<version>)
-async function compareWithOldVersion(oldVersion = "741.01") {
+async function compareWithOldVersion(oldVersion) {
   const currentVersionInfo = await getCurrentVersionInfo();
+  const currentVersion = currentVersionInfo.version;
 
-  const urlOld = proxy + encodeURIComponent(`https://empire-html5.goodgamestudios.com/default/items/items_v${oldVersion}.json`);
-  const resOld = await fetch(urlOld);
-  if (!resOld.ok) {
-    console.warn(`Failed to fetch version ${oldVersion}.`);
-    return;
-  }
-  const jsonOld = await resOld.json();
-  const oldDecorations = extractDecorations(jsonOld.buildings);
-
-  const oldCounts = countBySize(oldDecorations);
-  const newCounts = countBySize(allDecorations);
-
-  const oldDate = jsonOld.versionInfo?.date?.["@value"] || "unknown";
-
-  console.log(`Current Version: ${currentVersionInfo.version} (${currentVersionInfo.date})`);
-  console.log(`Compared Version: ${oldVersion} (${oldDate})\n`);
-
-  const allSizes = new Set([...Object.keys(oldCounts), ...Object.keys(newCounts)]);
-  const sortedSizes = [...allSizes].sort((a, b) => {
-    const [aw, ah] = a.split("x").map(Number);
-    const [bw, bh] = b.split("x").map(Number);
-    return (bw * bh) - (aw * ah);
-  });
-
-  let anyChanges = false;
-
-  for (const size of sortedSizes) {
-    const oldCount = oldCounts[size] || 0;
-    const newCount = newCounts[size] || 0;
-    const diff = newCount - oldCount;
-
-    if (diff !== 0) {
-      anyChanges = true;
-      let status = diff > 0 ? `+${diff} (increased)` : `${diff} (decreased)`;
-      console.log(`${size}: current = ${newCount}, old = ${oldCount} → ${status}`);
-    }
+  if (!oldVersion) {
+    const [majorStr] = currentVersion.split(".");
+    let major = parseInt(majorStr, 10);
+    oldVersion = `${major - 1}.01`;
   }
 
-  if (!anyChanges) {
-    console.log("No changes.");
-  }
+  let oldDecorations = [];
+  let addedWodIDs = [];
 
-  const oldWodIDs = new Set(oldDecorations.map(d => d.wodID));
-  const newWodIDs = new Set(allDecorations.map(d => d.wodID));
-  const addedWodIDs = Array.from(newWodIDs).filter(id => !oldWodIDs.has(id));
+  while (true) {
+    const urlOld = proxy + encodeURIComponent(`https://empire-html5.goodgamestudios.com/default/items/items_v${oldVersion}.json`);
+    const resOld = await fetch(urlOld);
+    if (!resOld.ok) return;
+
+    const jsonOld = await resOld.json();
+    oldDecorations = extractDecorations(jsonOld.buildings);
+
+    const oldWodIDs = new Set(oldDecorations.map(d => d.wodID));
+    const newWodIDs = new Set(allDecorations.map(d => d.wodID));
+    addedWodIDs = Array.from(newWodIDs).filter(id => !oldWodIDs.has(id));
+
+    if (addedWodIDs.length > 0 || oldVersion.startsWith("1")) break;
+
+    const [majorStr] = oldVersion.split(".");
+    const major = parseInt(majorStr, 10);
+    oldVersion = `${major - 1}.01`;
+  }
 
   if (addedWodIDs.length === 0) {
-    console.log("\nNo new decorations (wodID) were added.");
+    newWodIDsSet = new Set();
   } else {
-    console.log(`\nNew decorations added (wodID): ${addedWodIDs.join(", ")}`);
+    newWodIDsSet = new Set(addedWodIDs);
   }
+
+  showOnlyNew = true;
+  applyFiltersAndSorting();
 }
 
 function countBySize(items) {
