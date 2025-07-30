@@ -658,3 +658,22 @@ async function getCurrentVersionInfo() {
     return { version: "unknown", date: "unknown" };
   }
 }
+
+function handleResize() {
+  const select = document.getElementById('showFilter');
+  if (select) {
+    const isMobile = window.innerWidth < 576;
+    select.options[0].text = isMobile ? "Show all" : "Show all decorations";
+    select.options[1].text = isMobile ? "Show newest" : "Show only new decorations";
+  }
+
+  const note = document.querySelector('.note');
+  const content = document.getElementById('content');
+  if (note && content) {
+    const newHeight = window.innerHeight - note.offsetHeight - 10;
+    content.style.height = `${newHeight}px`;
+  }
+}
+
+window.addEventListener('resize', handleResize);
+window.addEventListener('DOMContentLoaded', handleResize);
