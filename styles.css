@@ -92,7 +92,7 @@ h1 {
     flex: 1;
     flex-direction: column;
     justify-content: space-between;
-    padding: 10px;
+    padding: 0px;
     position: relative;
     background-color: rgb(145, 98, 65);
     min-height: 100px;
@@ -105,19 +105,23 @@ h1 {
     margin: 0;
     font-weight: bold;
     color: white;
+    padding: 4px;
 }
 
 .box-content hr {
     width: 100%;
     border: 0;
     border-top: 2px solid white;
-    margin: 2px 0 5px;
+    opacity: 0.5;
+    margin: 0;
+    color: white;
 }
 
 .box-content p {
     margin: 0;
     font-size: 14px;
     color: white;
+    padding: 4px;
 }
 
 p {
@@ -164,4 +168,39 @@ p {
     pointer-events: none;
     cursor: not-allowed;
     transition: all 0.3s ease;
+}
+
+/* Home button */
+.home-icon-link {
+    position: fixed;
+    right: 10px;
+    top: 95%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+    z-index: 1000;
+    text-decoration: none;
+    opacity: 0.8;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.home-icon {
+    background-color: #7e4606;
+    border: 1px solid #f8bc00;
+    border-radius: 50%;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.home-icon i {
+    color: #4c473b;
+    font-size: 18px;
+}
+
+.home-icon-link .home-icon i {
+    color: #f8bc00;
 }
