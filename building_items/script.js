@@ -3,6 +3,9 @@ let lang = {};
 let allItems = [];
 let imageUrlMap = {};
 let currentFilter = "all";
+let typeFilterCheckboxes = [];
+let newItemIDsSet = new Set();
+let showOnlyNew = false;
 
 async function getItemVersion() {
   const url = proxy + encodeURIComponent("https://empire-html5.goodgamestudios.com/default/items/ItemsVersion.properties");
@@ -481,8 +484,7 @@ function renderConstructionItems(items) {
 
 function applyFiltersAndSorting() {
   const search = document.getElementById("searchInput").value.toLowerCase().trim();
-  const filterValue = currentFilter;
-  const appearanceFilter = document.getElementById("appearanceFilter").value;
+  const selectedTypes = Array.from(typeFilterCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
 
   const selectedFilters = Array.from(document.querySelectorAll(".search-filter:checked")).map(cb => cb.value);
   const hasSearchText = search.length > 0;
@@ -521,16 +523,17 @@ function applyFiltersAndSorting() {
       }
     }
 
-    let matchFilter = true;
-    if (filterValue === "permanent") matchFilter = !item.duration;
-    else if (filterValue === "temporary") matchFilter = !!item.duration;
+    let matchesType = false;
 
-    let matchAppearance = true;
-    if (appearanceFilter === "hide") {
-      matchAppearance = !item.decoPoints;
+    for (const type of selectedTypes) {
+      if (type === "permanent" && !item.duration && !item.decoPoints) matchesType = true;
+      if (type === "temporary" && item.duration) matchesType = true;
+      if (type === "appearance" && item.decoPoints) matchesType = true;
     }
 
-    return matchSearch && matchFilter && matchAppearance;
+    if (showOnlyNew && !newItemIDsSet.has(item.constructionItemID)) return false;
+
+    return matchSearch && matchesType;
   });
 
   filtered.sort((a, b) => getCIName(a).localeCompare(getCIName(b)));
@@ -544,19 +547,26 @@ function escapeRegExp(string) {
 
 function setupEventListeners() {
   const searchInput = document.getElementById("searchInput");
-  const durationFilter = document.getElementById("durationFilter");
-  const appearanceFilter = document.getElementById("appearanceFilter");
+  typeFilterCheckboxes = document.querySelectorAll(".type-filter");
+  const searchFilters = document.querySelectorAll(".search-filter");
+  const showFilter = document.getElementById("showFilter");
+
+  showFilter.addEventListener("change", () => {
+    const value = showFilter.value;
+
+    if (value === "new") {
+      compareWithOldVersion();
+    } else {
+      showOnlyNew = false;
+      applyFiltersAndSorting();
+    }
+  });
 
   searchInput.addEventListener("input", applyFiltersAndSorting);
 
-  durationFilter.addEventListener("change", () => {
-    currentFilter = durationFilter.value;
-    applyFiltersAndSorting();
+  typeFilterCheckboxes.forEach(cb => {
+    cb.addEventListener("change", applyFiltersAndSorting);
   });
-
-  appearanceFilter.addEventListener("change", applyFiltersAndSorting);
-
-  const searchFilters = document.querySelectorAll(".search-filter");
 
   function updateSearchInputState() {
     const selected = Array.from(searchFilters).filter(cb => cb.checked);
@@ -831,48 +841,41 @@ async function init() {
 
 init();
 
-// Console Command: compareWithOldVersion(<version>)
-async function compareWithOldVersion(oldVersion = "741.01") {
-  const url = proxy + encodeURIComponent(`https://empire-html5.goodgamestudios.com/default/items/items_v${oldVersion}.json`);
-  const res = await fetch(url);
-  if (!res.ok) {
-    console.warn(`Failed to fetch version ${oldVersion}.`);
-    return;
+async function compareWithOldVersion(oldVersion) {
+  const currentVersionInfo = await getVersionInfo();
+  const currentVersion = currentVersionInfo.version;
+
+  if (!oldVersion) {
+    const [majorStr] = currentVersion.split(".");
+    let major = parseInt(majorStr, 10);
+    oldVersion = `${major - 1}.01`;
   }
 
-  const json = await res.json();
-  const oldItems = extractConstructionItems(json);
+  let oldItems = [];
+  let addedIDs = [];
 
-  const currentVersionInfo = await getVersionInfo();
-  const oldVersionInfo = {
-    version: oldVersion,
-    date: json.versionInfo?.date?.["@value"] || "unknown"
-  };
+  while (true) {
+    const urlOld = proxy + encodeURIComponent(`https://empire-html5.goodgamestudios.com/default/items/items_v${oldVersion}.json`);
+    const resOld = await fetch(urlOld);
+    if (!resOld.ok) return;
 
-  const categorizedOld = categorizeItemsByDuration(oldItems);
-  const categorizedNew = categorizeItemsByDuration(allItems);
+    const jsonOld = await resOld.json();
+    oldItems = extractConstructionItems(jsonOld);
 
-  console.log(`Current Version: ${currentVersionInfo.version} (${currentVersionInfo.date})`);
-  console.log(`Compared Version: ${oldVersionInfo.version} (${oldVersionInfo.date})\n`);
+    const oldIDs = new Set(oldItems.map(i => i.constructionItemID));
+    const newIDs = new Set(allItems.map(i => i.constructionItemID));
+    addedIDs = Array.from(newIDs).filter(id => !oldIDs.has(id));
 
-  ["temporary", "permanent"].forEach(type => {
-    const oldList = categorizedOld[type];
-    const newList = categorizedNew[type];
+    if (addedIDs.length > 0 || oldVersion.startsWith("1")) break;
 
-    const oldCount = oldList.length;
-    const newCount = newList.length;
-    const diff = newCount - oldCount;
+    const [majorStr] = oldVersion.split(".");
+    const major = parseInt(majorStr, 10);
+    oldVersion = `${major - 1}.01`;
+  }
 
-    if (diff === 0) {
-      console.log(`No changes in ${type} items.`);
-    } else if (diff > 0) {
-      const oldIDs = new Set(oldList.map(i => i.constructionItemID));
-      const added = newList.filter(i => !oldIDs.has(i.constructionItemID));
-      console.log(`Added ${added.length} ${type} item(s) (constructionItemID): ${added.map(i => i.constructionItemID).join(", ")}`);
-    } else {
-      console.log(`${type} items decreased by ${-diff}`);
-    }
-  });
+  newItemIDsSet = new Set(addedIDs);
+  showOnlyNew = true;
+  applyFiltersAndSorting();
 }
 
 async function getVersionInfo() {
@@ -907,3 +910,17 @@ function categorizeItemsByDuration(items) {
     permanent: items.filter(item => !item.duration || Number(item.duration) === 0)
   };
 }
+
+function handleResize() {
+  const note = document.querySelector('.note');
+  const pageTitle = document.querySelector('.page-title');
+  const content = document.getElementById('content');
+
+  if (note && pageTitle && content) {
+    const totalHeightToSubtract = note.offsetHeight + pageTitle.offsetHeight + 18;
+    const newHeight = window.innerHeight - totalHeightToSubtract;
+    content.style.height = `${newHeight}px`;
+  }
+}
+window.addEventListener('resize', handleResize);
+window.addEventListener('DOMContentLoaded', handleResize);
