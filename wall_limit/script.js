@@ -5,7 +5,7 @@ function calculateDefenders() {
 
   var defenders = 0;
 
-  if (towers >= 0 && towers <= 25 && level >= 0 && level <= 8) {
+  if (towers >= 0 && towers <= 25 && level >= 0 && level <= 9) {
     var defendersTable = {
       0: 2,
       1: 10,
