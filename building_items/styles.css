@@ -191,12 +191,14 @@ p {
 }
 
 .dropdown-menu-custom {
-    background-color: #f2d9bb;
-    max-height: 300px;
-    overflow-y: auto;
-    border: 2px solid #a97c50;
-    padding: 10px;
-    border-radius: 10px;
+  background-color: #f3e0c2;
+  max-height: 300px;
+  overflow-y: auto;
+  border: 2px solid #a97c50;
+  padding: 10px;
+  border-radius: 8px;
+  min-width: 200px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .form-check-input {
@@ -473,14 +475,6 @@ p {
     margin-top: 10px;
 }
 
-.dropdown-menu-custom {
-  background-color: #f3e0c2;
-  border: 2px solid #a97c50;
-  border-radius: 8px;
-  padding: 10px;
-  min-width: 200px;
-}
-
 .dropdown-menu-custom li {
   list-style: none;
   margin-bottom: 5px;
@@ -499,10 +493,6 @@ p {
 .dropdown-menu-custom .form-check-label {
   color: #433120;
   font-weight: bold;
-}
-
-.dropdown-menu-custom {
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
 .btn.dropdown-toggle::after {
