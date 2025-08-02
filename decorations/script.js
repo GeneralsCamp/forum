@@ -18,10 +18,10 @@ async function getItemVersion() {
 }
 
 async function getLangVersion() {
-  const url = proxy + encodeURIComponent("https://empire-html5.goodgamestudios.com/config/languages/version.json");
+  const url = proxy + encodeURIComponent("https://langserv.public.ggs-ep.com/12/fr/@metadata");
   const res = await fetch(url);
   const json = await res.json();
-  return json.languages["en"];
+  return json["@metadata"].versionNo;
 }
 
 async function getLanguageData(version) {
@@ -474,7 +474,7 @@ async function getImageUrlMap() {
   const base = "https://empire-html5.goodgamestudios.com/default/assets/itemassets/";
 
   try {
-    const indexUrl = proxy + encodeURIComponent("https://empire-html5.goodgamestudios.com/default/index.html?inGameShop=1&allowFullScreen=true");
+    const indexUrl = proxy + encodeURIComponent("https://empire-html5.goodgamestudios.com/default/index.html");
     const indexRes = await fetch(indexUrl);
     if (!indexRes.ok) throw new Error("Failed to fetch index.html: " + indexRes.status);
     const indexHtml = await indexRes.text();
