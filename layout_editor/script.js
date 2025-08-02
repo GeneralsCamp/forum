@@ -2,10 +2,11 @@
 let buildingCount = 0;
 let buildingData = [];
 let predefinedBuildings = [];
-let isSwappedDimensions = false;
+let isSwappedDimensions = true;
 let activeOptimize = false;
 let isBuildingMoving = false;
 let startX, startY, currentBuilding;
+let isTransparentMode = false;
 
 /*** DATA FETCHING ***/
 function loadPredefinedBuildings() {
@@ -208,35 +209,6 @@ function resolveCollision(item1, item2) {
 }
 
 /*** BUILDING VALIDATION & CREATION ***/
-function validateAndCreateBuilding() {
-    const width = getWidthInputValue();
-    const height = getHeightInputValue();
-    if (isValidDimension(width) && isValidDimension(height)) {
-        createAndOptimizeBuilding(width, height);
-    } else {
-        showAlert('Width and height must be greater than 2!');
-    }
-}
-
-function getWidthInputValue() {
-    return parseInt(document.getElementById('widthInput').value);
-}
-
-function getHeightInputValue() {
-    return parseInt(document.getElementById('heightInput').value);
-}
-
-function isValidDimension(value) {
-    return value >= 2;
-}
-
-function createAndOptimizeBuilding(width, height) {
-    createCustomBuilding(width, height);
-    if (activeOptimize) {
-        optimizeBuildings();
-    }
-}
-
 function formatBuildingName(name) {
     return name.split(' ').join('<br>');
 }
@@ -247,6 +219,11 @@ function createCustomBuildingFromCache(data) {
     newBuilding.style.width = `${data.width}px`;
     newBuilding.style.height = `${data.height}px`;
     newBuilding.style.backgroundColor = `rgb(${data.color})`;
+
+    if (isTransparentMode) {
+        newBuilding.style.opacity = '0.5';
+    }
+
     newBuilding.style.position = 'absolute';
     newBuilding.style.left = data.left;
     newBuilding.style.top = data.top;
@@ -290,6 +267,9 @@ function createCustomBuildingFromPredefined(building) {
         newBuilding.style.width = `${width * 14.4}px`;
         newBuilding.style.height = `${height * 14.4}px`;
         newBuilding.style.backgroundColor = `rgb(${color})`;
+        if (isTransparentMode) {
+            newBuilding.style.opacity = '0.5';
+        }
         newBuilding.style.position = 'absolute';
 
         if (!activeOptimize) {
@@ -351,6 +331,9 @@ function swapBuildingDimensionsOnCreate(building) {
     newBuilding.style.width = `${swappedWidth * 14.4}px`;
     newBuilding.style.height = `${swappedHeight * 14.4}px`;
     newBuilding.style.backgroundColor = `rgb(${color})`;
+    if (isTransparentMode) {
+        newBuilding.style.opacity = '0.5';
+    }
     newBuilding.style.position = 'absolute';
 
     if (!activeOptimize) {
@@ -753,8 +736,23 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('optimizeBtn').addEventListener('click', toggleOptimization);
     document.getElementById('fullscreenBtn').addEventListener('click', toggleFullscreen);
     document.getElementById('orientationSelect').addEventListener('change', function () {
-        isSwappedDimensions = (this.value === 'vertical');
+        isSwappedDimensions = (this.value === 'horizontal');
     });
+
+    const transparencyToggle = document.getElementById('transparencyToggle');
+    if (transparencyToggle) {
+        transparencyToggle.addEventListener('click', function () {
+            isTransparentMode = !isTransparentMode;
+
+            const buildings = document.querySelectorAll('.building');
+            buildings.forEach(building => {
+                building.style.opacity = isTransparentMode ? '0.5' : '1';
+            });
+
+            this.dataset.active = isTransparentMode.toString();
+            this.textContent = `${isTransparentMode ? 'ON' : 'OFF'}`;
+        });
+    }
 
     /*** SEARCH & FILTER LISTENERS ***/
     document.getElementById("buildingSearch").addEventListener("input", filterBuildingsBySearch);
@@ -820,11 +818,11 @@ document.addEventListener('DOMContentLoaded', function () {
     /*** FULLSCREEN BUTTON DISABLE ON MOBILE ***/
     const fullscreenBtn = document.getElementById('fullscreenBtn');
     if (fullscreenBtn && window.innerWidth <= 1010) {
-
         fullscreenBtn.disabled = true;
         fullscreenBtn.classList.add('disabled');
     }
 });
+
 
 function generateSizeFilters() {
     const sizeFiltersContainer = document.getElementById('sizeFilters');

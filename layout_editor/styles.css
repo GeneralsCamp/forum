@@ -87,6 +87,10 @@ body {
     white-space: pre-line;
 }
 
+.transparent-mode .building {
+    opacity: 0.5;
+}
+
 
 /* ===== MODAL WINDOWS ===== */
 .modal-backdrop {
@@ -333,7 +337,8 @@ body {
 
 #buildingSearch:focus,
 #sortSelect:focus,
-.btn-custom:focus {
+.btn-custom:focus,
+.slot-name:focus {
     border-color: #f3c24a;
     box-shadow: 0 0 0 0.2rem rgba(243, 194, 74, 0.25);
     outline: none;
