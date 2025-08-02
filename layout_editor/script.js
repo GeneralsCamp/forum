@@ -802,7 +802,7 @@ document.addEventListener('DOMContentLoaded', function () {
         gridExpandToggle.classList.remove('expanded');
         gridExpandToggle.textContent = 'OFF';
     }
-console.log( window.innerWidth );
+
     /*** FULLSCREEN BUTTON DISABLE ON MOBILE ***/
     const fullscreenBtn = document.getElementById('fullscreenBtn');
     if (fullscreenBtn && window.innerWidth <= 980) {
