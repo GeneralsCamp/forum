@@ -9,7 +9,7 @@ let startX, startY, currentBuilding;
 let isTransparentMode = false;
 let originalLeft = 0;
 let originalTop = 0;
-
+let isCollisionActiveWhileMoving = false;
 
 /*** DATA FETCHING ***/
 function loadPredefinedBuildings() {
@@ -491,6 +491,11 @@ function moveBuilding(e) {
         snapToGrid(currentBuilding);
         checkIfInGrid(currentBuilding);
 
+        if (isCollisionActiveWhileMoving) {
+            checkBuildingsCollision(currentBuilding);
+        }
+
+
         const hasCollision = checkCollisionLive(currentBuilding);
         const nameLayer = currentBuilding.querySelector('div');
 
@@ -803,6 +808,7 @@ document.addEventListener('DOMContentLoaded', function () {
         isSwappedDimensions = (this.value === 'horizontal');
     });
 
+    /*** TRANSPARENCY TOGGLE + CACHE ***/
     const transparencyToggle = document.getElementById('transparencyToggle');
     if (transparencyToggle) {
         transparencyToggle.addEventListener('click', function () {
@@ -815,7 +821,36 @@ document.addEventListener('DOMContentLoaded', function () {
 
             this.dataset.active = isTransparentMode.toString();
             this.textContent = `${isTransparentMode ? 'ON' : 'OFF'}`;
+            localStorage.setItem('transparentMode', JSON.stringify(isTransparentMode));
         });
+
+        const savedTransparentMode = JSON.parse(localStorage.getItem('transparentMode'));
+        if (savedTransparentMode) {
+            isTransparentMode = true;
+            transparencyToggle.textContent = 'ON';
+            transparencyToggle.dataset.active = 'true';
+
+            const buildings = document.querySelectorAll('.building');
+            buildings.forEach(building => {
+                building.style.opacity = '0.5';
+            });
+        }
+    }
+
+    /*** SNAP TO GRID TOGGLE + CACHE ***/
+    const snapToggle = document.getElementById('snapToggle');
+    if (snapToggle) {
+        snapToggle.addEventListener('click', function () {
+            isSnapToGridEnabled = !isSnapToGridEnabled;
+            this.textContent = isSnapToGridEnabled ? 'ON' : 'OFF';
+            localStorage.setItem('snapToGrid', JSON.stringify(isSnapToGridEnabled));
+        });
+
+        const savedSnap = JSON.parse(localStorage.getItem('snapToGrid'));
+        if (savedSnap !== null) {
+            isSnapToGridEnabled = savedSnap;
+            snapToggle.textContent = isSnapToGridEnabled ? 'ON' : 'OFF';
+        }
     }
 
     /*** SEARCH & FILTER LISTENERS ***/
@@ -885,8 +920,23 @@ document.addEventListener('DOMContentLoaded', function () {
         fullscreenBtn.disabled = true;
         fullscreenBtn.classList.add('disabled');
     }
-});
 
+    /*** COLLISION WHILE MOVING ***/
+    const collisionToggle = document.getElementById('collisionToggle');
+    if (collisionToggle) {
+        collisionToggle.addEventListener('click', function () {
+            isCollisionActiveWhileMoving = !isCollisionActiveWhileMoving;
+            this.textContent = isCollisionActiveWhileMoving ? 'ON' : 'OFF';
+            localStorage.setItem('collisionWhileMoving', JSON.stringify(isCollisionActiveWhileMoving));
+        });
+        const savedCollision = JSON.parse(localStorage.getItem('collisionWhileMoving'));
+        if (savedCollision !== null) {
+            isCollisionActiveWhileMoving = savedCollision;
+            collisionToggle.textContent = isCollisionActiveWhileMoving ? 'ON' : 'OFF';
+        }
+    }
+
+});
 
 function generateSizeFilters() {
     const sizeFiltersContainer = document.getElementById('sizeFilters');
