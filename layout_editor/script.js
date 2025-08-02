@@ -9,7 +9,7 @@ let startX, startY, currentBuilding;
 let isTransparentMode = false;
 let originalLeft = 0;
 let originalTop = 0;
-let isCollisionActiveWhileMoving = false;
+let isCollisionActiveWhileMoving = true;
 
 /*** DATA FETCHING ***/
 function loadPredefinedBuildings() {
