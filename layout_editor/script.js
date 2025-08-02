@@ -7,6 +7,9 @@ let activeOptimize = false;
 let isBuildingMoving = false;
 let startX, startY, currentBuilding;
 let isTransparentMode = false;
+let originalLeft = 0;
+let originalTop = 0;
+
 
 /*** DATA FETCHING ***/
 function loadPredefinedBuildings() {
@@ -441,10 +444,29 @@ function startMovingBuilding(e) {
     if (!target) return;
 
     const rect = container.getBoundingClientRect();
-    startX = (e.type === 'mousedown') ? e.clientX - rect.left - target.offsetLeft : e.touches[0].clientX - rect.left - target.offsetLeft;
-    startY = (e.type === 'mousedown') ? e.clientY - rect.top - target.offsetTop : e.touches[0].clientY - rect.top - target.offsetTop;
+    startX = (e.type === 'mousedown')
+        ? e.clientX - rect.left - target.offsetLeft
+        : e.touches[0].clientX - rect.left - target.offsetLeft;
+    startY = (e.type === 'mousedown')
+        ? e.clientY - rect.top - target.offsetTop
+        : e.touches[0].clientY - rect.top - target.offsetTop;
+
     currentBuilding = target;
     isBuildingMoving = true;
+
+    container.appendChild(currentBuilding);
+
+    originalLeft = parseFloat(target.style.left);
+    originalTop = parseFloat(target.style.top);
+
+    target.style.opacity = '0.8';
+
+    const nameLayer = target.querySelector('div');
+    if (nameLayer) {
+        nameLayer.style.color = 'green';
+    }
+
+    target.style.border = '2px solid green';
 }
 
 function moveBuilding(e) {
@@ -460,22 +482,58 @@ function moveBuilding(e) {
             newY = e.touches[0].clientY - rect.top - startY;
         }
 
-        if (newX < 0) newX = 0;
-        if (newY < 0) newY = 0;
-        if (newX > rect.width - currentBuilding.offsetWidth) newX = rect.width - currentBuilding.offsetWidth;
-        if (newY > rect.height - currentBuilding.offsetHeight) newY = rect.height - currentBuilding.offsetHeight;
+        newX = Math.max(0, Math.min(newX, rect.width - currentBuilding.offsetWidth));
+        newY = Math.max(0, Math.min(newY, rect.height - currentBuilding.offsetHeight));
 
         currentBuilding.style.left = newX + 'px';
         currentBuilding.style.top = newY + 'px';
+
         snapToGrid(currentBuilding);
-        checkBuildingsCollision(currentBuilding);
         checkIfInGrid(currentBuilding);
+
+        const hasCollision = checkCollisionLive(currentBuilding);
+        const nameLayer = currentBuilding.querySelector('div');
+
+        if (hasCollision) {
+            nameLayer.style.color = 'red';
+            currentBuilding.style.border = '2px solid red';
+        } else {
+            nameLayer.style.color = 'green';
+            currentBuilding.style.border = '2px solid green';
+        }
+
     }
+}
+
+function checkCollisionLive(building) {
+    const buildings = document.querySelectorAll('.building');
+    for (let other of buildings) {
+        if (other !== building && isCollidingWithMargin(building, other)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 function stopMovingBuilding() {
     if (isBuildingMoving) {
         isBuildingMoving = false;
+
+        const nameLayer = currentBuilding.querySelector('div');
+        const hasCollision = checkCollisionLive(currentBuilding);
+
+        if (hasCollision) {
+            currentBuilding.style.left = originalLeft + 'px';
+            currentBuilding.style.top = originalTop + 'px';
+        }
+
+        currentBuilding.style.opacity = isTransparentMode ? '0.5' : '1';
+
+        currentBuilding.style.border = '';
+        if (nameLayer) {
+            nameLayer.style.color = '';
+        }
+
         snapToGrid(currentBuilding);
         checkBuildingsCollision(currentBuilding);
         checkIfInGrid(currentBuilding);
