@@ -490,15 +490,21 @@ document.addEventListener('mousedown', function (e) {
             const buildingDataItem = buildingData.find(data => data.element === clickedBuilding);
 
             if (buildingDataItem) {
+                const styleWidth = parseFloat(clickedBuilding.style.width);
+                const styleHeight = parseFloat(clickedBuilding.style.height);
                 const building = {
                     name: buildingDataItem.name,
                     color: buildingDataItem.color,
-                    width: buildingDataItem.width / 14.4,
-                    height: buildingDataItem.height / 14.4
+                    width: styleWidth / 14.4,
+                    height: styleHeight / 14.4
                 };
+
+                const originalSwapState = isSwappedDimensions;
+                isSwappedDimensions = false;
                 createCustomBuildingFromPredefined(building);
+                isSwappedDimensions = originalSwapState;
             } else {
-                console.error("Error!");
+                console.error("Error");
             }
         }
     }
