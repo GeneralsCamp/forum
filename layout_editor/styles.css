@@ -512,6 +512,12 @@ body {
     background-color: #e0b044;
 }
 
+button.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
 
 /* ===== OVERLAY & UTILS ===== */
 .overlay {
@@ -539,17 +545,9 @@ body {
     .modal-content {
         transform: scale(1) !important;
     }
-
-    .mobileOnly {
-        display: block;
-    }
 }
 
 @media (max-width: 980px) {
-    .mobileOnly {
-        display: none;
-    }
-
     .modal-content {
         max-height: 500px;
         min-height: 500px;

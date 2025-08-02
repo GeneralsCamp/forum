@@ -742,7 +742,6 @@ document.addEventListener('DOMContentLoaded', function () {
         isSwappedDimensions = (this.value === 'vertical');
     });
 
-
     /*** SEARCH & FILTER LISTENERS ***/
     document.getElementById("buildingSearch").addEventListener("input", filterBuildingsBySearch);
     document.querySelectorAll(".filter-checkbox").forEach(checkbox => {
@@ -802,6 +801,13 @@ document.addEventListener('DOMContentLoaded', function () {
         body.classList.remove('gridExpand');
         gridExpandToggle.classList.remove('expanded');
         gridExpandToggle.textContent = 'OFF';
+    }
+
+    /*** FULLSCREEN BUTTON DISABLE ON MOBILE ***/
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    if (fullscreenBtn && window.innerWidth <= 768) {
+        fullscreenBtn.disabled = true;
+        fullscreenBtn.classList.add('disabled');
     }
 });
 
