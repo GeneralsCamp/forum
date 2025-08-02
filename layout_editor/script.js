@@ -48,12 +48,12 @@ function saveToSlot() {
         }
     });
 
-    if (!slotExists) {
-        cachedBuildingData.push({
-            name: slotName,
-            buildings: buildingDataToSave
-        });
-    }
+    const gridExpanded = body.classList.contains('gridExpand');
+    cachedBuildingData.push({
+        name: slotName,
+        buildings: buildingDataToSave,
+        gridExpand: gridExpanded
+    });
 
     localStorage.setItem('buildingData', JSON.stringify(cachedBuildingData));
 
@@ -74,6 +74,20 @@ function loadFromSlot(loadBtn) {
     }
 
     clearAllBuildings();
+
+    if (slotData.gridExpand !== undefined) {
+        const expand = slotData.gridExpand;
+        if (expand) {
+            body.classList.add('gridExpand');
+            gridExpandToggle.classList.add('expanded');
+            gridExpandToggle.textContent = 'ON';
+        } else {
+            body.classList.remove('gridExpand');
+            gridExpandToggle.classList.remove('expanded');
+            gridExpandToggle.textContent = 'OFF';
+        }
+        localStorage.setItem('gridExpand', expand.toString());
+    }
 
     slotData.buildings.forEach(data => {
         createCustomBuildingFromCache(data);
@@ -805,8 +819,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     /*** FULLSCREEN BUTTON DISABLE ON MOBILE ***/
     const fullscreenBtn = document.getElementById('fullscreenBtn');
-    if (fullscreenBtn && window.innerWidth <= 980) {
-        
+    if (fullscreenBtn && window.innerWidth <= 1010) {
+
         fullscreenBtn.disabled = true;
         fullscreenBtn.classList.add('disabled');
     }
