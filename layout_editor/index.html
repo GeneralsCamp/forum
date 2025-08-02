@@ -11,15 +11,13 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="icon" type="image/webp" href="../img_base/favicon.ico">
     <meta charset="UTF-8">
-    <meta name="author" content="Dániel (Generals Camp)">
-    <meta name="description" content="Efficient castle layout editor for Goodgame Empire!">
-    <meta name="keywords"
-        content="castle planner, layout optimizer, GG Empire, building placement, strategy tool, castle design, grid system, base layout, optimization, web-based tool, GGE, GGS, Goodgame Studio">
+    <meta name="description" content="Efficient castle layout editor for Goodgame Empire & Empire: Four Kingdoms!">
     <link rel="stylesheet" href="styles.css">
-    <title>Castle Layout Editor 2025</title>
+    <title>Castle Layout Editor</title>
 </head>
 
 <body>
+
     <div class="container mt-4">
         <div class="row">
             <div class="col-12" onmousemove="moveBuilding(event)" onmouseup="stopMovingBuilding()"
@@ -28,20 +26,31 @@
             </div>
         </div>
     </div>
-    <!-- Bottom navbar -->
-    <div class="bottom-buttons-container">
+    <div class="bottom-buttons-container d-flex justify-content-center align-items-center">
         <button class="btn" data-bs-toggle="modal" data-bs-target="#buildingsModal" aria-label="Open buildings">
             <i class="bi bi-hammer fs-1"></i>
         </button>
+
+        <div class="vr mx-2"></div>
+
         <button class="btn" data-bs-toggle="modal" data-bs-target="#storageModal" aria-label="Open storage">
             <i class="bi bi-box-seam fs-1"></i>
         </button>
+
+        <div class="vr mx-2"></div>
+
         <button class="btn" data-bs-toggle="modal" data-bs-target="#savesModal" aria-label="Open saves">
             <i class="bi bi-save fs-1"></i>
         </button>
+
+        <div class="vr mx-2"></div>
+
         <button class="btn" data-bs-toggle="modal" data-bs-target="#settingsModal" aria-label="Open settings">
             <i class="bi bi-sliders fs-1"></i>
         </button>
+
+        <div class="vr mx-2"></div>
+
         <button class="btn" onclick="window.location.href='https://generalscamp.github.io/forum/';" aria-label="Home">
             <i class="bi bi-house fs-1"></i>
         </button>
@@ -50,41 +59,43 @@
     <!-- Buildings Modal -->
     <div class="modal fade" id="buildingsModal" tabindex="-1" aria-labelledby="buildingsModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content bugfix1 buildingList">
-                <div class="modal-header bugfix1">
-                    <h5 class="modal-title" id="buildingsModalLabel">BUILDINGS</h5>
-                    <div class="d-flex justify-content-end align-items-center w-100">
-                        <input type="text" id="buildingSearch" class="form-control me-2" placeholder="Search buildings">
-                        <div class="dropdown me-2 bugfix1">
-                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="filterDropdown"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-funnel"></i>
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="filterDropdown">
-                                <li>
-                                    <label class="dropdown-item">
-                                        <input type="checkbox" value="5x5" class="filter-checkbox" checked> 5x5
-                                    </label>
-                                </li>
-                                <li>
-                                    <label class="dropdown-item">
-                                        <input type="checkbox" value="5x10" class="filter-checkbox" checked> 5x10
-                                    </label>
-                                </li>
-                                <li>
-                                    <label class="dropdown-item">
-                                        <input type="checkbox" value="other" class="filter-checkbox" checked> Other
-                                    </label>
-                                </li>
-                            </ul>
+            <div class="modal-content  buildingList">
+
+                <div class="modal-header ">
+                    <h5 class="modal-title text-center" id="buildingsModalLabel">BUILDINGS</h5>
+                </div>
+
+                <div class="modal-header pt-2 pb-2">
+                    <div class="row w-100 g-2">
+
+                        <div class="col-4">
+                            <input type="text" id="buildingSearch" class="form-control"
+                                placeholder="Search buildings by name">
                         </div>
-                        <button class="btn btn-outline-secondary" id="swapButton">
-                            <i class="bi bi-arrow-repeat"></i> Rotate
-                        </button>
+
+                        <div class="col-4">
+                            <div class="dropdown w-100">
+                                <button class="btn btn-custom dropdown-toggle w-100" type="button" id="sizeDropdown"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    Size Filter
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-custom p-2" id="sizeFilters">
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <select id="orientationSelect" class="form-select custom-select text-center"
+                                aria-label="Select orientation">
+                                <option value="horizontal" selected>Horizontal</option>
+                                <option value="vertical">Vertical</option>
+                            </select>
+                        </div>
+
                     </div>
                 </div>
 
-                <div class="modal-body bugfix1">
+                <div class="modal-body">
                     <div class="row" id="buildingsGrid">
                         <!-- Dinamic items -->
                     </div>
@@ -96,27 +107,33 @@
     <!-- Settings Modal -->
     <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content bugfix1">
-                <div class="modal-header bugfix1">
-                    <h5 class="modal-title" id="settingsModalLabel">SETTINGS</h5>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-center" id="settingsModalLabel">SETTINGS</h5>
                 </div>
-                <div class="modal-body bugfix1">
-                    <!-- Optimize -->
-                    <div class="form-group">
-                        <label for="optimizeBtn">Optimize:</label>
-                        <button id="optimizeBtn" class="btn btn-black" style="font-weight: bolder;">ON</button>
+                <div class="modal-header pt-2 pb-2">
+                    <div class="row building-header">
+                        <div class="col-6"><b>Function</b></div>
+                        <div class="col-6"><b>Action</b></div>
                     </div>
-                    <!-- Expansion -->
-                    <div class="form-group">
-                        <label for="grid-expand-toggle">Expansion:</label>
-                        <button id="grid-expand-toggle" aria-label="Expansion" class="btn btn-black"
-                            style="font-weight: bolder;">OFF</button>
-                    </div>
-                    <!-- Fullscreen -->
-                    <div class="form-group mobileOnly">
-                        <label for="fullscreenBtn">Fullscreen:</label>
-                        <button id="fullscreenBtn" aria-label="Fullscreen" class="btn btn-black"
-                            style="font-weight: bolder;">OFF</button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="grid-container settings-container">
+                        <!-- Optimize -->
+                        <div class="row building-info pt-2 pb-2">
+                            <div class="col">Optimize buildings</div>
+                            <div class="col"><button id="optimizeBtn" class="btn">OFF</button></div>
+                        </div>
+                        <!-- Expansion -->
+                        <div class="row building-info pt-2 pb-2">
+                            <div class="col">Add expansions</div>
+                            <div class="col"><button id="grid-expand-toggle" class="btn">OFF</button></div>
+                        </div>
+                        <!-- Fullscreen -->
+                        <div class="row building-info pt-2 pb-2">
+                            <div class="col">Fullscreen mode</div>
+                            <div class="col"><button id="fullscreenBtn" class="btn">OFF</button></div>
+                        </div>
                     </div>
                 </div>
 
@@ -127,18 +144,20 @@
     <!-- Storage Modal -->
     <div class="modal fade" id="storageModal" tabindex="-1" aria-labelledby="storageModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content bugfix1">
-                <div class="modal-header bugfix1">
-                    <h5 class="modal-title" id="storageModalLabel">PLACED BUILDINGS</h5>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-center" id="storageModalLabel">PLACED BUILDINGS</h5>
                 </div>
-                <div class="modal-body bugfix1">
+                <div class="modal-header pt-2 pb-2">
+                    <div class="row building-header">
+                        <div class="col-3"><b>Name</b></div>
+                        <div class="col-3"><b>Size</b></div>
+                        <div class="col-3"><b>Color</b></div>
+                        <div class="col-3"><b>Action</b></div>
+                    </div>
+                </div>
+                <div class="modal-body p-0">
                     <div id="buildingList" class="grid-container">
-                        <div class="row building-header">
-                            <div class="col"><b>Name</b></div>
-                            <div class="col"><b>Size</b></div>
-                            <div class="col"><b>Color</b></div>
-                            <div class="col"><b>&nbsp&nbspDelete</b></div>
-                        </div>
                         <!-- Dinamic items -->
                     </div>
                 </div>
@@ -149,21 +168,33 @@
     <!-- Saves Modal -->
     <div class="modal fade" id="savesModal" tabindex="-1" aria-labelledby="savesModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content bugfix1">
-                <div class="modal-header bugfix1">
-                    <h5 class="modal-title" id="savesModalLabel">SAVE & LOAD LAYOUTS</h5>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-center" id="savesModalLabel">SAVE & LOAD LAYOUTS</h5>
                 </div>
-                <div class="modal-body bugfix1">
-                    <div id="save-slots">
-                        <div class="save-slot" id="slot-1">
+                <div class="modal-header layout-save-bar pt-2 pb-2">
+                    <div class="row" id="slot-1">
+                        <div class="col-10">
                             <input type="text" class="form-control slot-name" id="slot-1-name"
-                                placeholder="Layout name">
-                            <button class="btn btn-dark" onclick="saveToSlot()"
+                                placeholder="Name your layout before saving">
+                        </div>
+                        <div class="col-2 d-flex justify-content-start">
+                            <button class="btn save-button" onclick="saveToSlot()"
                                 style="font-weight: bolder;">Save</button>
                         </div>
+
                     </div>
+                </div>
+                <div class="modal-header pt-2 pb-2">
+                    <div class="row slots-header">
+                        <div class="col-4"><b>Name</b></div>
+                        <div class="col-4"><b>Load</b></div>
+                        <div class="col-4"><b>Delete</b></div>
+                    </div>
+                </div>
+                <div class="modal-body p-0">
                     <!-- Save slots -->
-                    <div class="save-slot" id="slot-template" style="display: none;">
+                    <div class="save-slot row" id="slot-template" style="display: none;">
                         <div class="slot-info">
                             <span class="castle-name"></span>
                         </div>
@@ -172,11 +203,6 @@
                     </div>
 
                     <div id="slotsList" class="grid-container">
-                        <div class="row slots-header">
-                            <div class="col"><b>Name</b></div>
-                            <div class="col"><b>&nbsp&nbspLoad</b></div>
-                            <div class="col"><b>&nbsp&nbspDelete</b></div>
-                        </div>
                         <!-- Dinamic items -->
                     </div>
 

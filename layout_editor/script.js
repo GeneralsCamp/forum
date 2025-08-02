@@ -13,6 +13,7 @@ function loadPredefinedBuildings() {
         .then(response => response.json())
         .then(data => {
             predefinedBuildings = data;
+            generateSizeFilters();
             populateBuildingsModal();
         })
         .catch(error => console.error("Error loading buildings:", error));
@@ -94,11 +95,11 @@ function updateSaveSlotsUI(slotName) {
     const slotsList = document.getElementById('slotsList');
 
     const slotItem = document.createElement('div');
-    slotItem.className = 'row slot-item';
+    slotItem.className = 'slot-item row pt-2 pb-2';
     slotItem.innerHTML = `
-        <div class="col castle-name">${slotName}</div>
-        <div class="col"><button class="btn btn-dark load-btn" onclick="loadFromSlot(this)">Load</button></div>
-        <div class="col"><button class="btn btn-dark delete-btn" onclick="deleteSlot(this)">Delete</button></div>
+        <div class="col-4 castle-name">${slotName}</div>
+        <div class="col-4"><button class="btn load-btn" onclick="loadFromSlot(this)">Load</button></div>
+        <div class="col-4"><button class="btn delete-btn" onclick="deleteSlot(this)">Delete</button></div>
     `;
 
     slotsList.appendChild(slotItem);
@@ -141,7 +142,7 @@ function initializeGrid() {
     gridContainer.innerHTML = '';
 
     const gridSize = 70;
-    
+
     for (let i = 0; i < gridSize * gridSize; i++) {
         const cell = document.createElement('div');
         cell.classList.add('cell');
@@ -244,13 +245,13 @@ function createCustomBuildingFromCache(data) {
     container.appendChild(newBuilding);
 
     const buildingInfo = document.createElement('div');
-    buildingInfo.className = 'row building-info';
+    buildingInfo.className = 'row building-info pt-2 pb-2';
 
     buildingInfo.innerHTML = `
         <div class="col">${data.name}</div>
         <div class="col">${(data.width / 14.4)}x${(data.height / 14.4)}</div>
         <div class="col"><div class="color-square" style="background-color: rgb(${data.color});"></div></div>
-        <div class="col"><button class="btn btn-dark remove-building-btn" onclick="removeBuildingFromList(this)">Delete</button></div>
+        <div class="col"><button class="btn remove-building-btn" onclick="removeBuildingFromList(this)">Delete</button></div>
     `;
 
     buildingList.appendChild(buildingInfo);
@@ -308,12 +309,12 @@ function createCustomBuildingFromPredefined(building) {
         buildingCount++;
 
         const buildingInfo = document.createElement('div');
-        buildingInfo.className = 'row building-info';
+        buildingInfo.className = 'row building-info pt-2 pb-2';
         buildingInfo.innerHTML = `
             <div class="col">${name}</div>
             <div class="col">${width}x${height}</div>
             <div class="col"><div class="color-square" style="background-color: rgb(${color});"></div></div>
-            <div class="col"><button class="btn btn-dark remove-building-btn" onclick="removeBuildingFromList(this)">Delete</button></div>
+            <div class="col"><button class="btn remove-building-btn" onclick="removeBuildingFromList(this)">Delete</button></div>
         `;
         buildingList.appendChild(buildingInfo);
 
@@ -369,12 +370,12 @@ function swapBuildingDimensionsOnCreate(building) {
     buildingCount++;
 
     const buildingInfo = document.createElement('div');
-    buildingInfo.className = 'row building-info';
+    buildingInfo.className = 'row building-info pt-2 pb-2';
     buildingInfo.innerHTML = `
         <div class="col">${name}</div>
         <div class="col">${swappedWidth}x${swappedHeight}</div>
         <div class="col"><div class="color-square" style="background-color: rgb(${color});"></div></div>
-        <div class="col"><button class="btn btn-dark remove-building-btn" onclick="removeBuildingFromList(this)">Delete</button></div>
+        <div class="col"><button class="btn remove-building-btn" onclick="removeBuildingFromList(this)">Delete</button></div>
     `;
     buildingList.appendChild(buildingInfo);
 
@@ -403,12 +404,12 @@ function removeBuilding(e) {
     if (e instanceof Event) {
         e.preventDefault();
         targetBuilding = e.target.closest('.building');
-    } 
+    }
     else if (e instanceof HTMLElement) {
         targetBuilding = e;
-    } 
+    }
     if (!targetBuilding) return;
-    
+
     if (!targetBuilding.classList.contains('predefined')) {
         const removedBuilding = buildingData.find(data => data.element === targetBuilding);
         if (removedBuilding) {
@@ -437,16 +438,16 @@ function clearAllBuildings() {
 
 /*** DRAG & DROP FUNCTIONALITY ***/
 function startMovingBuilding(e) {
-    // Középső egérgomb esetén nem indítjuk el a mozgatást
     if (e.button === 1) return;
 
-    if (e.type === 'mousedown' || e.type === 'touchstart') {
-        isBuildingMoving = true;
-        const rect = container.getBoundingClientRect();
-        startX = (e.type === 'mousedown') ? e.clientX - rect.left - e.target.offsetLeft : e.touches[0].clientX - rect.left - e.target.offsetLeft;
-        startY = (e.type === 'mousedown') ? e.clientY - rect.top - e.target.offsetTop : e.touches[0].clientY - rect.top - e.target.offsetTop;
-        currentBuilding = e.target;
-    }
+    const target = e.target.closest('.building');
+    if (!target) return;
+
+    const rect = container.getBoundingClientRect();
+    startX = (e.type === 'mousedown') ? e.clientX - rect.left - target.offsetLeft : e.touches[0].clientX - rect.left - target.offsetLeft;
+    startY = (e.type === 'mousedown') ? e.clientY - rect.top - target.offsetTop : e.touches[0].clientY - rect.top - target.offsetTop;
+    currentBuilding = target;
+    isBuildingMoving = true;
 }
 
 function moveBuilding(e) {
@@ -483,6 +484,28 @@ function stopMovingBuilding() {
         checkIfInGrid(currentBuilding);
     }
 }
+
+document.addEventListener('mousedown', function (e) {
+    if (e.button === 1) {
+        const clickedBuilding = e.target.closest('.building');
+        if (clickedBuilding) {
+            e.preventDefault();
+            const buildingDataItem = buildingData.find(data => data.element === clickedBuilding);
+
+            if (buildingDataItem) {
+                const building = {
+                    name: buildingDataItem.name,
+                    color: buildingDataItem.color,
+                    width: buildingDataItem.width / 14.4,
+                    height: buildingDataItem.height / 14.4
+                };
+                createCustomBuildingFromPredefined(building);
+            } else {
+                console.error("Error!");
+            }
+        }
+    }
+});
 
 /*** BUILDING OPTIMIZATION ***/
 function toggleOptimization() {
@@ -554,7 +577,7 @@ function loadOptimizeStateFromCache() {
     if (cachedOptimizeState !== null) {
         activeOptimize = JSON.parse(cachedOptimizeState);
         const optimizeBtn = document.getElementById('optimizeBtn');
-        
+
         if (optimizeBtn) {
             optimizeBtn.textContent = activeOptimize ? 'ON' : 'OFF';
         }
@@ -593,7 +616,6 @@ function populateBuildingsModal() {
     const buildingsGrid = document.getElementById("buildingsGrid");
     buildingsGrid.innerHTML = "";
 
-    // Mentett szűrők és keresési lekérdezés visszatöltése
     const searchQuery = document.getElementById("buildingSearch").value.toLowerCase();
     const activeFilters = Array.from(document.querySelectorAll(".filter-checkbox"))
         .filter(checkbox => checkbox.checked)
@@ -606,17 +628,17 @@ function populateBuildingsModal() {
             (activeFilters.includes("other") && size !== "5x5" && size !== "5x10")
         ) {
             const buildingCol = document.createElement("div");
-            buildingCol.className = "col-md-6 col-sm-12 mb-4";
+            buildingCol.className = "col-md-6 col-lg-4";
 
             buildingCol.innerHTML = `
             <div class="box">
                 <div class="box-icon">
-                    ${building.image ? 
+                    ${building.image ?
                     `<img src="${building.image}" alt="${building.name}" class="building-icon">` :
                     `<i class="bi bi-house"></i>`
                 }
                 </div>
-                <div class="box-content bugfix1">
+                <div class="box-content">
                     <h2>${building.name}</h2>
                     <hr>
                     <p>${building.description || "No description available."}</p>
@@ -627,7 +649,6 @@ function populateBuildingsModal() {
                 createCustomBuildingFromPredefined(building);
             });
 
-            // Alkalmazzuk a keresési szűrőt
             if (building.name.toLowerCase().includes(searchQuery)) {
                 buildingsGrid.appendChild(buildingCol);
             }
@@ -717,9 +738,10 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('grid-expand-toggle').addEventListener('click', toggleGridExpansion);
     document.getElementById('optimizeBtn').addEventListener('click', toggleOptimization);
     document.getElementById('fullscreenBtn').addEventListener('click', toggleFullscreen);
-    document.getElementById('swapButton').addEventListener('click', () => {
-        isSwappedDimensions = !isSwappedDimensions;
+    document.getElementById('orientationSelect').addEventListener('change', function () {
+        isSwappedDimensions = (this.value === 'vertical');
     });
+
 
     /*** SEARCH & FILTER LISTENERS ***/
     document.getElementById("buildingSearch").addEventListener("input", filterBuildingsBySearch);
@@ -741,13 +763,31 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /*** TOUCH & MOUSE EVENTS FOR MOVING BUILDINGS ***/
-    document.addEventListener('touchstart', startMovingBuilding);
-    document.addEventListener('touchmove', moveBuilding);
-    document.addEventListener('touchend', stopMovingBuilding);
-    
-    document.addEventListener('mousedown', startMovingBuilding);
-    document.addEventListener('mousemove', moveBuilding);
-    document.addEventListener('mouseup', stopMovingBuilding);
+    document.addEventListener('touchstart', function (e) {
+        const target = e.target.closest('.building');
+        if (target) startMovingBuilding(e);
+    });
+
+    document.addEventListener('touchmove', function (e) {
+        if (isBuildingMoving) moveBuilding(e);
+    });
+
+    document.addEventListener('touchend', function () {
+        if (isBuildingMoving) stopMovingBuilding();
+    });
+
+    document.addEventListener('mousedown', function (e) {
+        const target = e.target.closest('.building');
+        if (target) startMovingBuilding(e);
+    });
+
+    document.addEventListener('mousemove', function (e) {
+        if (isBuildingMoving) moveBuilding(e);
+    });
+
+    document.addEventListener('mouseup', function () {
+        if (isBuildingMoving) stopMovingBuilding();
+    });
 
     /*** MODAL EVENT TO POPULATE BUILDINGS ***/
     document.getElementById("buildingsModal").addEventListener("show.bs.modal", populateBuildingsModal);
@@ -765,67 +805,35 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+function generateSizeFilters() {
+    const sizeFiltersContainer = document.getElementById('sizeFilters');
+    sizeFiltersContainer.innerHTML = '';
 
-/*** DEVELOPER FUNCTIONS ***/
-function share() {
-    const layoutData = buildingData.map(data => ({
-        name: data.name,
-        color: data.color,
-        width: data.width,
-        height: data.height,
-        left: data.element.style.left,
-        top: data.element.style.top
-    }));
+    const sizes = new Set();
 
-    const jsonString = JSON.stringify(layoutData);
-    const encodedData = btoa(jsonString);
-    const shareLink = `${window.location.origin}${window.location.pathname}?layout=${encodedData}`;
+    predefinedBuildings.forEach(building => {
+        const size = `${building.width}x${building.height}`;
+        sizes.add(size);
+    });
 
-    const tempInput = document.createElement("textarea");
-    tempInput.value = shareLink;
-    document.body.appendChild(tempInput);
-    tempInput.select();
-    document.execCommand("copy");
-    document.body.removeChild(tempInput);
+    const sortedSizes = Array.from(sizes).sort((a, b) => {
+        const [aw, ah] = a.split('x').map(Number);
+        const [bw, bh] = b.split('x').map(Number);
+        return (bw * bh) - (aw * ah);
+    });
 
-    alert("Shareable link copied to clipboard!");
+    sortedSizes.forEach(size => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <div class="form-check">
+                <input class="form-check-input filter-checkbox" type="checkbox" value="${size}" id="size-${size}" checked>
+                <label class="form-check-label" for="size-${size}">${size}</label>
+            </div>
+        `;
+        sizeFiltersContainer.appendChild(li);
+    });
+
+    document.querySelectorAll(".filter-checkbox").forEach(checkbox => {
+        checkbox.addEventListener("change", filterBuildingsBySearch);
+    });
 }
-
-function loadSharedLayout() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const layoutData = urlParams.get("layout");
-    if (layoutData) {
-        try {
-            const decodedData = JSON.parse(atob(layoutData));
-            clearAllBuildings();
-            decodedData.forEach(createCustomBuildingFromCache);
-            alert("Shared layout loaded!");
-        } catch (err) {
-            console.error("Error:", err);
-        }
-    }
-}
-
-document.addEventListener('DOMContentLoaded', loadSharedLayout);
-
-document.addEventListener('mousedown', function (e) {
-    if (e.button === 1) {
-        const clickedBuilding = e.target.closest('.building');
-        if (clickedBuilding) {
-            e.preventDefault();
-            const buildingDataItem = buildingData.find(data => data.element === clickedBuilding);
-
-            if (buildingDataItem) {
-                const building = {
-                    name: buildingDataItem.name,
-                    color: buildingDataItem.color,
-                    width: buildingDataItem.width / 14.4,
-                    height: buildingDataItem.height / 14.4
-                };
-                createCustomBuildingFromPredefined(building);
-            } else {
-                console.error("Error!");
-            }
-        }
-    }
-});
