@@ -6,10 +6,18 @@ let isSwappedDimensions = true;
 let activeOptimize = false;
 let isBuildingMoving = false;
 let startX, startY, currentBuilding;
-let isTransparentMode = false;
+let isTransparentMode = true;
 let originalLeft = 0;
 let originalTop = 0;
 let isCollisionActiveWhileMoving = true;
+
+/***
+COLOR CODES:
+- Deco: 111 68 119
+- Civil: 183 197 53
+- Military: 61 130 141
+- Other: 128 128 128
+***/
 
 /*** DATA FETCHING ***/
 function loadPredefinedBuildings() {
@@ -212,10 +220,6 @@ function resolveCollision(item1, item2) {
 }
 
 /*** BUILDING VALIDATION & CREATION ***/
-function formatBuildingName(name) {
-    return name.split(' ').join('<br>');
-}
-
 function createCustomBuildingFromCache(data) {
     const newBuilding = document.createElement('div');
     newBuilding.className = 'building custom';
@@ -224,7 +228,7 @@ function createCustomBuildingFromCache(data) {
     newBuilding.style.backgroundColor = `rgb(${data.color})`;
 
     if (isTransparentMode) {
-        newBuilding.style.opacity = '0.5';
+        newBuilding.style.opacity = '0.75';
     }
 
     newBuilding.style.position = 'absolute';
@@ -233,7 +237,7 @@ function createCustomBuildingFromCache(data) {
 
     const nameLayer = document.createElement('div');
     nameLayer.style.pointerEvents = 'none';
-    nameLayer.innerHTML = `<div style="word-wrap: break-word;">${formatBuildingName(data.name)}</div>`;
+    nameLayer.innerHTML = `<div style="word-wrap: break-word;">${data.name}</div>`;
     newBuilding.appendChild(nameLayer);
 
     container.appendChild(newBuilding);
@@ -271,7 +275,7 @@ function createCustomBuildingFromPredefined(building) {
         newBuilding.style.height = `${height * 14.4}px`;
         newBuilding.style.backgroundColor = `rgb(${color})`;
         if (isTransparentMode) {
-            newBuilding.style.opacity = '0.5';
+            newBuilding.style.opacity = '0.75';
         }
         newBuilding.style.position = 'absolute';
 
@@ -299,7 +303,7 @@ function createCustomBuildingFromPredefined(building) {
 
         const nameLayer = document.createElement('div');
         nameLayer.style.pointerEvents = 'none';
-        nameLayer.innerHTML = `<div style="word-wrap: break-word;">${formatBuildingName(name)}</div>`;
+        nameLayer.innerHTML = `<div style="word-wrap: break-word;">${name}</div>`;
         newBuilding.appendChild(nameLayer);
 
         container.appendChild(newBuilding);
@@ -335,7 +339,7 @@ function swapBuildingDimensionsOnCreate(building) {
     newBuilding.style.height = `${swappedHeight * 14.4}px`;
     newBuilding.style.backgroundColor = `rgb(${color})`;
     if (isTransparentMode) {
-        newBuilding.style.opacity = '0.5';
+        newBuilding.style.opacity = '0.75';
     }
     newBuilding.style.position = 'absolute';
 
@@ -459,7 +463,7 @@ function startMovingBuilding(e) {
     originalLeft = parseFloat(target.style.left);
     originalTop = parseFloat(target.style.top);
 
-    target.style.opacity = '0.8';
+    target.style.opacity = '0.75';
 
     const nameLayer = target.querySelector('div');
     if (nameLayer) {
@@ -532,7 +536,7 @@ function stopMovingBuilding() {
             currentBuilding.style.top = originalTop + 'px';
         }
 
-        currentBuilding.style.opacity = isTransparentMode ? '0.5' : '1';
+        currentBuilding.style.opacity = isTransparentMode ? '0.75' : '1';
 
         currentBuilding.style.border = '';
         if (nameLayer) {
@@ -816,7 +820,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const buildings = document.querySelectorAll('.building');
             buildings.forEach(building => {
-                building.style.opacity = isTransparentMode ? '0.5' : '1';
+                building.style.opacity = isTransparentMode ? '0.75' : '1';
             });
 
             this.dataset.active = isTransparentMode.toString();
