@@ -272,7 +272,11 @@ body {
 
 .dropdown-menu-custom li {
     list-style: none;
-    margin-bottom: 5px;
+}
+
+.form-check {
+    margin-bottom: 0px;
+    padding-bottom: 5px;
 }
 
 .dropdown-menu-custom .form-check-input {

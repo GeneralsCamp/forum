@@ -10,6 +10,7 @@ let isTransparentMode = true;
 let originalLeft = 0;
 let originalTop = 0;
 let isCollisionActiveWhileMoving = true;
+const defaultBuildingNames = ["The Keep"];
 
 /***
 COLOR CODES:
@@ -27,6 +28,7 @@ function loadPredefinedBuildings() {
             predefinedBuildings = data;
             generateSizeFilters();
             populateBuildingsModal();
+            tryPlaceDefaultBuildings();
         })
         .catch(error => console.error("Error loading buildings:", error));
 }
@@ -857,12 +859,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    /*** SEARCH & FILTER LISTENERS ***/
-    document.getElementById("buildingSearch").addEventListener("input", filterBuildingsBySearch);
-    document.querySelectorAll(".filter-checkbox").forEach(checkbox => {
-        checkbox.addEventListener("change", filterBuildingsBySearch);
-    });
-
     /*** LOAD OPTIMIZATION STATE ***/
     loadOptimizeStateFromCache();
 
@@ -939,9 +935,9 @@ document.addEventListener('DOMContentLoaded', function () {
             collisionToggle.textContent = isCollisionActiveWhileMoving ? 'ON' : 'OFF';
         }
     }
-
 });
 
+/*** GENERATE SIZE FILTERS ***/
 function generateSizeFilters() {
     const sizeFiltersContainer = document.getElementById('sizeFilters');
     sizeFiltersContainer.innerHTML = '';
@@ -970,7 +966,43 @@ function generateSizeFilters() {
         sizeFiltersContainer.appendChild(li);
     });
 
+    document.querySelectorAll('#sizeFilters .form-check').forEach(formCheck => {
+        formCheck.addEventListener('click', function (e) {
+            const target = e.target;
+            const isCheckbox = target.classList.contains('form-check-input');
+            const isLabel = target.tagName.toLowerCase() === 'label';
+
+            if (!isCheckbox && !isLabel) {
+                const checkbox = formCheck.querySelector('input[type="checkbox"]');
+                if (checkbox) checkbox.checked = !checkbox.checked;
+            }
+            filterBuildingsBySearch();
+            e.stopPropagation();
+        });
+    });
+
     document.querySelectorAll(".filter-checkbox").forEach(checkbox => {
         checkbox.addEventListener("change", filterBuildingsBySearch);
     });
 }
+
+/*** DEFAULT BUILDINGS ON EMPTY LAYOUT ***/
+const tryPlaceDefaultBuildings = () => {
+    if (buildingData.length === 0 && predefinedBuildings.length > 0) {
+        const originalOptimizeState = activeOptimize;
+        activeOptimize = true;
+
+        defaultBuildingNames.forEach(name => {
+            const match = predefinedBuildings.find(b => b.name === name);
+            if (match) {
+                createCustomBuildingFromPredefined(match);
+            }
+        });
+
+        activeOptimize = originalOptimizeState;
+        const optimizeBtn = document.getElementById('optimizeBtn');
+        if (optimizeBtn) {
+            optimizeBtn.textContent = activeOptimize ? 'ON' : 'OFF';
+        }
+    }
+};
