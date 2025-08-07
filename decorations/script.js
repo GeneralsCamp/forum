@@ -619,7 +619,7 @@ async function compareWithOldVersion(oldVersion) {
     try {
       resOld = await fetchWithFallback(url);
     } catch (err) {
-      console.error("Hiba az előző verzió lekérdezésekor:", err);
+      console.error("Error loading previous version:", err);
       return;
     }
 
