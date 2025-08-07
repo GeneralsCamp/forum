@@ -1,4 +1,6 @@
-const proxy = "https://corsproxy.io/?";
+const myProxy = "https://my-proxy-8u49.onrender.com/";
+const fallbackProxy = "https://corsproxy.io/?";
+
 let lang = {};
 let allItems = [];
 let imageUrlMap = {};
@@ -7,9 +9,23 @@ let typeFilterCheckboxes = [];
 let newItemIDsSet = new Set();
 let showOnlyNew = false;
 
+async function fetchWithFallback(url) {
+  try {
+    const response = await fetch(myProxy + url);
+    if (!response.ok) throw new Error("myProxy: bad response");
+    return response;
+  } catch (err) {
+    console.warn("Proxy error:", err);
+    const encodedUrl = encodeURIComponent(url);
+    const fallbackResponse = await fetch(fallbackProxy + encodedUrl);
+    if (!fallbackResponse.ok) throw new Error("fallbackProxy: bad response");
+    return fallbackResponse;
+  }
+}
+
 async function getItemVersion() {
-  const url = proxy + encodeURIComponent("https://empire-html5.goodgamestudios.com/default/items/ItemsVersion.properties");
-  const res = await fetch(url);
+  const url = "https://empire-html5.goodgamestudios.com/default/items/ItemsVersion.properties";
+  const res = await fetchWithFallback(url);
   const text = await res.text();
   const match = text.match(/CastleItemXMLVersion=(\d+\.\d+)/);
   if (!match) throw new Error("Version: error");
@@ -17,22 +33,22 @@ async function getItemVersion() {
 }
 
 async function getLangVersion() {
-  const url = proxy + encodeURIComponent("https://langserv.public.ggs-ep.com/12/fr/@metadata");
-  const res = await fetch(url);
+  const url = "https://langserv.public.ggs-ep.com/12/fr/@metadata";
+  const res = await fetchWithFallback(url);
   const json = await res.json();
   return json["@metadata"].versionNo;
 }
 
 async function getLanguageData(version) {
-  const url = proxy + encodeURIComponent(`https://langserv.public.ggs-ep.com/12@${version}/en/*`);
-  const res = await fetch(url);
+  const url = `https://langserv.public.ggs-ep.com/12@${version}/en/*`;
+  const res = await fetchWithFallback(url);
   const data = await res.json();
   lang = data;
 }
 
 async function getItems(version) {
-  const url = proxy + encodeURIComponent(`https://empire-html5.goodgamestudios.com/default/items/items_v${version}.json`);
-  const res = await fetch(url);
+  const url = `https://empire-html5.goodgamestudios.com/default/items/items_v${version}.json`;
+  const res = await fetchWithFallback(url);
   const data = await res.json();
 
   if (Array.isArray(data.effects)) {
@@ -600,8 +616,8 @@ async function getImageUrlMap() {
   const base = "https://empire-html5.goodgamestudios.com/default/assets/itemassets/";
 
   try {
-    const indexUrl = proxy + encodeURIComponent("https://empire-html5.goodgamestudios.com/default/index.html");
-    const indexRes = await fetch(indexUrl);
+    const indexUrl = "https://empire-html5.goodgamestudios.com/default/index.html";
+    const indexRes = await fetchWithFallback(indexUrl);
     if (!indexRes.ok) throw new Error("Failed to fetch index.html: " + indexRes.status);
     const indexHtml = await indexRes.text();
 
@@ -610,14 +626,14 @@ async function getImageUrlMap() {
 
     const dllRelativeUrl = dllMatch[1];
     dllVersion = dllRelativeUrl;
-    dllUrl = `https://empire-html5.goodgamestudios.com/default/${dllRelativeUrl}`;
 
-    console.log(`DLL URL: ${dllVersion}`);
+    console.log("DLL URL:", dllRelativeUrl);
 
-    const res = await fetch(proxy + dllUrl);
-    if (!res.ok) throw new Error("Failed to fetch ggs.dll.js: " + res.status);
+    const dllUrl = `https://empire-html5.goodgamestudios.com/default/${dllRelativeUrl}`;
+    const dllRes = await fetchWithFallback(dllUrl);
+    if (!dllRes.ok) throw new Error("Failed to fetch ggs.dll.js: " + dllRes.status);
 
-    const text = await res.text();
+    const text = await dllRes.text();
 
     const regexIcon = /ConstructionItems\/ConstructionItem_([^\s"'`<>]+?)--\d+/g;
     const regexPlaced = /Building\/[^\/]+\/([^\/]+)\/[^\/]+--\d+/g;
@@ -842,7 +858,7 @@ async function init() {
 init();
 
 async function compareWithOldVersion(oldVersion) {
-  const currentVersionInfo = await getVersionInfo();
+  const currentVersionInfo = await getCurrentVersionInfo();
   const currentVersion = currentVersionInfo.version;
 
   if (!oldVersion) {
@@ -855,8 +871,16 @@ async function compareWithOldVersion(oldVersion) {
   let addedIDs = [];
 
   while (true) {
-    const urlOld = proxy + encodeURIComponent(`https://empire-html5.goodgamestudios.com/default/items/items_v${oldVersion}.json`);
-    const resOld = await fetch(urlOld);
+    const urlOld = `https://empire-html5.goodgamestudios.com/default/items/items_v${oldVersion}.json`;
+
+    let resOld;
+    try {
+      resOld = await fetchWithFallback(urlOld);
+    } catch (err) {
+      console.error("Error loading previous version:", err);
+      return;
+    }
+
     if (!resOld.ok) return;
 
     const jsonOld = await resOld.json();
@@ -878,10 +902,10 @@ async function compareWithOldVersion(oldVersion) {
   applyFiltersAndSorting();
 }
 
-async function getVersionInfo() {
+async function getCurrentVersionInfo() {
   try {
-    const urlVersion = proxy + encodeURIComponent("https://empire-html5.goodgamestudios.com/default/items/ItemsVersion.properties");
-    const resVersion = await fetch(urlVersion);
+    const urlVersion = "https://empire-html5.goodgamestudios.com/default/items/ItemsVersion.properties";
+    const resVersion = await fetchWithFallback(urlVersion);
     if (!resVersion.ok) throw new Error("Failed to fetch current version");
 
     const text = await resVersion.text();
@@ -889,8 +913,8 @@ async function getVersionInfo() {
     if (!match) throw new Error("Version not found");
     const version = match[1];
 
-    const urlJson = proxy + encodeURIComponent(`https://empire-html5.goodgamestudios.com/default/items/items_v${version}.json`);
-    const resJson = await fetch(urlJson);
+    const urlJson = `https://empire-html5.goodgamestudios.com/default/items/items_v${version}.json`;
+    const resJson = await fetchWithFallback(urlJson);
     if (!resJson.ok) throw new Error("Failed to fetch version JSON");
 
     const json = await resJson.json();
