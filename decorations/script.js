@@ -1,4 +1,6 @@
-const proxy = "https://corsproxy.io/?";
+const myProxy = "https://my-proxy-8u49.onrender.com/";
+const fallbackProxy = "https://corsproxy.io/?";
+
 let lang = {};
 let selectedSizes = new Set();
 let currentSort = "po";
@@ -8,9 +10,23 @@ let currentFilter = "all";
 let showOnlyNew = false;
 let newWodIDsSet = new Set();
 
+async function fetchWithFallback(url) {
+  try {
+    const response = await fetch(myProxy + url);
+    if (!response.ok) throw new Error("myProxy: bad response");
+    return response;
+  } catch (err) {
+    console.warn("Proxy error:", err);
+    const encodedUrl = encodeURIComponent(url);
+    const fallbackResponse = await fetch(fallbackProxy + encodedUrl);
+    if (!fallbackResponse.ok) throw new Error("fallbackProxy: bad response");
+    return fallbackResponse;
+  }
+}
+
 async function getItemVersion() {
-  const url = proxy + encodeURIComponent("https://empire-html5.goodgamestudios.com/default/items/ItemsVersion.properties");
-  const res = await fetch(url);
+  const url = "https://empire-html5.goodgamestudios.com/default/items/ItemsVersion.properties";
+  const res = await fetchWithFallback(url);
   const text = await res.text();
   const match = text.match(/CastleItemXMLVersion=(\d+\.\d+)/);
   if (!match) throw new Error("Version: error");
@@ -18,22 +34,22 @@ async function getItemVersion() {
 }
 
 async function getLangVersion() {
-  const url = proxy + encodeURIComponent("https://langserv.public.ggs-ep.com/12/fr/@metadata");
-  const res = await fetch(url);
+  const url = "https://langserv.public.ggs-ep.com/12/fr/@metadata";
+  const res = await fetchWithFallback(url);
   const json = await res.json();
   return json["@metadata"].versionNo;
 }
 
 async function getLanguageData(version) {
-  const url = proxy + encodeURIComponent(`https://langserv.public.ggs-ep.com/12@${version}/en/*`);
-  const res = await fetch(url);
+  const url = `https://langserv.public.ggs-ep.com/12@${version}/en/*`;
+  const res = await fetchWithFallback(url);
   const data = await res.json();
   lang = data;
 }
 
 async function getItems(version) {
-  const url = proxy + encodeURIComponent(`https://empire-html5.goodgamestudios.com/default/items/items_v${version}.json`);
-  const res = await fetch(url);
+  const url = `https://empire-html5.goodgamestudios.com/default/items/items_v${version}.json`;
+  const res = await fetchWithFallback(url);
   const data = await res.json();
 
   if (Array.isArray(data.effects)) {
@@ -474,8 +490,8 @@ async function getImageUrlMap() {
   const base = "https://empire-html5.goodgamestudios.com/default/assets/itemassets/";
 
   try {
-    const indexUrl = proxy + encodeURIComponent("https://empire-html5.goodgamestudios.com/default/index.html");
-    const indexRes = await fetch(indexUrl);
+    const indexUrl = "https://empire-html5.goodgamestudios.com/default/index.html";
+    const indexRes = await fetchWithFallback(indexUrl);
     if (!indexRes.ok) throw new Error("Failed to fetch index.html: " + indexRes.status);
     const indexHtml = await indexRes.text();
 
@@ -486,11 +502,10 @@ async function getImageUrlMap() {
     console.log("DLL URL:", dllRelativeUrl);
 
     const dllUrl = `https://empire-html5.goodgamestudios.com/default/${dllRelativeUrl}`;
+    const dllRes = await fetchWithFallback(dllUrl);
+    if (!dllRes.ok) throw new Error("Failed to fetch ggs.dll.js: " + dllRes.status);
 
-    const res = await fetch(proxy + dllUrl);
-    if (!res.ok) throw new Error("Failed to fetch ggs.dll.js: " + res.status);
-
-    const text = await res.text();
+    const text = await dllRes.text();
     const regex = /Building\/Deco\/[^\s"'`<>]+?--\d+/g;
     const matches = [...text.matchAll(regex)];
 
@@ -598,8 +613,16 @@ async function compareWithOldVersion(oldVersion) {
   let addedWodIDs = [];
 
   while (true) {
-    const urlOld = proxy + encodeURIComponent(`https://empire-html5.goodgamestudios.com/default/items/items_v${oldVersion}.json`);
-    const resOld = await fetch(urlOld);
+    const url = `https://empire-html5.goodgamestudios.com/default/items/items_v${oldVersion}.json`;
+    
+    let resOld;
+    try {
+      resOld = await fetchWithFallback(url);
+    } catch (err) {
+      console.error("Hiba az előző verzió lekérdezésekor:", err);
+      return;
+    }
+
     if (!resOld.ok) return;
 
     const jsonOld = await resOld.json();
