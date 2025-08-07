@@ -614,7 +614,7 @@ async function compareWithOldVersion(oldVersion) {
 
   while (true) {
     const url = `https://empire-html5.goodgamestudios.com/default/items/items_v${oldVersion}.json`;
-    
+
     let resOld;
     try {
       resOld = await fetchWithFallback(url);
@@ -660,8 +660,8 @@ function countBySize(items) {
 
 async function getCurrentVersionInfo() {
   try {
-    const urlVersion = proxy + encodeURIComponent("https://empire-html5.goodgamestudios.com/default/items/ItemsVersion.properties");
-    const resVersion = await fetch(urlVersion);
+    const urlVersion = "https://empire-html5.goodgamestudios.com/default/items/ItemsVersion.properties";
+    const resVersion = await fetchWithFallback(urlVersion);
     if (!resVersion.ok) throw new Error("Failed to fetch current version");
 
     const text = await resVersion.text();
@@ -669,8 +669,8 @@ async function getCurrentVersionInfo() {
     if (!match) throw new Error("Version not found");
     const version = match[1];
 
-    const urlJson = proxy + encodeURIComponent(`https://empire-html5.goodgamestudios.com/default/items/items_v${version}.json`);
-    const resJson = await fetch(urlJson);
+    const urlJson = `https://empire-html5.goodgamestudios.com/default/items/items_v${version}.json`;
+    const resJson = await fetchWithFallback(urlJson);
     if (!resJson.ok) throw new Error("Failed to fetch version JSON");
     const json = await resJson.json();
 
