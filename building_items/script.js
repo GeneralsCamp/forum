@@ -609,6 +609,34 @@ function setupEventListeners() {
     });
   });
 
+  document.querySelectorAll('#filterName, #filterID, #filterEffect').forEach(input => {
+    const formCheckDiv = input.closest('.form-check');
+    if (!formCheckDiv) return;
+
+    formCheckDiv.addEventListener('click', (e) => {
+      const target = e.target;
+      if (target !== input && target.tagName.toLowerCase() !== 'label') {
+        input.checked = !input.checked;
+        input.dispatchEvent(new Event('change'));
+      }
+      e.stopPropagation();
+    });
+  });
+
+  document.querySelectorAll('.type-filter').forEach(input => {
+    const formCheckDiv = input.closest('.form-check');
+    if (!formCheckDiv) return;
+
+    formCheckDiv.addEventListener('click', (e) => {
+      const target = e.target;
+      if (target !== input && target.tagName.toLowerCase() !== 'label') {
+        input.checked = !input.checked;
+        input.dispatchEvent(new Event('change'));
+      }
+      e.stopPropagation();
+    });
+  });
+
   updateSearchInputState();
 }
 
