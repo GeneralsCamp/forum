@@ -327,30 +327,38 @@ function renderSizeFilters(allDecorations) {
   sizes.forEach(size => {
     const li = document.createElement("li");
 
-    const div = document.createElement("div");
-    div.className = "form-check";
+    li.innerHTML = `
+      <div class="form-check">
+        <input class="form-check-input size-filter-checkbox" type="checkbox" value="${size}" id="size-${size}" checked>
+        <label class="form-check-label" for="size-${size}">${size}</label>
+      </div>
+    `;
 
-    const checkbox = document.createElement("input");
-    checkbox.className = "form-check-input";
-    checkbox.type = "checkbox";
-    checkbox.value = size;
-    checkbox.id = `size-${size}`;
-    checkbox.checked = true;
+    sizeFiltersContainer.appendChild(li);
+  });
 
+  document.querySelectorAll('#sizeFilters .form-check').forEach(formCheck => {
+    formCheck.addEventListener('click', function (e) {
+      const target = e.target;
+      const isCheckbox = target.classList.contains('form-check-input');
+      const isLabel = target.tagName.toLowerCase() === 'label';
+
+      if (!isCheckbox && !isLabel) {
+        const checkbox = formCheck.querySelector('input[type="checkbox"]');
+        if (checkbox) {
+          checkbox.checked = !checkbox.checked;
+          checkbox.dispatchEvent(new Event("change"));
+        }
+      }
+      e.stopPropagation();
+    });
+  });
+
+  document.querySelectorAll(".size-filter-checkbox").forEach(checkbox => {
     checkbox.addEventListener("change", () => {
       updateSelectedSizes();
       applyFiltersAndSorting();
     });
-
-    const label = document.createElement("label");
-    label.className = "form-check-label";
-    label.htmlFor = `size-${size}`;
-    label.textContent = size;
-
-    div.appendChild(checkbox);
-    div.appendChild(label);
-    li.appendChild(div);
-    sizeFiltersContainer.appendChild(li);
   });
 
   updateSelectedSizes();
@@ -480,6 +488,20 @@ function setupEventListeners() {
     cb.addEventListener("change", () => {
       updateSearchInputState();
       applyFiltersAndSorting();
+    });
+  });
+
+  document.querySelectorAll('#filterName, #filterID, #filterEffect').forEach(input => {
+    const formCheckDiv = input.closest('.form-check');
+    if (!formCheckDiv) return;
+
+    formCheckDiv.addEventListener('click', (e) => {
+      const target = e.target;
+      if (target !== input && target.tagName.toLowerCase() !== 'label') {
+        input.checked = !input.checked;
+        input.dispatchEvent(new Event('change'));
+      }
+      e.stopPropagation();
     });
   });
 
