@@ -653,11 +653,13 @@ async function getImageUrlMap() {
     if (!dllMatch) throw new Error("DLL preload link not found");
 
     const dllRelativeUrl = dllMatch[1];
-    dllVersion = dllRelativeUrl;
-
-    console.log("DLL URL:", dllRelativeUrl);
-
     const dllUrl = `https://empire-html5.goodgamestudios.com/default/${dllRelativeUrl}`;
+
+    console.log("");
+    console.log(`DLL version: ${dllRelativeUrl}`);
+    console.log(`DLL URL: %c${dllUrl}`, "color:blue; text-decoration:underline;");
+    console.log("");
+
     const dllRes = await fetchWithFallback(dllUrl);
     if (!dllRes.ok) throw new Error("Failed to fetch ggs.dll.js: " + dllRes.status);
 
@@ -846,16 +848,25 @@ async function init() {
   try {
     const itemVersion = await getItemVersion();
     const langVersion = await getLangVersion();
-    console.log("Item version:", itemVersion, "| Language version:", langVersion);
+
+    const itemUrl = `https://empire-html5.goodgamestudios.com/default/items/items_v${itemVersion}.json`;
+    const langUrl = `https://langserv.public.ggs-ep.com/12@${langVersion}/en/*`;
+
+    console.log(`Item version: ${itemVersion}`);
+    console.log(`Item URL: %c${itemUrl}`, "color:blue; text-decoration:underline;");
+    console.log("");
+
+    console.log(`Language version: ${langVersion}`);
+    console.log(`Language URL: %c${langUrl}`, "color:blue; text-decoration:underline;");
 
     await getLanguageData(langVersion);
-    imageUrlMap = await getImageUrlMap();
 
     const json = await getItems(itemVersion);
     allItems = extractConstructionItems(json);
 
-    console.log(`${Object.keys(imageUrlMap).length} construction item URL map is created.`);
-    console.log(`Found ${allItems.length} construction items`);
+    imageUrlMap = await getImageUrlMap();
+
+    console.log(`Found ${allItems.length} construction items, and created ${Object.keys(imageUrlMap).length} construction item URL map entries.`);
 
     setupEventListeners();
     applyFiltersAndSorting();
