@@ -84,7 +84,7 @@ async function getItems(version) {
 }
 
 function extractDecorations(buildings) {
-  const decorations = buildings.filter(b =>
+  return buildings.filter(b =>
     b.name?.toLowerCase() === "deco" &&
     getPO(b) > 0 &&
     !(
@@ -92,8 +92,6 @@ function extractDecorations(buildings) {
       (b.comment2 && b.comment2.toLowerCase().includes("test"))
     )
   );
-  console.log(`Found ${decorations.length} decorations`);
-  return decorations;
 }
 
 function getName(item) {
@@ -514,20 +512,20 @@ async function getImageUrlMap() {
   try {
     const indexUrl = "https://empire-html5.goodgamestudios.com/default/index.html";
     const indexRes = await fetchWithFallback(indexUrl);
-    if (!indexRes.ok) throw new Error("Failed to fetch index.html: " + indexRes.status);
     const indexHtml = await indexRes.text();
 
     const dllMatch = indexHtml.match(/<link\s+id=["']dll["']\s+rel=["']preload["']\s+href=["']([^"']+)["']/i);
-    if (!dllMatch) throw new Error("DLL preload link not found");
-
     const dllRelativeUrl = dllMatch[1];
-    console.log("DLL URL:", dllRelativeUrl);
-
     const dllUrl = `https://empire-html5.goodgamestudios.com/default/${dllRelativeUrl}`;
-    const dllRes = await fetchWithFallback(dllUrl);
-    if (!dllRes.ok) throw new Error("Failed to fetch ggs.dll.js: " + dllRes.status);
 
+    console.log("");
+    console.log(`DLL version: ${dllRelativeUrl}`);
+    console.log(`DLL URL: %c${dllUrl}`, "color:blue; text-decoration:underline;");
+    console.log("");
+
+    const dllRes = await fetchWithFallback(dllUrl);
     const text = await dllRes.text();
+
     const regex = /Building\/Deco\/[^\s"'`<>]+?--\d+/g;
     const matches = [...text.matchAll(regex)];
 
@@ -542,9 +540,9 @@ async function getImageUrlMap() {
       imageUrlMap[cleanName] = `${base}${path}.webp`;
     }
 
-    console.log(`${Object.keys(imageUrlMap).length} deco URL map is created.`);
-    return imageUrlMap;
+    console.log(`Found ${allDecorations.length} decorations, and created ${Object.keys(imageUrlMap).length} URL map entries.`);
 
+    return imageUrlMap;
   } catch (error) {
     console.error("getImageUrlMap error", error);
     return {};
@@ -555,13 +553,23 @@ async function init() {
   try {
     const itemVersion = await getItemVersion();
     const langVersion = await getLangVersion();
-    console.log("Item version:", itemVersion, "| Language version:", langVersion);
+
+    const itemUrl = `https://empire-html5.goodgamestudios.com/default/items/items_v${itemVersion}.json`;
+    const langUrl = `https://langserv.public.ggs-ep.com/12@${langVersion}/en/*`;
+
+    console.log(`Item version: ${itemVersion}`);
+    console.log(`Item URL: %c${itemUrl}`, "color:blue; text-decoration:underline;");
+    console.log("");
+
+    console.log(`Language version: ${langVersion}`);
+    console.log(`Language URL: %c${langUrl}`, "color:blue; text-decoration:underline;");
 
     await getLanguageData(langVersion);
-    imageUrlMap = await getImageUrlMap();
 
     const json = await getItems(itemVersion);
     allDecorations = extractDecorations(json.buildings);
+
+    imageUrlMap = await getImageUrlMap();
 
     renderSizeFilters(allDecorations);
     setupEventListeners();
