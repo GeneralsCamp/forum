@@ -15,9 +15,11 @@ function log(msg) {
 // --- Progress bar ---
 function updateProgress(current, total) {
     const progressEl = document.getElementById("downloadProgress");
+    const textEl = progressEl.querySelector(".progress-text");
     const percent = total ? Math.round((current / total) * 100) : 0;
+
     progressEl.style.width = percent + "%";
-    progressEl.textContent = `${current} / ${total}`;
+    textEl.textContent = `${current} / ${total}`;
 }
 
 // --- Proxy fetch wrapper ---

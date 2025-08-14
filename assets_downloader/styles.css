@@ -238,8 +238,9 @@ p {
 
 .progress {
     border-radius: 0px;
-    height: 20px;
-    background-color: #e9ecef;
+    height: 25px;
+    background-color: rgb(180, 127, 92);
+    border-bottom: rgb(67, 49, 32) 2px solid;
     box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     position: relative;
@@ -257,10 +258,11 @@ p {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-weight: 700;
-    color: #000;
+    color: black;
     text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
     pointer-events: none;
+    font-weight: bolder;
+    font-size: 100%;
 }
 
 .btn {
