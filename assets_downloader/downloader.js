@@ -28,7 +28,7 @@ async function proxyFetch(url, options = {}) {
 document.getElementById("selectFolder").addEventListener("click", async () => {
     try {
         folderHandle = await window.showDirectoryPicker();
-        log("Target folder selected. Click 'Start Download' to begin.");
+        log(`Target folder "${folderHandle.name}" selected. Click 'Start Download' to begin.`);
         document.getElementById("startDownload").disabled = false;
     } catch (err) {
         log("Folder selection canceled or not supported by this browser.");
@@ -119,11 +119,12 @@ document.getElementById("startDownload").addEventListener("click", async () => {
 
         const pathParts = asset.path.split("/");
         let currentDir = folderHandle;
-        for (let j = 0; j < pathParts.length - 1; j++) {
+        for (let j = 0; j < pathParts.length - 2; j++) {
             currentDir = await currentDir.getDirectoryHandle(pathParts[j], { create: true });
         }
 
         const fileName = pathParts[pathParts.length - 1] + ".webp";
+
         let fileExists = false;
         try { await currentDir.getFileHandle(fileName); fileExists = true; } catch { }
 
@@ -163,11 +164,11 @@ document.getElementById("startDownload").addEventListener("click", async () => {
 // --- Check if File System Access API is supported ---
 document.addEventListener("DOMContentLoaded", () => {
     if (!window.showDirectoryPicker) {
-        log("ERROR: This downloader only works on desktop browsers (PC).");
+        log("ERROR: This downloader only works on desktop browsers.");
         document.getElementById("selectFolder").disabled = true;
         document.getElementById("startDownload").disabled = true;
         document.getElementById("stopDownload").disabled = true;
     } else {
-        log("Please select a target folder to store the downloaded assets.");
+        log("Please select an empty target folder to store the downloaded assets.");
     }
 });

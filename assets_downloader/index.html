@@ -16,8 +16,8 @@
 <body>
     <div class="container">
         <div class="row">
-            <div class="col-12">
-                <h1>GGE ASSET DOWNLOADER</h1>
+            <div class="col-12 page-title">
+                <h1>GGE ASSETS DOWNLOADER</h1>
             </div>
 
             <a href="https://generalscamp.github.io/forum/" class="home-icon-link">
@@ -26,18 +26,22 @@
                 </div>
             </a>
 
-            <div class="col-12 collapse-area mb-2">
+            <div class="col-12 mb-2 collapse-area">
                 <h2 class="collapse-header">
                     <span class="header-title">CONTROLS</span>
                 </h2>
-                <div class="collapse show   row gx-1 gy-1 align-items-center pb-2">
-                    <button id="selectFolder" class="btn btn-warning col-md-4 col-sm-12">Select Folder</button>
-                    <button id="startDownload" class="btn btn-success col-md-4 col-sm-12" disabled>Start
-                        Download</button>
-                    <button id="stopDownload" class="btn btn-danger col-md-4 col-sm-12" disabled>Stop Download</button>
-                </div>
-                <div class="progress m-2">
-                    <div id="downloadProgress" class="progress-bar" role="progressbar" style="width: 0%">0 / 0</div>
+                <div class="row note gx-1 gy-1 p-1">
+                    <div class="col-md-4 col-sm-12">
+                        <button id="selectFolder" class="btn custom-folder-button w-100">Select Folder</button>
+                    </div>
+
+                    <div class="col-md-4 col-sm-12">
+                        <button id="startDownload" class="btn custom-start-button w-100" disabled>Start Download</button>
+                    </div>
+
+                    <div class="col-md-4 col-sm-12">
+                        <button id="stopDownload" class="btn custom-stop-button w-100" disabled>Stop Download</button>
+                    </div>
                 </div>
             </div>
 
@@ -45,7 +49,10 @@
                 <h2 class="collapse-header">
                     <span class="header-title">DOWNLOAD LOG</span>
                 </h2>
-                <div class="collapse show p-2">
+                <div class="progress">
+                    <div id="downloadProgress" class="progress-bar" role="progressbar" style="width: 0%">0 / 0</div>
+                </div>
+                <div class="collapse show p-2 pb-0">
                     <pre id="log"></pre>
                 </div>
             </div>
