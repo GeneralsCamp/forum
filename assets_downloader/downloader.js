@@ -195,23 +195,29 @@ document.getElementById("startDownload").addEventListener("click", async () => {
     if (currentIndex === 0) log("=== Download process started ===");
     else log("=== Continuing download ===");
 
-    // 1. Download special files
-    await getItemFile();
-    await getLangFile();
-    await getDllFile();
+    const optAssets = document.getElementById("optAssets").checked;
+    const optItems = document.getElementById("optItems").checked;
+    const optLang  = document.getElementById("optLang").checked;
+    const optDll   = document.getElementById("optDll").checked;
 
-    // 2. Download all assets
-    const assets = await getAllAssets();
-    if (assets.length > 0) await downloadAssets(assets);
+    if (optItems) await getItemFile();
+    if (optLang)  await getLangFile();
+    if (optDll)   await getDllFile();
 
-    if (currentIndex >= assets.length) currentIndex = 0;
+    if (optAssets) {
+        const assets = await getAllAssets();
+        if (assets.length > 0) await downloadAssets(assets);
+        if (currentIndex >= assets.length) currentIndex = 0;
+    }
+
     updateStartButtonText();
-
     log("=== Download process finished ===");
+
     document.getElementById("stopDownload").disabled = true;
     document.getElementById("startDownload").disabled = false;
     document.getElementById("selectFolder").disabled = false;
 });
+
 
 // --- Stop download ---
 document.getElementById("stopDownload").addEventListener("click", () => {
