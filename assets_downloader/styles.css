@@ -226,8 +226,8 @@ p {
 }
 
 #log {
-    max-height: 400px;
-    min-height: 400px;
+    max-height: 500px;
+    min-height: 500px;
     overflow-y: auto;
     background: rgb(234, 208, 178);
     color: black;
@@ -361,7 +361,7 @@ p {
     background-color: #f3c24a;
 }
 
-.custom-checkbox input:checked ~ .checkmark {
+.custom-checkbox input:checked~.checkmark {
     background-color: #28a745;
     border-color: #1e7e34;
 }
@@ -372,7 +372,7 @@ p {
     display: none;
 }
 
-.custom-checkbox input:checked ~ .checkmark:after {
+.custom-checkbox input:checked~.checkmark:after {
     display: block;
 }
 
@@ -384,6 +384,17 @@ p {
     border: solid white;
     border-width: 0 2px 2px 0;
     transform: rotate(45deg);
+}
+
+@media (max-width: 768px) {
+    .page-title {
+        display: none;
+    }
+
+    #log {
+        max-height: 350px;
+        min-height: 350px;
+    }
 }
 
 /* Home button */
