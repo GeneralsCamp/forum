@@ -45,17 +45,35 @@ async function saveFileInSubfolder(subfolder, fileName, blob) {
 // --- Get special files ---
 async function getItemFile() {
     const version = await getItemVersion();
+    const fileName = `items-${version}.json`;
+
+    try {
+        const dirHandle = await folderHandle.getDirectoryHandle("items", { create: true });
+        await dirHandle.getFileHandle(fileName);
+        log(`Skipped (already exists): ${fileName}`);
+        return;
+    } catch { }
+
     const url = "https://empire-html5.goodgamestudios.com/default/items/items_v" + version + ".json";
     const blob = await fetchWithRetry(url);
-    await saveFileInSubfolder("items", `items-${version}.json`, blob);
+    await saveFileInSubfolder("items", fileName, blob);
     log(`The latest items file has been downloaded, with version: ${version}`);
 }
 
 async function getLangFile() {
     const version = await getLangVersion();
+    const fileName = `lang-${version}.json`;
+
+    try {
+        const dirHandle = await folderHandle.getDirectoryHandle("lang", { create: true });
+        await dirHandle.getFileHandle(fileName);
+        log(`Skipped (already exists): ${fileName}`);
+        return;
+    } catch { }
+
     const url = "https://langserv.public.ggs-ep.com/12@" + version + "/en/*";
     const blob = await fetchWithRetry(url);
-    await saveFileInSubfolder("lang", `lang-${version}.json`, blob);
+    await saveFileInSubfolder("lang", fileName, blob);
     log(`The latest language file has been downloaded, with version: ${version}`);
 }
 
@@ -64,10 +82,20 @@ async function getDllFile() {
     const indexHtml = await proxyFetch(indexUrl).then(r => r.text());
     const dllMatch = indexHtml.match(/<link\s+id=["']dll["']\s+rel=["']preload["']\s+href=["']([^"']+)["']/i);
     if (!dllMatch) throw "DLL link not found.";
+
     const dllPath = dllMatch[1];
+    const fileName = "dll.js";
+
+    try {
+        const dirHandle = await folderHandle.getDirectoryHandle("dll", { create: true });
+        await dirHandle.getFileHandle(fileName);
+        log(`Skipped (already exists): ${fileName} (${dllPath})`);
+        return;
+    } catch { }
+
     const dllUrl = "https://empire-html5.goodgamestudios.com/default/" + dllPath;
     const blob = await fetchWithRetry(dllUrl);
-    await saveFileInSubfolder("dll", "dll.js", blob);
+    await saveFileInSubfolder("dll", fileName, blob);
     log(`The latest DLL file has been downloaded, with version: ${dllPath}`);
 }
 
