@@ -44,17 +44,19 @@ async function saveFileInSubfolder(subfolder, fileName, blob) {
 
 // --- Get special files ---
 async function getItemFile() {
-    const url = "https://empire-html5.goodgamestudios.com/default/items/items_v" + await getItemVersion() + ".json";
+    const version = await getItemVersion();
+    const url = "https://empire-html5.goodgamestudios.com/default/items/items_v" + version + ".json";
     const blob = await fetchWithRetry(url);
-    await saveFileInSubfolder("items", "items.json", blob);
-    log("Downloaded latest items file.");
+    await saveFileInSubfolder("items", `items-${version}.json`, blob);
+    log(`The latest items file has been downloaded, with version: ${version}`);
 }
 
 async function getLangFile() {
-    const url = "https://langserv.public.ggs-ep.com/12@" + await getLangVersion() + "/en/*";
+    const version = await getLangVersion();
+    const url = "https://langserv.public.ggs-ep.com/12@" + version + "/en/*";
     const blob = await fetchWithRetry(url);
-    await saveFileInSubfolder("lang", "lang.json", blob);
-    log("Downloaded latest lang file.");
+    await saveFileInSubfolder("lang", `lang-${version}.json`, blob);
+    log(`The latest language file has been downloaded, with version: ${version}`);
 }
 
 async function getDllFile() {
@@ -62,10 +64,11 @@ async function getDllFile() {
     const indexHtml = await proxyFetch(indexUrl).then(r => r.text());
     const dllMatch = indexHtml.match(/<link\s+id=["']dll["']\s+rel=["']preload["']\s+href=["']([^"']+)["']/i);
     if (!dllMatch) throw "DLL link not found.";
-    const dllUrl = "https://empire-html5.goodgamestudios.com/default/" + dllMatch[1];
+    const dllPath = dllMatch[1];
+    const dllUrl = "https://empire-html5.goodgamestudios.com/default/" + dllPath;
     const blob = await fetchWithRetry(dllUrl);
     await saveFileInSubfolder("dll", "dll.js", blob);
-    log("Downloaded latest DLL file.");
+    log(`The latest DLL file has been downloaded, with version: ${dllPath}`);
 }
 
 // --- Get all asset URLs ---
