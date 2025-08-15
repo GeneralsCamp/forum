@@ -84,19 +84,22 @@ async function getDllFile() {
     if (!dllMatch) throw "DLL link not found.";
 
     const dllPath = dllMatch[1];
-    const fileName = "dll.js";
+
+    const hashMatch = dllPath.match(/dll\/ggs\.dll\.([^.]+)\.js/i);
+    const hash = hashMatch ? hashMatch[1] : Date.now();
+    const fileName = `dll-${hash}.js`;
 
     try {
         const dirHandle = await folderHandle.getDirectoryHandle("dll", { create: true });
         await dirHandle.getFileHandle(fileName);
-        log(`Skipped (already exists): ${fileName} (${dllPath})`);
+        log(`Skipped (already exists): ${fileName}`);
         return;
     } catch { }
 
     const dllUrl = "https://empire-html5.goodgamestudios.com/default/" + dllPath;
     const blob = await fetchWithRetry(dllUrl);
     await saveFileInSubfolder("dll", fileName, blob);
-    log(`The latest DLL file has been downloaded, with version: ${dllPath}`);
+    log(`The latest DLL file has been downloaded, with version: ${hash}`);
 }
 
 // --- Get all asset URLs ---
@@ -132,7 +135,7 @@ async function getAllAssets() {
 
 // --- Download assets into assets folder ---
 async function downloadAssets(assets) {
-    let completed = currentIndex; 
+    let completed = currentIndex;
     const errorLog = [];
     let currentConcurrency = 5;
 
@@ -230,12 +233,12 @@ document.getElementById("startDownload").addEventListener("click", async () => {
 
     const optAssets = document.getElementById("optAssets").checked;
     const optItems = document.getElementById("optItems").checked;
-    const optLang  = document.getElementById("optLang").checked;
-    const optDll   = document.getElementById("optDll").checked;
+    const optLang = document.getElementById("optLang").checked;
+    const optDll = document.getElementById("optDll").checked;
 
     if (optItems) await getItemFile();
-    if (optLang)  await getLangFile();
-    if (optDll)   await getDllFile();
+    if (optLang) await getLangFile();
+    if (optDll) await getDllFile();
 
     if (optAssets) {
         const assets = await getAllAssets();
