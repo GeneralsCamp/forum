@@ -1,3 +1,4 @@
+// --- Proxy and global variables ---
 const myProxy = "https://my-proxy-8u49.onrender.com/";
 
 let folderHandle;
