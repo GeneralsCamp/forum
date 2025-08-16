@@ -1,8 +1,10 @@
+// --- EVENT LISTENERS (INITIALIZATION) ---
 window.addEventListener('DOMContentLoaded', (event) => {
     LocationModify();
     Calculate();
 });
 
+// --- GLOBAL DOM REFERENCES ---
 selectLocation = document.getElementById("location")
 
 selectMain = document.getElementById("vip-main")
@@ -14,9 +16,9 @@ selectHuntKingdom = document.getElementById("hunt-kingdom")
 
 selectVillages = document.getElementById("villages")
 
+// --- LOCATION HANDLING ---
 function LocationModify() {
     if (selectLocation.value == "main") {
-
         selectMain.style.display = "inline-block";
         selectOP.style.display = "none";
         selectKingdom.style.display = "none";
@@ -48,14 +50,16 @@ function LocationModify() {
     }
 }
 
+// --- MAIN CALCULATOR WRAPPER ---
 function Calculate() {
     CalculateBonuses();
     const buildings = ["b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10", "b11", "b12"];
     buildings.forEach(updateBuilding);
 }
 
-
+// --- BONUS CALCULATION ---
 function CalculateBonuses() {
+    // Re-fetch elements
     selectLocation = document.getElementById("location")
 
     selectMain = document.getElementById("vip-main")
@@ -70,6 +74,7 @@ function CalculateBonuses() {
     selectedLocation = selectLocation.value;
     selectBeri = document.getElementById("beri");
 
+    // --- Public Order Bonus ---
     po = document.getElementById("po").value;
     if (po > 0) {
         PObonus = 1 + 0.02 * Math.sqrt(po);
@@ -80,6 +85,7 @@ function CalculateBonuses() {
         PObonus = 1;
     }
 
+    // --- Input Values ---
     coat = document.getElementById("coat").value;
     if (selectedLocation == "kingdom") {
         hunt = document.getElementById("hunt-kingdom").value;
@@ -88,9 +94,9 @@ function CalculateBonuses() {
         hunt = document.getElementById("hunt-green").value;
     }
     mill = document.getElementById("mill").value;
-    deco2 = 0;
     deco2 = document.getElementById("deco2").value / 100;
 
+    // --- Beri Bonuses ---
     if (selectBeri.value == "weaponmaster") {
         beriKingdoms = 0.20;
         beriGreen = 0.40;
@@ -107,6 +113,8 @@ function CalculateBonuses() {
         beriGreen = 0;
         beriKingdoms = 0;
     }
+
+    // --- VIP Bonuses ---
     overseer = document.getElementById("overseer").value;
     if (selectedLocation == "main") {
         vip = document.getElementById("vip-main").value;
@@ -117,16 +125,19 @@ function CalculateBonuses() {
     else if (selectedLocation == "kingdom") {
         vip = document.getElementById("vip-kingdom").value;
     }
+
+    // --- Villages (Kingdom only) ---
     if (selectedLocation == "kingdom") {
         villages = document.getElementById("villages").value;
         villages = villages / 100;
     }
-    res1 = 0;
-    res1 = document.getElementById("res1").value
 
+    // --- Static Bonuses ---
+    res1 = document.getElementById("res1").value;
     res2 = document.getElementById("res2").value;
     sub = document.getElementById("sub").value;
 
+    // --- Castles ---
     cast = 0;
     var castInput = document.getElementById("cast").value;
     if (castInput === "" || isNaN(castInput)) {
@@ -135,6 +146,7 @@ function CalculateBonuses() {
         cast = parseInt(castInput);
     }
 
+    // --- Decoration Bonus ---
     decobonus = 0;
     var decoInput = document.getElementById("deco1").value;
     if (decoInput === "" || isNaN(decoInput)) {
@@ -143,6 +155,7 @@ function CalculateBonuses() {
         decobonus = parseInt(decoInput);
     }
 
+    // --- TCI Bonus ---
     tcibonus = 0;
     var tciInput = document.getElementById("foodTCI").value;
     if (tciInput === "" || isNaN(tciInput)) {
@@ -151,8 +164,9 @@ function CalculateBonuses() {
         tcibonus = parseInt(tciInput);
     }
 
+    // --- Final Percent & Constant Bonus ---
     if (selectedLocation == "main" || selectedLocation == "op6" || selectedLocation == "op8") {
-        percentBonus = parseFloat(PObonus) * (1+parseFloat(hunt)) * (1 + parseFloat(beriGreen) + parseFloat(coat) + parseFloat(mill) + parseFloat(deco2) + parseFloat(overseer) + parseFloat(vip) + parseFloat(res2) + parseFloat(sub));
+        percentBonus = parseFloat(PObonus) * (1 + parseFloat(hunt)) * (1 + parseFloat(beriGreen) + parseFloat(coat) + parseFloat(mill) + parseFloat(deco2) + parseFloat(overseer) + parseFloat(vip) + parseFloat(res2) + parseFloat(sub));
         constBonus = parseFloat(cast) + parseFloat(res1) + parseFloat(decobonus) + parseFloat(tcibonus);
     }
     else if (selectedLocation == "kingdom") {
@@ -160,101 +174,74 @@ function CalculateBonuses() {
         constBonus = parseFloat(cast) + parseFloat(res1) + parseFloat(decobonus) + parseFloat(tcibonus);
     }
 
-    document.getElementById("percentBonus").innerHTML = Math.round(percentBonus * 100) + "%";
-    document.getElementById("constBonus").innerHTML = constBonus + "&nbsp;/hour";
+    // --- Output ---
+    document.getElementById("percentBonus").innerHTML = Math.round(percentBonus * 100).toLocaleString() + "%";
+    document.getElementById("constBonus").innerHTML = constBonus.toLocaleString() + "&nbsp;/ hour";
 }
 
-//Generate buildings
+// --- BUILDING GENERATION ---
 function generateBuildingCards() {
-
     const buildingsData = [
-        { id: "b1", name: "Conservatory", type: "conservatory", imgSrc: "./img/conservatory.webp" },
-        { id: "b2", name: "Conservatory", type: "conservatory", imgSrc: "./img/conservatory.webp" },
-        { id: "b3", name: "Greenhouse", type: "greenhouse", imgSrc: "./img/greenhouse.webp" },
-        { id: "b4", name: "Greenhouse", type: "greenhouse", imgSrc: "./img/greenhouse.webp" },
-        { id: "b5", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
-        { id: "b6", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
-        { id: "b7", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
-        { id: "b8", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
-        { id: "b9", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
-        { id: "b10", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
-        { id: "b11", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
-        { id: "b12", name: "Granary", type: "granary", imgSrc: "./img/granary.webp" },
+        { id: "b1", name: "Conservatory", type: "conservatory", imgSrc: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/RelicFarm/RelicFarmGreen_Building_Level3/RelicFarmGreen_Building_Level3--1573728046260.webp" },
+        { id: "b2", name: "Conservatory", type: "conservatory", imgSrc: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/RelicFarm/RelicFarmGreen_Building_Level3/RelicFarmGreen_Building_Level3--1573728046260.webp" },
+        { id: "b3", name: "Greenhouse", type: "greenhouse", imgSrc: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/RelicFarm/RelicFarm_Building_Level3/RelicFarm_Building_Level3--1573584429307.webp" },
+        { id: "b4", name: "Greenhouse", type: "greenhouse", imgSrc: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/RelicFarm/RelicFarm_Building_Level3/RelicFarm_Building_Level3--1573584429307.webp" },
+        { id: "b5", name: "Granary", type: "granary", imgSrc: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/LegendFarm/LegendFarm_Building_Level9/LegendFarm_Building_Level9--1573584429307.webp" },
+        { id: "b6", name: "Granary", type: "granary", imgSrc: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/LegendFarm/LegendFarm_Building_Level9/LegendFarm_Building_Level9--1573584429307.webp" },
+        { id: "b7", name: "Granary", type: "granary", imgSrc: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/LegendFarm/LegendFarm_Building_Level9/LegendFarm_Building_Level9--1573584429307.webp" },
+        { id: "b8", name: "Granary", type: "granary", imgSrc: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/LegendFarm/LegendFarm_Building_Level9/LegendFarm_Building_Level9--1573584429307.webp" },
+        { id: "b9", name: "Granary", type: "granary", imgSrc: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/LegendFarm/LegendFarm_Building_Level9/LegendFarm_Building_Level9--1573584429307.webp" },
+        { id: "b10", name: "Granary", type: "granary", imgSrc: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/LegendFarm/LegendFarm_Building_Level9/LegendFarm_Building_Level9--1573584429307.webp" },
+        { id: "b11", name: "Granary", type: "granary", imgSrc: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/LegendFarm/LegendFarm_Building_Level9/LegendFarm_Building_Level9--1573584429307.webp" },
+        { id: "b12", name: "Granary", type: "granary", imgSrc: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/LegendFarm/LegendFarm_Building_Level9/LegendFarm_Building_Level9--1573584429307.webp" },
     ];
-
 
     const container = document.getElementById("buildings-container");
     container.innerHTML = "";
 
     buildingsData.forEach((building, index) => {
         const buildingCard = `
-            <div class="col-md-6 col-sm-12 col-lg-6" id="card-${building.id}" draggable="true" ondragstart="handleDragStart(event)" ondragover="handleDragOver(event)" ondrop="handleDrop(event)" ondragend="handleDragEnd(event)">
-                <div class="box" data-index="${index}">
-                    <div class="box-icon">
-                        <img src="${building.imgSrc}" class="img-fluid">
-                    </div>
-                    <div class="box-content">
-                        <h2>
-                            ${building.name} |
-                            <select class="fixSelector" name="${building.id}lvl" id="${building.id}lvl" onchange="updateBuilding('${building.id}')">
-                                ${generateLevelOptions(building.type)}
-                            </select>
-                        </h2>
-                        <hr>
+        <div class="col-md-6 col-sm-12 col-lg-6" id="card-${building.id}" data-prodIndex="${index + 1}">
+            <div class="box" data-index="${index}">
+                <div class="box-icon">
+                    <img src="${building.imgSrc}" class="img-fluid">
+                </div>
+                <div class="box-content">
+                    <h2>
+                        ${building.name}
+                        <select class="fixSelector levelSelector" name="${building.id}lvl" id="${building.id}lvl" onchange="updateBuilding('${building.id}')">
+                            ${generateLevelOptions(building.type)}
+                        </select>
+                    </h2>
+                    <div class="row box-text">
+                    <div class="col-6 mb-2">
                         <p>Productivity: <span id="${building.id}prod">-</span></p>
-                        <p>Production: <span id="${building.id}lbl">-</span></p>
+                    </div>
+                    <div class="col-6 mb-2">
                         <select class="fixSelector" name="${building.id}elem" id="${building.id}elem" onchange="updateBuilding('${building.id}')">
                             ${generatePrimaryOptions()}
                         </select>
+                    </div>
+                    <div class="col-6">
+                        <p>Production: <span id="${building.id}lbl">-</span></p>
+                    </div>
+                    <div class="col-6">
                         <select class="fixSelector" name="${building.id}relicElem" id="${building.id}relicElem" onchange="updateBuilding('${building.id}')">
                             ${generateRelicOptions()}
                         </select>
                     </div>
+                    </div>
                 </div>
             </div>
-        `;
+        </div>
+    `;
         container.innerHTML += buildingCard;
     });
 
     buildingsData.forEach((building) => updateBuilding(building.id));
 }
 
-function handleDragStart(event) {
-    event.dataTransfer.setData("text/plain", event.target.id);
-    event.target.classList.add("dragging");
-}
-
-function handleDragOver(event) {
-    event.preventDefault();
-}
-
-function handleDrop(event) {
-    event.preventDefault();
-    const draggedId = event.dataTransfer.getData("text/plain");
-    const draggedElement = document.getElementById(draggedId);
-    const targetElement = event.target.closest(".col-md-6");
-
-    if (draggedElement !== targetElement) {
-        const draggedIndex = draggedElement.dataset.index;
-        const targetIndex = targetElement.dataset.index;
-
-        swapElements(draggedElement, targetElement);
-
-        draggedElement.dataset.index = targetIndex;
-        targetElement.dataset.index = draggedIndex;
-
-    }
-}
-
-function handleDragEnd(event) {
-    event.target.classList.remove("dragging");
-}
-
-function swapElements(draggedElement, targetElement) {
-    const parent = draggedElement.parentNode;
-    parent.insertBefore(draggedElement, targetElement);
-}
-
+// --- OPTION GENERATORS ---
 function generateLevelOptions(buildingType) {
     let levels = [];
 
@@ -381,14 +368,12 @@ function generateLevelOptions(buildingType) {
             { value: 720, label: "Level 40" }
         ];
     }
-
     return levels.map(level => `<option value="${level.value}">${level.label}</option>`).join("");
 }
 
-
 function generatePrimaryOptions() {
     const options = [
-        { value: 0, label: "None" },
+        { value: 0, label: "No primary item" },
         { value: 108, label: "Base 15" },
         { value: 118, label: "Base 16" },
         { value: 128, label: "Base 17" },
@@ -421,13 +406,12 @@ function generatePrimaryOptions() {
         { value: 427, label: "Base 44" },
         { value: 439, label: "Base 45" },
     ];
-
     return options.map(option => `<option value="${option.value}">${option.label}</option>`).join("");
 }
 
 function generateRelicOptions() {
     const options = [
-        { value: 0, label: "None" },
+        { value: 0, label: "No relic item" },
         { value: 50, label: "Relic 1" },
         { value: 150, label: "Relic 2" },
         { value: 250, label: "Relic 3" },
@@ -469,19 +453,16 @@ function generateRelicOptions() {
         { value: 3900, label: "Premium 29" },
         { value: 4000, label: "Premium 30" }
     ];
-
     return options.map(option => `<option value="${option.value}">${option.label}</option>`).join("");
 }
 
+// --- PRODUCTION CALCULATIONS ---
 function calculateProduction(level, primaryItem, relicItem, productivity) {
     const baseProduction = level + primaryItem;
-
     const bonusProduction = baseProduction * percentBonus;
-
     const totalProduction = ((bonusProduction) * productivity) + relicItem;
 
-
-    return Math.round(totalProduction);
+    return Math.round(totalProduction).toLocaleString();
 }
 
 function updateBuilding(buildingId) {
@@ -533,36 +514,36 @@ function updateBuilding(buildingId) {
         }
     });
 
-    cast = 0;
+    let cast = 0;
     var castInput = document.getElementById("cast").value;
-    if (castInput === "" || isNaN(castInput)) {
-        cast = 0;
-    } else {
+    if (!(castInput === "" || isNaN(castInput))) {
         cast = parseInt(castInput);
     }
 
-    decobonus = 0;
+    let decobonus = 0;
     var decoInput = document.getElementById("deco1").value;
-    if (decoInput === "" || isNaN(decoInput)) {
-        decobonus = 0;
-    } else {
+    if (!(decoInput === "" || isNaN(decoInput))) {
         decobonus = parseInt(decoInput);
     }
 
-    tcibonus = 0;
+    let tcibonus = 0;
     var tciInput = document.getElementById("foodTCI").value;
-    if (tciInput === "" || isNaN(tciInput)) {
-        tcibonus = 0;
-    } else {
+    if (!(tciInput === "" || isNaN(tciInput))) {
         tcibonus = parseInt(tciInput);
     }
 
-    let totalProductionWithBonuses = totalProduction + cast + decobonus + tcibonus;
+    let res1 = document.getElementById("res1").value;
+    if (!(res1 === "" || isNaN(res1))) {
+        res1 = parseInt(res1);
+    }
 
-    document.getElementById("finalProduction").innerText = "TOTAL PRODUCTION: " + totalProductionWithBonuses + " /hour";
+    let totalProductionWithBonuses = totalProduction + cast + decobonus + tcibonus + res1;
+
+    document.getElementById("finalProduction").innerText =
+        "TOTAL FOOD PRODUCTION: " + totalProductionWithBonuses.toLocaleString() + " / hour";
 }
 
-//Save & load from cache
+// --- CACHE HANDLING ---
 function saveToCache() {
     document.querySelectorAll('input, select').forEach(input => {
         localStorage.setItem(input.id, input.value);
@@ -579,10 +560,10 @@ function loadFromCache() {
 
 document.addEventListener('DOMContentLoaded', () => {
     loadFromCache();
-
     document.querySelectorAll('input, select').forEach(input => {
         input.addEventListener('change', saveToCache);
     });
 });
 
+// --- INITIALIZATION ---
 generateBuildingCards();
