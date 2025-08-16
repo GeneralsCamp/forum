@@ -200,44 +200,82 @@ function generateBuildingCards() {
     container.innerHTML = "";
 
     buildingsData.forEach((building, index) => {
-        const buildingCard = `
-        <div class="col-md-6 col-sm-12 col-lg-6" id="card-${building.id}" data-prodIndex="${index + 1}">
-            <div class="box" data-index="${index}">
-                <div class="box-icon">
-                    <img src="${building.imgSrc}" class="img-fluid">
-                </div>
-                <div class="box-content">
-                    <h2>
-                        ${building.name}
-                        <select class="fixSelector levelSelector" name="${building.id}lvl" id="${building.id}lvl" onchange="updateBuilding('${building.id}')">
-                            ${generateLevelOptions(building.type)}
-                        </select>
-                    </h2>
-                    <div class="row box-text">
-                    <div class="col-6 mb-2">
-                        <p>Productivity: <span id="${building.id}prod">-</span></p>
+        let buildingCard;
+        if (window.innerWidth <= 768) {
+            buildingCard = `
+            <div class="col-12" id="card-${building.id}" data-prodIndex="${index + 1}">
+                <div class="box" data-index="${index}">
+                    <div class="box-icon">
+                        <img src="${building.imgSrc}" class="img-fluid">
                     </div>
-                    <div class="col-6 mb-2">
-                        <select class="fixSelector" name="${building.id}elem" id="${building.id}elem" onchange="updateBuilding('${building.id}')">
-                            ${generatePrimaryOptions()}
-                        </select>
-                    </div>
-                    <div class="col-6">
-                        <p>Production: <span id="${building.id}lbl">-</span></p>
-                    </div>
-                    <div class="col-6">
-                        <select class="fixSelector" name="${building.id}relicElem" id="${building.id}relicElem" onchange="updateBuilding('${building.id}')">
-                            ${generateRelicOptions()}
-                        </select>
-                    </div>
+                    <div class="box-content">
+                        <h2>
+                            ${building.name}
+                            <select class="fixSelector levelSelector" name="${building.id}lvl" id="${building.id}lvl" onchange="updateBuilding('${building.id}')">
+                                ${generateLevelOptions(building.type)}
+                            </select>
+                        </h2>
+                        <div class="row box-text">
+                            <div class="col-12">
+                                <p>Productivity: <span id="${building.id}prod">-</span></p>
+                            </div>
+                            <div class="col-12 mb-1">
+                                <p>Production: <span id="${building.id}lbl">-</span></p>
+                            </div>
+                            <div class="col-12 mb-1">
+                                <select class="fixSelector" name="${building.id}elem" id="${building.id}elem" onchange="updateBuilding('${building.id}')">
+                                    ${generatePrimaryOptions()}
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <select class="fixSelector" name="${building.id}relicElem" id="${building.id}relicElem" onchange="updateBuilding('${building.id}')">
+                                    ${generateRelicOptions()}
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    `;
+        `;
+        } else {
+            buildingCard = `
+            <div class="col-md-6 col-lg-6 col-sm-12" id="card-${building.id}" data-prodIndex="${index + 1}">
+                <div class="box" data-index="${index}">
+                    <div class="box-icon">
+                        <img src="${building.imgSrc}" class="img-fluid">
+                    </div>
+                    <div class="box-content">
+                        <h2>
+                            ${building.name}
+                            <select class="fixSelector levelSelector" name="${building.id}lvl" id="${building.id}lvl" onchange="updateBuilding('${building.id}')">
+                                ${generateLevelOptions(building.type)}
+                            </select>
+                        </h2>
+                        <div class="row box-text">
+                            <div class="col-6 mb-2">
+                                <p>Productivity: <span id="${building.id}prod">-</span></p>
+                            </div>
+                            <div class="col-6 mb-2">
+                                <select class="fixSelector" name="${building.id}elem" id="${building.id}elem" onchange="updateBuilding('${building.id}')">
+                                    ${generatePrimaryOptions()}
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <p>Production: <span id="${building.id}lbl">-</span></p>
+                            </div>
+                            <div class="col-6">
+                                <select class="fixSelector" name="${building.id}relicElem" id="${building.id}relicElem" onchange="updateBuilding('${building.id}')">
+                                    ${generateRelicOptions()}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        }
         container.innerHTML += buildingCard;
     });
-
     buildingsData.forEach((building) => updateBuilding(building.id));
 }
 
@@ -539,8 +577,13 @@ function updateBuilding(buildingId) {
 
     let totalProductionWithBonuses = totalProduction + cast + decobonus + tcibonus + res1;
 
-    document.getElementById("finalProduction").innerText =
-        "TOTAL FOOD PRODUCTION: " + totalProductionWithBonuses.toLocaleString() + " / hour";
+    if (window.innerWidth <= 768) {
+        document.getElementById("finalProduction").innerHTML =
+            "TOTAL FOOD PRODUCTION:<br>" + totalProductionWithBonuses.toLocaleString() + " / hour";
+    } else {
+        document.getElementById("finalProduction").innerHTML =
+            "TOTAL FOOD PRODUCTION: " + totalProductionWithBonuses.toLocaleString() + " / hour";
+    }
 }
 
 // --- CACHE HANDLING ---
