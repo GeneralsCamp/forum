@@ -503,6 +503,30 @@ function calculateProduction(level, primaryItem, relicItem, productivity) {
     return Math.round(totalProduction);
 }
 
+function getWorkArray(location, maxBuildings = 13) {
+    let production_slots = 0;
+
+    if (location === "main") {
+        production_slots = 3;
+    } else if (location === "op6") {
+        production_slots = 6;
+    } else if (location === "op8") {
+        production_slots = 8;
+    } else if (location === "kingdom") {
+        production_slots = 2;
+    }
+
+    let work = [0];
+    for (let i = 1; i <= maxBuildings; i++) {
+        if (i <= production_slots) {
+            work.push(1);
+        } else {
+            work.push(+(0.75 ** (i - production_slots)).toFixed(2));
+        }
+    }
+    return work;
+}
+
 function updateBuilding(buildingId) {
     const levelElement = document.getElementById(`${buildingId}lvl`);
     const primaryItemElement = document.getElementById(`${buildingId}elem`);
@@ -512,18 +536,9 @@ function updateBuilding(buildingId) {
     const primaryItem = primaryItemElement ? parseInt(primaryItemElement.value) || 0 : 0;
     const relicItem = relicItemElement ? parseInt(relicItemElement.value) || 0 : 0;
 
-    let work;
     const selectLocation = document.getElementById('location');
 
-    if (selectLocation.value == "main") {
-        work = [0, 1, 1, 1, 0.75, 0.56, 0.42, 0.31, 0.23, 0.17, 0.13, 0.10, 0.07];
-    } else if (selectLocation.value == "op6") {
-        work = [0, 1, 1, 1, 1, 1, 1, 0.75, 0.56, 0.42, 0.31, 0.23, 0.17];
-    } else if (selectLocation.value == "op8") {
-        work = [0, 1, 1, 1, 1, 1, 1, 1, 1, 0.75, 0.56, 0.42, 0.31];
-    } else if (selectLocation.value == "kingdom") {
-        work = [0, 1, 1, 0.75, 0.56, 0.42, 0.31, 0.23, 0.17, 0.13, 0.10, 0.07, 0.05];
-    }
+    const work = getWorkArray(selectLocation.value);
 
     const buildingIndex = parseInt(buildingId.replace(/[^\d]/g, ''));
     const productivity = work[buildingIndex] || 0;
