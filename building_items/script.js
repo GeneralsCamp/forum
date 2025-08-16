@@ -229,9 +229,9 @@ const legacyEffectFields = [
 ];
 
 const legacyEffectOverrides = {
-    "Woodproduction": "ci_effect_WoodProduction_tt",
-    "Stoneproduction": "ci_effect_StoneProduction_tt",
-    "Foodproduction": "ci_effect_FoodProduction_tt",
+    "Woodproduction": "ci_effect_unboostedWoodProduction_tt",
+    "Stoneproduction": "ci_effect_unboostedStoneProduction_tt",
+    "Foodproduction": "ci_effect_unboostedFoodProduction_tt",
     "Oilproduction": "effect_name_oilProductionBoost",
     "Ironproduction": "effect_name_ironProductionBoost",
     "Coalproduction": "effect_name_coalProductionBoost",
@@ -295,6 +295,9 @@ function getLocalizedEffectName(effectDef, variant = null) {
         candidates.push(`ci_effect_${original}_${variant}_tt`);
         candidates.push(`ci_effect_${lowerFirst}_${variant}_tt`);
         candidates.push(`ci_effect_${allLower}_${variant}_tt`);
+        candidates.push(`effect_name_${original}_${variant}`);
+        candidates.push(`effect_name_${lowerFirst}_${variant}`);
+        candidates.push(`effect_name_${allLower}_${variant}`);
     }
 
     candidates.push(`effect_name_${original}`);
@@ -309,6 +312,15 @@ function getLocalizedEffectName(effectDef, variant = null) {
     }
 
     return original;
+}
+
+function parseEffectString(effectStr) {
+    const parts = effectStr.split('+');
+    const value = parts[1] ? parseInt(parts[1], 10) : null;
+    const [idPart, levelPart] = parts[0].split('&');
+    const id = parseInt(idPart, 10);
+    const level = levelPart ? parseInt(levelPart, 10) : null;
+    return { id, level, value };
 }
 
 function parseEffects(effectsStr) {
