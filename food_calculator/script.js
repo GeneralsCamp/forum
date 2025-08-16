@@ -500,7 +500,7 @@ function calculateProduction(level, primaryItem, relicItem, productivity) {
     const bonusProduction = baseProduction * percentBonus;
     const totalProduction = ((bonusProduction) * productivity) + relicItem;
 
-    return Math.round(totalProduction).toLocaleString();
+    return Math.round(totalProduction);
 }
 
 function updateBuilding(buildingId) {
