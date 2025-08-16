@@ -314,15 +314,6 @@ function getLocalizedEffectName(effectDef, variant = null) {
     return original;
 }
 
-function parseEffectString(effectStr) {
-    const parts = effectStr.split('+');
-    const value = parts[1] ? parseInt(parts[1], 10) : null;
-    const [idPart, levelPart] = parts[0].split('&');
-    const id = parseInt(idPart, 10);
-    const level = levelPart ? parseInt(levelPart, 10) : null;
-    return { id, level, value };
-}
-
 function parseEffects(effectsStr) {
     if (!effectsStr) return [];
 
