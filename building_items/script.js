@@ -690,13 +690,8 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
 
 function renderConstructionItems(items) {
     const container = document.getElementById("cards");
-    container.innerHTML = "";
-
     const grouped = groupItemsByNameEffectsLegacyAppearanceAndDuration(items);
-
-    for (const key in grouped) {
-        container.insertAdjacentHTML("beforeend", createGroupedCard(grouped[key], imageUrlMap, key));
-    }
+    container.innerHTML = Object.keys(grouped).map(key => createGroupedCard(grouped[key], imageUrlMap, key)).join("");
 }
 
 // --- FILTERING, SEARCH, SORTING ---
