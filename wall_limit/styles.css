@@ -1,18 +1,24 @@
+/* Body & Global Styles */
 body {
   background-color: #bd9a79;
   color: #433120;
 }
 
-@media only screen and (max-width: 700px) {
-  #overlay {
-    background-color: rgba(0, 0, 0, 0);
-  }
-
-  body {
-    margin: 0 !important;
-  }
+p {
+  font-weight: 500;
+  margin: 0.5rem 0 0.5rem 0.5rem;
 }
 
+hr {
+  width: 100%;
+  border: 0;
+  border-top: 2px solid white;
+  opacity: 0.5;
+  margin: 0;
+  color: white;
+}
+
+/* Headings */
 h1 {
   background-color: rgb(119, 80, 54);
   color: #F3C24A;
@@ -26,6 +32,7 @@ h2 {
   font-size: 1.4rem;
 }
 
+/* Collapse Sections */
 .collapse-header {
   color: #F3C24A;
   font-weight: bolder;
@@ -53,18 +60,18 @@ h2 {
   padding-bottom: 10px;
 }
 
+.result .collapse {
+  padding-bottom: 0;
+}
+
+/* Results */
 .results {
   color: white;
   font-weight: bolder;
   font-size: large;
 }
 
-.warning-icon {
-  font-size: 30px;
-  margin-right: 20px;
-  font-weight: bold;
-}
-
+/* Containers & Layout */
 .container {
   background-color: rgb(67, 51, 38);
   display: flex;
@@ -73,118 +80,35 @@ h2 {
   margin-top: 0 !important;
 }
 
-.box {
-  display: flex;
-  align-items: stretch;
-  border-radius: 30px;
-  margin-bottom: 10px;
-  text-decoration: none;
-  color: #000;
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
-  border: 2px solid white;
+.row {
+  --bs-gutter-x: 0rem;
 }
 
-.box:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transform: scale(1.05);
-}
-
-.box-icon {
-  flex: 0 0 80px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-right: 2px solid white;
-  margin: 0;
-  background-color: rgb(145, 98, 65);
-  border-top-left-radius: 30px;
-  border-bottom-left-radius: 30px;
-}
-
-.box-icon img {
-  max-width: 60px;
-  max-height: 60px;
-  transition: transform 0.3s ease;
-}
-
-.box-content {
-  flex: 1;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 10px;
-  position: relative;
-  background-color: rgb(145, 98, 65);
-  min-height: 100px;
-  border-top-right-radius: 30px;
-  border-bottom-right-radius: 30px;
-}
-
-.box-content h2 {
-  font-size: 18px;
-  margin: 0;
-  font-weight: bold;
-  color: white;
-}
-
-.box-content hr {
+/* Forms */
+.form-control,
+.form-select,
+.form-select option {
   width: 100%;
-  border: 0;
-  border-top: 2px solid white;
-  margin: 2px 0 5px;
-}
-
-.box-content p {
-  margin: 0;
-  font-size: 14px;
-  color: white;
-}
-
-p {
-  font-weight: 500;
-}
-
-.box[disabled] {
-  pointer-events: none;
-  opacity: 0.5;
-}
-
-@media (hover: none) {
-  .box-icon img {
-    transform: none !important;
-  }
-
-  .box:hover {
-    transform: none !important;
-  }
-}
-
-@media only screen and (max-width: 1024px) {
-  .container {
-    min-width: fit-content;
-  }
-}
-
-.form-control2,
-.select {
-  display: flex;
-  width: 140px;
-  background-color: rgb(234, 208, 178);
-  color: black;
-  font-weight: bolder;
-  border: 1px solid #ccc;
+  font-weight: bold;
   padding: 8px;
-  box-sizing: border-box;
-  border-radius: 4px;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  margin-left: 0;
   font-size: 15px;
+  background-color: #f3e0c2;
+  color: #3e2a16;
+  border: 2px solid #bd9a79;
+  border-radius: 8px;
+}
+
+.form-control:focus,
+.form-select:focus {
+  box-shadow: 0 0 0 0.2rem rgba(243, 194, 74, 0.5);
+  border-color: #f3c24a;
+  outline: none;
+  background-color: #f3e0c2;
 }
 
 .form-group {
   color: white;
-  font-size: 25px;
+  font-size: 16px;
   font-weight: bolder;
 }
 
@@ -193,10 +117,12 @@ label {
   font-size: 16px;
 }
 
-.row {
-  --bs-gutter-x: 0rem;
+.calculator-bonuses-form .form-group {
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 10px;
   background-color: #f2d9bb;
@@ -211,21 +137,14 @@ label {
   background-color: #f2d9bb;
 }
 
-hr {
-  margin: 0;
+/* Media Queries */
+@media only screen and (max-width: 1024px) {
+  .container {
+    min-width: fit-content;
+  }
 }
 
-p {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-  margin-left: 0.5rem;
-}
-
-.calculator-bonuses-form .form-group {
-  padding-left: 10px;
-}
-
-/* Home button */
+/* Home Button */
 .home-icon-link {
   position: fixed;
   right: 10px;
@@ -252,10 +171,6 @@ p {
 }
 
 .home-icon i {
-  color: #4c473b;
-  font-size: 18px;
-}
-
-.home-icon-link .home-icon i {
   color: #f8bc00;
+  font-size: 18px;
 }

@@ -5,14 +5,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Wall Limit Calculator</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
   <link rel="icon" type="image/webp" href="../img_base/favicon.ico">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css"
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css"
     rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
@@ -34,12 +32,12 @@
           <form class="calculator-bonuses-form row" onsubmit="return false;">
             <div class="col-6 col-lg-3 form-group">
               <label for="towers">Tower amount</label>
-              <input type="number" id="towers" min="0" max="23" value="0" class="form-control2"
+              <input type="number" id="towers" min="0" max="23" value="0" class="form-control"
                 onchange="calculateDefenders()">
             </div>
             <div class="col-6 col-lg-3 form-group">
               <label for="level">Tower level</label>
-              <select name="level" id="level" class="form-control2" onchange="calculateDefenders()">
+              <select name="level" id="level" class="form-select" onchange="calculateDefenders()">
                 <option value="0">Level 0</option>
                 <option value="1">Level 1</option>
                 <option value="2">Level 2</option>
@@ -65,52 +63,43 @@
           <form class="calculator-bonuses-form row" onsubmit="return false;">
             <div class="col-md-3 col-6 col-sm-4 form-group">
               <label for="temp_items">Temp items (unit)</label>
-              <input type="number" value="0" id="temp_items" class="form-control2" min="0"
-                onchange="calculateDefenders()">
+              <input type="number" value="0" id="temp_items" class="form-control" min="0">
             </div>
 
             <div class="col-md-3 col-6 col-sm-4 form-group">
               <label for="constant_items">Constant items (unit)</label>
-              <input type="number" value="0" id="constant_items" class="form-control2" min="0"
-                onchange="calculateDefenders()">
+              <input type="number" value="0" id="constant_items" class="form-control" min="0">
             </div>
 
             <div class="col-md-3 col-6 col-sm-4 form-group">
               <label for="tools">Tools (%)</label>
-              <input type="number" value="0" id="tools" class="form-control2" min="0" max="40" step="0.1"
-                onchange="calculateDefenders()">
+              <input type="number" value="0" id="tools" class="form-control" min="0" max="40" step="0.1">
             </div>
 
             <div class="col-md-3 col-6 col-sm-4 form-group">
               <label for="equipment1">Equipments (%)</label>
-              <input type="number" value="0" id="equipment1" class="form-control2" min="0" step="0.1"
-                onchange="calculateDefenders()">
+              <input type="number" value="0" id="equipment1" class="form-control" min="0" step="0.1">
             </div>
 
             <div class="col-md-3 col-6 col-sm-4 form-group">
               <label for="hol">Hall of Legends (%)</label>
-              <input type="number" value="0" id="hol" class="form-control2" min="0" step="0.1"
-                onchange="calculateDefenders()">
+              <input type="number" value="0" id="hol" class="form-control" min="0" step="0.1">
             </div>
 
             <div class="col-md-3 col-6 col-sm-4 form-group">
               <label for="generals">Generals (%)</label>
-              <input type="number" value="0" id="generals" class="form-control2" min="0" step="0.1"
-                onchange="calculateDefenders()">
+              <input type="number" value="0" id="generals" class="form-control" min="0" step="0.1">
             </div>
 
             <div class="col-md-3 col-6 col-sm-4 form-group">
               <label for="deco">Effect decos (%)</label>
-              <input type="number" value="0" id="deco" class="form-control2" min="0" step="0.1"
-                onchange="calculateDefenders()">
+              <input type="number" value="0" id="deco" class="form-control" min="0" step="0.1">
             </div>
-
-
           </form>
         </div>
       </div>
 
-      <div class="col-12 collapse-area">
+      <div class="col-12 collapse-area result">
         <h2 class="collapse-header">
           <span class="header-title">RESULTS</span>
         </h2>
@@ -127,6 +116,9 @@
   </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+    crossorigin="anonymous"></script>
   <script src="script.js"></script>
 </body>
 
