@@ -1,3 +1,4 @@
+// --- PROXY AND GLOBAL VARIABLES ---
 const myProxy = "https://my-proxy-8u49.onrender.com/";
 const fallbackProxy = "https://corsproxy.io/?";
 
@@ -10,6 +11,7 @@ let currentFilter = "all";
 let showOnlyNew = false;
 let newWodIDsSet = new Set();
 
+// --- FETCH FUNCTIONS (WITH FALLBACK, VERSIONS, DATA) ---
 async function fetchWithFallback(url) {
   try {
     const response = await fetch(myProxy + url);
@@ -83,52 +85,96 @@ async function getItems(version) {
   return data;
 }
 
-function extractDecorations(buildings) {
-  return buildings.filter(b =>
-    b.name?.toLowerCase() === "deco" &&
-    getPO(b) > 0 &&
-    !(
-      (b.comment1 && b.comment1.toLowerCase().includes("test")) ||
-      (b.comment2 && b.comment2.toLowerCase().includes("test"))
-    )
-  );
-}
+async function compareWithOldVersion(oldVersion) {
+  const currentVersionInfo = await getCurrentVersionInfo();
+  const currentVersion = currentVersionInfo.version;
 
-function getName(item) {
-  const type = item.type || "";
-  const keyOriginal = `deco_${type}_name`;
-  const keyLower = `deco_${type.toLowerCase()}_name`;
-  const keyFirstLower = `deco_${type.charAt(0).toLowerCase() + type.slice(1)}_name`;
-
-  return lang[keyOriginal] || lang[keyLower] || lang[keyFirstLower] || type || "???";
-}
-
-function getSize(item) {
-  return `${item.width}x${item.height}`;
-}
-
-function getPO(item) {
-  if (item.decoPoints !== undefined && item.decoPoints !== null) {
-    return parseInt(item.decoPoints);
+  if (!oldVersion) {
+    const [majorStr] = currentVersion.split(".");
+    let major = parseInt(majorStr, 10);
+    oldVersion = `${major - 1}.01`;
   }
-  if (item.initialFusionLevel !== undefined && item.initialFusionLevel !== null) {
-    const level = parseInt(item.initialFusionLevel);
-    if (!isNaN(level)) {
-      return 100 + level * 5;
+
+  let oldDecorations = [];
+  let addedWodIDs = [];
+
+  while (true) {
+    const url = `https://empire-html5.goodgamestudios.com/default/items/items_v${oldVersion}.json`;
+
+    let resOld;
+    try {
+      resOld = await fetchWithFallback(url);
+    } catch (err) {
+      console.error("Error loading previous version:", err);
+      return;
     }
+
+    if (!resOld.ok) return;
+
+    const jsonOld = await resOld.json();
+    oldDecorations = extractDecorations(jsonOld.buildings);
+
+    const oldWodIDs = new Set(oldDecorations.map(d => d.wodID));
+    const newWodIDs = new Set(allDecorations.map(d => d.wodID));
+    addedWodIDs = Array.from(newWodIDs).filter(id => !oldWodIDs.has(id));
+
+    if (addedWodIDs.length > 0 || oldVersion.startsWith("1")) break;
+
+    const [majorStr] = oldVersion.split(".");
+    const major = parseInt(majorStr, 10);
+    oldVersion = `${major - 1}.01`;
   }
-  return 0;
+
+  if (addedWodIDs.length === 0) {
+    newWodIDsSet = new Set();
+  } else {
+    newWodIDsSet = new Set(addedWodIDs);
+  }
+
+  showOnlyNew = true;
+  applyFiltersAndSorting();
 }
 
-function getFusionStatus(item) {
-  const isSource = item.isFusionSource === "1";
-  const isTarget = item.isFusionTarget === "1";
-
-  if (isSource && isTarget) return "target & source";
-  if (isSource) return "source";
-  if (isTarget) return "target";
-  return "-";
+function countBySize(items) {
+  const counts = {};
+  items.forEach(item => {
+    const size = getSize(item);
+    counts[size] = (counts[size] || 0) + 1;
+  });
+  return counts;
 }
+
+async function getCurrentVersionInfo() {
+  try {
+    const urlVersion = "https://empire-html5.goodgamestudios.com/default/items/ItemsVersion.properties";
+    const resVersion = await fetchWithFallback(urlVersion);
+    if (!resVersion.ok) throw new Error("Failed to fetch current version");
+
+    const text = await resVersion.text();
+    const match = text.match(/CastleItemXMLVersion=(\d+\.\d+)/);
+    if (!match) throw new Error("Version not found");
+    const version = match[1];
+
+    const urlJson = `https://empire-html5.goodgamestudios.com/default/items/items_v${version}.json`;
+    const resJson = await fetchWithFallback(urlJson);
+    if (!resJson.ok) throw new Error("Failed to fetch version JSON");
+    const json = await resJson.json();
+
+    const date = json.versionInfo?.date?.["@value"] || "unknown";
+    return { version, date };
+  } catch (e) {
+    console.warn("Error fetching current version info:", e);
+    return { version: "unknown", date: "unknown" };
+  }
+}
+
+// --- EFFECTS AND LEGACY FIELD HANDLING ---
+const effectNameOverrides = {
+  "effect_name_AttackBoostFlankCapped": "Combat strength of units when attacking the flanks",
+  "effect_name_defenseUnitAmountYardMinorBoost": "Bonus to courtyard defense troop capacity",
+  "effect_name_AttackUnitAmountFrontCapped": "Increase front unit limit when attacking",
+  "effect_name_AttackBoostYardCapped": "Bonus to courtyard attack combat strength"
+};
 
 const hardcodedPercentEffectIDs = new Set([
   "61", "62", "370", "386", "387", "413", "414", "415",
@@ -142,13 +188,6 @@ const hardcodedPercentEffectIDs = new Set([
 ]);
 
 const percentEffectIDs = new Set();
-
-const effectNameOverrides = {
-  "effect_name_AttackBoostFlankCapped": "Combat strength of units when attacking the flanks",
-  "effect_name_defenseUnitAmountYardMinorBoost": "Bonus to courtyard defense troop capacity",
-  "effect_name_AttackUnitAmountFrontCapped": "Increase front unit limit when attacking",
-  "effect_name_AttackBoostYardCapped": "Bonus to courtyard attack combat strength"
-};
 
 function parseEffects(effectsStr) {
   if (!effectsStr) return [];
@@ -178,8 +217,18 @@ function parseEffects(effectsStr) {
   });
 }
 
-function formatNumber(num) {
-  return Number(num).toLocaleString(undefined);
+// --- NAME LOCALIZATION HELPERS ---
+function getName(item) {
+  const type = item.type || "";
+  const keyOriginal = `deco_${type}_name`;
+  const keyLower = `deco_${type.toLowerCase()}_name`;
+  const keyFirstLower = `deco_${type.charAt(0).toLowerCase() + type.slice(1)}_name`;
+
+  return lang[keyOriginal] || lang[keyLower] || lang[keyFirstLower] || type || "???";
+}
+
+function normalizeName(str) {
+  return str.toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 
 function toPascalCase(str) {
@@ -190,10 +239,118 @@ function toPascalCase(str) {
     .join('');
 }
 
-function normalizeName(str) {
-  return str.toLowerCase().replace(/[^a-z0-9]/g, '');
+// --- GET VALUES & CALCULATIONS ---
+function extractDecorations(buildings) {
+  return buildings.filter(b =>
+    b.name?.toLowerCase() === "deco" &&
+    getPO(b) > 0 &&
+    !(
+      (b.comment1 && b.comment1.toLowerCase().includes("test")) ||
+      (b.comment2 && b.comment2.toLowerCase().includes("test"))
+    )
+  );
 }
 
+function getSize(item) {
+  return `${item.width}x${item.height}`;
+}
+
+function getPO(item) {
+  if (item.decoPoints !== undefined && item.decoPoints !== null) {
+    return parseInt(item.decoPoints);
+  }
+  if (item.initialFusionLevel !== undefined && item.initialFusionLevel !== null) {
+    const level = parseInt(item.initialFusionLevel);
+    if (!isNaN(level)) {
+      return 100 + level * 5;
+    }
+  }
+  return 0;
+}
+
+function getFusionStatus(item) {
+  const isSource = item.isFusionSource === "1";
+  const isTarget = item.isFusionTarget === "1";
+
+  if (isSource && isTarget) return "target & source";
+  if (isSource) return "source";
+  if (isTarget) return "target";
+  return "-";
+}
+
+// --- SIZE FILTERS ---
+function getAvailableSizes(items) {
+  const sizes = new Set();
+  items.forEach(item => {
+    const size = getSize(item);
+    if (size) sizes.add(size);
+  });
+
+  return [...sizes].sort((a, b) => {
+    const [aW, aH] = a.split('x').map(Number);
+    const [bW, bH] = b.split('x').map(Number);
+    const aArea = aW * aH;
+    const bArea = bW * bH;
+    return bArea - aArea;
+  });
+}
+
+function renderSizeFilters(allDecorations) {
+  const sizeFiltersContainer = document.getElementById("sizeFilters");
+  sizeFiltersContainer.innerHTML = "";
+
+  const sizes = getAvailableSizes(allDecorations);
+  sizes.forEach(size => {
+    const li = document.createElement("li");
+
+    li.innerHTML = `
+      <div class="form-check">
+        <input class="form-check-input size-filter-checkbox" type="checkbox" value="${size}" id="size-${size}" checked>
+        <label class="form-check-label" for="size-${size}">${size}</label>
+      </div>
+    `;
+
+    sizeFiltersContainer.appendChild(li);
+  });
+
+  document.querySelectorAll('#sizeFilters .form-check').forEach(formCheck => {
+    formCheck.addEventListener('click', function (e) {
+      const target = e.target;
+      const isCheckbox = target.classList.contains('form-check-input');
+      const isLabel = target.tagName.toLowerCase() === 'label';
+
+      if (!isCheckbox && !isLabel) {
+        const checkbox = formCheck.querySelector('input[type="checkbox"]');
+        if (checkbox) {
+          checkbox.checked = !checkbox.checked;
+          checkbox.dispatchEvent(new Event("change"));
+        }
+      }
+      e.stopPropagation();
+    });
+  });
+
+  document.querySelectorAll(".size-filter-checkbox").forEach(checkbox => {
+    checkbox.addEventListener("change", () => {
+      updateSelectedSizes();
+      applyFiltersAndSorting();
+    });
+  });
+
+  updateSelectedSizes();
+}
+
+function updateSelectedSizes() {
+  const checkboxes = document.querySelectorAll("#sizeFilters input[type='checkbox']");
+  selectedSizes.clear();
+  checkboxes.forEach(cb => {
+    if (cb.checked) {
+      selectedSizes.add(cb.value);
+    }
+  });
+}
+
+// --- CARD CREATION (HTML RENDERING) ---
 function createCard(item, imageUrlMap = {}) {
   const name = getName(item);
   const size = getSize(item);
@@ -301,77 +458,7 @@ function renderDecorations(decos) {
   container.innerHTML = decos.map(item => createCard(item, imageUrlMap)).join("");
 }
 
-function getAvailableSizes(items) {
-  const sizes = new Set();
-  items.forEach(item => {
-    const size = getSize(item);
-    if (size) sizes.add(size);
-  });
-
-  return [...sizes].sort((a, b) => {
-    const [aW, aH] = a.split('x').map(Number);
-    const [bW, bH] = b.split('x').map(Number);
-    const aArea = aW * aH;
-    const bArea = bW * bH;
-    return bArea - aArea;
-  });
-}
-
-function renderSizeFilters(allDecorations) {
-  const sizeFiltersContainer = document.getElementById("sizeFilters");
-  sizeFiltersContainer.innerHTML = "";
-
-  const sizes = getAvailableSizes(allDecorations);
-  sizes.forEach(size => {
-    const li = document.createElement("li");
-
-    li.innerHTML = `
-      <div class="form-check">
-        <input class="form-check-input size-filter-checkbox" type="checkbox" value="${size}" id="size-${size}" checked>
-        <label class="form-check-label" for="size-${size}">${size}</label>
-      </div>
-    `;
-
-    sizeFiltersContainer.appendChild(li);
-  });
-
-  document.querySelectorAll('#sizeFilters .form-check').forEach(formCheck => {
-    formCheck.addEventListener('click', function (e) {
-      const target = e.target;
-      const isCheckbox = target.classList.contains('form-check-input');
-      const isLabel = target.tagName.toLowerCase() === 'label';
-
-      if (!isCheckbox && !isLabel) {
-        const checkbox = formCheck.querySelector('input[type="checkbox"]');
-        if (checkbox) {
-          checkbox.checked = !checkbox.checked;
-          checkbox.dispatchEvent(new Event("change"));
-        }
-      }
-      e.stopPropagation();
-    });
-  });
-
-  document.querySelectorAll(".size-filter-checkbox").forEach(checkbox => {
-    checkbox.addEventListener("change", () => {
-      updateSelectedSizes();
-      applyFiltersAndSorting();
-    });
-  });
-
-  updateSelectedSizes();
-}
-
-function updateSelectedSizes() {
-  const checkboxes = document.querySelectorAll("#sizeFilters input[type='checkbox']");
-  selectedSizes.clear();
-  checkboxes.forEach(cb => {
-    if (cb.checked) {
-      selectedSizes.add(cb.value);
-    }
-  });
-}
-
+// --- FILTERING, SEARCH, SORTING ---
 function applyFiltersAndSorting() {
   const search = document.getElementById("searchInput").value.toLowerCase().trim();
 
@@ -431,6 +518,10 @@ function applyFiltersAndSorting() {
 
 function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function formatNumber(num) {
+  return Number(num).toLocaleString(undefined);
 }
 
 function setupEventListeners() {
@@ -506,6 +597,7 @@ function setupEventListeners() {
   updateSearchInputState();
 }
 
+// --- IMAGE LOADING (DLL PARSING) ---
 async function getImageUrlMap() {
   const base = "https://empire-html5.goodgamestudios.com/default/assets/itemassets/";
 
@@ -548,6 +640,58 @@ async function getImageUrlMap() {
     return {};
   }
 }
+
+// --- MODAL HANDLING ---
+function openImageModal(src, caption) {
+  const modal = document.getElementById("imageModal");
+  const modalImg = document.getElementById("modalImage");
+  const modalCaption = document.getElementById("modalCaption");
+
+  modalImg.src = src;
+  modalCaption.innerText = caption;
+
+  modal.style.display = "flex";
+  requestAnimationFrame(() => modal.classList.add("show"));
+}
+
+function closeImageModal() {
+  const modal = document.getElementById("imageModal");
+
+  modal.classList.remove("show");
+  setTimeout(() => {
+    if (!modal.classList.contains("show")) {
+      modal.style.display = "none";
+    }
+  }, 300);
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  const modal = document.getElementById("imageModal");
+  modal.classList.remove("show");
+  modal.style.display = "none";
+});
+
+// --- INITIALIZATION AND EVENT SETUP ---
+function handleResize() {
+  const select = document.getElementById('showFilter');
+  if (select) {
+    const isMobile = window.innerWidth < 576;
+    select.options[0].text = isMobile ? "Show all" : "Show all decorations";
+    select.options[1].text = isMobile ? "Show newest" : "Show only new decorations";
+  }
+
+  const note = document.querySelector('.note');
+  const pageTitle = document.querySelector('.page-title');
+  const content = document.getElementById('content');
+
+  if (note && pageTitle && content) {
+    const totalHeightToSubtract = note.offsetHeight + pageTitle.offsetHeight + 18;
+    const newHeight = window.innerHeight - totalHeightToSubtract;
+    content.style.height = `${newHeight}px`;
+  }
+}
+window.addEventListener('resize', handleResize);
+window.addEventListener('DOMContentLoaded', handleResize);
 
 async function init() {
   try {
@@ -599,136 +743,3 @@ async function init() {
 }
 
 init();
-
-function openImageModal(src, caption) {
-  const modal = document.getElementById("imageModal");
-  const modalImg = document.getElementById("modalImage");
-  const modalCaption = document.getElementById("modalCaption");
-
-  modalImg.src = src;
-  modalCaption.innerText = caption;
-
-  modal.style.display = "flex";
-  requestAnimationFrame(() => modal.classList.add("show"));
-}
-
-function closeImageModal() {
-  const modal = document.getElementById("imageModal");
-
-  modal.classList.remove("show");
-  setTimeout(() => {
-    if (!modal.classList.contains("show")) {
-      modal.style.display = "none";
-    }
-  }, 300);
-}
-
-window.addEventListener("DOMContentLoaded", () => {
-  const modal = document.getElementById("imageModal");
-  modal.classList.remove("show");
-  modal.style.display = "none";
-});
-
-async function compareWithOldVersion(oldVersion) {
-  const currentVersionInfo = await getCurrentVersionInfo();
-  const currentVersion = currentVersionInfo.version;
-
-  if (!oldVersion) {
-    const [majorStr] = currentVersion.split(".");
-    let major = parseInt(majorStr, 10);
-    oldVersion = `${major - 1}.01`;
-  }
-
-  let oldDecorations = [];
-  let addedWodIDs = [];
-
-  while (true) {
-    const url = `https://empire-html5.goodgamestudios.com/default/items/items_v${oldVersion}.json`;
-
-    let resOld;
-    try {
-      resOld = await fetchWithFallback(url);
-    } catch (err) {
-      console.error("Error loading previous version:", err);
-      return;
-    }
-
-    if (!resOld.ok) return;
-
-    const jsonOld = await resOld.json();
-    oldDecorations = extractDecorations(jsonOld.buildings);
-
-    const oldWodIDs = new Set(oldDecorations.map(d => d.wodID));
-    const newWodIDs = new Set(allDecorations.map(d => d.wodID));
-    addedWodIDs = Array.from(newWodIDs).filter(id => !oldWodIDs.has(id));
-
-    if (addedWodIDs.length > 0 || oldVersion.startsWith("1")) break;
-
-    const [majorStr] = oldVersion.split(".");
-    const major = parseInt(majorStr, 10);
-    oldVersion = `${major - 1}.01`;
-  }
-
-  if (addedWodIDs.length === 0) {
-    newWodIDsSet = new Set();
-  } else {
-    newWodIDsSet = new Set(addedWodIDs);
-  }
-
-  showOnlyNew = true;
-  applyFiltersAndSorting();
-}
-
-function countBySize(items) {
-  const counts = {};
-  items.forEach(item => {
-    const size = getSize(item);
-    counts[size] = (counts[size] || 0) + 1;
-  });
-  return counts;
-}
-
-async function getCurrentVersionInfo() {
-  try {
-    const urlVersion = "https://empire-html5.goodgamestudios.com/default/items/ItemsVersion.properties";
-    const resVersion = await fetchWithFallback(urlVersion);
-    if (!resVersion.ok) throw new Error("Failed to fetch current version");
-
-    const text = await resVersion.text();
-    const match = text.match(/CastleItemXMLVersion=(\d+\.\d+)/);
-    if (!match) throw new Error("Version not found");
-    const version = match[1];
-
-    const urlJson = `https://empire-html5.goodgamestudios.com/default/items/items_v${version}.json`;
-    const resJson = await fetchWithFallback(urlJson);
-    if (!resJson.ok) throw new Error("Failed to fetch version JSON");
-    const json = await resJson.json();
-
-    const date = json.versionInfo?.date?.["@value"] || "unknown";
-    return { version, date };
-  } catch (e) {
-    console.warn("Error fetching current version info:", e);
-    return { version: "unknown", date: "unknown" };
-  }
-}
-
-function handleResize() {
-  const select = document.getElementById('showFilter');
-  if (select) {
-    const isMobile = window.innerWidth < 576;
-    select.options[0].text = isMobile ? "Show all" : "Show all decorations";
-    select.options[1].text = isMobile ? "Show newest" : "Show only new decorations";
-  }
-
-  const note = document.querySelector('.note');
-  const pageTitle = document.querySelector('.page-title');
-  const content = document.getElementById('content');
-
-  if (note && pageTitle && content) {
-    const totalHeightToSubtract = note.offsetHeight + pageTitle.offsetHeight + 18;
-    const newHeight = window.innerHeight - totalHeightToSubtract;
-    content.style.height = `${newHeight}px`;
-  }
-}
-window.addEventListener('resize', handleResize);
-window.addEventListener('DOMContentLoaded', handleResize);
