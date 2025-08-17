@@ -194,6 +194,10 @@ h1 {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
+#sizeFilters {
+    min-width: 100% !important;
+}
+
 .dropdown-menu-custom li {
     list-style: none;
     margin-bottom: 5px;
