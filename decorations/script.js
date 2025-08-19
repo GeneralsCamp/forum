@@ -439,7 +439,7 @@ function createCard(item, imageUrlMap = {}) {
         <h2 class="deco-title">${name} <br> (wodID: ${id})</h2>
         <hr>
         <div class="image-wrapper">
-          <img src="${imageUrl}" alt="${name}" class="card-image" onclick="openImageModal('${imageUrl}', '${safeName}')">
+          <img src="${imageUrl}" alt="${name}" class="card-image" loading="lazy" onclick="openImageModal('${imageUrl}', '${safeName}')">
         </div>
         <hr>
         <div class="card-table">
