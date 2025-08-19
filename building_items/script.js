@@ -91,7 +91,32 @@ async function compareWithOldVersion(oldVersion) {
     if (!oldVersion) {
         const [majorStr] = currentVersion.split(".");
         let major = parseInt(majorStr, 10);
-        oldVersion = `${major - 1}.01`;
+
+        let found = false;
+
+        while (major > 0 && !found) {
+            for (let minor = 1; minor <= 5; minor++) {
+                const candidate = `${major - 1}.${String(minor).padStart(2, "0")}`;
+                try {
+                    const testUrl = `https://empire-html5.goodgamestudios.com/default/items/items_v${candidate}.json`;
+                    const testRes = await fetchWithFallback(testUrl);
+                    if (testRes.ok) {
+                        oldVersion = candidate;
+                        found = true;
+                        break;
+                    }
+                } catch (e) {
+                }
+            }
+            if (!found) {
+                major--;
+            }
+        }
+
+        if (!found) {
+            console.warn("No previous version found.");
+            return;
+        }
     }
 
     let oldItems = [];
@@ -933,68 +958,68 @@ window.addEventListener("DOMContentLoaded", () => {
 
 // --- INITIALIZATION AND EVENT SETUP ---
 function handleResize() {
-  const note = document.querySelector('.note');
-  const pageTitle = document.querySelector('.page-title');
-  const content = document.getElementById('content');
+    const note = document.querySelector('.note');
+    const pageTitle = document.querySelector('.page-title');
+    const content = document.getElementById('content');
 
-  if (note && pageTitle && content) {
-    const totalHeightToSubtract = note.offsetHeight + pageTitle.offsetHeight + 18;
-    const newHeight = window.innerHeight - totalHeightToSubtract;
-    content.style.height = `${newHeight}px`;
-  }
+    if (note && pageTitle && content) {
+        const totalHeightToSubtract = note.offsetHeight + pageTitle.offsetHeight + 18;
+        const newHeight = window.innerHeight - totalHeightToSubtract;
+        content.style.height = `${newHeight}px`;
+    }
 }
 
 window.addEventListener('resize', handleResize);
 window.addEventListener('DOMContentLoaded', handleResize);
 
 async function init() {
-  try {
-    const itemVersion = await getItemVersion();
-    const langVersion = await getLangVersion();
+    try {
+        const itemVersion = await getItemVersion();
+        const langVersion = await getLangVersion();
 
-    const itemUrl = `https://empire-html5.goodgamestudios.com/default/items/items_v${itemVersion}.json`;
-    const langUrl = `https://langserv.public.ggs-ep.com/12@${langVersion}/en/*`;
+        const itemUrl = `https://empire-html5.goodgamestudios.com/default/items/items_v${itemVersion}.json`;
+        const langUrl = `https://langserv.public.ggs-ep.com/12@${langVersion}/en/*`;
 
-    console.log(`Item version: ${itemVersion}`);
-    console.log(`Item URL: %c${itemUrl}`, "color:blue; text-decoration:underline;");
-    console.log("");
+        console.log(`Item version: ${itemVersion}`);
+        console.log(`Item URL: %c${itemUrl}`, "color:blue; text-decoration:underline;");
+        console.log("");
 
-    console.log(`Language version: ${langVersion}`);
-    console.log(`Language URL: %c${langUrl}`, "color:blue; text-decoration:underline;");
+        console.log(`Language version: ${langVersion}`);
+        console.log(`Language URL: %c${langUrl}`, "color:blue; text-decoration:underline;");
 
-    await getLanguageData(langVersion);
+        await getLanguageData(langVersion);
 
-    const json = await getItems(itemVersion);
-    allItems = extractConstructionItems(json);
+        const json = await getItems(itemVersion);
+        allItems = extractConstructionItems(json);
 
-    imageUrlMap = await getImageUrlMap();
+        imageUrlMap = await getImageUrlMap();
 
-    console.log(`Found ${allItems.length} construction items, and created ${Object.keys(imageUrlMap).length} construction item URL map entries.`);
+        console.log(`Found ${allItems.length} construction items, and created ${Object.keys(imageUrlMap).length} construction item URL map entries.`);
 
-    setupEventListeners();
-    applyFiltersAndSorting();
-  } catch (err) {
-    console.error("Error:", err);
-    const cardsEl = document.getElementById("cards");
-    cardsEl.innerHTML = `
+        setupEventListeners();
+        applyFiltersAndSorting();
+    } catch (err) {
+        console.error("Error:", err);
+        const cardsEl = document.getElementById("cards");
+        cardsEl.innerHTML = `
       <div class="error-message">
         <h3>Something went wrong...</h3>
         <p>The page will automatically reload in <span id="retryCountdown">30</span> seconds!</p>
       </div>
     `;
 
-    let seconds = 30;
-    const countdownEl = document.getElementById("retryCountdown");
+        let seconds = 30;
+        const countdownEl = document.getElementById("retryCountdown");
 
-    const interval = setInterval(() => {
-      seconds--;
-      if (countdownEl) countdownEl.textContent = seconds.toString();
-      if (seconds <= 0) {
-        clearInterval(interval);
-        location.reload();
-      }
-    }, 1000);
-  }
+        const interval = setInterval(() => {
+            seconds--;
+            if (countdownEl) countdownEl.textContent = seconds.toString();
+            if (seconds <= 0) {
+                clearInterval(interval);
+                location.reload();
+            }
+        }, 1000);
+    }
 }
 
 init();
