@@ -645,7 +645,7 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
     <hr>
     <div class="image-wrapper">
       ${placedUrl
-                ? `<img src="${placedUrl}" alt="${name}" class="card-image" onclick="openImageModal('${placedUrl}', '${safeName}')">`
+                ? `<img src="${placedUrl}" alt="${name}" class="card-image" loading="lazy" onclick="openImageModal('${placedUrl}', '${safeName}')">`
                 : `<div class="no-image-text">no image</div>`
             }
     </div>
