@@ -72,7 +72,7 @@ async function getLangFile() {
         return;
     } catch { }
 
-    const url = "https://langserv.public.ggs-ep.com/12@" + version + "/en/*";
+    const url = "https://langserv.public.ggs-ep.com/12/en/" + version;
     const blob = await fetchWithRetry(url);
     await saveFileInSubfolder("lang", fileName, blob);
     log(`The latest language file has been downloaded, with version: ${version}`);
@@ -123,14 +123,17 @@ async function getAllAssets() {
     const matches = [...dllText.matchAll(regex)];
     const uniquePaths = [...new Set(matches.map(m => m[0]))];
 
+    const usePng = document.getElementById("optAssetsPng").checked;
+    const extension = usePng ? "png" : "webp";
+
     const assets = uniquePaths
         .filter(p => !p.includes("_-1"))
         .map(p => {
             const relativePath = p.replace(/^itemassets\//, "");
-            return { path: relativePath, url: `${base}${relativePath}.webp` };
+            return { path: relativePath, url: `${base}${relativePath}.${extension}`, ext: extension };
         });
 
-    log(`Found ${assets.length} assets to download.`);
+    log(`Found ${assets.length} assets to download (${extension}).`);
     return assets;
 }
 
@@ -140,6 +143,9 @@ async function downloadAssets(assets) {
     const errorLog = [];
     let currentConcurrency = 5;
 
+    const usePng = document.getElementById("optAssetsPng").checked;
+    const assetsRootFolder = usePng ? "assets-png" : "assets-webp";
+
     while (currentIndex < assets.length && !stopDownload) {
         const chunk = assets.slice(currentIndex, currentIndex + currentConcurrency);
         let allSkipped = true;
@@ -148,13 +154,13 @@ async function downloadAssets(assets) {
             if (stopDownload) return;
 
             const pathParts = asset.path.split("/");
-            let currentDir = await folderHandle.getDirectoryHandle("assets", { create: true });
+            let currentDir = await folderHandle.getDirectoryHandle(assetsRootFolder, { create: true });
 
             for (let j = 0; j < pathParts.length - 2; j++) {
                 currentDir = await currentDir.getDirectoryHandle(pathParts[j], { create: true });
             }
 
-            const fileName = pathParts[pathParts.length - 1] + ".webp";
+            const fileName = pathParts[pathParts.length - 1] + "." + asset.ext;
 
             let fileExists = false;
             try { await currentDir.getFileHandle(fileName); fileExists = true; } catch { }
@@ -225,14 +231,19 @@ document.getElementById("startDownload").addEventListener("click", async () => {
     if (!folderHandle) return;
 
     stopDownload = false;
+
     document.getElementById("stopDownload").disabled = false;
     document.getElementById("selectFolder").disabled = true;
     document.getElementById("startDownload").disabled = true;
 
+    const checkboxes = document.querySelectorAll("#optAssetsWebp, #optAssetsPng, #optItems, #optLang, #optDll");
+    checkboxes.forEach(cb => cb.disabled = true);
+
     if (currentIndex === 0) log("=== Download process started ===");
     else log("=== Continuing download ===");
 
-    const optAssets = document.getElementById("optAssets").checked;
+    const optAssetsWebp = document.getElementById("optAssetsWebp").checked;
+    const optAssetsPng = document.getElementById("optAssetsPng").checked;
     const optItems = document.getElementById("optItems").checked;
     const optLang = document.getElementById("optLang").checked;
     const optDll = document.getElementById("optDll").checked;
@@ -241,7 +252,7 @@ document.getElementById("startDownload").addEventListener("click", async () => {
     if (optLang) await getLangFile();
     if (optDll) await getDllFile();
 
-    if (optAssets) {
+    if (optAssetsWebp || optAssetsPng) {
         const assets = await getAllAssets();
         if (assets.length > 0) await downloadAssets(assets);
         if (currentIndex >= assets.length) currentIndex = 0;
@@ -249,12 +260,11 @@ document.getElementById("startDownload").addEventListener("click", async () => {
 
     updateStartButtonText();
     log("=== Download process finished ===");
-
     document.getElementById("stopDownload").disabled = true;
     document.getElementById("startDownload").disabled = false;
     document.getElementById("selectFolder").disabled = false;
+    checkboxes.forEach(cb => cb.disabled = false);
 });
-
 
 // --- Stop download ---
 document.getElementById("stopDownload").addEventListener("click", () => {
@@ -288,3 +298,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+// --- Checkbox mutual exclusivity (WEBP vs PNG) ---
+document.getElementById("optAssetsWebp").addEventListener("change", (e) => {
+    if (e.target.checked) {
+        document.getElementById("optAssetsPng").checked = false;
+    }
+});
+document.getElementById("optAssetsPng").addEventListener("change", (e) => {
+    if (e.target.checked) {
+        document.getElementById("optAssetsWebp").checked = false;
+    }
+});
