@@ -92,7 +92,32 @@ async function compareWithOldVersion(oldVersion) {
   if (!oldVersion) {
     const [majorStr] = currentVersion.split(".");
     let major = parseInt(majorStr, 10);
-    oldVersion = `${major - 1}.01`;
+
+    let found = false;
+
+    while (major > 0 && !found) {
+      for (let minor = 1; minor <= 5; minor++) {
+        const candidate = `${major - 1}.${String(minor).padStart(2, "0")}`;
+        try {
+          const testUrl = `https://empire-html5.goodgamestudios.com/default/items/items_v${candidate}.json`;
+          const testRes = await fetchWithFallback(testUrl);
+          if (testRes.ok) {
+            oldVersion = candidate;
+            found = true;
+            break;
+          }
+        } catch (e) {
+        }
+      }
+      if (!found) {
+        major--;
+      }
+    }
+
+    if (!found) {
+      console.warn("No previous version found.");
+      return;
+    }
   }
 
   let oldDecorations = [];
