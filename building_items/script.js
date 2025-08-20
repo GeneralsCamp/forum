@@ -585,7 +585,7 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
         const removalCost = item.removalCostC1 || "0";
         const removalCostText = (removalCost === 0 || removalCost === "0")
             ? "Non removable"
-            : `${removalCost} coins`;
+            : `${new Intl.NumberFormat().format(removalCost)} coins`;
         const commentList = [item.comment1, item.comment2].filter(Boolean);
 
         const normalizedName = normalizeName(item.name);
@@ -756,7 +756,9 @@ function applyFiltersAndSorting() {
             }
 
             if (selectedFilters.includes("effect")) {
-                const effectsText = parseEffects(item.effects || "").join(" ").toLowerCase();
+                let effects = parseEffects(item.effects || "");
+                addLegacyEffects(item, effects);
+                const effectsText = effects.join(" ").toLowerCase();
                 if (wordMatch(effectsText)) matchSearch = true;
             }
         }
