@@ -72,7 +72,7 @@ async function getLangFile() {
         return;
     } catch { }
 
-    const url = "https://langserv.public.ggs-ep.com/12/en/" + version;
+    const url = `https://langserv.public.ggs-ep.com/12@${version}/en/`;
     const blob = await fetchWithRetry(url);
     await saveFileInSubfolder("lang", fileName, blob);
     log(`The latest language file has been downloaded, with version: ${version}`);
