@@ -480,7 +480,22 @@ function createCard(item, imageUrlMap = {}) {
 
 function renderDecorations(decos) {
   const container = document.getElementById("cards");
-  container.innerHTML = decos.map(item => createCard(item, imageUrlMap)).join("");
+  container.innerHTML = "";
+
+  decos.forEach((item, index) => {
+    const cardHtml = createCard(item, imageUrlMap);
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = cardHtml;
+    const card = wrapper.firstElementChild;
+
+    card.classList.add("card-hidden");
+
+    setTimeout(() => {
+      card.classList.add("card-visible");
+    }, 50);
+
+    container.appendChild(card);
+  });
 }
 
 // --- FILTERING, SEARCH, SORTING ---
