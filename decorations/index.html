@@ -88,9 +88,17 @@
 
       <main id="content" class="container-fluid">
         <div id="cards" class="row g-1"></div>
+
+        <div id="loadingBox" class="loading-message">
+          <h3 id="loadingStatus">Initializing...</h3>
+          <div class="progress">
+            <div id="loadingProgress" class="progress-bar"></div>
+            <span id="loadingPercentText" class="progress-text">0%</span>
+          </div>
+        </div>
+
       </main>
     </div>
-
   </div>
 
   <div id="imageModal" class="image-modal" onclick="closeImageModal()">
