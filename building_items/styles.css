@@ -123,6 +123,17 @@ h1 {
     padding: 5px;
 }
 
+.card-hidden {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.card-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 /* --- SCROLLBARS --- */
 ::-webkit-scrollbar {
     width: 10px;
