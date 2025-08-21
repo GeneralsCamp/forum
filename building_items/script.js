@@ -975,17 +975,25 @@ window.addEventListener('resize', handleResize);
 window.addEventListener('DOMContentLoaded', handleResize);
 
 function setLoadingProgress(step, totalSteps, text) {
-    const status = document.getElementById("loadingStatus");
-    const bar = document.getElementById("loadingProgress");
-    const percentText = document.getElementById("loadingPercentText");
+  const status = document.getElementById("loadingStatus");
+  const bar = document.getElementById("loadingProgress");
+  const percentText = document.getElementById("loadingPercentText");
 
-    if (!status || !bar || !percentText) return;
+  if (!status || !bar || !percentText) return;
 
-    const percent = Math.round((step / totalSteps) * 100);
+  const targetPercent = Math.round((step / totalSteps) * 100);
+  status.textContent = text;
 
-    status.textContent = text;
-    bar.style.width = percent + "%";
-    percentText.textContent = percent + "%";
+  let currentPercent = parseInt(bar.style.width) || 0;
+  const interval = setInterval(() => {
+    if (currentPercent >= targetPercent) {
+      clearInterval(interval);
+      return;
+    }
+    currentPercent++;
+    bar.style.width = currentPercent + "%";
+    percentText.textContent = currentPercent + "%";
+  }, 25);
 }
 
 async function init() {
