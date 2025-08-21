@@ -974,53 +974,66 @@ function handleResize() {
 window.addEventListener('resize', handleResize);
 window.addEventListener('DOMContentLoaded', handleResize);
 
+function setLoadingProgress(step, totalSteps, text) {
+    const status = document.getElementById("loadingStatus");
+    const bar = document.getElementById("loadingProgress");
+    const percentText = document.getElementById("loadingPercentText");
+
+    if (!status || !bar || !percentText) return;
+
+    const percent = Math.round((step / totalSteps) * 100);
+
+    status.textContent = text;
+    bar.style.width = percent + "%";
+    percentText.textContent = percent + "%";
+}
+
 async function init() {
     try {
+        const totalSteps = 5;
+        let step = 0;
+
+        setLoadingProgress(++step, totalSteps, "Checking item version...");
         const itemVersion = await getItemVersion();
-        const langVersion = await getLangVersion();
-
-        const itemUrl = `https://empire-html5.goodgamestudios.com/default/items/items_v${itemVersion}.json`;
-        const langUrl = `https://langserv.public.ggs-ep.com/12@${langVersion}/en/*`;
-
         console.log(`Item version: ${itemVersion}`);
-        console.log(`Item URL: %c${itemUrl}`, "color:blue; text-decoration:underline;");
+        console.log(`Item URL: %chttps://empire-html5.goodgamestudios.com/default/items/items_v${itemVersion}.json`, "color:blue; text-decoration:underline;");
         console.log("");
 
+        setLoadingProgress(++step, totalSteps, "Checking language version...");
+        const langVersion = await getLangVersion();
         console.log(`Language version: ${langVersion}`);
-        console.log(`Language URL: %c${langUrl}`, "color:blue; text-decoration:underline;");
+        console.log(`Language URL: %chttps://langserv.public.ggs-ep.com/12@${langVersion}/en/*`, "color:blue; text-decoration:underline;");
 
+        setLoadingProgress(++step, totalSteps, "Loading language data...");
         await getLanguageData(langVersion);
 
+        setLoadingProgress(++step, totalSteps, "Loading items...");
         const json = await getItems(itemVersion);
         allItems = extractConstructionItems(json);
 
+        setLoadingProgress(++step, totalSteps, "Loading images...");
         imageUrlMap = await getImageUrlMap();
 
         console.log(`Found ${allItems.length} construction items, and created ${Object.keys(imageUrlMap).length} construction item URL map entries.`);
 
+        setLoadingProgress(totalSteps, totalSteps, "Rendering items...");
         setupEventListeners();
         applyFiltersAndSorting();
+
+        const box = document.getElementById("loadingBox");
+        if (box) box.style.display = "none";
+
     } catch (err) {
         console.error("Error:", err);
-        const cardsEl = document.getElementById("cards");
-        cardsEl.innerHTML = `
-      <div class="error-message">
-        <h3>Something went wrong...</h3>
-        <p>The page will automatically reload in <span id="retryCountdown">30</span> seconds!</p>
-      </div>
-    `;
-
-        let seconds = 30;
-        const countdownEl = document.getElementById("retryCountdown");
-
-        const interval = setInterval(() => {
-            seconds--;
-            if (countdownEl) countdownEl.textContent = seconds.toString();
-            if (seconds <= 0) {
-                clearInterval(interval);
-                location.reload();
-            }
-        }, 1000);
+        const box = document.getElementById("loadingBox");
+        if (box) {
+            box.innerHTML = `
+              <div class="error-message">
+                <h3>Something went wrong...</h3>
+                <p>The page will automatically reload in <span id="retryCountdown">30</span> seconds!</p>
+              </div>
+            `;
+        }
     }
 }
 
