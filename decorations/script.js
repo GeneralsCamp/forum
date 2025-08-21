@@ -773,11 +773,9 @@ async function init() {
     const loadingBox = document.getElementById("loadingBox");
     if (loadingBox) {
       loadingBox.innerHTML = `
-                <div class="error-message">
-                    <h3>Something went wrong...</h3>
-                    <p>The page will automatically reload in <span id="retryCountdown">30</span> seconds!</p>
-                </div>
-            `;
+        <h3>Something went wrong...</h3>
+        <p>The page will automatically reload in <span id="retryCountdown">30</span> seconds!</p>
+      `;
 
       let seconds = 30;
       const countdownEl = document.getElementById("retryCountdown");
