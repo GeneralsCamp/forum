@@ -729,11 +729,12 @@ function populateBuildingsModal() {
 }
 
 function filterBuildingsBySearch() {
+    const searchQuery = document.getElementById("buildingSearch").value.toLowerCase();
+    const buildingsGrid = document.getElementById("buildingsGrid");
+
     populateBuildingsModal();
 
-    const searchQuery = document.getElementById("buildingSearch").value.toLowerCase();
-    const buildings = document.querySelectorAll("#buildingsGrid .col-md-6");
-
+    const buildings = buildingsGrid.querySelectorAll(".col-md-6, .col-lg-4");
     buildings.forEach(building => {
         const name = building.querySelector("h2").textContent.toLowerCase();
         if (name.includes(searchQuery)) {
@@ -813,6 +814,12 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('orientationSelect').addEventListener('change', function () {
         isSwappedDimensions = (this.value === 'horizontal');
     });
+
+    /*** SEARCH FUNCTION ***/
+    const searchInput = document.getElementById("buildingSearch");
+    if (searchInput) {
+        searchInput.addEventListener("input", filterBuildingsBySearch);
+    }
 
     /*** TRANSPARENCY TOGGLE + CACHE ***/
     const transparencyToggle = document.getElementById('transparencyToggle');
