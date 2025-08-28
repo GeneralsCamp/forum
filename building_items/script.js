@@ -123,30 +123,52 @@ async function compareWithOldVersion(oldVersion) {
     let addedIDs = [];
 
     while (true) {
-        const urlOld = `https://empire-html5.goodgamestudios.com/default/items/items_v${oldVersion}.json`;
+        const [majorStr, minorStr] = oldVersion.split(".");
+        let major = parseInt(majorStr, 10);
+        let minor = parseInt(minorStr, 10);
 
-        let resOld;
-        try {
-            resOld = await fetchWithFallback(urlOld);
-        } catch (err) {
-            console.error("Error loading previous version:", err);
-            return;
+        let foundNew = false;
+
+        while (major > 0 && !foundNew) {
+            while (minor > 0) {
+                const candidate = `${major}.${String(minor).padStart(2, "0")}`;
+                const urlOld = `https://empire-html5.goodgamestudios.com/default/items/items_v${candidate}.json`;
+
+                let resOld;
+                try {
+                    resOld = await fetchWithFallback(urlOld);
+                } catch (err) {
+                    console.error("Error loading previous version:", err);
+                    minor--;
+                    continue;
+                }
+
+                if (!resOld.ok) {
+                    minor--;
+                    continue;
+                }
+
+                const jsonOld = await resOld.json();
+                oldItems = extractConstructionItems(jsonOld);
+
+                const oldIDs = new Set(oldItems.map(i => i.constructionItemID));
+                const newIDs = new Set(allItems.map(i => i.constructionItemID));
+                addedIDs = Array.from(newIDs).filter(id => !oldIDs.has(id));
+
+                if (addedIDs.length > 0) {
+                    oldVersion = candidate;
+                    foundNew = true;
+                    break;
+                }
+
+                minor--;
+            }
+
+            major--;
+            minor = 5;
         }
 
-        if (!resOld.ok) return;
-
-        const jsonOld = await resOld.json();
-        oldItems = extractConstructionItems(jsonOld);
-
-        const oldIDs = new Set(oldItems.map(i => i.constructionItemID));
-        const newIDs = new Set(allItems.map(i => i.constructionItemID));
-        addedIDs = Array.from(newIDs).filter(id => !oldIDs.has(id));
-
-        if (addedIDs.length > 0 || oldVersion.startsWith("1")) break;
-
-        const [majorStr] = oldVersion.split(".");
-        const major = parseInt(majorStr, 10);
-        oldVersion = `${major - 1}.01`;
+        break;
     }
 
     newItemIDsSet = new Set(addedIDs);
