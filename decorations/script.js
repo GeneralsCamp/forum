@@ -124,30 +124,39 @@ async function compareWithOldVersion(oldVersion) {
   let addedWodIDs = [];
 
   while (true) {
-    const url = `https://empire-html5.goodgamestudios.com/default/items/items_v${oldVersion}.json`;
+    const [majorStr, minorStr] = oldVersion.split(".");
+    let major = parseInt(majorStr, 10);
+    let minor = parseInt(minorStr, 10);
 
-    let resOld;
-    try {
-      resOld = await fetchWithFallback(url);
-    } catch (err) {
-      console.error("Error loading previous version:", err);
-      return;
+    let foundNew = false;
+
+    while (major > 0 && !foundNew) {
+      while (minor > 0) {
+        const candidate = `${major}.${String(minor).padStart(2, "0")}`;
+        const url = `https://empire-html5.goodgamestudios.com/default/items/items_v${candidate}.json`;
+        try {
+          const res = await fetchWithFallback(url);
+          if (res.ok) {
+            const jsonOld = await res.json();
+            const oldDecorations = extractDecorations(jsonOld.buildings);
+            const oldWodIDs = new Set(oldDecorations.map(d => d.wodID));
+            const newWodIDs = new Set(allDecorations.map(d => d.wodID));
+            const added = Array.from(newWodIDs).filter(id => !oldWodIDs.has(id));
+            if (added.length > 0) {
+              oldVersion = candidate;
+              addedWodIDs = added;
+              foundNew = true;
+              break;
+            }
+          }
+        } catch (e) { }
+        minor--;
+      }
+      major--;
+      minor = 5;
     }
 
-    if (!resOld.ok) return;
-
-    const jsonOld = await resOld.json();
-    oldDecorations = extractDecorations(jsonOld.buildings);
-
-    const oldWodIDs = new Set(oldDecorations.map(d => d.wodID));
-    const newWodIDs = new Set(allDecorations.map(d => d.wodID));
-    addedWodIDs = Array.from(newWodIDs).filter(id => !oldWodIDs.has(id));
-
-    if (addedWodIDs.length > 0 || oldVersion.startsWith("1")) break;
-
-    const [majorStr] = oldVersion.split(".");
-    const major = parseInt(majorStr, 10);
-    oldVersion = `${major - 1}.01`;
+    break;
   }
 
   if (addedWodIDs.length === 0) {
