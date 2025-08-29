@@ -803,9 +803,11 @@ function applyFiltersAndSorting() {
         let matchesType = false;
 
         for (const type of selectedTypes) {
-            if (type === "permanent" && !item.duration && !item.decoPoints) matchesType = true;
+            if (type === "primary" && Number(item.slotTypeID) === 1) matchesType = true;
+            if (type === "relic" && Number(item.slotTypeID) === 2) matchesType = true;
             if (type === "temporary" && item.duration) matchesType = true;
             if (type === "appearance" && item.decoPoints) matchesType = true;
+            if (type === "permanent" && Number(item.slotTypeID) === 0 && !item.decoPoints && !item.duration) matchesType = true;
         }
 
         if (showOnlyNew && !newItemIDsSet.has(item.constructionItemID)) return false;
