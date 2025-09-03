@@ -2,12 +2,15 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Travel Time (Attack)</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Travel Time (Attack)</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+  <link rel="icon" type="image/webp" href="../img_base/favicon.ico">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
@@ -42,11 +45,9 @@
                                 class="form-control">
                         </div>
                         <div class="col-6 col-lg-3 form-group">
-                            <label for="specialCond">Travel Boost Cheat</label>
-                            <select id="specialCond" class="form-select">
-                                <option value="0" selected>No</option>
-                                <option value="1">Yes</option>
-                            </select>
+                            <label for="horse">Horse Bonus Value</label>
+                            <input type="number" id="horse" step="0.1" min="0" max="100" min="0" class="form-control"
+                                placeholder="max.100%">
                         </div>
                     </form>
                 </div>
@@ -91,24 +92,16 @@
                         </div>
                         <!-- Alliance -->
                         <div class="col-md-4 col-6 form-group">
-                            <label for="war">Alliance Bonus</label>
+                            <label for="war">Alliance War Bonus</label>
                             <input type="number" id="war" step="1" max="100" min="0" class="form-control"
                                 placeholder="max.100%">
-                        </div>
-                        <!-- Horse -->
-                        <div class="col-12 form-group">
-                            <label for="horse">Horse Bonus Value</label>
-                            <input type="number" id="horse" min="0" max="95" min="0" class="form-control"
-                                placeholder="max.95%">
-                            <p style="margin: 0; font-size: smaller;">With horses, there can be a small difference
-                                because of roundings.</p>
                         </div>
                     </form>
                 </div>
             </div>
 
             <!-- RESULTS -->
-            <div class="col-12 collapse-area result">
+            <div class="col-12 collapse-area result mb-2">
                 <h2 class="collapse-header">
                     <span class="header-title">RESULTS</span>
                 </h2>
