@@ -411,6 +411,10 @@ function createCard(item, imageUrlMap = {}) {
   }
 
   const sources = [item.comment1, item.comment2].filter(Boolean);
+  if (item.maximumCount) {
+    sources.unshift(`Maximum count: ${item.maximumCount}`);
+  }
+
   const id = item.wodID || "???";
 
   const effects = parseEffects(item.areaSpecificEffects || "");
