@@ -44,46 +44,40 @@
                     </div>
                 </div>
             </div>
-
+            
             <div class="col-12 mb-2 collapse-area">
                 <h2 class="collapse-header">
                     <span class="header-title">OPTIONS</span>
                 </h2>
                 <div class="row note gx-1 gy-1 p-1">
-                    <div class="col-6 col-md-3">
-                        <label class="custom-checkbox">
-                            <input type="checkbox" id="optAssetsWebp" checked>
-                            <span class="checkmark"></span>
-                            Assets (WEBP)
-                        </label>
+
+                    <div class="col-md-6 col-sm-12">
+                        <select id="optAssets" class="form-select custom-select text-center">
+                            <option value="png" selected>Assets (PNG)</option>
+                            <option value="webp">Assets (WEBP)</option>
+                            <option value="no">No assets</option>
+                        </select>
                     </div>
-                    <div class="col-6 col-md-3">
-                        <label class="custom-checkbox">
-                            <input type="checkbox" id="optAssetsPng">
-                            <span class="checkmark"></span>
-                            Assets (PNG)
-                        </label>
+
+                    <div class="col-md-6 col-sm-12">
+                        <select id="optItems" class="form-select custom-select text-center">
+                            <option value="items" selected>items.json</option>
+                            <option value="no-items">No items.json</option>
+                        </select>
                     </div>
-                    <div class="col-6 col-md-2">
-                        <label class="custom-checkbox">
-                            <input type="checkbox" id="optItems" checked>
-                            <span class="checkmark"></span>
-                            Items
-                        </label>
+
+                    <div class="col-md-6 col-sm-12">
+                        <select id="optLang" class="form-select custom-select text-center">
+                            <option value="lang" selected>lang.json</option>
+                            <option value="no-dll">No lang.json</option>
+                        </select>
                     </div>
-                    <div class="col-6 col-md-2">
-                        <label class="custom-checkbox">
-                            <input type="checkbox" id="optLang" checked>
-                            <span class="checkmark"></span>
-                            Lang (EN)
-                        </label>
-                    </div>
-                    <div class="col-6 col-md-2">
-                        <label class="custom-checkbox">
-                            <input type="checkbox" id="optDll" checked>
-                            <span class="checkmark"></span>
-                            DLL
-                        </label>
+
+                    <div class="col-md-6 col-sm-12">
+                        <select id="optDll" class="form-select custom-select text-center">
+                            <option value="dll" selected>DLL.js</option>
+                            <option value="no-dll">No DLL.js</option>
+                        </select>
                     </div>
                 </div>
             </div>

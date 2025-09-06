@@ -104,7 +104,7 @@ async function getDllFile() {
 }
 
 // --- Get all asset URLs ---
-async function getAllAssets() {
+async function getAllAssets(usePng) {
     const base = "https://empire-html5.goodgamestudios.com/default/assets/itemassets/";
     const indexUrl = "https://empire-html5.goodgamestudios.com/default/index.html";
 
@@ -123,7 +123,6 @@ async function getAllAssets() {
     const matches = [...dllText.matchAll(regex)];
     const uniquePaths = [...new Set(matches.map(m => m[0]))];
 
-    const usePng = document.getElementById("optAssetsPng").checked;
     const extension = usePng ? "png" : "webp";
 
     const assets = uniquePaths
@@ -138,12 +137,11 @@ async function getAllAssets() {
 }
 
 // --- Download assets into assets folder ---
-async function downloadAssets(assets) {
+async function downloadAssets(assets, usePng) {
     let completed = currentIndex;
     const errorLog = [];
     let currentConcurrency = 5;
 
-    const usePng = document.getElementById("optAssetsPng").checked;
     const assetsRootFolder = usePng ? "assets-png" : "assets-webp";
 
     while (currentIndex < assets.length && !stopDownload) {
@@ -236,34 +234,47 @@ document.getElementById("startDownload").addEventListener("click", async () => {
     document.getElementById("selectFolder").disabled = true;
     document.getElementById("startDownload").disabled = true;
 
-    const checkboxes = document.querySelectorAll("#optAssetsWebp, #optAssetsPng, #optItems, #optLang, #optDll");
-    checkboxes.forEach(cb => cb.disabled = true);
+    const selects = document.querySelectorAll("#optAssets, #optItems, #optLang, #optDll");
+    selects.forEach(sel => sel.disabled = true);
 
     if (currentIndex === 0) log("=== Download process started ===");
     else log("=== Continuing download ===");
 
-    const optAssetsWebp = document.getElementById("optAssetsWebp").checked;
-    const optAssetsPng = document.getElementById("optAssetsPng").checked;
-    const optItems = document.getElementById("optItems").checked;
-    const optLang = document.getElementById("optLang").checked;
-    const optDll = document.getElementById("optDll").checked;
+    // --- Lekérjük a select értékeket ---
+    const optAssets = document.getElementById("optAssets").value;
+    const optItems = document.getElementById("optItems").value;
+    const optLang = document.getElementById("optLang").value;
+    const optDll = document.getElementById("optDll").value;
 
-    if (optItems) await getItemFile();
-    if (optLang) await getLangFile();
-    if (optDll) await getDllFile();
-
-    if (optAssetsWebp || optAssetsPng) {
-        const assets = await getAllAssets();
-        if (assets.length > 0) await downloadAssets(assets);
-        if (currentIndex >= assets.length) currentIndex = 0;
+    // --- Items ---
+    if (optItems === "items") {
+        await getItemFile();
     }
 
+    // --- Lang ---
+    if (optLang === "lang") {
+        await getLangFile();
+    }
+
+    // --- DLL ---
+    if (optDll === "dll") {
+        await getDllFile();
+    }
+
+    // --- Assets ---
+    if (optAssets === "png" || optAssets === "webp") {
+        const usePng = optAssets === "png";
+
+        const assets = await getAllAssets(usePng);
+        if (assets.length > 0) await downloadAssets(assets, usePng);
+        if (currentIndex >= assets.length) currentIndex = 0;
+    }
     updateStartButtonText();
     log("=== Download process finished ===");
     document.getElementById("stopDownload").disabled = true;
     document.getElementById("startDownload").disabled = false;
     document.getElementById("selectFolder").disabled = false;
-    checkboxes.forEach(cb => cb.disabled = false);
+    selects.forEach(sel => sel.disabled = false);
 });
 
 // --- Stop download ---
@@ -298,14 +309,3 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// --- Checkbox mutual exclusivity (WEBP vs PNG) ---
-document.getElementById("optAssetsWebp").addEventListener("change", (e) => {
-    if (e.target.checked) {
-        document.getElementById("optAssetsPng").checked = false;
-    }
-});
-document.getElementById("optAssetsPng").addEventListener("change", (e) => {
-    if (e.target.checked) {
-        document.getElementById("optAssetsWebp").checked = false;
-    }
-});
