@@ -160,7 +160,7 @@ h2 {
 }
 
 .input-responsive {
-    width: 80%;
+    width: 100%;
 }
 
 @media (min-width: 768px) {
