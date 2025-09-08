@@ -61,21 +61,35 @@ async function getItemFile() {
     log(`The latest items file has been downloaded, with version: ${version}`);
 }
 
-async function getLangFile() {
+async function getLangFile(selectedLang) {
     const version = await getLangVersion();
-    const fileName = `lang-${version}.json`;
+    const langs = [
+        "en", "ar", "pt", "es", "de", "nl", "sv", "bg", "fr", "zh_CN", "el", "cs",
+        "da", "fi", "hu", "id", "it", "ja", "ko", "ru", "lt", "no", "pl", "ro",
+        "sk", "tr", "zh_TW"
+    ];
 
-    try {
-        const dirHandle = await folderHandle.getDirectoryHandle("lang", { create: true });
-        await dirHandle.getFileHandle(fileName);
-        log(`Skipped (already exists): ${fileName}`);
-        return;
-    } catch { }
+    const targetLangs = selectedLang === "all" ? langs : [selectedLang];
 
-    const url = `https://langserv.public.ggs-ep.com/12@${version}/en/`;
-    const blob = await fetchWithRetry(url);
-    await saveFileInSubfolder("lang", fileName, blob);
-    log(`The latest language file has been downloaded, with version: ${version}`);
+    for (const lang of targetLangs) {
+        const fileName = `lang-${lang}-${version}.json`;
+
+        try {
+            const dirHandle = await folderHandle.getDirectoryHandle("lang", { create: true });
+            await dirHandle.getFileHandle(fileName);
+            log(`Skipped (already exists): ${fileName}`);
+            continue;
+        } catch { }
+
+        const url = `https://langserv.public.ggs-ep.com/12@${version}/${lang}/`;
+        try {
+            const blob = await fetchWithRetry(url);
+            await saveFileInSubfolder("lang", fileName, blob);
+            log(`Downloaded language file: ${fileName}`);
+        } catch {
+            log(`Failed to download: ${fileName}`);
+        }
+    }
 }
 
 async function getDllFile() {
@@ -252,8 +266,8 @@ document.getElementById("startDownload").addEventListener("click", async () => {
     }
 
     // --- Lang ---
-    if (optLang === "lang") {
-        await getLangFile();
+    if (optLang !== "no-lang") {
+        await getLangFile(optLang);
     }
 
     // --- DLL ---
