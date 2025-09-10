@@ -1,0 +1,106 @@
+body {
+    background-color: #bd9a79;
+    color: #433120;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.console {
+    border: 2px solid #433120;
+    padding: 20px;
+    width: 90%;
+    height: 90%;
+    box-shadow: 0 0 20px #433120;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f2d9bb;
+}
+
+.leaderboard {
+    text-align: center;
+    width: 100%;
+}
+
+h1 {
+    background-color: rgb(119, 80, 54);
+    color: #F3C24A;
+    padding: 4px;
+    border-radius: 10px;
+    font-weight: bolder;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.container {
+    background-color: rgb(67, 51, 38);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin-top: 0 !important;
+}
+
+.table-wrapper {
+    border: 1px solid #433120;
+    max-height: 80vh;
+    overflow-y: auto;
+    display: block;
+    background-color: #bd9a79;
+    border-radius: 8px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-weight: normal;
+}
+
+thead {
+    background-color: #7b5036;
+    color: #f3c24a;
+}
+
+th, td {
+    border: 1px solid #433120;
+    padding: 8px;
+    text-align: center;
+    overflow: hidden;
+    font-weight: bolder;
+}
+
+tbody {
+    display: table-row-group;
+    color: #433120;
+}
+
+th.name-col, td.name-col {
+    width: 60%;
+}
+
+th.score-col, td.score-col,
+th.game-col, td.game-col {
+    width: 20%;
+}
+
+/* GENERAL RESET & SCROLLBAR */
+* {
+    touch-action: manipulation;
+}
+
+::-webkit-scrollbar {
+    width: 3px;
+    background-color: #f2d9bb;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #bd9a79;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #f2d9bb;
+}

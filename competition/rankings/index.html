@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GGE Discord Verseny - Ranglista</title>
+
+    <meta property="og:title" content="Goodgame Empire Kvíz Ranglista" />
+    <meta property="og:description" content="GGE & E4K Discord verseny ranglista" />
+    <meta property="og:url" content="https://generalscamp.github.io/forum/competition/ranking.html" />
+    <meta property="og:type" content="website" />
+    <meta name="author" content="Dániel (@GeneralsCamp)">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        crossorigin="anonymous" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+    <div class="container">
+        <div class="leaderboard">
+            <h1>RANGLISTA</h1>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="game-col">Játék</th>
+                        <th class="name-col">Név</th>
+                        <th class="score-col">Pontszám</th>
+                    </tr>
+                </thead>
+            </table>
+            <div class="table-wrapper">
+                <table>
+                    <tbody id="leaderboard-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
