@@ -221,6 +221,9 @@ const langKeyOverrides = {
     "XPBoostBuildBuildings": "ci_primary_xpBoostBuildBuildings",
     "natureResearchtower": "ci_appearance_natureResearchTower",
     "winterResearchtower": "ci_appearance_winterResearchTower",
+
+    "RelicBeefCapacityIncrease": "ci_secondary_RelicBeefCapacityIncrease_premium",
+    "BeefCapacityIncrease": "ci_primary_Beef_CapacityIncrease_premium"
 };
 
 const hardcodedPercentEffectIDs = new Set([
