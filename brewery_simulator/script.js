@@ -81,7 +81,7 @@ function calculate() {
     /*** UNITS HOLD CALCULATION ***/
     const dist = parseFloat(document.getElementById("dist").value) || 0;
     const consumption = 2 * (1 - dist);
-    const unitsHold = Math.floor(finalMead / consumption);
+    const unitsHold = Math.floor(finalMeadValue / consumption);
     unitsHoldLabel.textContent = unitsHold.toLocaleString();
 }
 
