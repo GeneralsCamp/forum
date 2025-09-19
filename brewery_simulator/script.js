@@ -49,8 +49,8 @@ function calculate() {
 
     const ApercentBonuses = Aoverseer + Aresearch + Agardens + Acoat + AstormsTitle + Acast;
     const BaseHoneyProd = (apiaryLvl + AbaseElem) * apiaryAmount;
-    const finalHoney = Math.round(BaseHoneyProd * PObonus * (1 + ApercentBonuses) + ArelicElem * apiaryAmount + Deco);
-    honeyProdLabel.textContent = `${finalHoney.toLocaleString()} /hour`;
+    const finalHoney = Math.floor(BaseHoneyProd * PObonus * (1 + ApercentBonuses) + ArelicElem * apiaryAmount + Deco);
+    honeyProdLabel.textContent = finalHoney.toLocaleString();
 
     /*** MEAD CALCULATION ***/
     const breweryLvl = parseInt(document.getElementById("breweryLvl").value) || 1;
@@ -66,17 +66,23 @@ function calculate() {
 
     const percentBonuses = overseer + research + barrel + coat + stormsTitle + cast;
     const baseMeadProd = baseMead[breweryLvl - 1] + baseElem;
-    const finalMead = Math.round(workload * baseMeadProd * PObonus * (1 + percentBonuses) + relicElem + decoMead);
+
+    let finalMeadValue = Math.floor((workload * baseMeadProd * PObonus * (1 + percentBonuses) + relicElem + decoMead) * 10) / 10;
+
+    if (finalMeadValue % 1 === 0) {
+        meadLabel.textContent = finalMeadValue.toLocaleString();
+    } else {
+        meadLabel.textContent = finalMeadValue.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    }
 
     foodLabel.textContent = Math.round(baseFood[breweryLvl - 1] * workload).toLocaleString();
     honeyLabel.textContent = Math.round(baseHoney[breweryLvl - 1] * workload).toLocaleString();
-    meadLabel.textContent = finalMead.toLocaleString();
 
     /*** UNITS HOLD CALCULATION ***/
     const dist = parseFloat(document.getElementById("dist").value) || 0;
     const consumption = 2 * (1 - dist);
-    const unitsHold = finalMead / consumption;
-    unitsHoldLabel.textContent = Math.round(unitsHold).toLocaleString();
+    const unitsHold = Math.floor(finalMead / consumption);
+    unitsHoldLabel.textContent = unitsHold.toLocaleString();
 }
 
 /*** LOCAL STORAGE HANDLING ***/
