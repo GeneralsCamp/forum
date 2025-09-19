@@ -64,7 +64,7 @@ function calculate() {
     const cast = parseFloat(document.getElementById("cast").value) || 0;
     const decoMead = parseInt(document.getElementById("decoMead").value) || 0;
 
-    const percentBonuses = overseer + research + barrel + coat + stormsTitle + cast;
+    const percentBonuses = overseer + research + barrel + coat + stormsTitle + (cast/100);
     const baseMeadProd = baseMead[breweryLvl - 1] + baseElem;
 
     let finalMeadValue = Math.floor((workload * baseMeadProd * PObonus * (1 + percentBonuses) + relicElem + decoMead) * 10) / 10;
@@ -106,7 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('input, select').forEach(el => {
         el.addEventListener('change', () => {
             saveToCache();
-            calculate();
         });
     });
 });
