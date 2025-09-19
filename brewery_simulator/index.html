@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brewery Simulator</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+  <link rel="icon" type="image/webp" href="../img_base/favicon.ico">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <h1>BREWERY SIMULATOR</h1>
+      </div>
+      <a href="https://generalscamp.github.io/forum/" class="home-icon-link">
+        <div class="home-icon">
+          <i class="bi bi-house"></i>
+        </div>
+      </a>
+
+      <div class="col-12 collapse-area mb-2 result">
+        <h2 class="collapse-header">
+          <span class="header-title">RESULTS</span>
+        </h2>
+        <div class="collapse show">
+          <form class="calculator-bonuses-form row" onsubmit="return false;">
+            <div class="collapse show results">
+              <p class="il">TOTAL HONEY PRODUCTION: <i id="honeyProd">0</i></p>
+              <hr>
+              <p>TOTAL MEAD PRODUCTION: <br> <i id="food">0</i> food + <i id="honey">0</i> honey = <i id="mead">0</i>
+                mead</p>
+              <hr>
+              <p class="il">NUMBER OF UNITS YOU CAN KEEP: <i id="unitsHold">0</i></p>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="col-12 collapse-area mb-2">
+        <h2 class="collapse-header">
+          <span class="header-title">HONEY PRODUCTION BONUSES</span>
+        </h2>
+        <div class="collapse show">
+          <form id="bonuses-form" class="calculator-bonuses-form" onchange="calculate()">
+            <div class="row">
+              <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
+                <label for="apiaryAmount">Number of apiaries</label>
+                <select class="form-select" name="apiaryAmount" id="apiaryAmount">
+                  <option value="0">0</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12">12</option>
+                  <option value="13">13</option>
+                  <option value="14">14</option>
+                  <option value="15">15</option>
+                </select>
+              </div>
+              <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
+                <label for="apiaryLvl">Apiaries level</label>
+                <select class="form-select" name="apiaryLvl" id="apiaryLvl">
+                  <option value="250">1</option>
+                  <option value="275">2</option>
+                  <option value="300">3</option>
+                  <option value="325">4</option>
+                  <option value="350">5</option>
+                  <option value="375">6</option>
+                  <option value="400">7</option>
+                  <option value="425">8</option>
+                  <option value="450">9</option>
+                  <option value="475">10</option>
+                  <option value="500">11</option>
+                  <option value="525">12</option>
+                  <option value="550">13</option>
+                  <option value="575">14</option>
+                  <option value="600">15</option>
+                </select>
+              </div>
+              <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
+                <label for="Apo">Public order</label>
+                <input class="form-control" type="number" value="0" id="po">
+              </div>
+              <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
+                <label for="Aoverseer">Honey overseer</label>
+                <select class="form-select" name="Aoverseer" id="Aoverseer">
+                  <option value="0">No</option>
+                  <option value="0.25">Yes</option>
+                </select>
+              </div>
+              <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
+                <label for="Aresearch">Honey pots research</label>
+                <select class="form-select" name="Aresearch" id="Aresearch">
+                  <option value="0">No</option>
+                  <option value="0.04">Level 1</option>
+                  <option value="0.08">Level 2</option>
+                  <option value="0.12">Level 3</option>
+                  <option value="0.16">Level 4</option>
+                  <option value="0.20">Level 5</option>
+                </select>
+              </div>
+              <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
+                <label for="Agardens">Honey gardens</label>
+                <select class="form-select" name="Agardens" id="Agardens">
+                  <option value="0">No</option>
+                  <option value="0.1">Level 1</option>
+                  <option value="0.2">Level 2</option>
+                  <option value="0.3">Level 3</option>
+                  <option value="0.4">Level 4</option>
+                  <option value="0.5">Level 5</option>
+                  <option value="0.6">Level 6</option>
+                  <option value="0.65">Level 7</option>
+                  <option value="0.7">Level 8</option>
+                </select>
+              </div>
+              <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
+                <label for="Acoat">Coat of arms bonus</label>
+                <select class="form-select" name="Acoat" id="Acoat">
+                  <option value="0">0%</option>
+                  <option value="0.02">2%</option>
+                  <option value="0.04">4%</option>
+                  <option value="0.08">8%</option>
+                  <option value="0.11">11%</option>
+                  <option value="0.15">15%</option>
+                  <option value="0.16">16%</option>
+                  <option value="0.20">20%</option>
+                  <option value="0.22">22%</option>
+                  <option value="0.30">30%</option>
+                  <option value="0.40">40%</option>
+                </select>
+              </div>
+              <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
+                <label for="AstormsTitle">Storm title</label>
+                <select class="form-select" name="AstormsTitle" id="AstormsTitle">
+                  <option value="0">No</option>
+                  <option value="0.25">The Hive Master</option>
+                </select>
+              </div>
+              <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
+                <label for="AbaseElem">Primary item</label>
+                <select class="form-select" name="AbaseElem" id="AbaseElem">
+                  <option value="0">No</option>
+                  <option value="30">Level 1</option>
+                  <option value="40">Level 2</option>
+                  <option value="50">Level 3</option>
+                  <option value="60">Level 4</option>
+                  <option value="70">Level 5</option>
+                  <option value="80">Level 6</option>
+                  <option value="90">Level 7</option>
+                  <option value="100">Level 8</option>
+                  <option value="114">Level 9</option>
+                  <option value="130">Level 10</option>
+                  <option value="146">Level 11</option>
+                  <option value="162">Level 12</option>
+                  <option value="180">Level 13</option>
+                  <option value="198">Level 14</option>
+                  <option value="216">Level 15</option>
+                  <option value="236">Level 16</option>
+                  <option value="256">Level 17</option>
+                  <option value="276">Level 18</option>
+                  <option value="296">Level 19</option>
+                  <option value="316">Level 20</option>
+                  <option value="336">Level 21</option>
+                  <option value="356">Level 22</option>
+                  <option value="376">Level 23</option>
+                  <option value="396">Level 24</option>
+                  <option value="418">Level 25</option>
+                </select>
+              </div>
+              <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
+                <label for="ArelicElem">Relic item</label>
+                <select class="form-select" name="ArelicElem" id="ArelicElem">
+                  <option value="0">No</option>
+                  <option value="2200">Level 1</option>
+                  <option value="2400">Level 2</option>
+                  <option value="2600">Level 3</option>
+                  <option value="2800">Level 4</option>
+                  <option value="3000">Level 5</option>
+                  <option value="3200">Level 6</option>
+                  <option value="3400">Level 7</option>
+                  <option value="3600">Level 8</option>
+                  <option value="3800">Level 9</option>
+                  <option value="4000">Level 10</option>
+                  <option value="4200">Level 11</option>
+                  <option value="4400">Level 12</option>
+                  <option value="4600">Level 13</option>
+                  <option value="4800">Level 14</option>
+                  <option value="5000">Level 15</option>
+                  <option value="5200">Level 16</option>
+                  <option value="5400">Level 17</option>
+                  <option value="5600">Level 18</option>
+                  <option value="5800">Level 19</option>
+                  <option value="6000">Level 20</option>
+                </select>
+              </div>
+              <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
+                <label for="Acast">Castellan bonus</label>
+                <select class="form-control" name="Acast" id="Acast">
+                  <option value="0">No</option>
+                  <option value="0.01">1%</option>
+                  <option value="0.02">2%</option>
+                  <option value="0.03">3%</option>
+                  <option value="0.04">4%</option>
+                  <option value="0.05">5%</option>
+                  <option value="0.06">6%</option>
+                  <option value="0.07">7%</option>
+                  <option value="0.08">8%</option>
+                  <option value="0.09">9%</option>
+                  <option value="0.10">10%</option>
+                  <option value="0.11">11%</option>
+                  <option value="0.12">12%</option>
+                  <option value="0.13">13%</option>
+                  <option value="0.14">14%</option>
+                  <option value="0.15">15%</option>
+                  <option value="0.16">16%</option>
+                  <option value="0.17">17%</option>
+                  <option value="0.18">18%</option>
+                  <option value="0.19">19%</option>
+                  <option value="0.20">20%</option>
+                  <option value="0.21">21%</option>
+                  <option value="0.22">22%</option>
+                  <option value="0.23">23%</option>
+                  <option value="0.24">24%</option>
+                  <option value="0.25">25%</option>
+                </select>
+              </div>
+
+              <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
+                <label for="Acast">Effect deco</label>
+                <input class="form-control" required type="number" name="deco" id="deco" placeholder="e.g. 2500"
+                  min="0">
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="col-12 collapse-area mb-2">
+        <h2 class="collapse-header">
+          <span class="header-title">MEAD PRODUCTION BONUSES</span>
+        </h2>
+        <div class="calculator">
+          <div class="collapse show">
+            <form class="calculator-bonuses-form" onchange="calculate()" onSubmit="return false;">
+              <div class="row">
+                <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
+                  <label for="breweryLvl">Brewery level</label>
+                  <select class="form-select" name="breweryLvl" id="breweryLvl">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                    <option value="15">15</option>
+                    <option value="16">16</option>
+                    <option value="17">17</option>
+                    <option value="18">18</option>
+                    <option value="19">19</option>
+                    <option value="20">20</option>
+                    <option value="21">21</option>
+                    <option value="22">22</option>
+                    <option value="23">23</option>
+                    <option value="24">24</option>
+                    <option value="25">25</option>
+                    <option value="26">26</option>
+                    <option value="27">27</option>
+                    <option value="28">28</option>
+                    <option value="29">29</option>
+                    <option value="30">30</option>
+                  </select>
+                </div>
+                <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
+                  <label for="dist">Distillery</label>
+                  <select class="form-select" name="dist" id="dist">
+                    <option value="0">No</option>
+                    <option value="0.05">Level 1</option>
+                    <option value="0.10">Level 2</option>
+                    <option value="0.15">Level 3</option>
+                    <option value="0.20">Level 4</option>
+                    <option value="0.25">Level 5</option>
+                    <option value="0.30">Level 6</option>
+                    <option value="0.35">Level 7</option>
+                    <option value="0.40">Level 8</option>
+                  </select>
+                </div>
+                <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
+                  <label for="overseer">Mead overseer</label>
+                  <select class="form-select" name="overseer" id="overseer">
+                    <option value="0">No</option>
+                    <option value="0.25">Yes</option>
+                  </select>
+                </div>
+                <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
+                  <label for="research">Research (NT)</label>
+                  <select class="form-select" name="research" id="research">
+                    <option value="0">No</option>
+                    <option value="0.04">Level 1</option>
+                    <option value="0.08">Level 2</option>
+                    <option value="0.12">Level 3</option>
+                    <option value="0.16">Level 4</option>
+                    <option value="0.20">Level 5</option>
+                  </select>
+                </div>
+                <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
+                  <label for="barrel">Barrel workshop</label>
+                  <select class="form-select" name="barrel" id="barrel">
+                    <option value="0">No</option>
+                    <option value="0.1">Level 1</option>
+                    <option value="0.2">Level 2</option>
+                    <option value="0.3">Level 3</option>
+                    <option value="0.4">Level 4</option>
+                    <option value="0.5">Level 5</option>
+                    <option value="0.6">Level 6</option>
+                    <option value="0.65">Level 7</option>
+                    <option value="0.7">Level 8</option>
+                  </select>
+                </div>
+                <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
+                  <label for="coat">Coat of arms bonus</label>
+                  <select class="form-select" name="coat" id="coat">
+                    <option value="0">0%</option>
+                    <option value="0.02">2%</option>
+                    <option value="0.04">4%</option>
+                    <option value="0.08">8%</option>
+                    <option value="0.11">11%</option>
+                    <option value="0.15">15%</option>
+                    <option value="0.16">16%</option>
+                    <option value="0.20">20%</option>
+                    <option value="0.22">22%</option>
+                    <option value="0.30">30%</option>
+                    <option value="0.40">40%</option>
+                  </select>
+                </div>
+                <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
+                  <label for="stormsTitle">Storm title</label>
+                  <select class="form-select" name="stormsTitle" id="stormsTitle">
+                    <option value="0">No</option>
+                    <option value="0.25">the Voracious</option>
+                  </select>
+                </div>
+                <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
+                  <label for="baseElem">Primary item</label>
+                  <select class="form-select" name="baseElem" id="baseElem">
+                    <option value="0">No</option>
+                    <option value="70">Level 1</option>
+                    <option value="90">Level 2</option>
+                    <option value="110">Level 3</option>
+                    <option value="130">Level 4</option>
+                    <option value="150">Level 5</option>
+                    <option value="170">Level 6</option>
+                    <option value="190">Level 7</option>
+                    <option value="250">Level 8</option>
+                    <option value="300">Level 9</option>
+                    <option value="350">Level 10</option>
+                    <option value="400">Level 11</option>
+                    <option value="450">Level 12</option>
+                    <option value="500">Level 13</option>
+                    <option value="550">Level 14</option>
+                    <option value="600">Level 15</option>
+                    <option value="650">Level 16</option>
+                    <option value="700">Level 17</option>
+                    <option value="750">Level 18</option>
+                    <option value="800">Level 19</option>
+                    <option value="850">Level 20</option>
+                    <option value="900">Level 21</option>
+                    <option value="1000">Level 22</option>
+                    <option value="1100">Level 23</option>
+                    <option value="1200">Level 24</option>
+                    <option value="1350">Level 25</option>
+                  </select>
+                </div>
+                <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
+                  <label for="relicElem">Relic item</label>
+                  <select class="form-select" name="relicElem" id="relicElem">
+                    <option value="0">No</option>
+                    <option value="10200">Level 1</option>
+                    <option value="10400">Level 2</option>
+                    <option value="10600">Level 3</option>
+                    <option value="10800">Level 4</option>
+                    <option value="11000">Level 5</option>
+                    <option value="11200">Level 6</option>
+                    <option value="11400">Level 7</option>
+                    <option value="11600">Level 8</option>
+                    <option value="11800">Level 9</option>
+                    <option value="12000">Level 10</option>
+                    <option value="12200">Level 11</option>
+                    <option value="12400">Level 12</option>
+                    <option value="12600">Level 13</option>
+                    <option value="12800">Level 14</option>
+                    <option value="13000">Level 15</option>
+                    <option value="13200">Level 16</option>
+                    <option value="13400">Level 17</option>
+                    <option value="13600">Level 18</option>
+                    <option value="13800">Level 19</option>
+                    <option value="14000">Level 20</option>
+                  </select>
+                </div>
+                <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
+                  <label for="cast">Castellan Bonus</label>
+                  <select class="form-select" name="cast" id="cast">
+                    <option value="0">No</option>
+                    <option value="0.01">1%</option>
+                    <option value="0.02">2%</option>
+                    <option value="0.03">3%</option>
+                    <option value="0.04">4%</option>
+                    <option value="0.05">5%</option>
+                    <option value="0.06">6%</option>
+                    <option value="0.07">7%</option>
+                    <option value="0.08">8%</option>
+                    <option value="0.09">9%</option>
+                    <option value="0.10">10%</option>
+                    <option value="0.11">11%</option>
+                    <option value="0.12">12%</option>
+                    <option value="0.13">13%</option>
+                    <option value="0.14">14%</option>
+                    <option value="0.15">15%</option>
+                    <option value="0.16">16%</option>
+                    <option value="0.17">17%</option>
+                    <option value="0.18">18%</option>
+                    <option value="0.19">19%</option>
+                    <option value="0.20">20%</option>
+                    <option value="0.21">21%</option>
+                    <option value="0.22">22%</option>
+                    <option value="0.23">23%</option>
+                    <option value="0.24">24%</option>
+                    <option value="0.25">25%</option>
+                  </select>
+                </div>
+                <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
+                  <label for="">Effect deco</label>
+                  <input class="form-control" required type="number" name="decoMead" id="decoMead"
+                    placeholder="e.g. 10000" min="0">
+                </div>
+                <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
+                  <label for="ratio">Production ratio</label>
+                  <div class="brewery-production-control-input">
+                    <input class="form-control" type="number" min="0" max="100" value="0" id="productionInput">
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+
+</html>
