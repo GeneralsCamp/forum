@@ -82,6 +82,10 @@ async function getItems(version) {
     }
   });
 
+  if (Array.isArray(data.units)) {
+    units = data.units;
+  }
+
   return data;
 }
 
@@ -227,28 +231,81 @@ function parseEffects(effectsStr) {
   if (!effectsStr) return [];
 
   const formatter = new Intl.NumberFormat(navigator.language);
+  const results = [];
 
-  return effectsStr.split(",").map(eff => {
-    const [id, valRaw] = eff.split("&");
-    const val = Number(valRaw);
+  effectsStr.split(",").forEach(eff => {
+    const [id, rest] = eff.split("&");
     const effectDef = effectDefinitions[id];
 
-    const localizedName = effectDef
-      ? (effectNameOverrides[`effect_name_${effectDef.name}`] || lang[`effect_name_${effectDef.name}`] || effectDef.name)
+    let baseKey = effectDef ? "effect_name_" + effectDef.name : "";
+    let localizedTemplate = effectDef
+      ? (effectNameOverrides[baseKey] ||
+        lang[baseKey] ||
+        effectDef.name)
       : `Effect ID ${id}`;
-
     const suffix = percentEffectIDs.has(id) ? "%" : "";
 
-    let maxStr = "";
-    if (effectDef && effectDef.capID) {
-      const cap = effectCapsMap[effectDef.capID];
-      if (cap && cap.maxTotalBonus) {
-        maxStr = ` <span class="max-bonus">(Max: ${formatter.format(Number(cap.maxTotalBonus))}${suffix})</span>`;
+    if (rest.includes("+")) {
+      const [subType, valStr] = rest.split("+");
+      const val = Number(valStr);
+
+      let unitName = `Unit ${subType}`;
+      const unit = units.find(u => u.wodID == subType);
+      if (unit) {
+        unitName = lang[unit.type + "_name"] || unit.type;
+      }
+
+      function firstCharToLower(str) {
+        if (!str) return str;
+        return str.charAt(0).toLowerCase() + str.slice(1);
+      }
+
+      let templateKey = "effect_name_" + firstCharToLower(effectDef.name);
+      let localizedTemplate =
+        lang[templateKey] ||
+        effectNameOverrides[templateKey] ||
+        effectDef.name;
+
+      if (!lang[templateKey]) {
+        console.warn(
+          `⚠️ Subtype sablon hiányzik: key="${templateKey}", effectDef.name="${effectDef.name}", id=${id}, unitName="${unitName}"`
+        );
+      }
+
+      let localizedName = localizedTemplate.replace("{1}", unitName);
+
+      if (!isNaN(val)) {
+        let maxStr = "";
+        if (effectDef && effectDef.capID) {
+          const cap = effectCapsMap[effectDef.capID];
+          if (cap && cap.maxTotalBonus) {
+            maxStr = ` <span class="max-bonus">(Max: ${formatter.format(Number(cap.maxTotalBonus))}${suffix})</span>`;
+          }
+        }
+        results.push(`${localizedName}: ${formatter.format(val)}${suffix}${maxStr}`);
+      } else {
+        results.push(`${localizedName}: Invalid value (${rest})`);
       }
     }
 
-    return `${localizedName}: ${formatter.format(val)}${suffix}${maxStr}`;
+    else {
+      const val = Number(rest);
+      if (!isNaN(val)) {
+        let maxStr = "";
+        if (effectDef && effectDef.capID) {
+          const cap = effectCapsMap[effectDef.capID];
+          if (cap && cap.maxTotalBonus) {
+            maxStr = ` <span class="max-bonus">(Max: ${formatter.format(Number(cap.maxTotalBonus))}${suffix})</span>`;
+          }
+        }
+        results.push(`${localizedTemplate}: ${formatter.format(val)}${suffix}${maxStr}`);
+      } else {
+        results.push(`${localizedTemplate}: Invalid value (${rest})`);
+      }
+    }
   });
+
+  return results;
 }
 
 // --- NAME LOCALIZATION HELPERS ---
@@ -401,13 +458,20 @@ function createCard(item, imageUrlMap = {}) {
     isFusionSource ? "Source" :
       isFusionTarget ? "Target" : "none";
 
-  const sellPriceRaw = item.sellC1 || "0";
-  let sellPriceDisplay;
+  let sellPriceDisplay = "";
 
-  if (Number(sellPriceRaw) === 0 && item.sellSoldierBiscuit) {
-    sellPriceDisplay = `${formatNumber(item.sellSoldierBiscuit)} biscuits`;
+  if (item.sellLegendaryToken || item.sellLegendaryMaterial) {
+    const parts = [];
+    if (item.sellLegendaryToken) parts.push(`${formatNumber(item.sellLegendaryToken)} Construction token`);
+    if (item.sellLegendaryMaterial) parts.push(`${formatNumber(item.sellLegendaryMaterial)} Upgrade token`);
+    sellPriceDisplay = parts.join("<br>");
   } else {
-    sellPriceDisplay = `${formatNumber(sellPriceRaw)} coins`;
+    const sellPriceRaw = item.sellC1 || "0";
+    if (Number(sellPriceRaw) === 0 && item.sellSoldierBiscuit) {
+      sellPriceDisplay = `${formatNumber(item.sellSoldierBiscuit)} biscuits`;
+    } else {
+      sellPriceDisplay = `${formatNumber(sellPriceRaw)} coins`;
+    }
   }
 
   const sources = [item.comment1, item.comment2].filter(Boolean);
