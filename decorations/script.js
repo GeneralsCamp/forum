@@ -258,6 +258,10 @@ function parseEffects(effectsStr) {
       if (unit) {
         const key = unitTypeOverrides[unit.type] || unit.type;
         unitName = lang[key + "_name"] || unit.type;
+
+        if (unit.level != null) {
+          unitName += ` (lvl.${unit.level})`;
+        }
       }
 
       function firstCharToLower(str) {
@@ -286,6 +290,7 @@ function parseEffects(effectsStr) {
         results.push(`${localizedName}: Invalid value (${rest})`);
       }
     }
+
     else {
       const val = Number(rest);
       if (!isNaN(val)) {
