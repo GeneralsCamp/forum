@@ -249,10 +249,15 @@ function parseEffects(effectsStr) {
       const [subType, valStr] = rest.split("+");
       const val = Number(valStr);
 
+      const unitTypeOverrides = {
+        "ScaleBoundGuardian": "ScaleboundGuardian"
+      };
+
       let unitName = `Unit ${subType}`;
       const unit = units.find(u => u.wodID == subType);
       if (unit) {
-        unitName = lang[unit.type + "_name"] || unit.type;
+        const key = unitTypeOverrides[unit.type] || unit.type;
+        unitName = lang[key + "_name"] || unit.type;
       }
 
       function firstCharToLower(str) {
@@ -265,12 +270,6 @@ function parseEffects(effectsStr) {
         lang[templateKey] ||
         effectNameOverrides[templateKey] ||
         effectDef.name;
-
-      if (!lang[templateKey]) {
-        console.warn(
-          `⚠️ Subtype sablon hiányzik: key="${templateKey}", effectDef.name="${effectDef.name}", id=${id}, unitName="${unitName}"`
-        );
-      }
 
       let localizedName = localizedTemplate.replace("{1}", unitName);
 
@@ -287,7 +286,6 @@ function parseEffects(effectsStr) {
         results.push(`${localizedName}: Invalid value (${rest})`);
       }
     }
-
     else {
       const val = Number(rest);
       if (!isNaN(val)) {
@@ -295,7 +293,7 @@ function parseEffects(effectsStr) {
         if (effectDef && effectDef.capID) {
           const cap = effectCapsMap[effectDef.capID];
           if (cap && cap.maxTotalBonus) {
-            maxStr = ` <span class="max-bonus">(Max: ${formatter.format(Number(cap.maxTotalBonus))}${suffix})</span>`;
+            maxStr = ` <span class="max-bonus" data-capid="${effectDef.capID}" style="cursor:pointer">(Max: ${formatter.format(Number(cap.maxTotalBonus))}${suffix})</span>`;
           }
         }
         results.push(`${localizedTemplate}: ${formatter.format(val)}${suffix}${maxStr}`);
@@ -631,6 +629,47 @@ function applyFiltersAndSorting() {
   });
 
   renderDecorations(filtered);
+  setupMaxCapClick();
+}
+
+function setupMaxCapClick() {
+  document.querySelectorAll(".max-bonus").forEach(span => {
+    span.addEventListener("click", () => {
+      const capID = span.dataset.capid;
+      if (!capID) return;
+
+      const filtered = allDecorations.filter(item => {
+        if (!item.areaSpecificEffects) return false;
+        return item.areaSpecificEffects.split(",").some(eff => {
+          const [id] = eff.split("&");
+          const effectDef = effectDefinitions[id];
+          return effectDef && effectDef.capID === capID;
+        });
+      });
+
+      const showFilter = document.getElementById("showFilter");
+      if (showFilter) {
+        const lastCapOption = document.getElementById("lastCapOption");
+
+        if (!lastCapOption) {
+          const option = document.createElement("option");
+          option.id = "lastCapOption";
+          option.disabled = false;
+          showFilter.appendChild(option);
+        }
+
+        const optionToUpdate = document.getElementById("lastCapOption");
+        optionToUpdate.value = `cap-${capID}`;
+        optionToUpdate.text = `Last selected effect cap`;
+        optionToUpdate.disabled = false;
+        optionToUpdate.selected = true;
+
+        showFilter.dataset.previousValue = optionToUpdate.value;
+        showFilter.dataset.previousText = optionToUpdate.text;
+      }
+      renderDecorations(filtered);
+    });
+  });
 }
 
 function escapeRegExp(string) {
@@ -676,6 +715,23 @@ function setupEventListeners() {
   if (showFilter) {
     showFilter.addEventListener("change", async () => {
       const val = showFilter.value;
+
+      if (val.startsWith("cap-")) {
+        const capID = val.slice(4);
+
+        const filtered = allDecorations.filter(item => {
+          if (!item.areaSpecificEffects) return false;
+          return item.areaSpecificEffects.split(",").some(eff => {
+            const [id, rest] = eff.split("&");
+            const effectDef = effectDefinitions[id];
+            return effectDef && effectDef.capID === capID;
+          });
+        });
+
+        renderDecorations(filtered);
+        return;
+      }
+
       if (val === "new") {
         if (newWodIDsSet.size === 0) {
           await compareWithOldVersion();
