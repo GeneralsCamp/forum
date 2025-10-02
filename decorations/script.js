@@ -447,7 +447,6 @@ function createCard(item, imageUrlMap = {}) {
       isFusionTarget ? "Target" : "none";
 
   let sellPriceDisplay = "";
-
   if (item.sellLegendaryToken || item.sellLegendaryMaterial) {
     const parts = [];
     if (item.sellLegendaryToken) {
@@ -462,7 +461,7 @@ function createCard(item, imageUrlMap = {}) {
     if (Number(sellPriceRaw) === 0 && item.sellSoldierBiscuit) {
       sellPriceDisplay = `<img src="./img/biscuit.png" class="effect-icon">x${formatNumber(item.sellSoldierBiscuit)}`;
     } else {
-      sellPriceDisplay = `<img src="./img/coin.png" class="effect-icon">x${formatNumber(sellPriceRaw)}`;
+      sellPriceDisplay = `<img src="./img/coin.png" class="effect-icon">${formatNumber(sellPriceRaw)}`;
     }
   }
 
@@ -516,38 +515,36 @@ function createCard(item, imageUrlMap = {}) {
               <span class="position-absolute bottom-0 end-0 p-1 rounded-circle m-1">
                  <i class="bi bi-zoom-in"></i>
               </span>
-          </div>
+            </div>
             <div class="col-8 card-cell">
               <div class="row g-0">
                 <div class="col-6 card-cell border-end">
-                  <strong>Public order:</strong><br>${formatNumber(po)}
+                  <strong>Public order</strong><br><img src="./img/po.png" class="effect-icon">${formatNumber(po)}
                 </div>
                 <div class="col-6 card-cell">
-                  <strong>Public order/tile:</strong><br>${poPerTile}
+                  <strong>PO/tile</strong><br><img src="./img/po.png" class="effect-icon">${poPerTile}
                 </div>
               </div>
               <hr>
               <div class="row g-0">
                 <div class="col-6 card-cell border-end">
-                  <strong>Size:</strong><br>${size}
+                  <strong>Size</strong><br><img src="./img/size.png" class="effect-icon">${size}
                 </div>
                 <div class="col-6 card-cell">
-                  <strong>Might points:</strong><br>${formatNumber(might)}
+                  <strong>Might points</strong><br><img src="./img/might.png" class="effect-icon">${formatNumber(might)}
                 </div>
               </div>
               <hr>
               <div class="row g-0">
                 <div class="col-6 card-cell border-end">
-                  <strong>Sale price:</strong><br>${sellPriceDisplay}
+                  <strong>Sale price</strong><br>${sellPriceDisplay}
                 </div>
                 <div class="col-6 card-cell">
-                  <strong>Fusion:</strong><br>${fusion}
+                  <strong>Fusion</strong><br>${fusion}
                 </div>
               </div>
-
             </div>
           </div>
-
         </div>
         ${effectsHTML}
         ${sourceHTML}
@@ -555,6 +552,7 @@ function createCard(item, imageUrlMap = {}) {
     </div>
   </div>`;
 }
+
 
 function renderDecorations(decos) {
   const container = document.getElementById("cards");
