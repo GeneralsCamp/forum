@@ -461,7 +461,7 @@ function createCard(item, imageUrlMap = {}) {
     if (Number(sellPriceRaw) === 0 && item.sellSoldierBiscuit) {
       sellPriceDisplay = `<img src="./img/biscuit.png" class="effect-icon">x${formatNumber(item.sellSoldierBiscuit)}`;
     } else {
-      sellPriceDisplay = `<img src="./img/coin.png" class="effect-icon">${formatNumber(sellPriceRaw)}`;
+      sellPriceDisplay = `<img src="./img/coin.png" class="effect-icon">x${formatNumber(sellPriceRaw)}`;
     }
   }
 
