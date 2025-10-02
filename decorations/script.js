@@ -8,7 +8,7 @@ let currentSort = "po";
 let allDecorations = [];
 let imageUrlMap = {};
 let currentFilter = "all";
-let showOnlyNew = false;
+let specialFilter = null;
 let newWodIDsSet = new Set();
 
 // --- FETCH FUNCTIONS (WITH FALLBACK, VERSIONS, DATA) ---
@@ -68,17 +68,12 @@ async function getItems(version) {
     });
   }
 
+  percentEffectIDs.clear();
   Object.values(effectDefinitions).forEach(effect => {
     const descKey = `equip_effect_description_${effect.name}`;
     const description = lang[descKey];
     if (description && description.includes('%') && !descKey.includes('Unboosted')) {
       percentEffectIDs.add(effect.effectID);
-    }
-  });
-
-  hardcodedPercentEffectIDs.forEach(id => {
-    if (!percentEffectIDs.has(id)) {
-      percentEffectIDs.add(id);
     }
   });
 
@@ -165,11 +160,12 @@ async function compareWithOldVersion(oldVersion) {
 
   if (addedWodIDs.length === 0) {
     newWodIDsSet = new Set();
+    specialFilter = null;
   } else {
     newWodIDsSet = new Set(addedWodIDs);
+    specialFilter = "new";
   }
 
-  showOnlyNew = true;
   applyFiltersAndSorting();
 }
 
@@ -213,17 +209,6 @@ const effectNameOverrides = {
   "effect_name_AttackUnitAmountFrontCapped": "Increase front unit limit when attacking",
   "effect_name_AttackBoostYardCapped": "Bonus to courtyard attack combat strength"
 };
-
-const hardcodedPercentEffectIDs = new Set([
-  "61", "62", "370", "386", "387", "413", "414", "415",
-  "381", "382", "408", "383", "384", "82", "83", "388",
-  "389", "390", "391", "392", "393", "409", "394", "395",
-  "396", "611", "416", "397", "398", "399", "612", "417",
-  "369", "368", "410", "411", "412", "423", "424", "407",
-  "501", "705", "66", "614", "504", "503", "613", "114",
-  "80", "401", "402", "373", "259", "701", "343", "202",
-  "340", "339", "11", "363", "404", "403"
-]);
 
 const percentEffectIDs = new Set();
 
@@ -465,24 +450,31 @@ function createCard(item, imageUrlMap = {}) {
 
   if (item.sellLegendaryToken || item.sellLegendaryMaterial) {
     const parts = [];
-    if (item.sellLegendaryToken) parts.push(`${formatNumber(item.sellLegendaryToken)} Construction token`);
-    if (item.sellLegendaryMaterial) parts.push(`${formatNumber(item.sellLegendaryMaterial)} Upgrade token`);
+    if (item.sellLegendaryToken) {
+      parts.push(`<img src="./img/construction-token.png" class="effect-icon">x${formatNumber(item.sellLegendaryToken)}`);
+    }
+    if (item.sellLegendaryMaterial) {
+      parts.push(`<img src="./img/upgrade-token.png" class="effect-icon">x${formatNumber(item.sellLegendaryMaterial)}`);
+    }
     sellPriceDisplay = parts.join("<br>");
   } else {
     const sellPriceRaw = item.sellC1 || "0";
     if (Number(sellPriceRaw) === 0 && item.sellSoldierBiscuit) {
-      sellPriceDisplay = `${formatNumber(item.sellSoldierBiscuit)} biscuits`;
+      sellPriceDisplay = `<img src="./img/biscuit.png" class="effect-icon">x${formatNumber(item.sellSoldierBiscuit)}`;
     } else {
-      sellPriceDisplay = `${formatNumber(sellPriceRaw)} coins`;
+      sellPriceDisplay = `<img src="./img/coin.png" class="effect-icon">x${formatNumber(sellPriceRaw)}`;
     }
   }
 
-  const sources = [item.comment1, item.comment2].filter(Boolean);
-  if (item.maximumCount) {
-    sources.unshift(`Maximum count: ${item.maximumCount}`);
-  }
-
   const id = item.wodID || "???";
+  const sources = [item.comment1, item.comment2].filter(Boolean);
+
+  const wodIDHTML = `<span class="wod-id" style="cursor:pointer;" onclick="navigator.clipboard.writeText('${id}')">${id}</span>`;
+  sources.unshift(`wodID: ${wodIDHTML}`);
+
+  if (item.maximumCount) {
+    sources.splice(1, 0, `Maximum count per castle: ${item.maximumCount}`);
+  }
 
   const effects = parseEffects(item.areaSpecificEffects || "");
   let effectsHTML = "";
@@ -492,8 +484,7 @@ function createCard(item, imageUrlMap = {}) {
     <div class="card-section card-effects">
       <h5 class="card-section-title">Effects:</h5>
       <p>${effects.map(e => `- ${e}`).join("<br>")}</p>
-    </div>
-  `;
+    </div>`;
   }
 
   let sourceHTML = "";
@@ -503,59 +494,66 @@ function createCard(item, imageUrlMap = {}) {
     <div class="card-section card-sources">
       <h4 class="card-section-title">Developer comments:</h4>
       <p>${sources.map(s => `- ${s}`).join("<br>")}</p>
-    </div>
-  `;
+    </div>`;
   }
 
   const cleanedType = normalizeName(item.type);
   const imageUrl = imageUrlMap[cleanedType] || "assets/img/unknown.webp";
-
   const safeName = name.replace(/'/g, "\\'");
 
   return `
   <div class="col-md-6 col-sm-12 d-flex flex-column">
     <div class="box flex-fill">
       <div class="box-content">
-        <h2 class="deco-title">${name} <br> (wodID: ${id})</h2>
-        <hr>
-        <div class="image-wrapper">
-          <img src="${imageUrl}" alt="${name}" class="card-image" loading="lazy" onclick="openImageModal('${imageUrl}', '${safeName}')">
-        </div>
+        <h2 class="deco-title">${name}</h2>
         <hr>
         <div class="card-table">
           <div class="row g-0">
-            <div class="col-6 card-cell border-end">
-              <strong>Public order:</strong><br>${formatNumber(po)}
-            </div>
-            <div class="col-6 card-cell">
-              <strong>Public order/tile:</strong><br>${poPerTile}
+            <div class="col-4 card-cell border-end d-flex justify-content-center align-items-center position-relative" style="cursor:pointer;" onclick="openImageModal('${imageUrl}', '${safeName}')">
+              <div class="image-wrapper">
+                <img src="${imageUrl}" class="card-image w-100" loading="lazy">
+              </div>
+              <span class="position-absolute bottom-0 end-0 p-1 rounded-circle m-1">
+                 <i class="bi bi-zoom-in"></i>
+              </span>
+          </div>
+            <div class="col-8 card-cell">
+              <div class="row g-0">
+                <div class="col-6 card-cell border-end">
+                  <strong>Public order:</strong><br>${formatNumber(po)}
+                </div>
+                <div class="col-6 card-cell">
+                  <strong>Public order/tile:</strong><br>${poPerTile}
+                </div>
+              </div>
+              <hr>
+              <div class="row g-0">
+                <div class="col-6 card-cell border-end">
+                  <strong>Size:</strong><br>${size}
+                </div>
+                <div class="col-6 card-cell">
+                  <strong>Might points:</strong><br>${formatNumber(might)}
+                </div>
+              </div>
+              <hr>
+              <div class="row g-0">
+                <div class="col-6 card-cell border-end">
+                  <strong>Sale price:</strong><br>${sellPriceDisplay}
+                </div>
+                <div class="col-6 card-cell">
+                  <strong>Fusion:</strong><br>${fusion}
+                </div>
+              </div>
+
             </div>
           </div>
-          <hr>
-          <div class="row g-0">
-            <div class="col-6 card-cell border-end">
-              <strong>Size:</strong><br>${size}
-            </div>
-            <div class="col-6 card-cell">
-              <strong>Might points:</strong><br>${formatNumber(might)}
-            </div>
-          </div>
-          <hr>
-          <div class="row g-0">
-            <div class="col-6 card-cell border-end">
-              <strong>Sale price:</strong><br>${sellPriceDisplay}
-            </div>
-            <div class="col-6 card-cell">
-              <strong>Fusion:</strong><br>${fusion}
-            </div>
-          </div>
+
         </div>
-          ${effectsHTML}
-          ${sourceHTML}
+        ${effectsHTML}
+        ${sourceHTML}
       </div>
     </div>
-  </div>
-  `;
+  </div>`;
 }
 
 function renderDecorations(decos) {
@@ -588,7 +586,15 @@ function applyFiltersAndSorting() {
   const onlyFullWords = selectedFilters.includes("fullwords");
 
   const filtered = allDecorations.filter(item => {
-    if (showOnlyNew && !newWodIDsSet.has(item.wodID)) return false;
+    if (specialFilter === "new" && !newWodIDsSet.has(item.wodID)) return false;
+    if (specialFilter && specialFilter.startsWith("cap-")) {
+      const capID = specialFilter.slice(4);
+      if (!item.areaSpecificEffects || !item.areaSpecificEffects.split(",").some(eff => {
+        const [id] = eff.split("&");
+        const effectDef = effectDefinitions[id];
+        return effectDef && effectDef.capID === capID;
+      })) return false;
+    }
 
     const size = getSize(item);
     if (!selectedSizes.has(size)) return false;
@@ -643,36 +649,29 @@ function setupMaxCapClick() {
       const capID = span.dataset.capid;
       if (!capID) return;
 
-      const filtered = allDecorations.filter(item => {
-        if (!item.areaSpecificEffects) return false;
-        return item.areaSpecificEffects.split(",").some(eff => {
-          const [id] = eff.split("&");
-          const effectDef = effectDefinitions[id];
-          return effectDef && effectDef.capID === capID;
-        });
-      });
+      specialFilter = `cap-${capID}`;
 
       const showFilter = document.getElementById("showFilter");
       if (showFilter) {
-        const lastCapOption = document.getElementById("lastCapOption");
+        let lastCapOption = document.getElementById("lastCapOption");
 
         if (!lastCapOption) {
-          const option = document.createElement("option");
-          option.id = "lastCapOption";
-          option.disabled = false;
-          showFilter.appendChild(option);
+          lastCapOption = document.createElement("option");
+          lastCapOption.id = "lastCapOption";
+          lastCapOption.disabled = false;
+          showFilter.appendChild(lastCapOption);
         }
 
-        const optionToUpdate = document.getElementById("lastCapOption");
-        optionToUpdate.value = `cap-${capID}`;
-        optionToUpdate.text = `Last selected effect cap`;
-        optionToUpdate.disabled = false;
-        optionToUpdate.selected = true;
+        lastCapOption.value = `cap-${capID}`;
+        lastCapOption.text = `Selected effect`;
+        lastCapOption.disabled = false;
+        lastCapOption.selected = true;
 
-        showFilter.dataset.previousValue = optionToUpdate.value;
-        showFilter.dataset.previousText = optionToUpdate.text;
+        showFilter.dataset.previousValue = lastCapOption.value;
+        showFilter.dataset.previousText = lastCapOption.text;
       }
-      renderDecorations(filtered);
+
+      applyFiltersAndSorting();
     });
   });
 }
@@ -722,30 +721,20 @@ function setupEventListeners() {
       const val = showFilter.value;
 
       if (val.startsWith("cap-")) {
-        const capID = val.slice(4);
-
-        const filtered = allDecorations.filter(item => {
-          if (!item.areaSpecificEffects) return false;
-          return item.areaSpecificEffects.split(",").some(eff => {
-            const [id, rest] = eff.split("&");
-            const effectDef = effectDefinitions[id];
-            return effectDef && effectDef.capID === capID;
-          });
-        });
-
-        renderDecorations(filtered);
+        specialFilter = val;
+        applyFiltersAndSorting();
         return;
       }
 
       if (val === "new") {
+        specialFilter = "new";
         if (newWodIDsSet.size === 0) {
           await compareWithOldVersion();
         } else {
-          showOnlyNew = true;
           applyFiltersAndSorting();
         }
       } else {
-        showOnlyNew = false;
+        specialFilter = null;
         applyFiltersAndSorting();
       }
     });
