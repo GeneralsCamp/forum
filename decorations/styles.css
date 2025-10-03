@@ -85,7 +85,7 @@ h1 {
     position: relative;
     background-color: rgb(145, 98, 65);
     min-height: 100px;
-    border-radius: 10px;
+    border-radius: 8px;
 }
 
 .box-content h2 {
