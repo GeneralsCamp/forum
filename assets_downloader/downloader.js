@@ -178,7 +178,7 @@ async function downloadAssets(assets, usePng) {
             try { await currentDir.getFileHandle(fileName); fileExists = true; } catch { }
 
             if (fileExists) {
-                log(`Skipped (already exists): ${fileName}`);
+
             } else {
                 allSkipped = false;
                 try {
@@ -254,28 +254,23 @@ document.getElementById("startDownload").addEventListener("click", async () => {
     if (currentIndex === 0) log("=== Download process started ===");
     else log("=== Continuing download ===");
 
-    // --- Lekérjük a select értékeket ---
     const optAssets = document.getElementById("optAssets").value;
     const optItems = document.getElementById("optItems").value;
     const optLang = document.getElementById("optLang").value;
     const optDll = document.getElementById("optDll").value;
 
-    // --- Items ---
     if (optItems === "items") {
         await getItemFile();
     }
 
-    // --- Lang ---
     if (optLang !== "no-lang") {
         await getLangFile(optLang);
     }
 
-    // --- DLL ---
     if (optDll === "dll") {
         await getDllFile();
     }
 
-    // --- Assets ---
     if (optAssets === "png" || optAssets === "webp") {
         const usePng = optAssets === "png";
 
@@ -291,7 +286,6 @@ document.getElementById("startDownload").addEventListener("click", async () => {
     selects.forEach(sel => sel.disabled = false);
 });
 
-// --- Stop download ---
 document.getElementById("stopDownload").addEventListener("click", () => {
     stopDownload = true;
     log("Download stopped by user.");
