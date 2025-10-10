@@ -1,7 +1,6 @@
 // --- PROXY AND GLOBAL VARIABLES ---
 const myProxy = "https://my-proxy-8u49.onrender.com/";
 const fallbackProxy = "https://corsproxy.io/?";
-const proxyTimeout = 5000;
 
 const availableLanguages = ["en", "de", "fr", "pl", "hu", "ro", "es", "ru", "el", "nl", "cs", "ar", "it", "ja"];
 
@@ -28,22 +27,17 @@ let newWodIDsSet = new Set();
 
 // --- FETCH FUNCTIONS (WITH FALLBACK, VERSIONS, DATA) ---
 async function fetchWithFallback(url) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), proxyTimeout);
-
-  try {
-    const response = await fetch(myProxy + url, { signal: controller.signal });
-    clearTimeout(timeout);
-    if (!response.ok) throw new Error("myProxy: bad response");
-    return response;
-  } catch (err) {
-    clearTimeout(timeout);
-    console.warn("Proxy error or timeout:", err.message);
-    const encodedUrl = encodeURIComponent(url);
-    const fallbackResponse = await fetch(fallbackProxy + encodedUrl);
-    if (!fallbackResponse.ok) throw new Error("fallbackProxy: bad response");
-    return fallbackResponse;
-  }
+    try {
+        const response = await fetch(myProxy + url);
+        if (!response.ok) throw new Error("myProxy: bad response");
+        return response;
+    } catch (err) {
+        console.warn("Proxy error:", err);
+        const encodedUrl = encodeURIComponent(url);
+        const fallbackResponse = await fetch(fallbackProxy + encodedUrl);
+        if (!fallbackResponse.ok) throw new Error("fallbackProxy: bad response");
+        return fallbackResponse;
+    }
 }
 
 async function getItemVersion() {
