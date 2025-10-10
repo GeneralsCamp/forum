@@ -22,7 +22,9 @@
       "show_new": "Show only new decorations",
       "show_selected_effect": "Selected effect",
       "size_filter": "Size Filter",
-      "search_placeholder_prefix": "Search by: "
+      "search_placeholder_prefix": "Search by: ",
+      "show_all_short": "Show all",
+      "show_new_short": "Show newest"
     }
   },
   "de": {
@@ -48,7 +50,9 @@
       "show_new": "Nur neue Dekorationen anzeigen",
       "show_selected_effect": "Ausgewählter Effekt",
       "size_filter": "Größenfilter",
-      "search_placeholder_prefix": "Suche nach: "
+      "search_placeholder_prefix": "Suche nach: ",
+      "show_all_short": "Alle anzeigen",
+      "show_new_short": "Nur neue anzeigen"
     }
   },
   "fr": {
@@ -74,7 +78,9 @@
       "show_new": "Afficher uniquement les nouvelles décorations",
       "show_selected_effect": "Effet sélectionné",
       "size_filter": "Filtre de taille",
-      "search_placeholder_prefix": "Recherche par : "
+      "search_placeholder_prefix": "Recherche par : ",
+      "show_all_short": "Afficher tout",
+      "show_new_short": "Afficher les nouveautés"
     }
   },
   "pl": {
@@ -100,7 +106,9 @@
       "show_new": "Pokaż tylko nowe dekoracje",
       "show_selected_effect": "Wybrany efekt",
       "size_filter": "Filtr rozmiaru",
-      "search_placeholder_prefix": "Szukaj po: "
+      "search_placeholder_prefix": "Szukaj po: ",
+      "show_all_short": "Pokaż wszystkie",
+      "show_new_short": "Pokaż nowe"
     }
   },
   "hu": {
@@ -126,7 +134,9 @@
       "show_new": "Csak az új díszek",
       "show_selected_effect": "Kiválasztott hatás",
       "size_filter": "Méret szűrő",
-      "search_placeholder_prefix": "Keresés: "
+      "search_placeholder_prefix": "Keresés: ",
+      "show_all_short": "Összes dísz",
+      "show_new_short": "Csak az új díszek"
     }
   },
   "ro": {
@@ -152,7 +162,9 @@
       "show_new": "Afișează doar decorațiunile noi",
       "show_selected_effect": "Efect selectat",
       "size_filter": "Filtru dimensiune",
-      "search_placeholder_prefix": "Caută după: "
+      "search_placeholder_prefix": "Caută după: ",
+      "show_all_short": "Afișează toate decorațiunile",
+      "show_new_short": "Afișează doar decorațiunile noi"
     }
   },
   "es": {
@@ -178,7 +190,9 @@
       "show_new": "Mostrar solo decoraciones nuevas",
       "show_selected_effect": "Efecto seleccionado",
       "size_filter": "Filtro de tamaño",
-      "search_placeholder_prefix": "Buscar por: "
+      "search_placeholder_prefix": "Buscar por: ",
+      "show_all_short": "Mostrar todas las decoraciones",
+      "show_new_short": "Mostrar solo decoraciones nuevas"
     }
   },
   "ru": {
@@ -204,7 +218,9 @@
       "show_new": "Показать только новые украшения",
       "show_selected_effect": "Выбранный эффект",
       "size_filter": "Фильтр размера",
-      "search_placeholder_prefix": "Поиск по: "
+      "search_placeholder_prefix": "Поиск по: ",
+      "show_all_short": "Показать все украшения",
+      "show_new_short": "Показать только новые"
     }
   },
   "el": {
@@ -230,7 +246,9 @@
       "show_new": "Εμφάνιση μόνο νέων διακοσμήσεων",
       "show_selected_effect": "Επιλεγμένο εφέ",
       "size_filter": "Φίλτρο μεγέθους",
-      "search_placeholder_prefix": "Αναζήτηση με: "
+      "search_placeholder_prefix": "Αναζήτηση με: ",
+      "show_all_short": "Εμφάνιση όλων των διακοσμήσεων",
+      "show_new_short": "Εμφάνιση μόνο νέων διακοσμήσεων"
     }
   },
   "nl": {
@@ -256,7 +274,9 @@
       "show_new": "Alleen nieuwe decoraties tonen",
       "show_selected_effect": "Geselecteerd effect",
       "size_filter": "Groottefilter",
-      "search_placeholder_prefix": "Zoeken op: "
+      "search_placeholder_prefix": "Zoeken op: ",
+      "show_all_short": "Alle decoraties tonen",
+      "show_new_short": "Alleen nieuwe decoraties tonen"
     }
   },
   "cs": {
@@ -282,7 +302,9 @@
       "show_new": "Zobrazit pouze nové dekorace",
       "show_selected_effect": "Vybraný efekt",
       "size_filter": "Filtr velikosti",
-      "search_placeholder_prefix": "Hledat podle: "
+      "search_placeholder_prefix": "Hledat podle: ",
+      "show_all_short": "Zobrazit všechny dekorace",
+      "show_new_short": "Zobrazit pouze nové dekorace"
     }
   },
   "ar": {
@@ -308,7 +330,9 @@
       "show_new": "عرض الزخارف الجديدة فقط",
       "show_selected_effect": "التأثير المختار",
       "size_filter": "تصفية حسب الحجم",
-      "search_placeholder_prefix": "البحث بواسطة: "
+      "search_placeholder_prefix": "البحث بواسطة: ",
+      "show_all_short": "عرض جميع الزخارف",
+      "show_new_short": "عرض الزخارف الجديدة فقط"
     }
   },
   "it": {
@@ -334,7 +358,9 @@
       "show_new": "Mostra solo le nuove decorazioni",
       "show_selected_effect": "Effetto selezionato",
       "size_filter": "Filtro dimensione",
-      "search_placeholder_prefix": "Cerca per: "
+      "search_placeholder_prefix": "Cerca per: ",
+      "show_all_short": "Mostra tutte le decorazioni",
+      "show_new_short": "Mostra solo le nuove decorazioni"
     }
   },
   "ja": {
@@ -360,7 +386,9 @@
       "show_new": "新しい装飾のみ表示",
       "show_selected_effect": "選択した効果",
       "size_filter": "サイズフィルター",
-      "search_placeholder_prefix": "検索: "
+      "search_placeholder_prefix": "検索: ",
+      "show_all_short": "すべての装飾を表示",
+      "show_new_short": "新しい装飾のみ表示"
     }
   }
 }

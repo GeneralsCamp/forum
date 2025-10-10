@@ -276,7 +276,8 @@ async function reloadLanguage() {
     await getLanguageData(version);
     await loadOwnLang();
     applyOwnLang();
-
+    handleResize();
+    
     applyFiltersAndSorting();
     setupLanguageSelector();
   } catch (err) {
@@ -770,6 +771,7 @@ function applyFiltersAndSorting() {
 }
 
 function setupMaxCapClick() {
+  const langData = ownLang[currentLanguage]?.filters || {};
   document.querySelectorAll(".max-bonus").forEach(span => {
     span.addEventListener("click", () => {
       const capID = span.dataset.capid;
@@ -789,7 +791,7 @@ function setupMaxCapClick() {
         }
 
         lastCapOption.value = `cap-${capID}`;
-        lastCapOption.text = `Selected effect`;
+        lastCapOption.text = langData.show_selected_effect || "Selected effect";
         lastCapOption.disabled = false;
         lastCapOption.selected = true;
 
@@ -969,10 +971,17 @@ window.addEventListener("DOMContentLoaded", () => {
 // --- INITIALIZATION AND EVENT SETUP ---
 function handleResize() {
   const select = document.getElementById('showFilter');
+  const langData = ownLang[currentLanguage]?.filters || {};
+
   if (select) {
     const isMobile = window.innerWidth < 576;
-    select.options[0].text = isMobile ? "Show all" : "Show all decorations";
-    select.options[1].text = isMobile ? "Show newest" : "Show only new decorations";
+    select.options[0].text = isMobile
+      ? (langData.show_all_short || "Show all")
+      : (langData.show_all || "Show all decorations");
+
+    select.options[1].text = isMobile
+      ? (langData.show_new_short || "Show newest")
+      : (langData.show_new || "Show only new decorations");
   }
 
   const note = document.querySelector('.note');
@@ -985,6 +994,7 @@ function handleResize() {
     content.style.height = `${newHeight}px`;
   }
 }
+
 window.addEventListener('resize', handleResize);
 window.addEventListener('DOMContentLoaded', handleResize);
 
