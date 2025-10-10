@@ -27,17 +27,17 @@ let newWodIDsSet = new Set();
 
 // --- FETCH FUNCTIONS (WITH FALLBACK, VERSIONS, DATA) ---
 async function fetchWithFallback(url) {
-    try {
-        const response = await fetch(myProxy + url);
-        if (!response.ok) throw new Error("myProxy: bad response");
-        return response;
-    } catch (err) {
-        console.warn("Proxy error:", err);
-        const encodedUrl = encodeURIComponent(url);
-        const fallbackResponse = await fetch(fallbackProxy + encodedUrl);
-        if (!fallbackResponse.ok) throw new Error("fallbackProxy: bad response");
-        return fallbackResponse;
-    }
+  try {
+    const response = await fetch(myProxy + url);
+    if (!response.ok) throw new Error("myProxy: bad response");
+    return response;
+  } catch (err) {
+    console.warn("Proxy error:", err);
+    const encodedUrl = encodeURIComponent(url);
+    const fallbackResponse = await fetch(fallbackProxy + encodedUrl);
+    if (!fallbackResponse.ok) throw new Error("fallbackProxy: bad response");
+    return fallbackResponse;
+  }
 }
 
 async function getItemVersion() {
@@ -234,7 +234,7 @@ function setupLanguageSelector() {
     col.className = "col-12 col-md-6 mb-2";
 
     const btn = document.createElement("button");
-    btn.className = "btn w-100 text-start lang-btn fw-bold";
+    btn.className = "btn w-100 text-center lang-btn fw-bold";
     btn.style.backgroundColor = "#f3e0c2";
     btn.style.color = "#433120";
 
@@ -271,7 +271,7 @@ async function reloadLanguage() {
     await loadOwnLang();
     applyOwnLang();
     handleResize();
-    
+
     applyFiltersAndSorting();
     setupLanguageSelector();
   } catch (err) {
@@ -333,11 +333,12 @@ window.addEventListener("DOMContentLoaded", async () => {
 });
 
 // --- EFFECTS AND LEGACY FIELD HANDLING ---
-const effectNameOverrides = {
-  "effect_name_AttackBoostFlankCapped": "Combat strength of units when attacking the flanks",
-  "effect_name_defenseUnitAmountYardMinorBoost": "Bonus to courtyard defense troop capacity",
-  "effect_name_AttackUnitAmountFrontCapped": "Increase front unit limit when attacking",
-  "effect_name_AttackBoostYardCapped": "Bonus to courtyard attack combat strength"
+const effectKeyOverrides = {
+  "effect_name_AttackBoostFlankCapped": { key: "effect_group_1_5_passive", percent: true },
+  "effect_name_AttackBoostFrontCapped": { key: "effect_group_1_4_passive", percent: true },
+  "effect_name_defenseUnitAmountYardMinorBoost": { key: "effect_name_defenseUnitAmountYardBonus", percent: true },
+  "effect_name_AttackUnitAmountFrontCapped": { key: "effect_name_attackUnitAmountFrontCapped", percent: true },
+  "effect_name_AttackBoostYardCapped": { key: "effect_name_attackBoostYard", percent: true }
 };
 
 const percentEffectIDs = new Set();
@@ -353,50 +354,48 @@ function parseEffects(effectsStr) {
     const effectDef = effectDefinitions[id];
 
     let baseKey = effectDef ? "effect_name_" + effectDef.name : "";
-    let localizedTemplate = effectDef
-      ? (effectNameOverrides[baseKey] ||
-        lang[baseKey] ||
-        effectDef.name)
-      : `Effect ID ${id}`;
-    const suffix = percentEffectIDs.has(id) ? "%" : "";
+    let isPercent = percentEffectIDs.has(id);
+
+
+    const override = effectKeyOverrides[baseKey];
+    if (override) {
+      baseKey = override.key;
+      isPercent = !!override.percent;
+    }
+
+    let localizedTemplate = effectDef ? (lang[baseKey] || effectDef.name) : `Effect ID ${id}`;
+    const suffix = isPercent ? "%" : "";
 
     if (rest.includes("+")) {
       const [subType, valStr] = rest.split("+");
       const val = Number(valStr);
 
-      const unitTypeOverrides = {
-        "ScaleBoundGuardian": "ScaleboundGuardian"
-      };
-
+      const unitTypeOverrides = { "ScaleBoundGuardian": "ScaleboundGuardian" };
       let unitName = `Unit ${subType}`;
       const unit = units.find(u => u.wodID == subType);
       if (unit) {
         const key = unitTypeOverrides[unit.type] || unit.type;
         unitName = lang[key + "_name"] || unit.type;
-
-        if (unit.level != null) {
-          unitName += ` (lvl.${unit.level})`;
-        }
+        if (unit.level != null) unitName += ` (lvl.${unit.level})`;
       }
 
-      function firstCharToLower(str) {
-        if (!str) return str;
-        return str.charAt(0).toLowerCase() + str.slice(1);
-      }
+      function firstCharToLower(str) { return str ? str.charAt(0).toLowerCase() + str.slice(1) : str; }
 
       let templateKey = "effect_name_" + firstCharToLower(effectDef.name);
-      let localizedTemplate =
-        lang[templateKey] ||
-        effectNameOverrides[templateKey] ||
-        effectDef.name;
+      const templateOverride = effectKeyOverrides[templateKey];
+      if (templateOverride) {
+        templateKey = templateOverride.key;
+        isPercent = !!templateOverride.percent;
+      }
 
+      localizedTemplate = lang[templateKey] || effectDef.name;
       let localizedName = localizedTemplate.replace("{1}", unitName);
 
       if (!isNaN(val)) {
         let maxStr = "";
-        if (effectDef && effectDef.capID) {
+        if (effectDef?.capID) {
           const cap = effectCapsMap[effectDef.capID];
-          if (cap && cap.maxTotalBonus) {
+          if (cap?.maxTotalBonus) {
             maxStr = ` <span class="max-bonus">(Max: ${formatter.format(Number(cap.maxTotalBonus))}${suffix})</span>`;
           }
         }
@@ -404,15 +403,13 @@ function parseEffects(effectsStr) {
       } else {
         results.push(`${localizedName}: Invalid value (${rest})`);
       }
-    }
-
-    else {
+    } else {
       const val = Number(rest);
       if (!isNaN(val)) {
         let maxStr = "";
-        if (effectDef && effectDef.capID) {
+        if (effectDef?.capID) {
           const cap = effectCapsMap[effectDef.capID];
-          if (cap && cap.maxTotalBonus) {
+          if (cap?.maxTotalBonus) {
             maxStr = ` <span class="max-bonus" data-capid="${effectDef.capID}" style="cursor:pointer">(Max: ${formatter.format(Number(cap.maxTotalBonus))}${suffix})</span>`;
           }
         }
