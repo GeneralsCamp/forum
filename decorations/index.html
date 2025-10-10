@@ -21,11 +21,19 @@
           <h1>GGE DECORATIONS</h1>
         </div>
 
-        <a href="https://generalscamp.github.io/forum/" class="home-icon-link">
-          <div class="home-icon">
-            <i class="bi bi-house"></i>
-          </div>
-        </a>
+        <div id="topButtonsContainer">
+          <a href="#" id="languageButtonContainer" class="home-icon-link">
+            <div class="home-icon" title="Change language">
+              <i class="bi bi-globe"></i>
+            </div>
+          </a>
+
+          <a href="https://generalscamp.github.io/forum/" class="home-icon-link">
+            <div class="home-icon">
+              <i class="bi bi-house"></i>
+            </div>
+          </a>
+        </div>
 
         <div class="row note gx-1 gy-1 align-items-center pb-2">
           <div class="col-md-6 col-sm-12 position-relative">
@@ -107,6 +115,20 @@
       <span class="image-modal-close" onclick="closeImageModal()">&times;</span>
       <img id="modalImage" class="image-modal-content" />
       <div id="modalCaption"></div>
+    </div>
+  </div>
+
+  <!-- Language Modal -->
+  <div class="modal fade" id="languageModal" tabindex="-1" aria-labelledby="languageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-center w-100" id="languageModalLabel"></h5>
+        </div>
+        <div class="modal-body">
+          <div id="languageList" class="row"></div>
+        </div>
+      </div>
     </div>
   </div>
 

@@ -1,6 +1,21 @@
 // --- PROXY AND GLOBAL VARIABLES ---
 const myProxy = "https://my-proxy-8u49.onrender.com/";
 const fallbackProxy = "https://corsproxy.io/?";
+const proxyTimeout = 5000;
+
+const availableLanguages = ["en", "de", "fr", "pl", "hu", "ro", "es", "ru", "el", "nl", "cs", "ar", "it", "ja"];
+
+let browserLanguage = navigator.language || "en";
+let primaryLang = browserLanguage.split("-")[0];
+
+if (availableLanguages.includes(primaryLang)) {
+  currentLanguage = primaryLang;
+} else {
+  currentLanguage = "en";
+}
+
+let langModal;
+let ownLang = {};
 
 let lang = {};
 let selectedSizes = new Set();
@@ -13,12 +28,17 @@ let newWodIDsSet = new Set();
 
 // --- FETCH FUNCTIONS (WITH FALLBACK, VERSIONS, DATA) ---
 async function fetchWithFallback(url) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), proxyTimeout);
+
   try {
-    const response = await fetch(myProxy + url);
+    const response = await fetch(myProxy + url, { signal: controller.signal });
+    clearTimeout(timeout);
     if (!response.ok) throw new Error("myProxy: bad response");
     return response;
   } catch (err) {
-    console.warn("Proxy error:", err);
+    clearTimeout(timeout);
+    console.warn("Proxy error or timeout:", err.message);
     const encodedUrl = encodeURIComponent(url);
     const fallbackResponse = await fetch(fallbackProxy + encodedUrl);
     if (!fallbackResponse.ok) throw new Error("fallbackProxy: bad response");
@@ -43,7 +63,7 @@ async function getLangVersion() {
 }
 
 async function getLanguageData(version) {
-  const url = `https://langserv.public.ggs-ep.com/12@${version}/en/*`;
+  const url = `https://langserv.public.ggs-ep.com/12@${version}/${currentLanguage}/*`;
   const res = await fetchWithFallback(url);
   const data = await res.json();
   lang = data;
@@ -202,6 +222,121 @@ async function getCurrentVersionInfo() {
   }
 }
 
+function setupLanguageSelector() {
+  const langBtn = document.getElementById("languageButtonContainer");
+  const langModalEl = document.getElementById("languageModal");
+  const langList = document.getElementById("languageList");
+  const modalTitle = langModalEl.querySelector(".modal-title");
+
+  if (!langModal) {
+    langModal = new bootstrap.Modal(langModalEl, { keyboard: true });
+  }
+
+  modalTitle.innerText = lang?.dialog_allLanguages_desc || "All languages";
+
+  langList.innerHTML = "";
+  availableLanguages.forEach((code) => {
+    const col = document.createElement("div");
+    col.className = "col-12 col-md-6 mb-2";
+
+    const btn = document.createElement("button");
+    btn.className = "btn w-100 text-start lang-btn fw-bold";
+    btn.style.backgroundColor = "#f3e0c2";
+    btn.style.color = "#433120";
+
+    const langLabel = lang[`language_native_${code}`] || code.toUpperCase();
+    btn.innerHTML = langLabel;
+    btn.dataset.lang = code;
+
+    if (code === currentLanguage) {
+      btn.disabled = true;
+      btn.style.opacity = "0.6";
+    }
+
+    btn.addEventListener("click", async () => {
+      currentLanguage = code;
+      localStorage.setItem("selectedLanguage", code);
+      langModal.hide();
+      await reloadLanguage();
+    });
+
+    col.appendChild(btn);
+    langList.appendChild(col);
+  });
+
+  langBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    langModal.show();
+  });
+}
+
+async function reloadLanguage() {
+  try {
+    const version = await getLangVersion();
+    await getLanguageData(version);
+    await loadOwnLang();
+    applyOwnLang();
+
+    applyFiltersAndSorting();
+    setupLanguageSelector();
+  } catch (err) {
+    console.error("Error reloading language:", err);
+  }
+}
+
+async function loadOwnLang() {
+  try {
+    const res = await fetch("./ownLang.json");
+    ownLang = await res.json();
+  } catch (err) {
+    console.error("Error loading ownLang.json:", err);
+    ownLang = {};
+  }
+}
+
+async function applyOwnLang() {
+  const filters = ownLang[currentLanguage]?.filters || {};
+
+  document.querySelector('label[for="filterName"]').textContent = filters.search_name || "Name";
+  document.querySelector('label[for="filterID"]').textContent = filters.search_id || "ID";
+  document.querySelector('label[for="filterEffect"]').textContent = filters.search_effect || "Effect";
+
+  const sortSelect = document.getElementById('sortSelect');
+  if (sortSelect) {
+    sortSelect.options[0].text = filters.sort_po || "Sort by Public Order";
+    sortSelect.options[1].text = filters.sort_pot || "Sort by Public Order/Tile";
+  }
+
+  const showFilter = document.getElementById('showFilter');
+  if (showFilter) {
+    showFilter.options[0].text = filters.show_all || "Show all decorations";
+    showFilter.options[1].text = filters.show_new || "Show only new decorations";
+    const lastCapOption = document.getElementById('lastCapOption');
+    if (lastCapOption) lastCapOption.text = filters.show_selected_effect || "Selected effect";
+  }
+
+  const sizeDropdown = document.getElementById('sizeDropdown');
+  if (sizeDropdown) sizeDropdown.textContent = filters.size_filter || "Size Filter";
+
+  const searchInput = document.getElementById("searchInput");
+  if (searchInput) {
+    const selectedFilters = Array.from(document.querySelectorAll(".search-filter:checked")).map(cb => cb.value);
+    const selectedLabels = selectedFilters.map(f => {
+      if (f === "name") return filters.search_name || "Name";
+      if (f === "id") return filters.search_id || "ID";
+      if (f === "effect") return filters.search_effect || "Effect";
+      return f;
+    });
+    searchInput.placeholder = (filters.search_placeholder_prefix || "Search by: ") + selectedLabels.join(", ");
+  }
+}
+
+window.addEventListener("DOMContentLoaded", async () => {
+  const savedLang = localStorage.getItem("selectedLanguage");
+  if (savedLang) currentLanguage = savedLang;
+  await reloadLanguage();
+});
+
 // --- EFFECTS AND LEGACY FIELD HANDLING ---
 const effectNameOverrides = {
   "effect_name_AttackBoostFlankCapped": "Combat strength of units when attacking the flanks",
@@ -351,10 +486,10 @@ function getFusionStatus(item) {
   const isSource = item.isFusionSource === "1";
   const isTarget = item.isFusionTarget === "1";
 
-  if (isSource && isTarget) return "target & source";
-  if (isSource) return "source";
-  if (isTarget) return "target";
-  return "-";
+  if (isSource && isTarget) return lang.fusion_both;
+  if (isSource) return lang.fusion_source;
+  if (isTarget) return lang.fusion_target;
+  return lang.fusion_none;
 }
 
 // --- SIZE FILTERS ---
@@ -431,6 +566,8 @@ function updateSelectedSizes() {
 
 // --- CARD CREATION (HTML RENDERING) ---
 function createCard(item, imageUrlMap = {}) {
+  const langData = ownLang[currentLanguage] || {};
+
   const name = getName(item);
   const size = getSize(item);
   const width = parseInt(item.width);
@@ -442,19 +579,15 @@ function createCard(item, imageUrlMap = {}) {
 
   const isFusionSource = item.isFusionSource === "1";
   const isFusionTarget = item.isFusionTarget === "1";
-  const fusion = isFusionSource && isFusionTarget ? "Source & Target" :
-    isFusionSource ? "Source" :
-      isFusionTarget ? "Target" : "none";
+  const fusion = isFusionSource && isFusionTarget ? langData.fusion_both :
+    isFusionSource ? langData.fusion_source :
+      isFusionTarget ? langData.fusion_target : langData.fusion_none;
 
   let sellPriceDisplay = "";
   if (item.sellLegendaryToken || item.sellLegendaryMaterial) {
     const parts = [];
-    if (item.sellLegendaryToken) {
-      parts.push(`<img src="./img/construction-token.png" class="effect-icon">x${formatNumber(item.sellLegendaryToken)}`);
-    }
-    if (item.sellLegendaryMaterial) {
-      parts.push(`<img src="./img/upgrade-token.png" class="effect-icon">x${formatNumber(item.sellLegendaryMaterial)}`);
-    }
+    if (item.sellLegendaryToken) parts.push(`<img src="./img/construction-token.png" class="effect-icon">x${formatNumber(item.sellLegendaryToken)}`);
+    if (item.sellLegendaryMaterial) parts.push(`<img src="./img/upgrade-token.png" class="effect-icon">x${formatNumber(item.sellLegendaryMaterial)}`);
     sellPriceDisplay = parts.join("<br>");
   } else {
     const sellPriceRaw = item.sellC1 || "0";
@@ -467,33 +600,29 @@ function createCard(item, imageUrlMap = {}) {
 
   const id = item.wodID || "???";
   const sources = [item.comment1, item.comment2].filter(Boolean);
-
   const wodIDHTML = `<span class="wod-id" style="cursor:pointer;" onclick="navigator.clipboard.writeText('${id}')">${id}</span>`;
   sources.unshift(`wodID: ${wodIDHTML}`);
-
-  if (item.maximumCount) {
-    sources.splice(1, 0, `Maximum count per castle: ${item.maximumCount}`);
-  }
+  if (item.maximumCount) sources.splice(1, 0, `Maximum count per castle: ${item.maximumCount}`);
 
   const effects = parseEffects(item.areaSpecificEffects || "");
   let effectsHTML = "";
   if (effects.length > 0) {
     effectsHTML = `
-    <hr>
-    <div class="card-section card-effects">
-      <h5 class="card-section-title">Effects:</h5>
-      <p>${effects.map(e => `- ${e}`).join("<br>")}</p>
-    </div>`;
+      <hr>
+      <div class="card-section card-effects">
+        <h5 class="card-section-title">${langData.label_effects}</h5>
+        <p>${effects.map(e => `- ${e}`).join("<br>")}</p>
+      </div>`;
   }
 
   let sourceHTML = "";
   if (sources.length > 0) {
     sourceHTML = `
-    <hr>
-    <div class="card-section card-sources">
-      <h4 class="card-section-title">Developer comments:</h4>
-      <p>${sources.map(s => `- ${s}`).join("<br>")}</p>
-    </div>`;
+      <hr>
+      <div class="card-section card-sources">
+        <h4 class="card-section-title">${langData.label_developer_comments}</h4>
+        <p>${sources.map(s => `- ${s}`).join("<br>")}</p>
+      </div>`;
   }
 
   const cleanedType = normalizeName(item.type);
@@ -519,28 +648,28 @@ function createCard(item, imageUrlMap = {}) {
             <div class="col-8 card-cell">
               <div class="row g-0">
                 <div class="col-6 card-cell border-end">
-                  <strong>Public order</strong><br><img src="./img/po.png" class="effect-icon">${formatNumber(po)}
+                  <strong>${langData.label_public_order}</strong><br><img src="./img/po.png" class="effect-icon">${formatNumber(po)}
                 </div>
                 <div class="col-6 card-cell">
-                  <strong>PO/tile</strong><br><img src="./img/po.png" class="effect-icon">${poPerTile}
+                  <strong>${langData.label_po_per_tile}</strong><br><img src="./img/po.png" class="effect-icon">${poPerTile}
                 </div>
               </div>
               <hr>
               <div class="row g-0">
                 <div class="col-6 card-cell border-end">
-                  <strong>Size</strong><br><img src="./img/size.png" class="effect-icon">${size}
+                  <strong>${langData.label_size}</strong><br><img src="./img/size.png" class="effect-icon">${size}
                 </div>
                 <div class="col-6 card-cell">
-                  <strong>Might points</strong><br><img src="./img/might.png" class="effect-icon">${formatNumber(might)}
+                  <strong>${langData.label_might_points}</strong><br><img src="./img/might.png" class="effect-icon">${formatNumber(might)}
                 </div>
               </div>
               <hr>
               <div class="row g-0">
                 <div class="col-6 card-cell border-end">
-                  <strong>Sale price</strong><br>${sellPriceDisplay}
+                  <strong>${langData.label_sale_price}</strong><br>${sellPriceDisplay}
                 </div>
                 <div class="col-6 card-cell">
-                  <strong>Fusion</strong><br>${fusion}
+                  <strong>${langData.label_fusion}</strong><br>${fusion}
                 </div>
               </div>
             </div>
@@ -552,7 +681,6 @@ function createCard(item, imageUrlMap = {}) {
     </div>
   </div>`;
 }
-
 
 function renderDecorations(decos) {
   const container = document.getElementById("cards");
@@ -691,20 +819,22 @@ function setupEventListeners() {
   searchInput.addEventListener("input", applyFiltersAndSorting);
 
   function updateSearchInputState() {
-    const selected = Array.from(searchFilters).filter(cb => cb.checked);
+    const searchInput = document.getElementById("searchInput");
+    const selected = Array.from(document.querySelectorAll(".search-filter:checked")).map(cb => cb.value);
     if (selected.length === 0) {
       searchInput.disabled = true;
       searchInput.placeholder = "Unavailable to search!";
       searchInput.value = "";
     } else {
       searchInput.disabled = false;
-      const selectedLabels = selected.map(cb => {
-        if (cb.value === "name") return "Name";
-        if (cb.value === "effect") return "Effect";
-        if (cb.value === "id") return "ID";
-        return cb.value;
+      const filters = ownLang[currentLanguage]?.filters || {};
+      const selectedLabels = selected.map(f => {
+        if (f === "name") return filters.search_name || "Name";
+        if (f === "effect") return filters.search_effect || "Effect";
+        if (f === "id") return filters.search_id || "ID";
+        return f;
       });
-      searchInput.placeholder = "Search by: " + selectedLabels.join(", ");
+      searchInput.placeholder = (filters.search_placeholder_prefix || "Search by: ") + selectedLabels.join(", ");
     }
   }
 
@@ -907,6 +1037,7 @@ async function init() {
 
     setLoadingProgress(++step, totalSteps, "Loading images...");
     imageUrlMap = await getImageUrlMap();
+    await loadOwnLang();
 
     setLoadingProgress(totalSteps, totalSteps, "Rendering decorations...");
     renderSizeFilters(allDecorations);

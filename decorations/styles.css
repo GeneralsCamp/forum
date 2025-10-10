@@ -398,18 +398,27 @@ h1 {
     }
 }
 
-/* --- HOME BUTTON --- */
-.home-icon-link {
+/* --- HOME + LANGUAGE BUTTON CONTAINER --- */
+#topButtonsContainer {
     position: fixed;
     right: 10px;
-    top: 95%;
-    transform: translateY(-50%);
+    bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.home-icon-link {
     width: 50px;
     height: 50px;
-    z-index: 1000;
     text-decoration: none;
     opacity: 0.8;
     transition: opacity 0.3s ease-in-out;
+}
+
+.home-icon-link:hover {
+    opacity: 1;
 }
 
 .home-icon {
@@ -425,12 +434,8 @@ h1 {
 }
 
 .home-icon i {
-    color: #4c473b;
-    font-size: 18px;
-}
-
-.home-icon-link .home-icon i {
     color: #f8bc00;
+    font-size: 18px;
 }
 
 /* --- CONTENT AREA --- */
@@ -453,7 +458,7 @@ h1 {
     padding: 5px;
 }
 
-/* Progress bar */
+/* --- PROGRESS BAR --- */
 .loading-message {
     text-align: center;
     padding: 5px;
@@ -507,4 +512,56 @@ h1 {
     font-size: 0.95rem;
     letter-spacing: 0.5px;
     pointer-events: none;
+}
+
+/* --- LANGUAGE MODAL --- */
+#languageModal .modal-content {
+    background-color: #433120;
+    color: #EAD0B2;
+    border: 1px solid #443326;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#languageModal .modal-header {
+    background-color: rgb(119, 80, 54);
+    border-bottom: 1px solid #443326;
+    color: #EAD0B2;
+    padding: 8px 12px;
+}
+
+#languageModal .modal-title {
+    color: #F3C24A;
+    font-weight: bolder;
+    font-size: 26px;
+    text-align: center;
+    width: 100%;
+}
+
+#languageModal .modal-body {
+    background-color: rgb(145, 98, 65);
+    padding: 15px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+#languageModal .lang-btn {
+    background-color: rgb(145, 98, 65);
+    border: 2px solid #443326;
+    color: #F3C24A;
+    border-radius: 10px;
+    font-weight: bold;
+    width: 100%;
+    transition: all 0.2s ease-in-out;
+    text-align: center;
+}
+
+#languageModal .lang-btn:hover:not(:disabled) {
+    background-color: #F3C24A;
+    color: #433120;
+}
+
+#languageModal .lang-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
