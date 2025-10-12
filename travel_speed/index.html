@@ -2,28 +2,29 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Travel Speed (Attack)</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
-  <link rel="icon" type="image/webp" href="../img_base/favicon.ico">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css"
-    rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attack Speed & Detection</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link rel="icon" type="image/webp" href="../img_base/favicon.ico">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
     <div class="container">
         <div class="row">
             <div class="col-12">
-                <h1>TRAVEL SPEED IN ATTACK</h1>
+                <h1>ATTACK SPEED & DETECTION</h1>
             </div>
             <a href="https://generalscamp.github.io/forum/" class="home-icon-link">
                 <div class="home-icon">
                     <i class="bi bi-house"></i>
                 </div>
             </a>
+
             <!-- ATTACK PARAMETERS -->
             <div class="col-12 collapse-area mb-2">
                 <h2 class="collapse-header">
@@ -31,23 +32,41 @@
                 </h2>
                 <div class="collapse show">
                     <form class="calculator-bonuses-form row" onsubmit="return false;">
-                        <div class="col-6 col-lg-3 form-group">
+                        <div class="col-md-4 col-6 form-group">
                             <label for="distance">Attack Distance</label>
                             <input type="number" id="distance" step="0.1" value="100" class="form-control">
                         </div>
-                        <div class="col-6 col-lg-3 form-group">
+                        <div class="col-md-4 col-6 form-group">
                             <label for="speed">Attack Speed</label>
                             <input type="number" id="speed" step="1" value="15" class="form-control">
                         </div>
-                        <div class="col-6 col-lg-3 form-group">
+                        <div class="col-md-4 col-6  form-group">
+                            <label for="distance">Army size</label>
+                            <input type="number" id="attackerUnits" value="0" min="1" max="100000" class="form-control"
+                                step="1">
+                        </div>
+                        <div class="col-md-4 col-6 form-group">
                             <label for="playerLevel">Your Player Level</label>
-                            <input type="number" id="playerLevel" step="10" value="1020" min="0" max="1020"
+                            <input type="number" id="playerLevel" step="1" value="20" min="0" max="1020"
                                 class="form-control">
                         </div>
-                        <div class="col-6 col-lg-3 form-group">
-                            <label for="horse">Horse Bonus Value</label>
-                            <input type="number" id="horse" step="0.1" min="0" max="100" min="0" class="form-control"
-                                placeholder="max.100%">
+                        <div class="col-md-4 col-6 form-group">
+                            <label for="stableLevel">Stable Level</label>
+                            <select id="stableLevel" class="form-select">
+                                <option value="0">No Stable</option>
+                                <option value="1">Level1 (0%)</option>
+                                <option value="2">Level2 (60%)</option>
+                                <option value="3">Level3 (120%)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 col-6 form-group">
+                            <label for="horseType">Horse Type</label>
+                            <select id="horseType" class="form-select">
+                                <option value="none">None</option>
+                                <option value="Horse">Horse</option>
+                                <option value="Warhorse">Warhorse</option>
+                                <option value="Courser">Courser</option>
+                            </select>
                         </div>
                     </form>
                 </div>
@@ -60,40 +79,58 @@
                 </h2>
                 <div class="collapse show">
                     <form class="calculator-bonuses-form row" onsubmit="return false;">
-                        <!-- Commander -->
                         <div class="col-md-4 col-6 form-group">
                             <label for="commander">Commander</label>
                             <input type="number" id="commander" step="1" max="100" min="0" placeholder="max.100%"
                                 class="form-control">
                         </div>
-                        <!-- Glory -->
                         <div class="col-md-4 col-6 form-group">
                             <label for="glory">Glory Title</label>
                             <input type="number" id="glory" step="1" max="20" min="0" class="form-control"
                                 placeholder="max.20%">
                         </div>
-                        <!-- VIP -->
                         <div class="col-md-4 col-6 form-group">
                             <label for="vip">VIP Level</label>
                             <input type="number" id="vip" step="1" max="50" min="0" class="form-control"
                                 placeholder="max.50%">
                         </div>
-                        <!-- Global -->
                         <div class="col-md-4 col-6 form-group">
                             <label for="global">Global Bonus</label>
                             <input type="number" id="global" step="1" max="60" min="0" class="form-control"
                                 placeholder="max.60%">
                         </div>
-                        <!-- HoL -->
                         <div class="col-md-4 col-6 form-group">
                             <label for="hol">HoL Bonus</label>
                             <input type="number" id="hol" step="1" max="80" min="0" class="form-control"
                                 placeholder="max.80%">
                         </div>
-                        <!-- Alliance -->
                         <div class="col-md-4 col-6 form-group">
                             <label for="war">Alliance War Bonus</label>
                             <input type="number" id="war" step="1" max="100" min="0" class="form-control"
+                                placeholder="max.100%">
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- TROOP DETECTION CALCULATOR -->
+            <div class="col-12 collapse-area mb-2">
+                <h2 class="collapse-header">
+                    <span class="header-title">OTHER PARAMETERS</span>
+                </h2>
+                <div class="collapse show">
+                    <form class="calculator-bonuses-form row" onsubmit="return false;">
+                        <div class="col-md-4 col-6 form-group">
+                            <label for="speed">Later detection</label>
+                            <input type="number" id="laterDetection" value="0" min="0" step="1" class="form-control">
+                        </div>
+                        <div class="col-md-4 col-6 form-group">
+                            <label for="playerLevel">Early detection</label>
+                            <input type="number" id="earlyDetection" value="0" min="0" step="1" class="form-control">
+                        </div>
+                        <div class="col-md-4 col-6 form-group">
+                            <label for="sightBonus">Sight Radius Bonus</label>
+                            <input type="number" id="sightBonus" step="1" max="100" min="0" class="form-control"
                                 placeholder="max.100%">
                         </div>
                     </form>
@@ -106,12 +143,11 @@
                     <span class="header-title">RESULTS</span>
                 </h2>
                 <div class="collapse show results">
-                    <p>Travel time: <span id="time">00:00:00</span></p>
+                    <p>Travel time: <span id="arrivalTime">00:00:00</span></p>
                     <hr>
-                    <p>All bonuses: <span id="total-percentage-bonus">-</span></p>
+                    <p>Army detection after: <span id="detectionTime">00:00:00</span></p>
                 </div>
             </div>
-
         </div>
     </div>
 

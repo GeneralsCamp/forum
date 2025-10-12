@@ -98,6 +98,13 @@ h2 {
   border-radius: 8px;
 }
 
+.form-select:disabled,
+form-control:disabled {
+  filter: brightness(80%);
+  cursor: not-allowed;
+  background-color: #f3e0c2;
+}
+
 .form-control:focus,
 .form-select:focus {
   box-shadow: 0 0 0 0.2rem rgba(243, 194, 74, 0.5);
