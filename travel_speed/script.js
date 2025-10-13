@@ -57,6 +57,31 @@ function parseMmSs(str) {
     return mm * 60 + ss;
 }
 
+/*
+CASE1 (Dániel -> Kalmo)
+Distance: 75,6
+Speed: 100
+Army size: 32
+Bunus: no horse (30% research?)
+Travel time: 00:29:04
+Army detection after: 00:26:45
+
+CASE2 (Kalmo -> Dániel)
+Distance: 75,6
+Speed: 100
+Army size: 32
+Bunus: no horse (30% research?)
+Travel time: 00:29:04
+Army detection after: 00:25:24
+
+CASE3 (Kalmo -> Dániel)
+Distance: 75,6
+Speed: 100
+Army size: 32
+Bunus: no horse, +100% sight radius, (30% research?)
+Travel time: 00:29:04
+Army detection after: 00:23:04
+*/
 function calculateTroopDetection(rawTimeWithoutHorse, adjustedTime, distance) {
     const units = Number(document.getElementById('attackerUnits').value);
     const earlyDetection = Number(document.getElementById('earlyDetection').value) || 0;
@@ -75,14 +100,17 @@ function calculateTroopDetection(rawTimeWithoutHorse, adjustedTime, distance) {
     console.log("Adjusted time (sec):", adjustedTime);
 
     let baseSightRadius = 0.6 * Math.pow(units, 0.4);
-    let sightRadiusWithBonus = baseSightRadius * (1 + sightBonus / 100);
-    let sightRadius = Math.max(6, sightRadiusWithBonus);
+    let sightRadius = Math.max(6, baseSightRadius) * (1 + sightBonus / 100);
+
     console.log("Sight radius:", sightRadius);
 
-    let detectTimeSec = (sightRadius / distance) * rawTimeWithoutHorse;
+    //let detectTimeSec = rawTimeWithoutHorse * (sightRadius / distance);
+    let detectTimeSec = adjustedTime * ((distance - sightRadius) / distance);
+
     console.log("Detect time before boosts:", detectTimeSec);
 
-    let totalDetectionPercent = Math.max((1 + laterDetection / 100) / (1 + earlyDetection / 100), 0.1);
+    let totalDetectionPercent = Math.max((1 - earlyDetection / 100) * (1 + laterDetection / 100), 0.1);
+
     console.log("Later detection:", laterDetection);
     console.log("Early detection:", earlyDetection);
     console.log("Total detection percent:", totalDetectionPercent);
@@ -93,7 +121,7 @@ function calculateTroopDetection(rawTimeWithoutHorse, adjustedTime, distance) {
     detectTimeSec = Math.min(detectTimeSec, adjustedTime);
     console.log("After applying maximum:", detectTimeSec);
 
-    //document.getElementById('detectionTime').textContent = hmsFromSeconds(detectTimeSec);
+    document.getElementById('detectionTime').textContent = hmsFromSeconds(detectTimeSec);
 }
 
 function render() {
