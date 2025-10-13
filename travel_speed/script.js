@@ -67,34 +67,23 @@ function calculateTroopDetection(rawTimeWithoutHorse, adjustedTime, distance) {
         !Number.isFinite(distance) || distance <= 0 ||
         !Number.isFinite(rawTimeWithoutHorse) || rawTimeWithoutHorse <= 0) {
         document.getElementById('detectionTime').innerText = "00:00:00";
+        document.getElementById('detectionTimeAfter').innerText = "00:00:00";
         return;
     }
 
-    console.clear();
-    console.log("Raw time (sec):", rawTimeWithoutHorse);
-    console.log("Adjusted time (sec):", adjustedTime);
-
     let baseSightRadius = 0.6 * Math.pow(units, 0.4);
     let sightRadius = Math.max(6, baseSightRadius) * (1 + sightBonus / 100);
-    console.log("Sight radius:", sightRadius);
 
     let detectTimeSec = rawTimeWithoutHorse * (sightRadius / distance);
-    //let detectTimeSec = adjustedTime * ((distance - sightRadius) / distance);
-    console.log("Detect time before boosts:", detectTimeSec);
 
-    //let totalDetectionPercent = Math.max((1 - earlyDetection / 100) * (1 + laterDetection / 100), 0.1);
-    //let totalDetectionPercent = Math.max((1 + laterDetection / 100) / (1 + earlyDetection / 100), 0.1);
     let totalDetectionPercent = Math.max(0.1, (100 + earlyDetection - laterDetection) / 100);
-    
-    console.log("Total detection percent:", totalDetectionPercent);
-
     detectTimeSec *= totalDetectionPercent;
-    console.log("Detect time after boosts:", detectTimeSec);
-
     detectTimeSec = Math.min(detectTimeSec, adjustedTime);
-    console.log("After applying maximum:", detectTimeSec);
+
+    let detectTimeSecAfter = adjustedTime - detectTimeSec;
 
     document.getElementById('detectionTime').textContent = hmsFromSeconds(detectTimeSec);
+    document.getElementById('detectionTimeAfter').textContent = hmsFromSeconds(detectTimeSecAfter);
 }
 
 function render() {
