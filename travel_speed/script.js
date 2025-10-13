@@ -57,31 +57,6 @@ function parseMmSs(str) {
     return mm * 60 + ss;
 }
 
-/*
-CASE1 (Dániel -> Kalmo)
-Distance: 75,6
-Speed: 100
-Army size: 32
-Bunus: no horse (30% research?)
-Travel time: 00:29:04
-Army detection after: 00:26:45
-
-CASE2 (Kalmo -> Dániel)
-Distance: 75,6
-Speed: 100
-Army size: 32
-Bunus: no horse (30% research?)
-Travel time: 00:29:04
-Army detection after: 00:25:24
-
-CASE3 (Kalmo -> Dániel)
-Distance: 75,6
-Speed: 100
-Army size: 32
-Bunus: no horse, +100% sight radius, (30% research?)
-Travel time: 00:29:04
-Army detection after: 00:23:04
-*/
 function calculateTroopDetection(rawTimeWithoutHorse, adjustedTime, distance) {
     const units = Number(document.getElementById('attackerUnits').value);
     const earlyDetection = Number(document.getElementById('earlyDetection').value) || 0;
@@ -109,10 +84,9 @@ function calculateTroopDetection(rawTimeWithoutHorse, adjustedTime, distance) {
 
     console.log("Detect time before boosts:", detectTimeSec);
 
-    let totalDetectionPercent = Math.max((1 - earlyDetection / 100) * (1 + laterDetection / 100), 0.1);
+    //let totalDetectionPercent = Math.max((1 - earlyDetection / 100) * (1 + laterDetection / 100), 0.1);
+    let totalDetectionPercent = Math.max((1 + laterDetection / 100) / (1 + earlyDetection / 100), 0.1);
 
-    console.log("Later detection:", laterDetection);
-    console.log("Early detection:", earlyDetection);
     console.log("Total detection percent:", totalDetectionPercent);
 
     detectTimeSec *= totalDetectionPercent;
