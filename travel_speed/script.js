@@ -76,17 +76,16 @@ function calculateTroopDetection(rawTimeWithoutHorse, adjustedTime, distance) {
 
     let baseSightRadius = 0.6 * Math.pow(units, 0.4);
     let sightRadius = Math.max(6, baseSightRadius) * (1 + sightBonus / 100);
-
     console.log("Sight radius:", sightRadius);
 
-    //let detectTimeSec = rawTimeWithoutHorse * (sightRadius / distance);
-    let detectTimeSec = adjustedTime * ((distance - sightRadius) / distance);
-
+    let detectTimeSec = rawTimeWithoutHorse * (sightRadius / distance);
+    //let detectTimeSec = adjustedTime * ((distance - sightRadius) / distance);
     console.log("Detect time before boosts:", detectTimeSec);
 
     //let totalDetectionPercent = Math.max((1 - earlyDetection / 100) * (1 + laterDetection / 100), 0.1);
-    let totalDetectionPercent = Math.max((1 + laterDetection / 100) / (1 + earlyDetection / 100), 0.1);
-
+    //let totalDetectionPercent = Math.max((1 + laterDetection / 100) / (1 + earlyDetection / 100), 0.1);
+    let totalDetectionPercent = Math.max(0.1, (100 + earlyDetection - laterDetection) / 100);
+    
     console.log("Total detection percent:", totalDetectionPercent);
 
     detectTimeSec *= totalDetectionPercent;
