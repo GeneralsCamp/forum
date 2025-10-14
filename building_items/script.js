@@ -357,6 +357,10 @@ function getLocalizedEffectName(effectDef, variant = null) {
     candidates.push(`effect_name_${allLower}`);
     candidates.push(`ci_effect_${allLower}_tt`);
 
+    candidates.push(original);
+    candidates.push(lowerFirst);
+    candidates.push(allLower);
+
     for (const key of candidates) {
         if (lang[key]) return lang[key];
     }
