@@ -59,7 +59,7 @@ function parseMmSs(str) {
 
 function calculateTroopDetection(rawTimeWithoutHorse, adjustedTime, distance) {
     const units = Number(document.getElementById('attackerUnits').value);
-    const earlyDetection = Number(document.getElementById('earlyDetection').value) || 0;
+    let earlyDetection = Number(document.getElementById('earlyDetection').value) || 0;
     const laterDetection = Number(document.getElementById('laterDetection').value) || 0;
     const sightBonus = Number(document.getElementById('sightBonus').value) || 0;
 
@@ -76,7 +76,9 @@ function calculateTroopDetection(rawTimeWithoutHorse, adjustedTime, distance) {
 
     let detectTimeSec = rawTimeWithoutHorse * (sightRadius / distance);
 
+    earlyDetection = earlyDetection * (1 + sightBonus / 100);
     let totalDetectionPercent = Math.max(0.1, (100 + earlyDetection - laterDetection) / 100);
+
     detectTimeSec *= totalDetectionPercent;
     detectTimeSec = Math.min(detectTimeSec, adjustedTime);
 
