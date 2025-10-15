@@ -11,17 +11,23 @@ let newItemIDsSet = new Set();
 let showOnlyNew = false;
 
 // --- FETCH FUNCTIONS (WITH FALLBACK, VERSIONS, DATA) ---
-async function fetchWithFallback(url) {
+async function fetchWithFallback(url, timeout = 10000) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeout);
+
     try {
-        const response = await fetch(myProxy + url);
+        const response = await fetch(myProxy + url, { signal: controller.signal });
         if (!response.ok) throw new Error("myProxy: bad response");
         return response;
     } catch (err) {
         console.warn("Proxy error:", err);
+
         const encodedUrl = encodeURIComponent(url);
         const fallbackResponse = await fetch(fallbackProxy + encodedUrl);
         if (!fallbackResponse.ok) throw new Error("fallbackProxy: bad response");
         return fallbackResponse;
+    } finally {
+        clearTimeout(timer);
     }
 }
 
