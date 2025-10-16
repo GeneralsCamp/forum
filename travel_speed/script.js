@@ -21,6 +21,9 @@ function calculateLowLevelBoost(level) {
 }
 
 function hmsFromSeconds(sec) {
+    if (!Number.isFinite(sec) || sec < 0) {
+        return "00:00:00";
+    }
     const s = Math.trunc(sec);
     const h = Math.floor(s / 3600);
     const m = Math.floor((s % 3600) / 60);
@@ -29,6 +32,11 @@ function hmsFromSeconds(sec) {
 }
 
 function getTravelTime(unitSpeed, distance, horseBoost, percentageBoost, totalDistance) {
+    if (!Number.isFinite(unitSpeed) || unitSpeed <= 0 ||
+        !Number.isFinite(distance) || distance <= 0) {
+        return NaN;
+    }
+
     const unitSpeedInFieldsPerSecond = unitSpeed / 10 / (10 * 60);
     const boostPercentAsFactor = percentageBoost / 100;
     let boostedUnitSpeed = unitSpeedInFieldsPerSecond * (1 + boostPercentAsFactor);
@@ -108,11 +116,9 @@ function render() {
     const lowLevelBoost = calculateLowLevelBoost(playerLevel);
 
     const rawTimeWithoutHorse = getTravelTime(speed, distance, 0, totalBonus, distance);
-
     const rawTimeWithHorse = getTravelTime(speed, distance, horseBoostPercent, totalBonus, distance);
 
     const adjustedTime = rawTimeWithHorse / (1 + lowLevelBoost);
-
     document.getElementById('arrivalTime').textContent = hmsFromSeconds(adjustedTime);
 
     calculateTroopDetection(rawTimeWithoutHorse, adjustedTime, distance);

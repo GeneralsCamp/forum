@@ -38,16 +38,17 @@
                         </div>
                         <div class="col-md-4 col-6 form-group">
                             <label for="speed">Attack Speed</label>
-                            <input type="number" id="speed" step="1" value="15" class="form-control">
+                            <input type="number" id="speed" step="1" value="1" class="form-control"
+                                placeholder="slowest unit">
                         </div>
                         <div class="col-md-4 col-6  form-group">
                             <label for="distance">Army Size</label>
-                            <input type="number" id="attackerUnits" value="0" min="1" max="100000" class="form-control"
+                            <input type="number" id="attackerUnits" value="1" min="1" max="100000" class="form-control"
                                 step="1">
                         </div>
                         <div class="col-md-4 col-6 form-group">
                             <label for="playerLevel">Player Level</label>
-                            <input type="number" id="playerLevel" step="1" value="20" min="0" max="1020"
+                            <input type="number" id="playerLevel" step="1" value="25" min="0" max="1020"
                                 class="form-control">
                         </div>
                         <div class="col-md-4 col-6 form-group">
@@ -86,28 +87,51 @@
                         </div>
                         <div class="col-md-4 col-6 form-group">
                             <label for="glory">Glory Title</label>
-                            <input type="number" id="glory" step="1" max="20" min="0" class="form-control"
-                                placeholder="max.20%">
+                            <select id="glory" class="form-select">
+                                <option value="0">0%</option>
+                                <option value="20">20%</option>
+                            </select>
                         </div>
                         <div class="col-md-4 col-6 form-group">
                             <label for="vip">VIP Level</label>
-                            <input type="number" id="vip" step="1" max="50" min="0" class="form-control"
-                                placeholder="max.50%">
+                            <select id="vip" class="form-select">
+                                <option value="0" selected>0%</option>
+                                <option value="20">20%</option>
+                                <option value="25">25%</option>
+                                <option value="30">30%</option>
+                                <option value="35">35%</option>
+                                <option value="40">40%</option>
+                                <option value="50">50%</option>
+                            </select>
                         </div>
                         <div class="col-md-4 col-6 form-group">
                             <label for="global">Global Bonus</label>
-                            <input type="number" id="global" step="1" max="60" min="0" class="form-control"
-                                placeholder="max.60%">
+                            <select id="global" class="form-select">
+                                <option value="0" selected>0%</option>
+                                <option value="10">10%</option>
+                                <option value="60">60%</option>
+                            </select>
                         </div>
                         <div class="col-md-4 col-6 form-group">
                             <label for="hol">HoL Bonus</label>
-                            <input type="number" id="hol" step="1" max="80" min="0" class="form-control"
-                                placeholder="max.80%">
+                            <select id="hol" class="form-select">
+                                <option value="0" selected>0%</option>
+                                <option value="10">10%</option>
+                                <option value="20">20%</option>
+                                <option value="30">30%</option>
+                                <option value="40">40%</option>
+                                <option value="50">50%</option>
+                                <option value="60">60%</option>
+                                <option value="70">70%</option>
+                                <option value="80">80%</option>
+                            </select>
                         </div>
                         <div class="col-md-4 col-6 form-group">
                             <label for="war">Alliance War Bonus</label>
-                            <input type="number" id="war" step="1" max="100" min="0" class="form-control"
-                                placeholder="max.100%">
+                            <select id="war" class="form-select">
+                                <option value="0" selected>No</option>
+                                <option value="100">Yes</option>
+                            </select>
                         </div>
                     </form>
                 </div>
@@ -122,11 +146,13 @@
                     <form class="calculator-bonuses-form row" onsubmit="return false;">
                         <div class="col-md-4 col-6 form-group">
                             <label for="speed">Late Detection</label>
-                            <input type="number" id="laterDetection" value="0" min="0" step="1" class="form-control">
+                            <input type="number" id="laterDetection" min="0" max="210" step="1" class="form-control"
+                                placeholder="max.210%">
                         </div>
                         <div class="col-md-4 col-6 form-group">
                             <label for="playerLevel">Early Detection</label>
-                            <input type="number" id="earlyDetection" value="0" min="0" step="1" class="form-control">
+                            <input type="number" id="earlyDetection" min="0" max="210" step="1" class="form-control"
+                                placeholder="max.210%">
                         </div>
                         <div class="col-md-4 col-6 form-group">
                             <label for="sightBonus">Watch Tower Bonus</label>
