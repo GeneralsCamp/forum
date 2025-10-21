@@ -189,15 +189,6 @@ async function compareWithOldVersion(oldVersion) {
   applyFiltersAndSorting();
 }
 
-function countBySize(items) {
-  const counts = {};
-  items.forEach(item => {
-    const size = getSize(item);
-    counts[size] = (counts[size] || 0) + 1;
-  });
-  return counts;
-}
-
 async function getCurrentVersionInfo() {
   try {
     const urlVersion = "https://empire-html5.goodgamestudios.com/default/items/ItemsVersion.properties";
@@ -468,14 +459,6 @@ function normalizeName(str) {
   return str.toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 
-function toPascalCase(str) {
-  return str
-    .replace(/[^a-zA-Z0-9 ]/g, '')
-    .split(/\s+/)
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join('');
-}
-
 // --- GET VALUES & CALCULATIONS ---
 function extractDecorations(buildings) {
   return buildings.filter(b =>
@@ -503,16 +486,6 @@ function getPO(item) {
     }
   }
   return 0;
-}
-
-function getFusionStatus(item) {
-  const isSource = item.isFusionSource === "1";
-  const isTarget = item.isFusionTarget === "1";
-
-  if (isSource && isTarget) return lang.fusion_both;
-  if (isSource) return lang.fusion_source;
-  if (isTarget) return lang.fusion_target;
-  return lang.fusion_none;
 }
 
 // --- SIZE FILTERS ---
