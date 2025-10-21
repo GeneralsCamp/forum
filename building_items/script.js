@@ -74,9 +74,22 @@ async function getItems(version) {
     }
 
     Object.values(effectDefinitions).forEach(effect => {
-        const descKey = `equip_effect_description_${effect.name}`;
-        const description = lang[descKey];
-        if (description && description.includes('%') && !descKey.includes('Unboosted')) {
+        const possiblePrefixes = [
+            'equip_effect_description_',
+            'ci_effect_',
+            'effect_name_'
+        ];
+
+        let description;
+        for (const prefix of possiblePrefixes) {
+            const key = `${prefix}${effect.name}`;
+            if (lang[key]) {
+                description = lang[key];
+                break;
+            }
+        }
+
+        if (description && description.includes('%') && !effect.name.includes('Unboosted')) {
             percentEffectIDs.add(effect.effectID);
         }
     });
@@ -220,7 +233,8 @@ const effectNameOverrides = {
     "rangeBonus": "Ranged unit attack strength when attacking",
     "beefProductionBoost": "Beef production bonus",
     "defenseUnitAmountYardMinorBoost": "Bonus to courtyard defense troop capacity",
-    "attackUnitAmountReinforcementBoost": "Troop capacity for final assault"
+    "attackUnitAmountReinforcementBoost": "Troop capacity for final assault",
+    "publicOrderBonusMain": "Public order bonus in the main castle",
 };
 
 const langKeyOverrides = {
@@ -229,7 +243,7 @@ const langKeyOverrides = {
     "winterResearchtower": "ci_appearance_winterResearchTower",
 
     "RelicBeefCapacityIncrease": "ci_secondary_RelicBeefCapacityIncrease_premium",
-    "BeefCapacityIncrease": "ci_primary_Beef_CapacityIncrease_premium"
+    "BeefCapacityIncrease": "ci_primary_Beef_CapacityIncrease_premium",
 };
 
 const hardcodedPercentEffectIDs = new Set([
