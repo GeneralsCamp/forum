@@ -66,7 +66,7 @@ async function getLanguageData(version) {
   const url = `https://langserv.public.ggs-ep.com/12@${version}/${currentLanguage}/*`;
   const res = await fetchWithFallback(url);
   const data = await res.json();
-  lang = data;
+  lang = lowercaseKeysRecursive(data);
 }
 
 async function getItems(version) {
@@ -90,9 +90,9 @@ async function getItems(version) {
 
   percentEffectIDs.clear();
   Object.values(effectDefinitions).forEach(effect => {
-    const descKey = `equip_effect_description_${effect.name}`;
+    const descKey = `equip_effect_description_${effect.name}`.toLowerCase();
     const description = lang[descKey];
-    if (description && description.includes('%') && !descKey.includes('Unboosted')) {
+    if (description && description.includes('%') && !descKey.includes('unboosted')) {
       percentEffectIDs.add(effect.effectID);
     }
   });
@@ -288,7 +288,20 @@ async function reloadLanguage() {
 async function loadOwnLang() {
   try {
     const res = await fetch("./ownLang.json");
-    ownLang = await res.json();
+    const rawLang = await res.json();
+
+    function normalizeKeys(obj) {
+      if (obj && typeof obj === "object" && !Array.isArray(obj)) {
+        return Object.fromEntries(
+          Object.entries(obj).map(([key, val]) => [key.toLowerCase(), normalizeKeys(val)])
+        );
+      } else if (Array.isArray(obj)) {
+        return obj.map(normalizeKeys);
+      }
+      return obj;
+    }
+
+    ownLang = normalizeKeys(rawLang);
   } catch (err) {
     console.error("Error loading ownLang.json:", err);
     ownLang = {};
@@ -296,7 +309,7 @@ async function loadOwnLang() {
 }
 
 async function applyOwnLang() {
-  const filters = ownLang[currentLanguage]?.filters || {};
+  const filters = ownLang[currentLanguage.toLowerCase()]?.filters || {};
 
   document.querySelector('label[for="filterName"]').textContent = filters.search_name || "Name";
   document.querySelector('label[for="filterID"]').textContent = filters.search_id || "ID";
@@ -338,6 +351,20 @@ window.addEventListener("DOMContentLoaded", async () => {
   await reloadLanguage();
 });
 
+function lowercaseKeysRecursive(input) {
+  if (input === null || input === undefined) return input;
+  if (Array.isArray(input)) return input.map(lowercaseKeysRecursive);
+  if (typeof input === 'object') {
+    const out = {};
+    Object.keys(input).forEach(key => {
+      const lowerKey = key.toString().toLowerCase();
+      out[lowerKey] = lowercaseKeysRecursive(input[key]);
+    });
+    return out;
+  }
+  return input;
+}
+
 // --- EFFECTS AND LEGACY FIELD HANDLING ---
 const effectKeyOverrides = {
   "effect_name_AttackBoostFlankCapped": { key: "effect_group_1_5_passive", percent: true },
@@ -362,32 +389,30 @@ function parseEffects(effectsStr) {
     let baseKey = effectDef ? "effect_name_" + effectDef.name : "";
     let isPercent = percentEffectIDs.has(id);
 
-
     const override = effectKeyOverrides[baseKey];
     if (override) {
       baseKey = override.key;
       isPercent = !!override.percent;
     }
 
-    let localizedTemplate = effectDef ? (lang[baseKey] || effectDef.name) : `Effect ID ${id}`;
+    let normalizedKey = baseKey.toLowerCase();
+    let localizedTemplate = effectDef ? (lang[normalizedKey] || effectDef.name) : `Effect ID ${id}`;
+
     const suffix = isPercent ? "%" : "";
 
     if (rest.includes("+")) {
       const [subType, valStr] = rest.split("+");
       const val = Number(valStr);
 
-      const unitTypeOverrides = { "ScaleBoundGuardian": "ScaleboundGuardian" };
       let unitName = `Unit ${subType}`;
       const unit = units.find(u => u.wodID == subType);
       if (unit) {
-        const key = unitTypeOverrides[unit.type] || unit.type;
+        const key = unit.type;
         unitName = lang[key + "_name"] || unit.type;
         if (unit.level != null) unitName += ` (lvl.${unit.level})`;
       }
 
-      function firstCharToLower(str) { return str ? str.charAt(0).toLowerCase() + str.slice(1) : str; }
-
-      let templateKey = "effect_name_" + firstCharToLower(effectDef.name);
+      let templateKey = "effect_name_" + effectDef.name;
       const templateOverride = effectKeyOverrides[templateKey];
       if (templateOverride) {
         templateKey = templateOverride.key;
@@ -436,7 +461,7 @@ function getName(item) {
   const keyLower = `deco_${type.toLowerCase()}_name`;
   const keyFirstLower = `deco_${type.charAt(0).toLowerCase() + type.slice(1)}_name`;
 
-  return lang[keyOriginal] || lang[keyLower] || lang[keyFirstLower] || type || "???";
+  return lang[keyOriginal.toLowerCase()] || lang[keyLower.toLowerCase()] || lang[keyFirstLower.toLowerCase()] || type || "???";
 }
 
 function normalizeName(str) {
