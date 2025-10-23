@@ -728,10 +728,10 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
         <div class="col-7 card-cell d-flex flex-column">
             <div class="flex-fill d-flex flex-column justify-content-between h-100">
                 <div class="card-cell border-bottom flex-fill d-flex flex-column justify-content-center">
-                    <strong>Type:</strong>Permanent
+                    <strong>Type:</strong>${typeText}
                 </div>
                 <div class="card-cell flex-fill d-flex flex-column justify-content-center">
-                    <strong>Removal Cost:</strong>7200 coins
+                    <strong>Removal Cost:</strong>${removalCostText}
                 </div>
             </div>
         </div>
