@@ -386,9 +386,8 @@ function parseEffects(effectsStr) {
       isPercent = !!override.percent;
     }
 
-    let normalizedKey = baseKey.toLowerCase();
+    const normalizedKey = baseKey.toLowerCase();
     let localizedTemplate = effectDef ? (lang[normalizedKey] || effectDef.name) : `Effect ID ${id}`;
-
     const suffix = isPercent ? "%" : "";
 
     if (rest.includes("+")) {
@@ -399,19 +398,20 @@ function parseEffects(effectsStr) {
       const unit = units.find(u => u.wodID == subType);
       if (unit) {
         const key = unit.type;
-        unitName = lang[key + "_name"] || unit.type;
+        const unitKey = (key + "_name").toLowerCase();
+        unitName = lang[unitKey] || unit.type;
         if (unit.level != null) unitName += ` (lvl.${unit.level})`;
       }
 
-      let templateKey = "effect_name_" + effectDef.name;
+      let templateKey = ("effect_name_" + effectDef.name).toLowerCase();
       const templateOverride = effectKeyOverrides[templateKey];
       if (templateOverride) {
-        templateKey = templateOverride.key;
+        templateKey = templateOverride.key.toLowerCase();
         isPercent = !!templateOverride.percent;
       }
 
       localizedTemplate = lang[templateKey] || effectDef.name;
-      let localizedName = localizedTemplate.replace("{1}", unitName);
+      const localizedName = localizedTemplate.replace("{1}", unitName);
 
       if (!isNaN(val)) {
         let maxStr = "";
