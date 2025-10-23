@@ -614,108 +614,137 @@ function formatDuration(seconds) {
 
 // --- CARD CREATION (HTML RENDERING) ---
 function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
-    let currentLevelIndex = 0;
-    const safeKey = groupKey.replace(/[^a-zA-Z0-9]/g, '-');
-    const groupId = `group-${safeKey}`;
-    const name = getCIName(groupItems[0]);
+  let currentLevelIndex = 0;
+  const safeKey = groupKey.replace(/[^a-zA-Z0-9]/g, '-');
+  const groupId = `group-${safeKey}`;
+  const name = getCIName(groupItems[0]);
 
-    const rarenessNames = {
-        1: "Ordinary",
-        2: "Rare",
-        3: "Epic",
-        4: "Legendary",
-        5: "Appearance",
-        10: "Appearance"
-    };
+  const rarenessNames = {
+    1: "Ordinary",
+    2: "Rare",
+    3: "Epic",
+    4: "Legendary",
+    5: "Appearance",
+    10: "Appearance"
+  };
 
-    function renderLevel(index) {
-        const item = groupItems[index];
-        const isTemporary = !!item.duration;
-        const removalCost = item.removalCostC1 || "0";
-        const removalCostText = (removalCost === 0 || removalCost === "0")
-            ? "Non removable"
-            : `${new Intl.NumberFormat().format(removalCost)} coins`;
-        const commentList = [item.comment1, item.comment2].filter(Boolean);
+  function renderLevel(index) {
+    const item = groupItems[index];
+    const isTemporary = !!item.duration;
+    const removalCost = item.removalCostC1 || "0";
+    const removalCostText = (removalCost === 0 || removalCost === "0")
+      ? "Non removable"
+      : `${new Intl.NumberFormat().format(removalCost)} coins`;
 
-        const normalizedName = normalizeName(item.name);
-        const urls = imageUrlMap[normalizedName] || {};
-        const placedUrl = urls.placedUrl || null;
+    const commentList = [item.comment1, item.comment2].filter(Boolean);
 
-        const safeName = name.replace(/'/g, "\\'");
+    const normalizedName = normalizeName(item.name);
+    const urls = imageUrlMap[normalizedName] || {};
+    const placedUrl = urls.placedUrl || null;
 
-        const isFirstLevel = index === 0;
-        const isLastLevel = index === groupItems.length - 1;
+    const safeName = name.replace(/'/g, "\\'");
 
-        const rarityName = rarenessNames[item.rarenessID] || "Unknown";
-        const levelText = getLevelText(item, rarityName);
+    const isFirstLevel = index === 0;
+    const isLastLevel = index === groupItems.length - 1;
 
-        let effects = parseEffects(item.effects || "");
-        addLegacyEffects(item, effects);
+    const rarityName = rarenessNames[item.rarenessID] || "Unknown";
+    const levelText = getLevelText(item, rarityName);
 
-        if (item.decoPoints) {
-            effects.push(`Public order: ${formatNumber(item.decoPoints)}`);
-        }
+    let effects = parseEffects(item.effects || "");
+    addLegacyEffects(item, effects);
 
-        let effectsHTML = "";
-        if (effects.length > 0) {
-            effectsHTML = `
-    <hr>
-    <div class="card-effects">
-      <h5 class="card-section-title">Effects:</h5>
-      <p>${effects.map(e => `- ${e}`).join("<br>")}</p>
-    </div>
-  `;
-        }
-
-        let commentsHTML = "";
-        if (commentList.length > 0) {
-            commentsHTML = `
-    <hr>
-    <div class="card-sources">
-      <h4 class="card-section-title">Developer comments:</h4>
-      <p>${commentList.map(c => `- ${c}`).join("<br>")}</p>
-    </div>
-  `;
-        }
-
-        const typeText = isTemporary ? `Temporary (${formatDuration(item.duration)})` : "Permanent";
-
-        return `
-    <div class="level-selector d-flex justify-content-between align-items-center">
-      <button id="${groupId}-prev" class="btn btn-sm btn-outline-primary" ${isFirstLevel ? "disabled" : ""}>
-        <i class="bi bi-arrow-left"></i>
-      </button>
-      <div><strong>${levelText}</strong></div>
-      <button id="${groupId}-next" class="btn btn-sm btn-outline-primary" ${isLastLevel ? "disabled" : ""}>
-        <i class="bi bi-arrow-right"></i>
-      </button>
-    </div>
-    <h2 class="ci-title">${name} <br> (constructionItemID: ${item.constructionItemID})</h2>
-    <hr>
-    <div class="image-wrapper">
-      ${placedUrl
-                ? `<img src="${placedUrl}" alt="${name}" class="card-image" loading="lazy" onclick="openImageModal('${placedUrl}', '${safeName}')">`
-                : `<div class="no-image-text">no image</div>`
-            }
-    </div>
-    <hr>
-    <div class="card-table">
-      <div class="row g-0">
-        <div class="col-6 card-cell border-end">
-          <strong>Type:</strong><br> ${typeText}
-        </div>
-        <div class="col-6 card-cell">
-          <strong>Removal Cost:</strong><br> ${removalCostText}
-        </div>
-      </div>
-    </div>
-  ${effectsHTML}
-  ${commentsHTML}
-  `;
+    if (item.decoPoints) {
+      effects.push(`Public order: ${formatNumber(item.decoPoints)}`);
     }
 
-    const containerId = `${groupId}-container`;
-    const cardHtml = `
+    let effectsHTML = "";
+    if (effects.length > 0) {
+      effectsHTML = `
+        <hr>
+        <div class="card-section card-effects">
+          <h5 class="card-section-title">Effects:</h5>
+          <p>${effects.map(e => `- ${e}`).join("<br>")}</p>
+        </div>
+      `;
+    }
+
+    const id = item.constructionItemID || "???";
+    const ciIdHTML = `<span class="wod-id" style="cursor:pointer;" onclick="navigator.clipboard.writeText('${id}')">${id}</span>`;
+
+    const comments = [`constructionItemID: ${ciIdHTML}`, ...commentList];
+
+    let commentsHTML = "";
+    if (comments.length > 0) {
+      commentsHTML = `
+        <hr>
+        <div class="card-section card-sources">
+          <h4 class="card-section-title">Developer comments:</h4>
+          <p>${comments.map(c => `- ${c}`).join("<br>")}</p>
+        </div>
+      `;
+    }
+
+    const typeText = isTemporary ? `Temporary (${formatDuration(item.duration)})` : "Permanent";
+
+    const imageSection = placedUrl
+      ? `
+        <div class="col-5 card-cell border-end d-flex justify-content-center align-items-center position-relative" 
+             style="cursor:pointer;" 
+             onclick="openImageModal('${placedUrl}', '${safeName}')">
+          <div class="image-wrapper">
+            <img src="${placedUrl}" alt="${name}" class="card-image w-100" loading="lazy">
+          </div>
+          <span class="position-absolute bottom-0 end-0 p-1 rounded-circle m-1">
+            <i class="bi bi-zoom-in"></i>
+          </span>
+        </div>
+      `
+      : `
+        <div class="col-4 card-cell border-end d-flex justify-content-center align-items-center">
+          <div class="image-wrapper">
+            <div class="no-image-text">no image</div>
+          </div>
+        </div>
+      `;
+
+    return `
+      <div class="level-selector d-flex justify-content-between align-items-center">
+        <button id="${groupId}-prev" class="btn btn-sm btn-outline-primary" ${isFirstLevel ? "disabled" : ""}>
+          <i class="bi bi-arrow-left"></i>
+        </button>
+        <div><strong>${levelText}</strong></div>
+        <button id="${groupId}-next" class="btn btn-sm btn-outline-primary" ${isLastLevel ? "disabled" : ""}>
+          <i class="bi bi-arrow-right"></i>
+        </button>
+      </div>
+
+      <h2 class="ci-title">${name}</h2>
+      <hr>
+
+      <!-- Kép + adatok -->
+      <div class="card-table">
+        <div class="row g-0">
+          ${imageSection}
+        <div class="col-7 card-cell d-flex flex-column">
+            <div class="flex-fill d-flex flex-column justify-content-between h-100">
+                <div class="card-cell border-bottom flex-fill d-flex flex-column justify-content-center">
+                    <strong>Type:</strong>Permanent
+                </div>
+                <div class="card-cell flex-fill d-flex flex-column justify-content-center">
+                    <strong>Removal Cost:</strong>7200 coins
+                </div>
+            </div>
+        </div>
+        </div>
+      </div>
+
+      ${effectsHTML}
+      ${commentsHTML}
+    `;
+  }
+
+  const containerId = `${groupId}-container`;
+  const cardHtml = `
     <div class="col-md-6 col-sm-12 d-flex flex-column">
       <div class="box flex-fill" id="${containerId}">
         <div class="box-content">
@@ -725,41 +754,39 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
     </div>
   `;
 
-    setTimeout(() => {
-        const prevBtn = document.getElementById(`${groupId}-prev`);
-        const nextBtn = document.getElementById(`${groupId}-next`);
-        const boxContent = document.querySelector(`#${containerId} .box-content`);
+  setTimeout(() => {
+    const boxContent = document.querySelector(`#${containerId} .box-content`);
 
-        function updateView() {
-            boxContent.innerHTML = renderLevel(currentLevelIndex);
-            bindEvents();
+    function updateView() {
+      boxContent.innerHTML = renderLevel(currentLevelIndex);
+      bindEvents();
+    }
+
+    function bindEvents() {
+      const prev = document.getElementById(`${groupId}-prev`);
+      const next = document.getElementById(`${groupId}-next`);
+
+      if (prev) prev.disabled = currentLevelIndex === 0;
+      if (next) next.disabled = currentLevelIndex === groupItems.length - 1;
+
+      if (prev) prev.onclick = () => {
+        if (currentLevelIndex > 0) {
+          currentLevelIndex--;
+          updateView();
         }
-
-        function bindEvents() {
-            const prev = document.getElementById(`${groupId}-prev`);
-            const next = document.getElementById(`${groupId}-next`);
-
-            if (prev) prev.disabled = currentLevelIndex === 0;
-            if (next) next.disabled = currentLevelIndex === groupItems.length - 1;
-
-            if (prev) prev.onclick = () => {
-                if (currentLevelIndex > 0) {
-                    currentLevelIndex--;
-                    updateView();
-                }
-            };
-            if (next) next.onclick = () => {
-                if (currentLevelIndex < groupItems.length - 1) {
-                    currentLevelIndex++;
-                    updateView();
-                }
-            };
+      };
+      if (next) next.onclick = () => {
+        if (currentLevelIndex < groupItems.length - 1) {
+          currentLevelIndex++;
+          updateView();
         }
+      };
+    }
 
-        bindEvents();
-    }, 0);
+    bindEvents();
+  }, 0);
 
-    return cardHtml;
+  return cardHtml;
 }
 
 function renderConstructionItems(items) {
