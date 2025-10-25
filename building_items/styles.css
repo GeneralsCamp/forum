@@ -456,10 +456,9 @@ h1 {
 }
 
 .level-selector button:disabled {
-    background-color: #bd9a79;
-    color: #433120;
+    background-color: rgba(189, 154, 121, 0.6);
+    color: rgba(67, 49, 32, 0.6); 
     cursor: default;
-    opacity: 1;
     box-shadow: none;
 }
 
