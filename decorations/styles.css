@@ -257,6 +257,7 @@ h1 {
     color: #433120;
     border: 2px solid #a97c50;
     font-weight: bold;
+    border-radius: 8px;
 }
 
 #searchInput:focus,
