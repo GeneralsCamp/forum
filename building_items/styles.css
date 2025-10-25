@@ -112,13 +112,9 @@ h1 {
     transition: all 0.3s ease;
 }
 
-.box-content hr {
-    width: 100%;
-    border: 0;
+.card-section.border-top {
     border-top: 1px solid white !important;
     opacity: 1 !important;
-    margin: 0;
-    color: white;
 }
 
 .ci-title {
@@ -253,6 +249,7 @@ h1 {
     color: #433120;
     border: 2px solid #a97c50;
     font-weight: bold;
+    border-radius: 8px;
 }
 
 #searchInput:focus,
@@ -433,20 +430,33 @@ h1 {
 
 .level-selector button {
     background-color: #f3c24a;
-    border: 2px solid #bd9a79;
     color: #433120;
     font-weight: bold;
     padding: 4px 10px;
-    border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease;
     min-width: 40px;
     user-select: none;
 }
 
+.level-selector button:first-child {
+    border-radius: 8px 0 0 0;
+    border-top: none;
+    border-left: none;
+    border-right: 2px solid white;
+    border-bottom: none;
+}
+
+.level-selector button:last-child {
+    border-radius: 0 8px 0 0;
+    border-top: none;
+    border-right: none;
+    border-left: 2px solid white;
+    border-bottom: none;
+}
+
 .level-selector button:disabled {
     background-color: #bd9a79;
-    border-color: #7b5a3b;
     color: #433120;
     cursor: default;
     opacity: 0.6;
@@ -455,7 +465,7 @@ h1 {
 
 .level-selector button:hover:not(:disabled) {
     background-color: #e2b33d;
-    border-color: #f3c24a;
+    color: #433120;
 }
 
 .level-selector .level-text {
@@ -479,7 +489,7 @@ h1 {
 
 /* --- CARD EFFECTS AND SOURCES --- */
 .card-effects,
-.card-sources{
+.card-sources {
     padding: 5px;
 }
 

@@ -51,7 +51,7 @@ async function getLanguageData(version) {
     const url = `https://langserv.public.ggs-ep.com/12@${version}/en/*`;
     const res = await fetchWithFallback(url);
     const data = await res.json();
-    lang = data;
+    lang = lowercaseKeysRecursive(data);
 }
 
 async function getItems(version) {
@@ -59,44 +59,51 @@ async function getItems(version) {
     const res = await fetchWithFallback(url);
     const data = await res.json();
 
+    effectDefinitions = {};
     if (Array.isArray(data.effects)) {
-        effectDefinitions = {};
         data.effects.forEach(effect => {
             effectDefinitions[effect.effectID] = effect;
         });
     }
 
+    effectCapsMap = {};
     if (Array.isArray(data.effectCaps)) {
-        effectCapsMap = {};
         data.effectCaps.forEach(cap => {
             effectCapsMap[cap.capID] = cap;
         });
     }
 
+    percentEffectIDs.clear();
     Object.values(effectDefinitions).forEach(effect => {
-        const possiblePrefixes = [
-            'equip_effect_description_',
-            'ci_effect_',
-            'effect_name_'
-        ];
+        const baseName = effect.name;
+        const variants = ["", "_1", "_2", "_3"];
+        let foundPercent = false;
 
-        let description;
-        for (const prefix of possiblePrefixes) {
-            const key = `${prefix}${effect.name}`;
-            if (lang[key]) {
-                description = lang[key];
-                break;
+        for (const variant of variants) {
+            const possiblePrefixes = [
+                'equip_effect_description_',
+                'ci_effect_',
+                'effect_name_',
+                'effect_desc_'
+            ];
+
+            for (const prefix of possiblePrefixes) {
+                const key = `${prefix}${baseName}${variant}`.toLowerCase();
+                if (lang[key] && lang[key].includes('%')) {
+                    foundPercent = true;
+                    break;
+                }
+                const keyTT = `${key}_tt`;
+                if (lang[keyTT] && lang[keyTT].includes('%')) {
+                    foundPercent = true;
+                    break;
+                }
             }
+            if (foundPercent) break;
         }
 
-        if (description && description.includes('%') && !effect.name.includes('Unboosted')) {
+        if (foundPercent && !effect.name.includes('Unboosted')) {
             percentEffectIDs.add(effect.effectID);
-        }
-    });
-
-    hardcodedPercentEffectIDs.forEach(id => {
-        if (!percentEffectIDs.has(id)) {
-            percentEffectIDs.add(id);
         }
     });
 
@@ -221,7 +228,23 @@ async function getCurrentVersionInfo() {
     }
 }
 
+function lowercaseKeysRecursive(input) {
+    if (input === null || input === undefined) return input;
+    if (Array.isArray(input)) return input.map(lowercaseKeysRecursive);
+    if (typeof input === 'object') {
+        const out = {};
+        Object.keys(input).forEach(key => {
+            const lowerKey = key.toString().toLowerCase();
+            out[lowerKey] = lowercaseKeysRecursive(input[key]);
+        });
+        return out;
+    }
+    return input;
+}
+
 // --- EFFECTS AND LEGACY FIELD HANDLING ---
+const legacyEffectFields = ["unitWallCount", "recruitSpeedBoost", "woodStorage", "stoneStorage", "ReduceResearchResourceCosts", "Stoneproduction", "Woodproduction", "Foodproduction", "foodStorage", "unboostedFoodProduction", "defensiveToolsSpeedBoost", "defensiveToolsCostsReduction", "meadStorage", "recruitCostReduction", "honeyStorage", "hospitalCapacity", "healSpeed", "marketCarriages", "XPBoostBuildBuildings", "stackSize", "glassStorage", "Glassproduction", "ironStorage", "Ironproduction", "coalStorage", "Coalproduction", "oilStorage", "Oilproduction", "offensiveToolsCostsReduction", "feastCostsReduction", "Meadreduction", "surviveBoost", "unboostedStoneProduction", "unboostedWoodProduction", "offensiveToolsSpeedBoost", "espionageTravelBoost"];
+
 const effectNameOverrides = {
     "lootBonusPVE": "Loot bonus from NPC targets",
     "defenseBonusNotMainCastle": "Bonus to the strength of defensive units not in the main castle",
@@ -237,111 +260,34 @@ const effectNameOverrides = {
     "publicOrderBonusMain": "Public order bonus in the main castle",
 };
 
-const langKeyOverrides = {
-    "XPBoostBuildBuildings": "ci_primary_xpBoostBuildBuildings",
-    "natureResearchtower": "ci_appearance_natureResearchTower",
-    "winterResearchtower": "ci_appearance_winterResearchTower",
-
-    "RelicBeefCapacityIncrease": "ci_secondary_RelicBeefCapacityIncrease_premium",
-    "BeefCapacityIncrease": "ci_primary_Beef_CapacityIncrease_premium",
-};
-
-const hardcodedPercentEffectIDs = new Set([
-    "61", "62", "370", "386", "387", "413", "414", "415",
-    "381", "382", "408", "383", "384", "82", "83", "388",
-    "389", "390", "391", "392", "393", "409", "394", "395",
-    "396", "611", "416", "397", "398", "399", "612", "417",
-    "369", "368", "410", "411", "412", "423", "424", "407",
-    "501", "705", "66", "614", "504", "503", "613", "114",
-    "80", "401", "402", "373", "259", "701", "343", "202",
-    "340", "339", "11", "363", "404", "403"
-]);
-
-const percentEffectIDs = new Set();
-
-const legacyEffectFields = [
-    ["unitWallCount", false],
-    ["recruitSpeedBoost", true],
-    ["woodStorage", false],
-    ["stoneStorage", false],
-    ["ReduceResearchResourceCosts", true],
-    ["Stoneproduction", false],
-    ["Woodproduction", false],
-    ["Foodproduction", false],
-    ["foodStorage", false],
-    ["unboostedFoodProduction", false],
-    ["defensiveToolsSpeedBoost", true],
-    ["defensiveToolsCostsReduction", true],
-    ["meadStorage", false],
-    ["recruitCostReduction", true],
-    ["honeyStorage", false],
-    ["hospitalCapacity", false],
-    ["healSpeed", true],
-    ["marketCarriages", false],
-    ["XPBoostBuildBuildings", true],
-    ["stackSize", false],
-    ["glassStorage", false],
-    ["Glassproduction", false],
-    ["ironStorage", false],
-    ["Ironproduction", false],
-    ["coalStorage", false],
-    ["Coalproduction", false],
-    ["oilStorage", false],
-    ["Oilproduction", false],
-    ["offensiveToolsCostsReduction", true],
-    ["feastCostsReduction", true],
-    ["Meadreduction", true],
-    ["surviveBoost", true],
-    ["unboostedStoneProduction", false],
-    ["unboostedWoodProduction", false],
-    ["offensiveToolsSpeedBoost", true],
-    ["espionageTravelBoost", true],
-];
-
-const legacyEffectOverrides = {
-    "Woodproduction": "ci_effect_unboostedWoodProduction_tt",
-    "Stoneproduction": "ci_effect_unboostedStoneProduction_tt",
-    "Foodproduction": "ci_effect_unboostedFoodProduction_tt",
-    "Oilproduction": "effect_name_oilProductionBoost",
-    "Ironproduction": "effect_name_ironProductionBoost",
-    "Coalproduction": "effect_name_coalProductionBoost",
-    "Glassproduction": "effect_name_glassProductionBoost",
-};
-
 function addLegacyEffects(item, effectsList) {
     function getLangKey(fieldName) {
-        if (legacyEffectOverrides[fieldName]) {
-            const key = legacyEffectOverrides[fieldName];
-            if (lang[key]) return lang[key];
+        const lower = fieldName.toLowerCase();
+        for (const key in lang) {
+            const keyLower = key.toLowerCase();
+            if (keyLower.endsWith('_tt') && keyLower.includes(lower)) {
+                return lang[key];
+            }
         }
-
-        const original = fieldName;
-        const variants = [
-            `${original}_capacityBonus_tt`,
-            `${original}CapacityBonus_tt`,
-            `ci_effect_${original}_tt`,
-            `ci_effect_${lowerFirstN(original, 1)}_tt`,
-            `ci_effect_${lowerFirstN(original, 2)}_tt`,
-            `ci_effect_${original.toLowerCase()}_tt`,
-        ];
-
-        for (const key of variants) {
-            if (lang[key]) return lang[key];
-        }
-
         return fieldName;
     }
 
-    legacyEffectFields.forEach(([field, hasPercent]) => {
+    legacyEffectFields.forEach(field => {
         const val = item[field];
         if (val !== undefined && val !== null && val !== "") {
             const effectName = getLangKey(field);
+
+            const langKey = `ci_effect_${field.toLowerCase()}`;
+            const isPercent = lang[langKey]?.includes("%");
+
+            const formattedValue = isPercent
+                ? `${formatNumber(val)}%`
+                : formatNumber(val);
+
             const endsWithColon = effectName.trim().endsWith(":");
-            const formattedValue = formatNumber(val);
-            const valueWithSuffix = hasPercent ? `${formattedValue}%` : formattedValue;
             const effectText = endsWithColon
-                ? `${effectName} ${valueWithSuffix}`
-                : `${effectName}: ${valueWithSuffix}`;
+                ? `${effectName} ${formattedValue}`
+                : `${effectName}: ${formattedValue}`;
 
             effectsList.push(effectText);
         }
@@ -352,41 +298,34 @@ function getLocalizedEffectName(effectDef, variant = null) {
     if (!effectDef) return null;
 
     const original = effectDef.name;
-    const lowerFirst = original.charAt(0).toLowerCase() + original.slice(1);
     const allLower = original.toLowerCase();
 
     if (effectNameOverrides[original]) return effectNameOverrides[original];
-    if (effectNameOverrides[lowerFirst]) return effectNameOverrides[lowerFirst];
     if (effectNameOverrides[allLower]) return effectNameOverrides[allLower];
 
     const candidates = [];
 
     if (variant !== null) {
-        candidates.push(`ci_effect_${original}_${variant}_tt`);
-        candidates.push(`ci_effect_${lowerFirst}_${variant}_tt`);
+
         candidates.push(`ci_effect_${allLower}_${variant}_tt`);
-        candidates.push(`effect_name_${original}_${variant}`);
-        candidates.push(`effect_name_${lowerFirst}_${variant}`);
+
         candidates.push(`effect_name_${allLower}_${variant}`);
     }
 
-    candidates.push(`effect_name_${original}`);
-    candidates.push(`ci_effect_${original}_tt`);
-    candidates.push(`effect_name_${lowerFirst}`);
-    candidates.push(`ci_effect_${lowerFirst}_tt`);
     candidates.push(`effect_name_${allLower}`);
     candidates.push(`ci_effect_${allLower}_tt`);
 
-    candidates.push(original);
-    candidates.push(lowerFirst);
     candidates.push(allLower);
 
     for (const key of candidates) {
         if (lang[key]) return lang[key];
+        if (lang[key.toLowerCase()]) return lang[key.toLowerCase()];
     }
 
     return original;
 }
+
+const percentEffectIDs = new Set();
 
 function parseEffects(effectsStr) {
     if (!effectsStr) return [];
@@ -426,73 +365,31 @@ function parseEffects(effectsStr) {
 
 // --- NAME LOCALIZATION HELPERS ---
 function getCIName(item) {
-    const rawName = item.name || "???";
-
-    const pascalName = toPascalCase(rawName);
-
-    if (langKeyOverrides[rawName]) {
-        const overriddenKey = langKeyOverrides[rawName];
-        if (lang[overriddenKey]) return lang[overriddenKey];
-        if (lang[overriddenKey.toLowerCase()]) return lang[overriddenKey.toLowerCase()];
-    }
-
+    const rawName = (item.name || "???").toLowerCase();
     const prefixes = ["appearance", "primary", "secondary"];
+    const suffixes = ["", "_premium"];
 
     for (const prefix of prefixes) {
-        const found = findLangKeyVariations(prefix, rawName);
-        if (found) return found;
+        for (const suffix of suffixes) {
+            const key = `ci_${prefix}_${rawName}${suffix}`;
+            if (lang[key]) return lang[key];
+        }
     }
 
     const keysToTry = [
-        `ci_${rawName}`,
-        `ci_${rawName.toLowerCase()}`,
-        `ci_${rawName.charAt(0).toLowerCase() + rawName.slice(1)}`
-    ];
-    for (const key of keysToTry) {
-        if (lang[key]) return lang[key];
-    }
-
-    for (const prefix of prefixes) {
-        const foundPascal = findLangKeyVariations(prefix, pascalName);
-        if (foundPascal) return foundPascal;
-    }
-
-    const keysPascalPlain = [
-        `ci_${pascalName}`,
-        `ci_${pascalName.toLowerCase()}`,
-        `ci_${pascalName.charAt(0).toLowerCase() + pascalName.slice(1)}`
-    ];
-    for (const key of keysPascalPlain) {
-        if (lang[key]) return lang[key];
-    }
-
-    return rawName;
-}
-
-function findLangKeyVariations(prefix, name) {
-    const keysToTry = [
-        `ci_${prefix}_${name}`,
-        `ci_${prefix}_${name.toLowerCase()}`,
-        `ci_${prefix}_${name.charAt(0).toLowerCase() + name.slice(1)}`,
+        ...suffixes.map(s => `ci_${rawName}${s}`),
+        rawName
     ];
 
     for (const key of keysToTry) {
         if (lang[key]) return lang[key];
     }
 
-    return null;
+    return item.name;
 }
 
 function normalizeName(str) {
     return str.toLowerCase().replace(/[^a-z0-9]/g, '');
-}
-
-function toPascalCase(str) {
-    return str
-        .replace(/[^a-zA-Z0-9 ]/g, ' ')
-        .split(/\\s+/)
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join('');
 }
 
 // --- GROUPING AND VALUE CALCULATIONS ---
@@ -502,14 +399,11 @@ function extractConstructionItems(data) {
 
 function groupItemsByNameEffectsLegacyAppearanceAndDuration(items) {
     const groups = {};
-
     const testingRegex = /testing/i;
 
     items.forEach(item => {
-        if (
-            (item.comment1 && testingRegex.test(item.comment1)) ||
-            (item.comment2 && testingRegex.test(item.comment2))
-        ) {
+        if ((item.comment1 && testingRegex.test(item.comment1)) ||
+            (item.comment2 && testingRegex.test(item.comment2))) {
             return;
         }
 
@@ -517,19 +411,17 @@ function groupItemsByNameEffectsLegacyAppearanceAndDuration(items) {
             ? Array.from(new Set(item.effects.split(",").map(eff => eff.split("&")[0])))
             : [];
 
-        const legacyKeys = [];
-        legacyEffectFields.forEach(([fieldName, _]) => {
-            if (item[fieldName] !== undefined && item[fieldName] !== null && item[fieldName] !== "" && Number(item[fieldName]) !== 0) {
-                legacyKeys.push(fieldName);
-            }
-        });
+        const allEffects = [...new Set(effectIDs)].sort().join(",");
 
-        const allEffects = [...new Set([...effectIDs, ...legacyKeys])].sort().join(",");
+        const legacyParts = legacyEffectFields
+            .filter(f => item[f] !== undefined && item[f] !== null && item[f] !== "")
+            .sort()
+            .join(",");
 
         const appearanceFlag = (Number(item.slotTypeID) === 0 && item.decoPoints) ? "appearance" : "normal";
         const durationFlag = (item.duration && Number(item.duration) > 0) ? "temporary" : "permanent";
 
-        const key = `${item.name}_${allEffects}_${appearanceFlag}_${durationFlag}_${item.slotTypeID}`;
+        const key = `${item.name}_${allEffects}_${legacyParts}_${appearanceFlag}_${durationFlag}_${item.slotTypeID}`;
 
         if (!groups[key]) groups[key] = [];
         groups[key].push(item);
@@ -540,9 +432,7 @@ function groupItemsByNameEffectsLegacyAppearanceAndDuration(items) {
             const rarA = parseInt(a.rarenessID || 0);
             const rarB = parseInt(b.rarenessID || 0);
 
-            if (rarA !== rarB) {
-                return rarA - rarB;
-            }
+            if (rarA !== rarB) return rarA - rarB;
 
             const totalEffectA = getTotalEffectValue(a);
             const totalEffectB = getTotalEffectValue(b);
@@ -569,12 +459,7 @@ function getTotalEffectValue(item) {
                 }
             }
         });
-    }
-    legacyEffectFields.forEach(([field, _]) => {
-        if (item[field] !== undefined && item[field] !== null && item[field] !== "") {
-            total += Number(item[field]) || 0;
-        }
-    });
+    };
 
     return total;
 }
@@ -614,80 +499,79 @@ function formatDuration(seconds) {
 
 // --- CARD CREATION (HTML RENDERING) ---
 function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
-  let currentLevelIndex = 0;
-  const safeKey = groupKey.replace(/[^a-zA-Z0-9]/g, '-');
-  const groupId = `group-${safeKey}`;
-  const name = getCIName(groupItems[0]);
+    let currentLevelIndex = 0;
+    const safeKey = groupKey.replace(/[^a-zA-Z0-9]/g, '-');
+    const groupId = `group-${safeKey}`;
+    const name = getCIName(groupItems[0]);
 
-  const rarenessNames = {
-    1: "Ordinary",
-    2: "Rare",
-    3: "Epic",
-    4: "Legendary",
-    5: "Appearance",
-    10: "Appearance"
-  };
+    const rarenessNames = {
+        1: "Ordinary",
+        2: "Rare",
+        3: "Epic",
+        4: "Legendary",
+        5: "Appearance",
+        10: "Appearance"
+    };
 
-  function renderLevel(index) {
-    const item = groupItems[index];
-    const isTemporary = !!item.duration;
-    const removalCost = item.removalCostC1 || "0";
-    const removalCostText = (removalCost === 0 || removalCost === "0")
-      ? "Non removable"
-      : `${new Intl.NumberFormat().format(removalCost)} coins`;
+    function renderLevel(index) {
+        const item = groupItems[index];
+        const isTemporary = !!item.duration;
+        const removalCost = item.removalCostC1 || "0";
+        const removalCostText = (removalCost === 0 || removalCost === "0")
+            ? "Non removable"
+            : `${new Intl.NumberFormat().format(removalCost)} coins`;
 
-    const commentList = [item.comment1, item.comment2].filter(Boolean);
+        const commentList = [item.comment1, item.comment2].filter(Boolean);
 
-    const normalizedName = normalizeName(item.name);
-    const urls = imageUrlMap[normalizedName] || {};
-    const placedUrl = urls.placedUrl || null;
+        const normalizedName = normalizeName(item.name);
+        const urls = imageUrlMap[normalizedName] || {};
+        const placedUrl = urls.placedUrl || null;
 
-    const safeName = name.replace(/'/g, "\\'");
+        const safeName = name.replace(/'/g, "\\'");
 
-    const isFirstLevel = index === 0;
-    const isLastLevel = index === groupItems.length - 1;
+        const isFirstLevel = index === 0;
+        const isLastLevel = index === groupItems.length - 1;
 
-    const rarityName = rarenessNames[item.rarenessID] || "Unknown";
-    const levelText = getLevelText(item, rarityName);
+        const rarityName = rarenessNames[item.rarenessID] || "Unknown";
+        const levelText = getLevelText(item, rarityName);
 
-    let effects = parseEffects(item.effects || "");
-    addLegacyEffects(item, effects);
+        let effects = parseEffects(item.effects || "");
 
-    if (item.decoPoints) {
-      effects.push(`Public order: ${formatNumber(item.decoPoints)}`);
-    }
+        addLegacyEffects(item, effects);
 
-    let effectsHTML = "";
-    if (effects.length > 0) {
-      effectsHTML = `
-        <hr>
-        <div class="card-section card-effects">
+        if (item.decoPoints) {
+            effects.push(`Public order: ${formatNumber(item.decoPoints)}`);
+        }
+
+        let effectsHTML = "";
+        if (effects.length > 0) {
+            effectsHTML = `
+        <div class="card-section card-effects border-top">
           <h5 class="card-section-title">Effects:</h5>
           <p>${effects.map(e => `- ${e}`).join("<br>")}</p>
         </div>
       `;
-    }
+        }
 
-    const id = item.constructionItemID || "???";
-    const ciIdHTML = `<span class="wod-id" style="cursor:pointer;" onclick="navigator.clipboard.writeText('${id}')">${id}</span>`;
+        const id = item.constructionItemID || "???";
+        const ciIdHTML = `<span class="wod-id" style="cursor:pointer;" onclick="navigator.clipboard.writeText('${id}')">${id}</span>`;
 
-    const comments = [`constructionItemID: ${ciIdHTML}`, ...commentList];
+        const comments = [`constructionItemID: ${ciIdHTML}`, ...commentList];
 
-    let commentsHTML = "";
-    if (comments.length > 0) {
-      commentsHTML = `
-        <hr>
-        <div class="card-section card-sources">
+        let commentsHTML = "";
+        if (comments.length > 0) {
+            commentsHTML = `
+        <div class="card-section card-sources border-top">
           <h4 class="card-section-title">Developer comments:</h4>
           <p>${comments.map(c => `- ${c}`).join("<br>")}</p>
         </div>
       `;
-    }
+        }
 
-    const typeText = isTemporary ? `Temporary (${formatDuration(item.duration)})` : "Permanent";
+        const typeText = isTemporary ? `Temporary (${formatDuration(item.duration)})` : "Permanent";
 
-    const imageSection = placedUrl
-      ? `
+        const imageSection = placedUrl
+            ? `
         <div class="col-5 card-cell border-end d-flex justify-content-center align-items-center position-relative" 
              style="cursor:pointer;" 
              onclick="openImageModal('${placedUrl}', '${safeName}')">
@@ -699,30 +583,28 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
           </span>
         </div>
       `
-      : `
-        <div class="col-4 card-cell border-end d-flex justify-content-center align-items-center">
+            : `
+        <div class="col-5 card-cell border-end d-flex justify-content-center align-items-center">
           <div class="image-wrapper">
             <div class="no-image-text">no image</div>
           </div>
         </div>
       `;
 
-    return `
+        return `
       <div class="level-selector d-flex justify-content-between align-items-center">
-        <button id="${groupId}-prev" class="btn btn-sm btn-outline-primary" ${isFirstLevel ? "disabled" : ""}>
+        <button id="${groupId}-prev"  ${isFirstLevel ? "disabled" : ""}>
           <i class="bi bi-arrow-left"></i>
         </button>
         <div><strong>${levelText}</strong></div>
-        <button id="${groupId}-next" class="btn btn-sm btn-outline-primary" ${isLastLevel ? "disabled" : ""}>
+        <button id="${groupId}-next" ${isLastLevel ? "disabled" : ""}>
           <i class="bi bi-arrow-right"></i>
         </button>
       </div>
 
       <h2 class="ci-title">${name}</h2>
-      <hr>
 
-      <!-- Kép + adatok -->
-      <div class="card-table">
+      <div class="card-table border-top">
         <div class="row g-0">
           ${imageSection}
         <div class="col-7 card-cell d-flex flex-column">
@@ -741,10 +623,10 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
       ${effectsHTML}
       ${commentsHTML}
     `;
-  }
+    }
 
-  const containerId = `${groupId}-container`;
-  const cardHtml = `
+    const containerId = `${groupId}-container`;
+    const cardHtml = `
     <div class="col-md-6 col-sm-12 d-flex flex-column">
       <div class="box flex-fill" id="${containerId}">
         <div class="box-content">
@@ -754,39 +636,39 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
     </div>
   `;
 
-  setTimeout(() => {
-    const boxContent = document.querySelector(`#${containerId} .box-content`);
+    setTimeout(() => {
+        const boxContent = document.querySelector(`#${containerId} .box-content`);
 
-    function updateView() {
-      boxContent.innerHTML = renderLevel(currentLevelIndex);
-      bindEvents();
-    }
-
-    function bindEvents() {
-      const prev = document.getElementById(`${groupId}-prev`);
-      const next = document.getElementById(`${groupId}-next`);
-
-      if (prev) prev.disabled = currentLevelIndex === 0;
-      if (next) next.disabled = currentLevelIndex === groupItems.length - 1;
-
-      if (prev) prev.onclick = () => {
-        if (currentLevelIndex > 0) {
-          currentLevelIndex--;
-          updateView();
+        function updateView() {
+            boxContent.innerHTML = renderLevel(currentLevelIndex);
+            bindEvents();
         }
-      };
-      if (next) next.onclick = () => {
-        if (currentLevelIndex < groupItems.length - 1) {
-          currentLevelIndex++;
-          updateView();
+
+        function bindEvents() {
+            const prev = document.getElementById(`${groupId}-prev`);
+            const next = document.getElementById(`${groupId}-next`);
+
+            if (prev) prev.disabled = currentLevelIndex === 0;
+            if (next) next.disabled = currentLevelIndex === groupItems.length - 1;
+
+            if (prev) prev.onclick = () => {
+                if (currentLevelIndex > 0) {
+                    currentLevelIndex--;
+                    updateView();
+                }
+            };
+            if (next) next.onclick = () => {
+                if (currentLevelIndex < groupItems.length - 1) {
+                    currentLevelIndex++;
+                    updateView();
+                }
+            };
         }
-      };
-    }
 
-    bindEvents();
-  }, 0);
+        bindEvents();
+    }, 0);
 
-  return cardHtml;
+    return cardHtml;
 }
 
 function renderConstructionItems(items) {
@@ -848,7 +730,6 @@ function applyFiltersAndSorting() {
 
             if (selectedFilters.includes("effect")) {
                 let effects = parseEffects(item.effects || "");
-                addLegacyEffects(item, effects);
                 const effectsText = effects.join(" ").toLowerCase();
                 if (wordMatch(effectsText)) matchSearch = true;
             }
@@ -880,10 +761,6 @@ function escapeRegExp(string) {
 
 function formatNumber(num) {
     return Number(num).toLocaleString();
-}
-
-function lowerFirstN(str, n = 1) {
-    return str.slice(0, n).toLowerCase() + str.slice(n);
 }
 
 function setupEventListeners() {
