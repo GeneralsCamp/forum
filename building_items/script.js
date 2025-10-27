@@ -247,17 +247,13 @@ const legacyEffectFields = ["unitWallCount", "recruitSpeedBoost", "woodStorage",
 
 const effectNameOverrides = {
     "lootBonusPVE": "Loot bonus from NPC targets",
-    "defenseBonusNotMainCastle": "Bonus to the strength of defensive units not in the main castle",
+    "defenseBonusNotMainCastle": "Bonus to the strength of defensive units not in the main castle", //relicequip_effect_description_relicDefenseBonusNotMainCastleCapA_undefined with %
     "attackUnitAmountReinforcementBonus": "Troop capacity for final assault",
-    "rangeBonusTCI": "Ranged unit attack strength when attacking",
-    "meleeBonusTCI": "Melee unit attack strength when attacking",
-    "MeadProductionIncrease": "Mead production bonus",
-    "HoneyProductionIncrease": "Honey production bonus",
-    "rangeBonus": "Ranged unit attack strength when attacking",
-    "beefProductionBoost": "Beef production bonus",
-    "defenseUnitAmountYardMinorBoost": "Bonus to courtyard defense troop capacity",
     "attackUnitAmountReinforcementBoost": "Troop capacity for final assault",
-    "publicOrderBonusMain": "Public order bonus in the main castle",
+    "PublicOrderBonusMain": "Public order bonus in the main castle", //webshop_subscription_effect_description_publicOrderBonusMain_short without %
+    "rangeBonusTCI": "Ranged unit attack strength when attacking", //ci_effect_offensiveRangeBonusTCI_tt with %
+    "meleeBonusTCI": "Melee unit attack strength when attacking", //ci_effect_offensiveMeleeBonusTCI_tt with %
+    "defenseUnitAmountYardMinorBoost": "Bonus to courtyard defense troop capacity", //effect_name_defenseUnitAmountYardBonus with %
 };
 
 function addLegacyEffects(item, effectsList) {
