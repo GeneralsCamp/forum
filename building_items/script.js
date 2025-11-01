@@ -532,7 +532,6 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
         const levelText = getLevelText(item, rarityName);
 
         let effects = parseEffects(item.effects || "");
-
         addLegacyEffects(item, effects);
 
         if (item.decoPoints) {
@@ -545,14 +544,16 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
         <div class="card-section card-effects border-top">
           <h5 class="card-section-title">Effects:</h5>
           <p>${effects.map(e => `- ${e}`).join("<br>")}</p>
-        </div>
-      `;
+        </div>`;
         }
 
         const id = item.constructionItemID || "???";
         const ciIdHTML = `<span class="wod-id" style="cursor:pointer;" onclick="navigator.clipboard.writeText('${id}')">${id}</span>`;
-
         const comments = [`constructionItemID: ${ciIdHTML}`, ...commentList];
+
+        if (item.effects && item.effects.trim() !== "") {
+            comments.push(`Effect IDs: ${item.effects}`);
+        }
 
         let commentsHTML = "";
         if (comments.length > 0) {
@@ -560,8 +561,7 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
         <div class="card-section card-sources border-top">
           <h4 class="card-section-title">Developer comments:</h4>
           <p>${comments.map(c => `- ${c}`).join("<br>")}</p>
-        </div>
-      `;
+        </div>`;
         }
 
         const typeText = isTemporary ? `Temporary (${formatDuration(item.duration)})` : "Permanent";
@@ -577,15 +577,13 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
           <span class="position-absolute bottom-0 end-0 p-1 rounded-circle m-1">
             <i class="bi bi-zoom-in"></i>
           </span>
-        </div>
-      `
+        </div>`
             : `
         <div class="col-5 card-cell border-end d-flex justify-content-center align-items-center">
           <div class="image-wrapper">
             <div class="no-image-text">no image</div>
           </div>
-        </div>
-      `;
+        </div>`;
 
         return `
       <div class="level-selector d-flex justify-content-between align-items-center">
@@ -617,8 +615,7 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
       </div>
 
       ${effectsHTML}
-      ${commentsHTML}
-    `;
+      ${commentsHTML}`;
     }
 
     const containerId = `${groupId}-container`;
@@ -629,8 +626,7 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
           ${renderLevel(currentLevelIndex)}
         </div>
       </div>
-    </div>
-  `;
+    </div>`;
 
     setTimeout(() => {
         const boxContent = document.querySelector(`#${containerId} .box-content`);
