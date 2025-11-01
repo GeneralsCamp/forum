@@ -611,6 +611,10 @@ function createCard(item, imageUrlMap = {}) {
       </div>`;
   }
 
+  if (item.areaSpecificEffects && item.areaSpecificEffects.trim() !== "") {
+    sources.push(`Effect IDs: ${item.areaSpecificEffects}`);
+  }
+
   let sourceHTML = "";
   if (sources.length > 0) {
     sourceHTML = `
