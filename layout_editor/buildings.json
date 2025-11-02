@@ -454,5 +454,29 @@
     "color": "183 197 53",
     "image": "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/Crane/Crane_Building_Level1/Crane_Building_Level1--1573584429307.webp",
     "description": "Size: 3x3"
+  },
+  {
+    "name": "Merchants' storehouse",
+    "width": 8,
+    "height": 10,
+    "color": "183 197 53",
+    "image": "images/metroStorehouse.webp",
+    "description": "Size: 8x10"
+  },
+  {
+    "name": "Palace",
+    "width": 25,
+    "height": 25,
+    "color": "61 130 141",
+    "image": "images/palace.webp",
+    "description": "Size: 25x25"
+  },
+  {
+    "name": "Emporium",
+    "width": 25,
+    "height": 25,
+    "color": "183 197 53",
+    "image": "images/emporium.webp",
+    "description": "Size: 25x25"
   }
 ]
