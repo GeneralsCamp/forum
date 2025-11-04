@@ -375,8 +375,8 @@ body {
 .modal-body {
     background-color: rgb(68, 51, 38);
     padding: 0;
-    max-height: 48vh;
-    min-height: 48vh;
+    max-height: 52vh;
+    min-height: 52vh;
     overflow-y: auto;
     overflow-x: hidden;
 }
