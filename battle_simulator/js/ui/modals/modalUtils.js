@@ -38,7 +38,14 @@ export function bindConfirmButton(buttonId, confirmValues, modal, onConfirm) {
 
       keys.forEach((key, idx) => {
         if (idx === keys.length - 1) {
-          target[key] = parseInt(slider.value);
+          const value = parseInt(slider.value);
+
+          if (key === 'left' && target['right'] !== undefined) {
+            target['left'] = value;
+            target['right'] = value;
+          } else {
+            target[key] = value;
+          }
         } else {
           if (!target[key]) target[key] = {};
           target = target[key];
