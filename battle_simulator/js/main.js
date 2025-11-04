@@ -1,6 +1,6 @@
 import { loadData } from './data/dataLoader.js';
 import { generateWaves, switchSide, openAllWaves } from './ui/uiWaves.js';
-import { attackBasics, commanderStats, castellanStats } from './data/variables.js';
+import { attackBasics, commanderStats, castellanStats, currentSide } from './data/variables.js';
 import { openCommanderStatsModal } from './ui/modals/commanderStatsModal.js';
 import { openBasicsModal } from './ui/modals/attackBasicsModal.js';
 import { openDefenseBasicsModal } from './ui/modals/defenseBasicsModal.js';
@@ -19,12 +19,6 @@ window.addEventListener('load', () => {
 
   ['meadRangeLevel', 'meadMeleeLevel', 'beefRangeLevel', 'beefMeleeLevel', 'beefVeteranRangeLevel', 'beefVeteranMeleeLevel']
     .forEach(level => attackBasics[level] = attackBasics[level] || 10);
-
-  document.querySelectorAll('.flanks-button.sides').forEach(button =>
-    button.addEventListener('click', () => switchSide(button.dataset.section))
-  );
-
-  switchSide('front');
 
   document.querySelectorAll('.card-header button').forEach(button =>
     button.addEventListener('click', e => {
@@ -45,11 +39,14 @@ window.addEventListener('load', () => {
     );
   });
 
+  document.querySelectorAll('.flanks-button.sides').forEach(btn => btn.addEventListener('click', () => switchSide(btn.dataset.section)));
   document.querySelector('.openAllWaves-button')?.addEventListener('click', openAllWaves);
   document.querySelector('.flanks-button.red-button')?.addEventListener('click', battleSimulation);
   document.querySelector('.preset-button')?.addEventListener('click', openWaveCopyModal);
 
   loadData().then(() => {
+
     generateWaves('front', attackBasics.maxWaves);
+    switchSide(currentSide);
   });
 });

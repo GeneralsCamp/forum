@@ -1,6 +1,7 @@
-import { currentSide, currentSideReport, setCurrentSide } from '../data/variables.js';
+import { currentSide, currentSideReport, setCurrentSide, setCurrentSideDefense, currentSideDefense, setCurrentSideReport } from '../data/variables.js';
 import { switchDefenseSide } from './uiDefense.js';
 import { switchSide } from './uiWaves.js';
+import { switchReportSide } from './uiBattleReport.js';
 
 export function addSwipeListener(element, { onSwipeLeft, onSwipeRight, threshold = 50, verticalTolerance = 30 }) {
   if (!element) return;
@@ -33,7 +34,7 @@ export function addSwipeListener(element, { onSwipeLeft, onSwipeRight, threshold
 }
 
 export function initWaveSwipe() {
-  const waveContainer = document.getElementById('wave-container');
+  const waveContainer = document.querySelector('.scrollable-content');
   if (!waveContainer || waveContainer.dataset.swipeInit === 'true') return;
   waveContainer.dataset.swipeInit = 'true';
 
@@ -85,7 +86,7 @@ export function initReportSwipe() {
   function switchReport(direction) {
     const currentIndex = reportSides.indexOf(currentSideReport);
     const newIndex = (currentIndex + direction + reportSides.length) % reportSides.length;
-    currentSideReport = reportSides[newIndex];
+    setCurrentSideReport(reportSides[newIndex]);
     switchReportSide(reportSides[newIndex]);
   }
 }
@@ -112,16 +113,16 @@ export function initDefenseSwipe() {
 
   addSwipeListener(modalBody, {
     onSwipeLeft: () => {
-      const next = getNextDefenseSide(currentSide);
+      const next = getNextDefenseSide(currentSideDefense);
       if (next) {
-        setCurrentSide(next);
+        setCurrentSideDefense(next);
         switchDefenseSide(next);
       }
     },
     onSwipeRight: () => {
-      const prev = getPreviousDefenseSide(currentSide);
+      const prev = getPreviousDefenseSide(currentSideDefense);
       if (prev) {
-        setCurrentSide(prev);
+        setCurrentSideDefense(prev);
         switchDefenseSide(prev);
       }
     }

@@ -152,7 +152,6 @@ export function loadDefenseSlots(side) {
   });
 }
 
-
 export function loadDefenseTools(side) {
   if (side === 'cy') {
     const cySlots = defenseSlots[side].cyTools || [];

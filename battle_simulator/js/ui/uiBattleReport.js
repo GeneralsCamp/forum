@@ -1,10 +1,10 @@
-import { waves, defenseSlots, unitImages, unitImagesDefense } from '../data/variables.js';
+import { waves, defenseSlots, unitImages, unitImagesDefense, currentSideReport } from '../data/variables.js';
 import { initPresetSwipe } from './swipe.js';
 
 export function battleSimulation() {
   const battleReportModal = new bootstrap.Modal(document.getElementById('battleReportModal'));
   battleReportModal.show();
-  switchReportSide('front');
+  switchReportSide(currentSideReport);
 
   initPresetSwipe('battleReportModal', direction => {
     const sides = ['left', 'front', 'right', 'cy'];
@@ -15,7 +15,7 @@ export function battleSimulation() {
   });
 }
 
-function switchReportSide(side) {
+export function switchReportSide(side) {
   document.querySelectorAll('.flanks-button-report').forEach(button => {
     button.classList.remove('active');
   });

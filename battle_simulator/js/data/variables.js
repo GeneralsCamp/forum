@@ -21,6 +21,8 @@ export let totalTools = { left: [], front: [], right: [], Support: [] };
 export let openWaves = {};
 
 export let currentSide = 'front';
+export let currentSideReport = 'front';
+export let currentSideDefense = 'front';
 
 export let commanderStats = {
   melee: 0,
@@ -98,8 +100,6 @@ export let selectedPreset = null;
 export let currentWaveIndex = 1;
 export let notificationTimeout = null;
 
-export let currentSideReport = 'front';
-
 export let openAllWavesState = false;
 
 export function setOpenAllWavesState(state) {
@@ -108,6 +108,14 @@ export function setOpenAllWavesState(state) {
 
 export function setCurrentSide(side) {
   currentSide = side;
+}
+
+export function setCurrentSideDefense(side) {
+  currentSideDefense = side;
+}
+
+export function setCurrentSideReport(side) {
+  currentSideReport = side;
 }
 
 export function setOpenWave(index, isOpen) {

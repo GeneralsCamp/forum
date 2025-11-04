@@ -447,7 +447,6 @@ body {
 .form-range {
     width: 80%;
     background: rgb(180, 140, 100);
-    margin-right: 10px;
 }
 
 .selector-value {
@@ -540,6 +539,7 @@ input[type="number"] {
     font-size: 1rem;
     transition: border-color 0.3s ease;
     margin-right: 10px;
+    background-color: rgb(248, 238, 211);
 }
 
 #defenseBasicsModal .form-range {

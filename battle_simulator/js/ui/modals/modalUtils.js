@@ -30,9 +30,20 @@ export function bindConfirmButton(buttonId, confirmValues, modal, onConfirm) {
 
   btn.onclick = () => {
     confirmValues.forEach(({ sliderId, property, targetObject }) => {
-      if (document.getElementById(sliderId)) {
-        targetObject[property] = parseInt(document.getElementById(sliderId).value);
-      }
+      const slider = document.getElementById(sliderId);
+      if (!slider) return;
+
+      const keys = property.split('.');
+      let target = targetObject;
+
+      keys.forEach((key, idx) => {
+        if (idx === keys.length - 1) {
+          target[key] = parseInt(slider.value);
+        } else {
+          if (!target[key]) target[key] = {};
+          target = target[key];
+        }
+      });
     });
 
     if (onConfirm) onConfirm();
