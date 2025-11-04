@@ -213,7 +213,6 @@ export function loadDefenseTools(side) {
   }
 }
 
-
 export function displayDefenseBonuses(side) {
   const bonuses = {
     melee: castellanStats.melee,

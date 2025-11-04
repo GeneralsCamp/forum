@@ -94,10 +94,56 @@ export function initPresetSwipe(containerId, changeWaveCallback) {
   const modal = document.getElementById(containerId);
   if (!modal) return;
 
+  if (modal.dataset.swipeInit === 'true') return;
+  modal.dataset.swipeInit = 'true';
+
   const swipeArea = modal.querySelector('.modal-body') || modal;
 
   addSwipeListener(swipeArea, {
     onSwipeLeft: () => changeWaveCallback(1),
     onSwipeRight: () => changeWaveCallback(-1)
   });
+}
+
+export function initDefenseSwipe() {
+  const modalBody = document.querySelector('#defenseBasicsModal .modal-body');
+  if (!modalBody || modalBody.dataset.swipeInit === 'true') return;
+  modalBody.dataset.swipeInit = 'true';
+
+  addSwipeListener(modalBody, {
+    onSwipeLeft: () => {
+      const next = getNextDefenseSide(currentSide);
+      if (next) {
+        setCurrentSide(next);
+        switchDefenseSide(next);
+      }
+    },
+    onSwipeRight: () => {
+      const prev = getPreviousDefenseSide(currentSide);
+      if (prev) {
+        setCurrentSide(prev);
+        switchDefenseSide(prev);
+      }
+    }
+  });
+}
+
+function getNextDefenseSide(side) {
+  switch (side) {
+    case 'front': return 'right';
+    case 'right': return 'cy';
+    case 'cy': return 'left';
+    case 'left': return 'front';
+    default: return 'front';
+  }
+}
+
+function getPreviousDefenseSide(side) {
+  switch (side) {
+    case 'front': return 'left';
+    case 'left': return 'cy';
+    case 'cy': return 'right';
+    case 'right': return 'front';
+    default: return 'front';
+  }
 }
