@@ -40,14 +40,14 @@ export function initWaveSwipe() {
 
   addSwipeListener(waveContainer, {
     onSwipeLeft: () => {
-      const next = getNextSide(currentSide);
+      const next = getPreviousSide(currentSide);
       if (next) {
         setCurrentSide(next);
         switchSide(next);
       }
     },
     onSwipeRight: () => {
-      const prev = getPreviousSide(currentSide);
+      const prev = getNextSide(currentSide);
       if (prev) {
         setCurrentSide(prev);
         switchSide(prev);
