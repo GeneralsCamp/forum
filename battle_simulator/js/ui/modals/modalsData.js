@@ -12,7 +12,7 @@ export const modalsData = [
             <span id="currentWaveText">Wave 1 / X</span>
             <button class="nav-btn" id="nextWaveBtn">&#9654;</button>
         </div>
-        <div class="preset-list" id="presetList" ontouchstart="startTouchPresets(event)" ontouchend="endTouchPresets(event)">
+        <div class="preset-list" id="presetList">
             ${[...Array(8)].map(
       (_, i) => `
                 <div class="preset-item" data-preset="${i + 1}">

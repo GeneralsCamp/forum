@@ -1,10 +1,7 @@
-import { totalUnits, totalTools, attackBasics, currentSide } from '../data/variables.js';
+import { totalUnits, totalTools, attackBasics, currentSide, currentWaveIndex, selectedPreset, presets, notificationTimeout } from '../data/variables.js';
 import { switchSide, generateWaves } from '../ui/uiWaves.js';
-
-let currentWaveIndex = 1;
-let selectedPreset = null;
-let presets = {};
-let notificationTimeout = null;
+import { setCurrentWaveIndex, setSelectedPreset, setPresets, setNotificationTimeout } from '../data/variables.js';
+import { initPresetSwipe } from './swipe.js';
 
 export function openWaveCopyModal() {
     const modalEl = document.getElementById('waveCopyModal');
@@ -18,33 +15,28 @@ export function openWaveCopyModal() {
         item.onclick = () => selectPreset(i + 1);
     });
 
-    const applyBtn = modalEl.querySelector('#applyPresetBtn');
-    applyBtn.onclick = applyPreset;
+    modalEl.querySelector('#applyPresetBtn').onclick = applyPreset;
+    modalEl.querySelector('#applyPresetAllBtn').onclick = applyPresetToAll;
+    modalEl.querySelector('#savePresetBtn').onclick = saveToPreset;
 
-    const applyAllBtn = modalEl.querySelector('#applyPresetAllBtn');
-    applyAllBtn.onclick = applyPresetToAll;
-
-    const saveBtn = modalEl.querySelector('#savePresetBtn');
-    saveBtn.onclick = saveToPreset;
-
-    const prevWaveBtn = modalEl.querySelector('#prevWaveBtn');
-    const nextWaveBtn = modalEl.querySelector('#nextWaveBtn');
-
-    prevWaveBtn.onclick = () => changeWave(-1);
-    nextWaveBtn.onclick = () => changeWave(1);
+    modalEl.querySelector('#prevWaveBtn').onclick = () => changeWave(-1);
+    modalEl.querySelector('#nextWaveBtn').onclick = () => changeWave(1);
+    initPresetSwipe('waveCopyModal', changeWave);
 }
 
 export function changeWave(direction) {
-    currentWaveIndex += direction;
+    let newIndex = currentWaveIndex + direction;
 
-    if (currentWaveIndex > attackBasics.maxWaves) currentWaveIndex = 1;
-    if (currentWaveIndex < 1) currentWaveIndex = attackBasics.maxWaves;
+    if (newIndex > attackBasics.maxWaves) newIndex = 1;
+    if (newIndex < 1) newIndex = attackBasics.maxWaves;
 
-    document.getElementById('currentWaveText').textContent = `Wave ${currentWaveIndex} / ${attackBasics.maxWaves}`;
+    setCurrentWaveIndex(newIndex);
+    document.getElementById('currentWaveText').textContent = `Wave ${newIndex} / ${attackBasics.maxWaves}`;
 }
 
 export function selectPreset(presetNumber) {
-    selectedPreset = presetNumber;
+    setSelectedPreset(presetNumber);
+
     const presetItems = document.querySelectorAll('.preset-item');
     presetItems.forEach(item => item.classList.remove('selected-preset'));
 
@@ -59,7 +51,8 @@ export function saveToPreset() {
         return;
     }
 
-    presets[selectedPreset] = {
+    const newPresets = { ...presets };
+    newPresets[selectedPreset] = {
         units: {
             left: JSON.parse(JSON.stringify(totalUnits.left[currentWaveIndex - 1] || [])),
             front: JSON.parse(JSON.stringify(totalUnits.front[currentWaveIndex - 1] || [])),
@@ -72,13 +65,17 @@ export function saveToPreset() {
         }
     };
 
-    localStorage.setItem('presets', JSON.stringify(presets));
+    setPresets(newPresets);
+    localStorage.setItem('variables.presets', JSON.stringify(newPresets));
+
     displayNotification(`Saved current wave to preset ${selectedPreset}`);
 }
 
 export function loadPresets() {
-    const storedPresets = localStorage.getItem('presets');
-    if (storedPresets) presets = JSON.parse(storedPresets);
+    const storedPresets = localStorage.getItem('variables.presets');
+    if (storedPresets) {
+        setPresets(JSON.parse(storedPresets));
+    }
 }
 
 export function applyPreset() {
@@ -133,7 +130,9 @@ export function displayNotification(message) {
 
     notificationBar.classList.add('show');
 
-    notificationTimeout = setTimeout(() => {
+    const timeout = setTimeout(() => {
         notificationBar.classList.remove('show');
     }, 2000);
+
+    setNotificationTimeout(timeout);
 }

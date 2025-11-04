@@ -1,9 +1,18 @@
 import { waves, defenseSlots, unitImages, unitImagesDefense } from '../data/variables.js';
+import { initPresetSwipe } from './swipe.js';
 
 export function battleSimulation() {
   const battleReportModal = new bootstrap.Modal(document.getElementById('battleReportModal'));
   battleReportModal.show();
   switchReportSide('front');
+
+  initPresetSwipe('battleReportModal', direction => {
+    const sides = ['left', 'front', 'right', 'cy'];
+    const current = document.querySelector('.flanks-button-report.active')?.dataset.section || 'front';
+    const currentIndex = sides.indexOf(current);
+    const newIndex = (currentIndex + direction + sides.length) % sides.length;
+    switchReportSide(sides[newIndex]);
+  });
 }
 
 function switchReportSide(side) {
@@ -117,10 +126,10 @@ function populateBattleReportModal(side) {
             <div class="col bugfix report-attackers" style="border-right: 1px solid rgb(180, 140, 100);">
               <div class="row">
                 ${wave.slots
-                  .map(slot => {
-                    if (slot && slot.count > 0) {
-                      const unitImage = unitImages[slot.type] || 'default-attack-icon.png';
-                      return `
+          .map(slot => {
+            if (slot && slot.count > 0) {
+              const unitImage = unitImages[slot.type] || 'default-attack-icon.png';
+              return `
                         <div class="unit-slot">
                           <div class="unit-icon-container">
                             <img src="./img/${unitImage}" class="unit-icon" alt="${slot.type}">
@@ -128,10 +137,10 @@ function populateBattleReportModal(side) {
                           </div>
                         </div>
                       `;
-                    }
-                    return '';
-                  })
-                  .join('')}
+            }
+            return '';
+          })
+          .join('')}
               </div>
             </div>
             <div class="col bugfix report-defenders">

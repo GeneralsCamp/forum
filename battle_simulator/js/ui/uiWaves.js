@@ -4,6 +4,7 @@ import { createCourtyardAssaultCard } from './uiCourtyard.js';
 import { createSupportWaveCard } from './uiSupport.js';
 import * as variables from '../data/variables.js';
 import { setOpenAllWavesState } from '../data/variables.js';
+import { initWaveSwipe } from './swipe.js';
 
 export function generateWaves(side, numberOfWaves) {
   variables.waves[side] = [];
@@ -197,6 +198,7 @@ export function generateWaves(side, numberOfWaves) {
     });
   }
   createCourtyardAssaultCard();
+  initWaveSwipe();
 }
 
 export function switchSide(side) {

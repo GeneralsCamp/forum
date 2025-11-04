@@ -747,7 +747,7 @@ input[type="number"] {
 .card-header .effect-icon {
     width: 20px;
     height: auto;
-    max-height: 19px !important;
+    max-height: 16.5px !important;
     margin-right: 2px;
     vertical-align: middle;
     opacity: 1;

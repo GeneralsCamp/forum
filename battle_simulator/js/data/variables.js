@@ -118,3 +118,19 @@ export function setUnitStats(newStats) {
   unitStats.length = 0;
   unitStats.push(...newStats);
 }
+
+export function setCurrentWaveIndex(index) {
+  currentWaveIndex = index;
+}
+
+export function setSelectedPreset(preset) {
+  selectedPreset = preset;
+}
+
+export function setPresets(newPresets) {
+  presets = newPresets;
+}
+
+export function setNotificationTimeout(timeout) {
+  notificationTimeout = timeout;
+}

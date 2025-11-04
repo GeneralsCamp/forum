@@ -1,9 +1,6 @@
-//NOT USED YET
 import { currentSide, currentSideReport, setCurrentSide } from '../data/variables.js';
 import { switchDefenseSide } from './uiDefense.js';
-
-let startX = 0;
-let startY = 0;
+import { switchSide } from './uiWaves.js';
 
 export function addSwipeListener(element, { onSwipeLeft, onSwipeRight, threshold = 50, verticalTolerance = 30 }) {
   if (!element) return;
@@ -12,13 +9,15 @@ export function addSwipeListener(element, { onSwipeLeft, onSwipeRight, threshold
   let startY = 0;
 
   function start(e) {
-    startX = e.touches ? e.touches[0].clientX : e.clientX;
-    startY = e.touches ? e.touches[0].clientY : e.clientY;
+    if (!e.touches || e.touches.length === 0) return;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
   }
 
   function end(e) {
-    const clientX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
-    const clientY = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
+    if (!e.changedTouches || e.changedTouches.length === 0) return;
+    const clientX = e.changedTouches[0].clientX;
+    const clientY = e.changedTouches[0].clientY;
 
     const deltaX = clientX - startX;
     const deltaY = clientY - startY;
@@ -31,33 +30,47 @@ export function addSwipeListener(element, { onSwipeLeft, onSwipeRight, threshold
 
   element.addEventListener('touchstart', start);
   element.addEventListener('touchend', end);
-  element.addEventListener('mousedown', start);
-  element.addEventListener('mouseup', end);
 }
-
 
 export function initWaveSwipe() {
   const waveContainer = document.getElementById('wave-container');
+  if (!waveContainer || waveContainer.dataset.swipeInit === 'true') return;
+  waveContainer.dataset.swipeInit = 'true';
+
   addSwipeListener(waveContainer, {
-    onSwipeLeft: switchToNextWave,
-    onSwipeRight: switchToPreviousWave
+    onSwipeLeft: () => {
+      const next = getNextSide(currentSide);
+      if (next) {
+        setCurrentSide(next);
+        switchSide(next);
+      }
+    },
+    onSwipeRight: () => {
+      const prev = getPreviousSide(currentSide);
+      if (prev) {
+        setCurrentSide(prev);
+        switchSide(prev);
+      }
+    }
   });
 }
 
-const sides = ['left', 'front', 'right'];
-
-function switchToPreviousWave() {
-  const currentIndex = sides.indexOf(currentSide);
-  const newIndex = (currentIndex - 1 + sides.length) % sides.length;
-  setCurrentSide(sides[newIndex]);
-  switchDefenseSide(sides[newIndex]);
+function getNextSide(side) {
+  switch (side) {
+    case 'front': return 'left';
+    case 'left': return 'right';
+    case 'right': return 'front';
+    default: return 'front';
+  }
 }
 
-function switchToNextWave() {
-  const currentIndex = sides.indexOf(currentSide);
-  const newIndex = (currentIndex + 1) % sides.length;
-  setCurrentSide(sides[newIndex]);
-  switchDefenseSide(sides[newIndex]);
+function getPreviousSide(side) {
+  switch (side) {
+    case 'front': return 'right';
+    case 'right': return 'left';
+    case 'left': return 'front';
+    default: return 'front';
+  }
 }
 
 export function initReportSwipe() {
@@ -78,8 +91,12 @@ export function initReportSwipe() {
 }
 
 export function initPresetSwipe(containerId, changeWaveCallback) {
-  const container = document.getElementById(containerId);
-  addSwipeListener(container, {
+  const modal = document.getElementById(containerId);
+  if (!modal) return;
+
+  const swipeArea = modal.querySelector('.modal-body') || modal;
+
+  addSwipeListener(swipeArea, {
     onSwipeLeft: () => changeWaveCallback(1),
     onSwipeRight: () => changeWaveCallback(-1)
   });
