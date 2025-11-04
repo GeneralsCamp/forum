@@ -3,6 +3,7 @@ import { createToolIcon, openToolModal, summarizeToolBonuses } from './uiTools.j
 import { createCourtyardAssaultCard } from './uiCourtyard.js';
 import { createSupportWaveCard } from './uiSupport.js';
 import * as variables from '../data/variables.js';
+import { setOpenAllWavesState } from '../data/variables.js';
 
 export function generateWaves(side, numberOfWaves) {
   variables.waves[side] = [];
@@ -211,6 +212,18 @@ export function switchSide(side) {
   variables.setCurrentSide(side);
   generateWaves(side, variables.attackBasics.maxWaves);
 
+  const openAllWavesButton = document.querySelector('.openAllWaves-button');
+
+  if (variables.openAllWavesState) {
+    openAllWavesButton.classList.add('active');
+
+    document.querySelectorAll('.wave').forEach(wave => {
+      wave.classList.add('open');
+    });
+  } else {
+    openAllWavesButton.classList.remove('active');
+  }
+
   const flankLabels = {
     left: 'Left flank',
     front: 'Front',
@@ -257,7 +270,7 @@ export function openAllWaves() {
   const supportCollapse = document.getElementById('collapseSupp');
   const courtyardCollapse = document.getElementById('collapseCY');
   if ((supportCollapse && supportCollapse.classList.contains('show')) ||
-      (courtyardCollapse && courtyardCollapse.classList.contains('show'))) anyOpen = true;
+    (courtyardCollapse && courtyardCollapse.classList.contains('show'))) anyOpen = true;
 
   const action = anyOpen ? 'close' : 'open';
 
@@ -319,7 +332,9 @@ export function openAllWaves() {
 
   if (action === 'open') {
     openAllWavesButton.classList.add('active');
+    setOpenAllWavesState(true);
   } else {
     openAllWavesButton.classList.remove('active');
+    setOpenAllWavesState(false);
   }
 }

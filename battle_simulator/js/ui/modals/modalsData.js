@@ -370,28 +370,28 @@ export const modalsData = [
     )}
       ${generateInputCard(
       'Wall unit limit', './img/castellan-modal3.png', 'wall-unit-limit',
-      'wall-unit-limit-slider', 100, 30000, castellanStats.wallUnitLimit,
-      'wall-unit-limit-value', 100, 30000, castellanStats.wallUnitLimit
+      'wall-unit-limit-slider', 100, 50000, castellanStats.wallUnitLimit,
+      'wall-unit-limit-value', 100, 50000, castellanStats.wallUnitLimit
     )}
       ${generateInputCard(
       'Courtyard unit limit', './img/attack-modal4.png', 'cy-unit-limit',
-      'cy-unit-limit-slider', 10000, 999999, castellanStats.cyUnitLimit,
-      'cy-unit-limit-value', 10000, 999999, castellanStats.cyUnitLimit
+      'cy-unit-limit-slider', 100, 5000000, castellanStats.cyUnitLimit,
+      'cy-unit-limit-value', 100, 5000000, castellanStats.cyUnitLimit
     )}
       ${generateInputCard(
       'Wall protection (%)', './img/castellan-modal4.png', 'wall-protection',
-      'defense-wall-protection-slider', 0, 480, castellanStats.wallProtection,
-      'defense-wall-protection-value', 0, 480, castellanStats.wallProtection
+      'defense-wall-protection-slider', 0, 400, castellanStats.wallProtection,
+      'defense-wall-protection-value', 0, 400, castellanStats.wallProtection
     )}
       ${generateInputCard(
       'Moat protection (%)', './img/castellan-modal5.png', 'moat-protection',
-      'defense-moat-protection-slider', 0, 260, castellanStats.moatProtection,
-      'defense-moat-protection-value', 0, 260, castellanStats.moatProtection
+      'defense-moat-protection-slider', 0, 300, castellanStats.moatProtection,
+      'defense-moat-protection-value', 0, 300, castellanStats.moatProtection
     )}
       ${generateInputCard(
       'Gate protection (%)', './img/castellan-modal6.png', 'gate-protection',
-      'defense-gate-protection-slider', 0, 480, castellanStats.gateProtection,
-      'defense-gate-protection-value', 0, 480, castellanStats.gateProtection
+      'defense-gate-protection-slider', 0, 400, castellanStats.gateProtection,
+      'defense-gate-protection-value', 0, 400, castellanStats.gateProtection
     )}
   `,
     footer: `

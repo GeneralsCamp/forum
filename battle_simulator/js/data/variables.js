@@ -44,7 +44,7 @@ export let castellanStats = {
   ranged: 100,
   courtyard: 0,
   wallUnitLimit: 100,
-  cyUnitLimit: 10000,
+  cyUnitLimit: 100,
   wallProtection: 0,
   moatProtection: 0,
   gateProtection: 0
@@ -88,6 +88,7 @@ export let defenseSlots = {
 
 export let copiedUnits = null;
 export let copiedTools = null;
+
 export let presets = {
   1: null, 2: null, 3: null, 4: null,
   5: null, 6: null, 7: null, 8: null
@@ -98,6 +99,12 @@ export let currentWaveIndex = 1;
 export let notificationTimeout = null;
 
 export let currentSideReport = 'front';
+
+export let openAllWavesState = false;
+
+export function setOpenAllWavesState(state) {
+  openAllWavesState = state;
+}
 
 export function setCurrentSide(side) {
   currentSide = side;
