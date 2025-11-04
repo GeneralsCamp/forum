@@ -375,10 +375,16 @@ body {
 .modal-body {
     background-color: rgb(68, 51, 38);
     padding: 0;
-    max-height: 53vh;
-    min-height: 46vh;
+    max-height: 48vh;
+    min-height: 48vh;
     overflow-y: auto;
     overflow-x: hidden;
+}
+
+#waveCopyModal .modal-body,
+#defenseBasicsModal .modal-body {
+    max-height: none;
+    min-height: 0;
 }
 
 .modal-body::-webkit-scrollbar {
@@ -879,11 +885,6 @@ input[type="number"] {
     padding: 0 !important;
 }
 
-.battle-modal {
-    max-height: 50vh !important;
-    min-height: 50vh !important;
-}
-
 .presets-footer {
     display: flex;
     flex-wrap: wrap;
@@ -895,12 +896,12 @@ input[type="number"] {
     align-items: center;
     flex: 0 0 50%;
     max-width: 50%;
-    padding: 5px;
+    padding: 0px;
     box-sizing: border-box;
 }
 
 .presets-footer .btn {
-    margin-right: 10px;
+    margin-right: 0px;
     margin-left: 0px;
     border: none !important;
     transition: transform 0.3s ease;
