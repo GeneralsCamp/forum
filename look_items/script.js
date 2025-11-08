@@ -275,6 +275,10 @@ async function getImageUrlMap() {
                 const name = match[1];
                 const normalized = normalizeName(name);
 
+                if (normalized === "halloween" && (keyName === "moveNormal" || keyName === "moveBoat")) {
+                    continue;
+                }
+
                 const [fileName, suffix] = fullMatch.split("--");
                 const path = folderBuilder(fileName, suffix);
                 const url = `${base}${path}.webp`;
