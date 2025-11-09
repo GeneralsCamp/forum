@@ -128,40 +128,58 @@ function createLookCard(item, imageUrlMap = {}, showFilter = null) {
     const mapObjects = urls.mapObjects || {};
     const movements = urls.movements || {};
 
+    const imgOrPlaceholder = (url) => {
+        if (url) {
+            return `<img src="${url}" alt="${name}" class="img-fluid">`;
+        } else {
+            return `<div class="no-image-text text-muted py-4">No image</div>`;
+        }
+    };
+
     let cardsHtml = "";
 
-    if ((showFilter === "castellan" || !showFilter) && Object.keys(mapObjects).length > 0) {
-        const mapImages = Object.values(mapObjects).filter(Boolean);
+    if ((showFilter === "castellan" || !showFilter) &&
+        (Object.keys(mapObjects).length > 0 || showFilter === "castellan")) {
+
         cardsHtml += `
         <div class="col-md-6 col-sm-12 d-flex flex-column">
             <div class="box flex-fill">
                 <div class="box-content">
                     <h2 class="deco-title">${name}</h2>
-                    <hr>
-                    <div class="row castellan-row">
-                        ${mapImages.map(url => `
-                        <div class="col-6 mb-2 text-center">
-                            <img src="${url}" alt="${name}">
-                        </div>`).join("")}
+                    <div class="row g-0 border-top castellan-grid">
+                        <div class="col-6 border-end border-bottom text-center p-4">
+                            ${imgOrPlaceholder(mapObjects.castleUrl)}
+                        </div>
+                        <div class="col-6 border-bottom text-center p-4">
+                            ${imgOrPlaceholder(mapObjects.outpostUrl)}
+                        </div>
+                        <div class="col-6 border-end text-center p-4">
+                            ${imgOrPlaceholder(mapObjects.metroUrl)}
+                        </div>
+                        <div class="col-6 text-center p-4">
+                            ${imgOrPlaceholder(mapObjects.capitalUrl)}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>`;
     }
 
-    if ((showFilter === "commander" || !showFilter) && Object.keys(movements).length > 0) {
-        const moveImages = Object.values(movements).filter(Boolean);
+    if ((showFilter === "commander" || !showFilter) &&
+        (Object.keys(movements).length > 0 || showFilter === "commander")) {
+
         cardsHtml += `
         <div class="col-md-6 col-sm-12 d-flex flex-column">
             <div class="box flex-fill">
                 <div class="box-content">
                     <h2 class="deco-title">${name}</h2>
-                    <hr>
-                    <div class="row commander-row">
-                        ${moveImages.map(url => `
-                        <div class="col-6 text-center">
-                            <img src="${url}" alt="${name}">
-                        </div>`).join("")}
+                    <div class="row g-0 border-top commander-grid">
+                        <div class="col-6 border-end text-center p-4">
+                            ${imgOrPlaceholder(movements.moveNormal)}
+                        </div>
+                        <div class="col-6 text-center p-4">
+                            ${imgOrPlaceholder(movements.moveBoat)}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -280,7 +298,13 @@ async function getImageUrlMap() {
                 }
 
                 const [fileName, suffix] = fullMatch.split("--");
-                const path = folderBuilder(fileName, suffix);
+
+                let fixedFileName = fileName;
+                if (fileName === "Outpost_Mapobject_Special_Sand") {
+                    fixedFileName = "Outpost_Mapobject_Special_Sand_8_2_0_Icon";
+                }
+
+                const path = folderBuilder(fixedFileName, suffix);
                 const url = `${base}${path}.webp`;
 
                 if (!map[normalized]) map[normalized] = { mapObjects: {}, movements: {} };
@@ -297,6 +321,14 @@ async function getImageUrlMap() {
                         map[normalized].movements[keyName] = url;
                         break;
                 }
+            }
+
+            if (regex === regexCastle) {
+                const underworldKey = normalizeName("Underworld");
+                if (!map[underworldKey]) map[underworldKey] = { mapObjects: {}, movements: {} };
+
+                map[underworldKey].mapObjects.castleUrl =
+                    "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Worldmap/WorldmapObjects/Castles/Underworld_Special/Castle_Mapobject_Special_Underworld_5/Castle_Mapobject_Special_Underworld_5--1573584429307.webp";
             }
         }
 
