@@ -2,7 +2,7 @@
 const myProxy = "https://my-proxy-8u49.onrender.com/";
 const fallbackProxy = "https://corsproxy.io/?";
 
-const availableLanguages = ["en", "de", "fr", "pl", "hu", "ro", "es", "ru", "el", "nl", "cs", "ar", "it", "ja"];
+const availableLanguages = ["en", "de", "fr", "pl", "hu", "ro", "es", "ru", "el", "nl", "cs", "ar", "it", "ja", "tr"];
 
 let browserLanguage = navigator.language || "en";
 let primaryLang = browserLanguage.split("-")[0];

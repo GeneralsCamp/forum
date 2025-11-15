@@ -390,5 +390,34 @@
       "show_all_short": "すべての装飾を表示",
       "show_new_short": "新しい装飾のみ表示"
     }
+  },
+  "tr": {
+  "label_size": "Boyut",
+  "label_fusion": "Füzyon",
+  "label_public_order": "Kamu düzeni",
+  "label_po_per_tile": "KD/kare",
+  "label_might_points": "Güç puanları",
+  "label_sale_price": "Satış fiyatı",
+  "label_developer_comments": "Geliştirici yorumları:",
+  "label_effects": "Etkiler:",
+  "fusion_none": "yok",
+  "fusion_source": "Kaynak",
+  "fusion_target": "Hedef",
+  "fusion_both": "Kaynak & Hedef",
+  "filters": {
+    "search_name": "İsim",
+    "search_id": "ID",
+    "search_effect": "Etki",
+    "sort_po": "Kamu düzenine göre sırala",
+    "sort_pot": "Kamu düzeni/kareye göre sırala",
+    "show_all": "Tüm dekorasyonları göster",
+    "show_new": "Sadece yeni dekorasyonları göster",
+    "show_selected_effect": "Seçilen etki",
+    "size_filter": "Boyut filtresi",
+    "search_placeholder_prefix": "Ara: ",
+    "show_all_short": "Tümünü göster",
+    "show_new_short": "Yenileri göster"
   }
+}
+
 }
