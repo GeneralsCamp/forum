@@ -25,7 +25,7 @@ let currentFilter = "all";
 let specialFilter = null;
 let newWodIDsSet = new Set();
 
-const specialKeywords = ["gingerbread", "winter", "frost", "christmas", "nutcracker", "frozen", "ice"];
+const specialKeywords = ["gingerbread", "winter", "frost", "christmas", "nutcracker", "frozen", "ice", "snow"];
 
 // --- FETCH FUNCTIONS (WITH FALLBACK, VERSIONS, DATA) ---
 async function fetchWithFallback(url, timeout = 5000) {
