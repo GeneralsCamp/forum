@@ -25,6 +25,8 @@ let currentFilter = "all";
 let specialFilter = null;
 let newWodIDsSet = new Set();
 
+const specialKeywords = ["gingerbread", "winter", "frost", "christmas", "nutcracker", "frozen", "ice"];
+
 // --- FETCH FUNCTIONS (WITH FALLBACK, VERSIONS, DATA) ---
 async function fetchWithFallback(url, timeout = 5000) {
   const controller = new AbortController();
@@ -712,24 +714,25 @@ function applyFiltersAndSorting() {
   const onlyFullWords = selectedFilters.includes("fullwords");
 
   const filtered = allDecorations.filter(item => {
-    if (specialFilter === "new" && !newWodIDsSet.has(item.wodID)) return false;
-    if (specialFilter && specialFilter.startsWith("cap-")) {
-      const capID = specialFilter.slice(4);
-      if (!item.areaSpecificEffects || !item.areaSpecificEffects.split(",").some(eff => {
-        const [id] = eff.split("&");
-        const effectDef = effectDefinitions[id];
-        return effectDef && effectDef.capID === capID;
-      })) return false;
-    }
 
     const size = getSize(item);
     if (!selectedSizes.has(size)) return false;
 
+    const searchTextLower = search.toLowerCase();
     let matchSearch = true;
 
-    if (hasSearchText && hasFilters) {
-      matchSearch = false;
+    if (specialKeywords.some(word => {
 
+      const name = getName(item).toLowerCase();
+      if (name.includes(word)) return true;
+
+      if ((item.comment1 || "").toLowerCase().includes(word)) return true;
+      if ((item.comment2 || "").toLowerCase().includes(word)) return true;
+      return false;
+    })) {
+      matchSearch = true;
+    } else if (hasSearchText && hasFilters) {
+      matchSearch = false;
       function wordMatch(text) {
         if (!text) return false;
         if (onlyFullWords) {
@@ -965,6 +968,12 @@ window.addEventListener("DOMContentLoaded", () => {
   const modal = document.getElementById("imageModal");
   modal.classList.remove("show");
   modal.style.display = "none";
+
+  const hash = window.location.hash.slice(1).toLowerCase();
+  if (hash && specialKeywords.includes(hash)) {
+    specialFilter = hash;
+    applyFiltersAndSorting();
+  }
 });
 
 // --- INITIALIZATION AND EVENT SETUP ---
