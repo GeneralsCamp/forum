@@ -714,48 +714,44 @@ function applyFiltersAndSorting() {
   const onlyFullWords = selectedFilters.includes("fullwords");
 
   const filtered = allDecorations.filter(item => {
-
     const size = getSize(item);
     if (!selectedSizes.has(size)) return false;
 
-    const searchTextLower = search.toLowerCase();
     let matchSearch = true;
 
-    if (specialKeywords.some(word => {
+    if (specialFilter === "winter") {
+      matchSearch = specialKeywords.some(word =>
+        getName(item).toLowerCase().includes(word) ||
+        (item.comment1 || "").toLowerCase().includes(word) ||
+        (item.comment2 || "").toLowerCase().includes(word)
+      );
+    } else {
+      const searchTextLower = search.toLowerCase();
+      const hasSearchText = searchTextLower.length > 0;
+      const hasFilters = Array.from(document.querySelectorAll(".search-filter:checked")).length > 0;
+      const onlyFullWords = Array.from(document.querySelectorAll(".search-filter:checked")).includes("fullwords");
 
-      const name = getName(item).toLowerCase();
-      if (name.includes(word)) return true;
-
-      if ((item.comment1 || "").toLowerCase().includes(word)) return true;
-      if ((item.comment2 || "").toLowerCase().includes(word)) return true;
-      return false;
-    })) {
-      matchSearch = true;
-    } else if (hasSearchText && hasFilters) {
-      matchSearch = false;
-      function wordMatch(text) {
-        if (!text) return false;
-        if (onlyFullWords) {
-          const pattern = new RegExp(`\\b${escapeRegExp(search)}\\b`, 'i');
-          return pattern.test(text);
-        } else {
-          return text.includes(search);
+      if (hasSearchText && hasFilters) {
+        matchSearch = false;
+        function wordMatch(text) {
+          if (!text) return false;
+          if (onlyFullWords) {
+            const pattern = new RegExp(`\\b${escapeRegExp(searchTextLower)}\\b`, 'i');
+            return pattern.test(text);
+          } else {
+            return text.includes(searchTextLower);
+          }
         }
-      }
 
-      if (selectedFilters.includes("name")) {
-        const name = getName(item).toLowerCase();
-        if (wordMatch(name)) matchSearch = true;
-      }
-
-      if (selectedFilters.includes("id")) {
-        const wodID = (item.wodID || "").toString().toLowerCase();
-        if (wordMatch(wodID)) matchSearch = true;
-      }
-
-      if (selectedFilters.includes("effect")) {
-        const effectsText = parseEffects(item.areaSpecificEffects || "").join(" ").toLowerCase();
-        if (wordMatch(effectsText)) matchSearch = true;
+        if (document.getElementById("filterName").checked) {
+          if (wordMatch(getName(item).toLowerCase())) matchSearch = true;
+        }
+        if (document.getElementById("filterID").checked) {
+          if (wordMatch((item.wodID || "").toString().toLowerCase())) matchSearch = true;
+        }
+        if (document.getElementById("filterEffect").checked) {
+          if (wordMatch(parseEffects(item.areaSpecificEffects || "").join(" ").toLowerCase())) matchSearch = true;
+        }
       }
     }
 
