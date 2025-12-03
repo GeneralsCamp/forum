@@ -25,6 +25,8 @@ let currentFilter = "all";
 let specialFilter = null;
 let newWodIDsSet = new Set();
 
+const specialKeywords = ["gingerbread", "winter", "frost", "christmas", "nutcracker", "frozen", "ice", "snow"];
+
 // --- FETCH FUNCTIONS (WITH FALLBACK, VERSIONS, DATA) ---
 async function fetchWithFallback(url, timeout = 5000) {
   const controller = new AbortController();
@@ -722,14 +724,23 @@ function applyFiltersAndSorting() {
       })) return false;
     }
 
+    if (specialFilter === "specialKeywords") {
+      const textToCheck = [
+        getName(item).toLowerCase(),
+        item.comment1?.toLowerCase() || "",
+        item.comment2?.toLowerCase() || ""
+      ].join(" ");
+
+      const matchesAny = specialKeywords.some(kw => textToCheck.includes(kw));
+      if (!matchesAny) return false;
+    }
+
     const size = getSize(item);
     if (!selectedSizes.has(size)) return false;
 
     let matchSearch = true;
-
     if (hasSearchText && hasFilters) {
       matchSearch = false;
-
       function wordMatch(text) {
         if (!text) return false;
         if (onlyFullWords) {
@@ -744,12 +755,10 @@ function applyFiltersAndSorting() {
         const name = getName(item).toLowerCase();
         if (wordMatch(name)) matchSearch = true;
       }
-
       if (selectedFilters.includes("id")) {
         const wodID = (item.wodID || "").toString().toLowerCase();
         if (wordMatch(wodID)) matchSearch = true;
       }
-
       if (selectedFilters.includes("effect")) {
         const effectsText = parseEffects(item.areaSpecificEffects || "").join(" ").toLowerCase();
         if (wordMatch(effectsText)) matchSearch = true;
@@ -767,6 +776,14 @@ function applyFiltersAndSorting() {
 
   renderDecorations(filtered);
   setupMaxCapClick();
+}
+
+function checkSpecialKeywordFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const special = params.get("special");
+  if (special && special.toLowerCase() === "winter") {
+    specialFilter = "specialKeywords";
+  }
 }
 
 function setupMaxCapClick() {
@@ -965,6 +982,8 @@ window.addEventListener("DOMContentLoaded", () => {
   const modal = document.getElementById("imageModal");
   modal.classList.remove("show");
   modal.style.display = "none";
+
+  checkSpecialKeywordFromURL();
 });
 
 // --- INITIALIZATION AND EVENT SETUP ---
