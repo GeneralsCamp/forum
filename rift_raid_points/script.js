@@ -13,9 +13,9 @@ const raidBossLevels = {
 };
 
 function calculateActivityPoints() {
-  const defeated = parseFloat(document.getElementById("defeated").value) || 0;
+  const defeated = Number(document.getElementById("defeated").value) || 0;
   const area = document.getElementById("area").value;
-  const level = parseInt(document.getElementById("level").value) || 1;
+  const level = Number(document.getElementById("level").value) || 1;
 
   const areaMultipliers = {
     courtyard: 1000,
@@ -33,13 +33,15 @@ function calculateActivityPoints() {
 
   document.getElementById("faced").value = faced;
 
-  let ratio = defeated / faced;
-  ratio = Math.min(ratio, 1);
+  if (faced <= 0 || defeated <= 0) {
+    document.getElementById("points").innerHTML = "0";
+    return;
+  }
 
-  ratio = Math.floor(ratio * 100) / 100;
+  const ratio = Math.min(defeated / faced, 1);
 
-  const points = Math.floor(
-    ratio * areaMultipliers[area] * levelMultiplier
+  const points = Math.ceil(
+    ratio * areaMultipliers[area] * levelMultiplier + Number.EPSILON
   );
 
   document.getElementById("points").innerHTML = points;
