@@ -1,38 +1,46 @@
 /*** MAIN CALCULATION FUNCTION ***/
+const raidBossLevels = {
+  1: { faced: 50000, multiplier: 1 },
+  2: { faced: 75000, multiplier: 3 },
+  3: { faced: 150000, multiplier: 8 },
+  4: { faced: 300000, multiplier: 12 },
+  5: { faced: 350000, multiplier: 20 },
+  6: { faced: 400000, multiplier: 25 },
+  7: { faced: 450000, multiplier: 30 },
+  8: { faced: 500000, multiplier: 35 },
+  9: { faced: 600000, multiplier: 40 },
+  10: { faced: 700000, multiplier: 50 }
+};
+
 function calculateActivityPoints() {
   const defeated = parseFloat(document.getElementById("defeated").value) || 0;
-  const faced    = parseFloat(document.getElementById("faced").value) || 0;
-  const area     = document.getElementById("area").value;
-  const level    = parseInt(document.getElementById("level").value) || 1;
+  const area = document.getElementById("area").value;
+  const level = parseInt(document.getElementById("level").value) || 1;
 
   const areaMultipliers = {
     courtyard: 1000,
     walls: 100
   };
 
-  const levelMultipliers = {
-    1: 1,
-    2: 3,
-    3: 8,
-    4: 12,
-    5: 20,
-    6: 25,
-    7: 30,
-    8: 35,
-    9: 40,
-    10: 50
-  };
-
-  if (faced <= 0) {
+  const levelData = raidBossLevels[level];
+  if (!levelData) {
     document.getElementById("points").innerHTML = "0";
     return;
   }
 
+  const faced = levelData.faced;
+  const levelMultiplier = levelData.multiplier;
+
+  document.getElementById("faced").value = faced;
+
   let ratio = defeated / faced;
   ratio = Math.min(ratio, 1);
 
-  const multiplier = areaMultipliers[area] * levelMultipliers[level];
-  const points = Math.floor(ratio * multiplier);
+  ratio = Math.floor(ratio * 100) / 100;
+
+  const points = Math.floor(
+    ratio * areaMultipliers[area] * levelMultiplier
+  );
 
   document.getElementById("points").innerHTML = points;
 }
