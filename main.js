@@ -12,7 +12,8 @@ const categories = {
         { name: "Mead Production Calculator", desc: "Calculate your mead production easily.", icon: "mead-icon.webp", link: "./brewery_simulator/index.html", disabled: false },
         { name: "Wall Limit Calculator", desc: "Calculate your wall unit limit with absolute accuracy.", icon: "wall-icon.webp", link: "./wall_limit/index.html", disabled: false },
         { name: "Collector Event Calculator", desc: "Calculate that how many points you need to reach your goal.", icon: "collector-icon.webp", link: "./collector_calculator/index.html", disabled: false },
-        { name: "Detection Time Calculator", desc: "Calculate the exact land time, and detection time of an attack.", icon: "detection-icon.webp", link: "./travel_speed/index.html", disabled: false }
+        { name: "Detection Time Calculator", desc: "Calculate the exact land time, and detection time of an attack.", icon: "detection-icon.webp", link: "./travel_speed/index.html", disabled: false },
+        { name: "Rift Raid Point Calculator", desc: "Calculate Activity Points based on defeated/faced troops, area, and boss level.", icon: "rift-raid-points-icon.webp", link: "./rift_raid_points/index.html", disabled: false }
     ],
 
     simulators: [
