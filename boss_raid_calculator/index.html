@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Activity Points Calculator</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <h1>ACTIVITY POINTS CALCULATOR</h1>
+      </div>
+
+      <a href="https://generalscamp.github.io/forum/" class="home-icon-link">
+        <div class="home-icon">
+          <i class="bi bi-house"></i>
+        </div>
+      </a>
+
+      <!-- INPUTS -->
+      <div class="col-12 collapse-area mb-2">
+        <h2 class="collapse-header">
+          <span class="header-title">INPUTS</span>
+        </h2>
+        <div class="collapse show">
+          <form class="calculator-bonuses-form row" onsubmit="return false;">
+
+            <div class="col-md-3 col-6 form-group">
+              <label for="area">Area</label>
+              <select id="area" class="form-select">
+                <option value="courtyard">Courtyard (1000)</option>
+                <option value="walls">Walls (100)</option>
+              </select>
+            </div>
+
+            <div class="col-md-3 col-6 form-group">
+              <label for="level">Boss level</label>
+              <select id="level" class="form-select">
+                <option value="1">Level 1</option>
+                <option value="2">Level 2</option>
+                <option value="3">Level 3</option>
+                <option value="4">Level 4</option>
+                <option value="5">Level 5</option>
+                <option value="6">Level 6</option>
+                <option value="7">Level 7</option>
+                <option value="8">Level 8</option>
+                <option value="9">Level 9</option>
+                <option value="10">Level 10</option>
+              </select>
+            </div>
+
+            <div class="col-md-3 col-6 form-group">
+              <label for="defeated">Defeated troops</label>
+              <input type="number" id="defeated" class="form-control" min="0" value="20000">
+            </div>
+
+            <div class="col-md-3 col-6 form-group">
+              <label for="faced">Faced troops</label>
+              <input type="number" id="faced" class="form-control" min="1" value="75000">
+            </div>
+
+          </form>
+        </div>
+      </div>
+
+      <!-- RESULTS -->
+      <div class="col-12 collapse-area result">
+        <h2 class="collapse-header">
+          <span class="header-title">RESULTS</span>
+        </h2>
+        <div class="collapse show results">
+          <p>ACTIVITY POINTS: <span id="points">0</span></p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="script.js"></script>
+</body>
+
+</html>
