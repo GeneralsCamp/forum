@@ -174,3 +174,11 @@ label {
   color: #f8bc00;
   font-size: 18px;
 }
+
+/* Wall troops disabled visual */
+#courtyardBox input[readonly],
+#wallBox input[readonly] {
+  filter: brightness(80%);
+  cursor: not-allowed;
+  background-color: rgb(233, 236, 239);
+}
