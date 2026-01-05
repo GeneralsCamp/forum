@@ -651,10 +651,10 @@ function renderRewardsForSelection() {
         }
     });
 
-    renderRewards(rewards);
+    renderRewards(rewards, "Chance");
 }
 
-function renderRewards(rewards) {
+function renderRewards(rewards, label = "Chance") {
     const container = document.getElementById("rewardRows");
     container.innerHTML = "";
 
@@ -687,7 +687,7 @@ function renderRewards(rewards) {
                 <div>${amountText}</div>
               </div>
               <div class="col-6 card-cell d-flex flex-column justify-content-center">
-                <strong>Chance</strong>
+                <strong>${label}</strong>
                 <div>${chanceText}</div>
               </div>
             </div>
@@ -751,7 +751,7 @@ function renderTopRewardsForSelection(eventId, setId) {
         });
     });
 
-    renderRewards(rewards);
+    renderRewards(rewards, "Ranking");
 }
 
 // --- INITIALIZATION ---
