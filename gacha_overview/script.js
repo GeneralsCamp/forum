@@ -123,6 +123,34 @@ function parseCsvIds(value) {
         .filter(Boolean);
 }
 
+function parseIdAmountToken(token) {
+    const trimmed = String(token || "").trim();
+    if (!trimmed) return [];
+    const parts = trimmed.split("#");
+    const primary = parts[0];
+    const results = [];
+
+    const [idPart, amountPart] = primary.split("+");
+    const primaryId = Number(idPart);
+    if (!Number.isNaN(primaryId)) {
+        let amount = 1;
+        if (amountPart) {
+            const parsed = Number(amountPart);
+            if (!Number.isNaN(parsed)) amount = parsed;
+        }
+        results.push({ id: primaryId, amount });
+    }
+
+    for (let i = 1; i < parts.length; i++) {
+        const extraId = Number(parts[i]);
+        if (!Number.isNaN(extraId)) {
+            results.push({ id: extraId, amount: 1 });
+        }
+    }
+
+    return results;
+}
+
 function parseUnitReward(value) {
     if (!value) return null;
     const [idPart, amountPart] = String(value).split("+");
@@ -267,6 +295,95 @@ function resolveRewardName(reward) {
     return null;
 }
 
+function resolveRewardEntries(reward) {
+    if (!reward || typeof reward !== "object") return [];
+    const entries = [];
+
+    if (reward.units) {
+        const parsed = parseUnitReward(reward.units);
+        if (parsed && parsed.unitId !== null) {
+            const unit = unitsById[String(parsed.unitId)];
+            const rawType = unit ? (unit.type || unit.name || unit.Name) : null;
+            let name = rawType || `Unit ${parsed.unitId}`;
+            if (rawType) {
+                const langKey = `${rawType}_name`.toLowerCase();
+                if (lang[langKey]) name = lang[langKey];
+            }
+            entries.push({ name, amount: parsed.amount !== null ? parsed.amount : 1 });
+        }
+    }
+
+    const addKey = Object.keys(reward).find(key => key.toLowerCase().startsWith("add"));
+    if (addKey) {
+        const rawName = addKey.slice(3);
+        if (rawName) {
+            const langKey = `currency_name_${rawName}`.toLowerCase();
+            const name = lang[langKey] || rawName;
+            const val = Number(reward[addKey]);
+            entries.push({ name, amount: Number.isNaN(val) ? 1 : val });
+        }
+    }
+
+    const currencyId = getProp(reward, ["currencyID", "currencyId", "currencyid"]);
+    if (currencyId) {
+        const currency = currenciesById[String(currencyId)];
+        const rawName = currency ? (currency.Name || currency.name) : null;
+        const langKey = rawName ? `currency_name_${rawName}`.toLowerCase() : null;
+        const name = (langKey && lang[langKey]) ? lang[langKey] : (rawName || `Currency ${currencyId}`);
+        entries.push({ name, amount: 1 });
+    }
+
+    const constructionId = getProp(reward, ["constructionItemID", "constructionItemId", "constructionitemid"]);
+    if (constructionId) {
+        const item = constructionById[String(constructionId)];
+        const baseName = getCIName(item) || "Construction item";
+        entries.push({ name: `${baseName} (${constructionId})`, amount: 1 });
+    }
+
+    const constructionIds = getProp(reward, ["constructionItemIDs", "constructionItemIds", "constructionitemids"]);
+    if (constructionIds) {
+        const tokens = parseCsvIds(constructionIds);
+        tokens.forEach(token => {
+            const parsedItems = parseIdAmountToken(token);
+            parsedItems.forEach(parsed => {
+                const item = constructionById[String(parsed.id)];
+                const baseName = getCIName(item) || "Construction item";
+                entries.push({ name: `${baseName} (${parsed.id})`, amount: parsed.amount });
+            });
+        });
+    }
+
+    const equipmentId = getProp(reward, ["equipmentID", "equipmentId", "equipmentid"]);
+    if (equipmentId) {
+        const item = equipmentById[String(equipmentId)];
+        const rawName = item ? (item.name || item.Name) : null;
+        const langName = getLangByPrefixes(rawName, ["equip_name_", "equipment_name_", "equip_"]);
+        entries.push({ name: langName || rawName || `Equipment ${equipmentId}`, amount: 1 });
+    }
+
+    const equipmentIds = getProp(reward, ["equipmentIDs", "equipmentIds", "equipmentids"]);
+    if (equipmentIds) {
+        const tokens = parseCsvIds(equipmentIds);
+        tokens.forEach(token => {
+            const parsedItems = parseIdAmountToken(token);
+            parsedItems.forEach(parsed => {
+                const langKey = `equipment_unique_${parsed.id}`.toLowerCase();
+                const name = (lang[langKey]) ? lang[langKey] : `Equipment ${parsed.id}`;
+                entries.push({ name, amount: parsed.amount });
+            });
+        });
+    }
+
+    const decoId = getProp(reward, ["decoWODID", "decoWodID", "decowodid"]);
+    if (decoId) {
+        const item = decorationsById[String(decoId)];
+        const decoName = getDecorationName(item) || "Decoration";
+        entries.push({ name: `${decoName} (${decoId})`, amount: 1 });
+    }
+
+    return entries;
+}
+
 function getRewardAmount(reward) {
     if (!reward || typeof reward !== "object") return 1;
     if (reward.units) {
@@ -318,9 +435,12 @@ function setLoadingProgress(step, totalSteps, text) {
 function getEventLabel(event) {
     if (!event) return "Unknown event";
     const eventId = event.eventID;
-    const langKey = `event_title_${eventId}`.toLowerCase();
-    const localized = lang[langKey];
-    const name = localized || event.comment1 || event.comment2 || "Event";
+    const titleKey = `event_title_${eventId}`.toLowerCase();
+    const titleName = lang[titleKey];
+    const eventType = event.eventType || event.EventType;
+    const tooltipKey = eventType ? `tooltip_gachaName_${eventType}`.toLowerCase() : null;
+    const tooltipName = tooltipKey ? lang[tooltipKey] : null;
+    const name = titleName || tooltipName || event.comment1 || event.comment2 || "Event";
     return name;
 }
 
@@ -443,6 +563,11 @@ function updateLevelOptions() {
         levelSelect.appendChild(option);
     });
 
+    const topOption = document.createElement("option");
+    topOption.value = "top";
+    topOption.textContent = "TOP rewards";
+    levelSelect.appendChild(topOption);
+
     levelSelect.value = String(uniqueLevels[0]);
 }
 
@@ -456,6 +581,11 @@ function renderRewardsForSelection() {
 
     if (!eventId || !setId || !level) {
         renderRewards([]);
+        return;
+    }
+
+    if (level === "top") {
+        renderTopRewardsForSelection(eventId, setId);
         return;
     }
 
@@ -517,7 +647,7 @@ function renderRewardsForSelection() {
         const key = `${name}::${amount}::${percent}`;
         if (!seen.has(key)) {
             seen.add(key);
-            rewards.push({ name, amount, percent });
+            rewards.push({ name, amount, chanceText: formatPercent(percent) });
         }
     });
 
@@ -545,7 +675,7 @@ function renderRewards(rewards) {
         const col = document.createElement("div");
         col.className = "col-12 col-md-6 d-flex";
         const amountText = formatNumber(reward.amount);
-        const chanceText = formatPercent(reward.percent);
+        const chanceText = reward.chanceText || "";
         col.innerHTML = `
       <div class="box flex-fill">
         <div class="box-content">
@@ -566,6 +696,62 @@ function renderRewards(rewards) {
       </div>`;
         container.appendChild(col);
     });
+}
+
+function renderTopRewardsForSelection(eventId, setId) {
+    const leagueEvents = getArray(itemsData, ["leaguetypeevents", "leagueTypeEvents", "leagueTypeevents"]);
+    const matching = leagueEvents.filter(e => {
+        const eventMatch = String(getProp(e, ["eventID", "eventId", "eventid"])) === String(eventId);
+        const setMatch = String(getProp(e, ["rewardSetID", "rewardSetId", "rewardsetid"]) || "") === String(setId);
+        return eventMatch && setMatch;
+    });
+    let entry = null;
+
+    if (matching.length === 1) {
+        entry = matching[0];
+    } else if (matching.length > 1) {
+        entry = matching[0];
+    }
+
+    if (!entry) {
+        renderRewards([]);
+        return;
+    }
+
+    const rewardIds = parseCsvIds(getProp(entry, ["rewardIDs", "rewardIds", "rewardids"]));
+    const topValuesRaw = parseCsvIds(getProp(entry, ["topXValue", "topxvalue"]));
+    const topValues = topValuesRaw.map(v => Number(v)).filter(v => !Number.isNaN(v));
+    topValues.push(1);
+    const tiers = Array.from(new Set(topValues)).sort((a, b) => a - b);
+
+    const topRewardIds = rewardIds.slice(-tiers.length);
+    const rewards = [];
+    const seen = new Set();
+
+    tiers.forEach((tier, index) => {
+        const rewardId = topRewardIds[topRewardIds.length - 1 - index];
+        const reward = rewardsById[String(rewardId)];
+        const entries = resolveRewardEntries(reward);
+        if (entries.length === 0) {
+            const name = resolveRewardName(reward) || `Reward ${rewardId}`;
+            const amount = getRewardAmount(reward);
+            const key = `${name}::${amount}::${tier}`;
+            if (!seen.has(key)) {
+                seen.add(key);
+                rewards.push({ name, amount, chanceText: `TOP${tier}` });
+            }
+            return;
+        }
+        entries.forEach(entry => {
+            const key = `${entry.name}::${entry.amount}::${tier}`;
+            if (!seen.has(key)) {
+                seen.add(key);
+                rewards.push({ name: entry.name, amount: entry.amount, chanceText: `TOP${tier}` });
+            }
+        });
+    });
+
+    renderRewards(rewards);
 }
 
 // --- INITIALIZATION ---
