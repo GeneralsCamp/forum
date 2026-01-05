@@ -389,18 +389,27 @@ function updateSetOptions() {
 
     setSelect.innerHTML = "";
     if (uniqueSets.length === 0) {
-        setSelect.innerHTML = `<option value="" selected>No sets</option>`;
+        setSelect.innerHTML = `<option value="" selected>No versions</option>`;
+        setSelect.disabled = true;
         return;
     }
 
+    const latestSet = uniqueSets[uniqueSets.length - 1];
+    const hasMultiple = uniqueSets.length > 1;
     uniqueSets.forEach(setId => {
         const option = document.createElement("option");
         option.value = String(setId);
-        option.textContent = `Version ${setId}`;
+        if (!hasMultiple) {
+            option.textContent = "Latest version";
+        } else {
+            const suffix = setId !== latestSet ? " (old)" : "";
+            option.textContent = setId === latestSet ? "Latest version" : `Version ${setId}${suffix}`;
+        }
         setSelect.appendChild(option);
     });
 
-    setSelect.value = String(uniqueSets[uniqueSets.length - 1]);
+    setSelect.value = String(latestSet);
+    setSelect.disabled = uniqueSets.length === 1;
 }
 
 function updateLevelOptions() {

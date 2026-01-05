@@ -251,6 +251,13 @@ h1 {
     border-radius: 8px;
 }
 
+.form-select:disabled,
+.custom-select:disabled {
+    filter: brightness(80%);
+    cursor: not-allowed;
+    background-color: rgb(233, 236, 239);
+}
+
 #searchInput:focus,
 #sortSelect:focus,
 .btn-custom:focus {
