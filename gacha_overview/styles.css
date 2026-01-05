@@ -365,6 +365,17 @@ h1 {
     padding: 2px 0;
 }
 
+.card-cell a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.card-cell a:hover,
+.card-cell a:focus {
+    color: #fff;
+    text-decoration: none;
+}
+
 .card-section-title {
     text-align: left;
     font-size: 15px;

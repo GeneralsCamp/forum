@@ -12,6 +12,13 @@ let constructionById = {};
 let decorationsById = {};
 let unitsById = {};
 
+const rarityStyles = {
+    1: { label: "common", color: "#ffffffff" },
+    2: { label: "rare", color: "#58e16fff" },
+    3: { label: "epic", color: "#c09bf8ff" },
+    4: { label: "legendary", color: "#f4b551ff" }
+};
+
 // --- FETCH FUNCTIONS (WITH FALLBACK) ---
 async function fetchWithFallback(url, timeout = 10000) {
     const controller = new AbortController();
@@ -224,7 +231,7 @@ function resolveRewardName(reward) {
                 if (lang[langKey]) return lang[langKey];
                 return rawType;
             }
-            return `Unit ${parsed.unitId}`;
+            return "Unit";
         }
     }
 
@@ -246,7 +253,7 @@ function resolveRewardName(reward) {
             if (langKey && lang[langKey]) return lang[langKey];
             if (rawName) return rawName;
         }
-        return `Currency ${currencyId}`;
+        return "Currency";
     }
 
     const constructionId = getProp(reward, ["constructionItemID", "constructionItemId", "constructionitemid"]);
@@ -255,7 +262,7 @@ function resolveRewardName(reward) {
         const item = constructionById[String(constructionId)];
         const name = getCIName(item);
         const baseName = name || "Construction item";
-        return `${baseName} (${constructionId})`;
+        return baseName;
     }
     if (constructionIds) {
         const ids = parseCsvIds(constructionIds);
@@ -263,7 +270,7 @@ function resolveRewardName(reward) {
         const item = firstId ? constructionById[String(firstId)] : null;
         const name = getCIName(item);
         const baseName = name || "Construction item";
-        return firstId ? `${baseName} (${firstId})` : null;
+        return firstId ? baseName : null;
     }
 
     const equipmentId = getProp(reward, ["equipmentID", "equipmentId", "equipmentid"]);
@@ -274,14 +281,14 @@ function resolveRewardName(reward) {
         const langName = getLangByPrefixes(rawName, ["equip_name_", "equipment_name_", "equip_"]);
         if (langName) return langName;
         if (rawName) return rawName;
-        return `Equipment ${equipmentId}`;
+        return "Equipment";
     }
     if (equipmentIds) {
         const ids = parseCsvIds(equipmentIds);
         const firstId = ids[0];
         const langKey = firstId ? `equipment_unique_${firstId}`.toLowerCase() : null;
         if (langKey && lang[langKey]) return lang[langKey];
-        return firstId ? `Equipment ${firstId}` : null;
+        return firstId ? "Equipment" : null;
     }
 
     const decoId = getProp(reward, ["decoWODID", "decoWodID", "decowodid"]);
@@ -289,8 +296,96 @@ function resolveRewardName(reward) {
         const item = decorationsById[String(decoId)];
         const decoName = getDecorationName(item);
         const finalName = decoName || "Decoration";
-        return `${finalName} (${decoId})`;
+        return finalName;
     }
+
+    return null;
+}
+
+function resolveRewardId(reward, fallbackId = null) {
+    if (!reward || typeof reward !== "object") return fallbackId;
+
+    if (reward.units) {
+        const parsed = parseUnitReward(reward.units);
+        if (parsed && parsed.unitId !== null) return parsed.unitId;
+    }
+
+    const currencyId = getProp(reward, ["currencyID", "currencyId", "currencyid"]);
+    if (currencyId) return currencyId;
+
+    const constructionId = getProp(reward, ["constructionItemID", "constructionItemId", "constructionitemid"]);
+    if (constructionId) return constructionId;
+    const constructionIds = getProp(reward, ["constructionItemIDs", "constructionItemIds", "constructionitemids"]);
+    if (constructionIds) {
+        const ids = parseCsvIds(constructionIds);
+        if (ids.length > 0) return ids[0];
+    }
+
+    const equipmentId = getProp(reward, ["equipmentID", "equipmentId", "equipmentid"]);
+    if (equipmentId) return equipmentId;
+    const equipmentIds = getProp(reward, ["equipmentIDs", "equipmentIds", "equipmentids"]);
+    if (equipmentIds) {
+        const ids = parseCsvIds(equipmentIds);
+        if (ids.length > 0) return ids[0];
+    }
+
+    const decoId = getProp(reward, ["decoWODID", "decoWodID", "decowodid"]);
+    if (decoId) return decoId;
+
+    return fallbackId;
+}
+
+function resolveRewardIdStrict(reward) {
+    if (!reward || typeof reward !== "object") return null;
+
+    if (reward.units) {
+        const parsed = parseUnitReward(reward.units);
+        if (parsed && parsed.unitId !== null) return parsed.unitId;
+    }
+
+    const currencyId = getProp(reward, ["currencyID", "currencyId", "currencyid"]);
+    if (currencyId) return currencyId;
+
+    const constructionId = getProp(reward, ["constructionItemID", "constructionItemId", "constructionitemid"]);
+    if (constructionId) return constructionId;
+    const constructionIds = getProp(reward, ["constructionItemIDs", "constructionItemIds", "constructionitemids"]);
+    if (constructionIds) {
+        const ids = parseCsvIds(constructionIds);
+        if (ids.length > 0) return ids[0];
+    }
+
+    const equipmentId = getProp(reward, ["equipmentID", "equipmentId", "equipmentid"]);
+    if (equipmentId) return equipmentId;
+    const equipmentIds = getProp(reward, ["equipmentIDs", "equipmentIds", "equipmentids"]);
+    if (equipmentIds) {
+        const ids = parseCsvIds(equipmentIds);
+        if (ids.length > 0) return ids[0];
+    }
+
+    const decoId = getProp(reward, ["decoWODID", "decoWodID", "decowodid"]);
+    if (decoId) return decoId;
+
+    return null;
+}
+
+function resolveRewardType(reward) {
+    if (!reward || typeof reward !== "object") return null;
+
+    if (reward.units) return "unit";
+
+    const currencyId = getProp(reward, ["currencyID", "currencyId", "currencyid"]);
+    if (currencyId) return "currency";
+
+    const constructionId = getProp(reward, ["constructionItemID", "constructionItemId", "constructionitemid"]);
+    const constructionIds = getProp(reward, ["constructionItemIDs", "constructionItemIds", "constructionitemids"]);
+    if (constructionId || constructionIds) return "construction";
+
+    const equipmentId = getProp(reward, ["equipmentID", "equipmentId", "equipmentid"]);
+    const equipmentIds = getProp(reward, ["equipmentIDs", "equipmentIds", "equipmentids"]);
+    if (equipmentId || equipmentIds) return "equipment";
+
+    const decoId = getProp(reward, ["decoWODID", "decoWodID", "decowodid"]);
+    if (decoId) return "decoration";
 
     return null;
 }
@@ -304,12 +399,18 @@ function resolveRewardEntries(reward) {
         if (parsed && parsed.unitId !== null) {
             const unit = unitsById[String(parsed.unitId)];
             const rawType = unit ? (unit.type || unit.name || unit.Name) : null;
-            let name = rawType || `Unit ${parsed.unitId}`;
+            let name = rawType;
             if (rawType) {
                 const langKey = `${rawType}_name`.toLowerCase();
                 if (lang[langKey]) name = lang[langKey];
             }
-            entries.push({ name, amount: parsed.amount !== null ? parsed.amount : 1 });
+            if (!name) name = "Unit";
+            entries.push({
+                name,
+                amount: parsed.amount !== null ? parsed.amount : 1,
+                id: parsed.unitId,
+                type: "unit"
+            });
         }
     }
 
@@ -320,7 +421,7 @@ function resolveRewardEntries(reward) {
             const langKey = `currency_name_${rawName}`.toLowerCase();
             const name = lang[langKey] || rawName;
             const val = Number(reward[addKey]);
-            entries.push({ name, amount: Number.isNaN(val) ? 1 : val });
+            entries.push({ name, amount: Number.isNaN(val) ? 1 : val, id: null, type: "currency" });
         }
     }
 
@@ -329,15 +430,15 @@ function resolveRewardEntries(reward) {
         const currency = currenciesById[String(currencyId)];
         const rawName = currency ? (currency.Name || currency.name) : null;
         const langKey = rawName ? `currency_name_${rawName}`.toLowerCase() : null;
-        const name = (langKey && lang[langKey]) ? lang[langKey] : (rawName || `Currency ${currencyId}`);
-        entries.push({ name, amount: 1 });
+        const name = (langKey && lang[langKey]) ? lang[langKey] : (rawName || "Currency");
+        entries.push({ name, amount: 1, id: currencyId, type: "currency" });
     }
 
     const constructionId = getProp(reward, ["constructionItemID", "constructionItemId", "constructionitemid"]);
     if (constructionId) {
         const item = constructionById[String(constructionId)];
         const baseName = getCIName(item) || "Construction item";
-        entries.push({ name: `${baseName} (${constructionId})`, amount: 1 });
+        entries.push({ name: baseName, amount: 1, id: constructionId, type: "construction" });
     }
 
     const constructionIds = getProp(reward, ["constructionItemIDs", "constructionItemIds", "constructionitemids"]);
@@ -348,7 +449,7 @@ function resolveRewardEntries(reward) {
             parsedItems.forEach(parsed => {
                 const item = constructionById[String(parsed.id)];
                 const baseName = getCIName(item) || "Construction item";
-                entries.push({ name: `${baseName} (${parsed.id})`, amount: parsed.amount });
+                entries.push({ name: baseName, amount: parsed.amount, id: parsed.id, type: "construction" });
             });
         });
     }
@@ -358,7 +459,12 @@ function resolveRewardEntries(reward) {
         const item = equipmentById[String(equipmentId)];
         const rawName = item ? (item.name || item.Name) : null;
         const langName = getLangByPrefixes(rawName, ["equip_name_", "equipment_name_", "equip_"]);
-        entries.push({ name: langName || rawName || `Equipment ${equipmentId}`, amount: 1 });
+        entries.push({
+            name: langName || rawName || "Equipment",
+            amount: 1,
+            id: equipmentId,
+            type: "equipment"
+        });
     }
 
     const equipmentIds = getProp(reward, ["equipmentIDs", "equipmentIds", "equipmentids"]);
@@ -368,8 +474,8 @@ function resolveRewardEntries(reward) {
             const parsedItems = parseIdAmountToken(token);
             parsedItems.forEach(parsed => {
                 const langKey = `equipment_unique_${parsed.id}`.toLowerCase();
-                const name = (lang[langKey]) ? lang[langKey] : `Equipment ${parsed.id}`;
-                entries.push({ name, amount: parsed.amount });
+                const name = (lang[langKey]) ? lang[langKey] : "Equipment";
+                entries.push({ name, amount: parsed.amount, id: parsed.id, type: "equipment" });
             });
         });
     }
@@ -378,7 +484,7 @@ function resolveRewardEntries(reward) {
     if (decoId) {
         const item = decorationsById[String(decoId)];
         const decoName = getDecorationName(item) || "Decoration";
-        entries.push({ name: `${decoName} (${decoId})`, amount: 1 });
+        entries.push({ name: decoName, amount: 1, id: decoId, type: "decoration" });
     }
 
     return entries;
@@ -407,6 +513,11 @@ function formatPercent(value) {
 
 function formatNumber(value) {
     return Number(value).toLocaleString();
+}
+
+function getRarityColor(rarity) {
+    const style = rarityStyles[Number(rarity)];
+    return style ? style.color : null;
 }
 
 // --- UI RENDERING ---
@@ -641,13 +752,23 @@ function renderRewardsForSelection() {
 
     uniqueRewardIds.forEach(id => {
         const reward = rewardsById[String(id)];
-        const name = resolveRewardName(reward) || `Reward ${id}`;
+        const name = resolveRewardName(reward) || "Reward";
         const amount = getRewardAmount(reward);
         const percent = totalShares > 0 ? (rewardShares[id] / totalShares) * 100 : 0;
-        const key = `${name}::${amount}::${percent}`;
+        const rewardId = resolveRewardId(reward, id);
+        const displayId = resolveRewardIdStrict(reward);
+        const key = `${name}::${amount}::${percent}::${rewardId}`;
         if (!seen.has(key)) {
             seen.add(key);
-            rewards.push({ name, amount, chanceText: formatPercent(percent) });
+            const meta = rewardMeta[id] || { rarity: 0 };
+            rewards.push({
+                name,
+                amount,
+                chanceText: formatPercent(percent),
+                rarity: meta.rarity,
+                id: displayId,
+                type: resolveRewardType(reward)
+            });
         }
     });
 
@@ -676,19 +797,32 @@ function renderRewards(rewards, label = "Chance") {
         col.className = "col-12 col-md-6 d-flex";
         const amountText = formatNumber(reward.amount);
         const chanceText = reward.chanceText || "";
+        const rarityColor = getRarityColor(reward.rarity);
+        const chanceStyle = rarityColor ? ` style="color:${rarityColor};"` : "";
+        const idText = (reward.id !== undefined && reward.id !== null && reward.id !== "") ? String(reward.id) : "-";
+        let idDisplay = idText;
+        if (idText !== "-" && reward.type === "decoration") {
+            idDisplay = `<a class="id-link" href="https://generalscamp.github.io/forum/decorations" target="_blank" rel="noopener">${idText}</a>`;
+        } else if (idText !== "-" && reward.type === "construction") {
+            idDisplay = `<a class="id-link" href="https://generalscamp.github.io/forum/building_items/" target="_blank" rel="noopener">${idText}</a>`;
+        }
         col.innerHTML = `
       <div class="box flex-fill">
         <div class="box-content">
           <h2 class="ci-title">${reward.name}</h2>
           <div class="card-table border-top">
             <div class="row g-0">
-              <div class="col-6 card-cell border-end d-flex flex-column justify-content-center">
+              <div class="col-4 card-cell border-end d-flex flex-column justify-content-center">
                 <strong>Amount</strong>
                 <div>${amountText}</div>
               </div>
-              <div class="col-6 card-cell d-flex flex-column justify-content-center">
+              <div class="col-4 card-cell border-end d-flex flex-column justify-content-center">
                 <strong>${label}</strong>
-                <div>${chanceText}</div>
+                <div${chanceStyle}>${chanceText}</div>
+              </div>
+              <div class="col-4 card-cell d-flex flex-column justify-content-center">
+                <strong>ID</strong>
+                <div>${idDisplay}</div>
               </div>
             </div>
           </div>
@@ -733,20 +867,35 @@ function renderTopRewardsForSelection(eventId, setId) {
         const reward = rewardsById[String(rewardId)];
         const entries = resolveRewardEntries(reward);
         if (entries.length === 0) {
-            const name = resolveRewardName(reward) || `Reward ${rewardId}`;
+            const name = resolveRewardName(reward) || "Reward";
             const amount = getRewardAmount(reward);
-            const key = `${name}::${amount}::${tier}`;
+            const rewardKeyId = resolveRewardId(reward, rewardId);
+            const displayId = resolveRewardIdStrict(reward);
+            const key = `${name}::${amount}::${tier}::${rewardKeyId}`;
             if (!seen.has(key)) {
                 seen.add(key);
-                rewards.push({ name, amount, chanceText: `TOP${tier}` });
+                rewards.push({
+                    name,
+                    amount,
+                    chanceText: `TOP${tier}`,
+                    id: displayId,
+                    type: resolveRewardType(reward)
+                });
             }
             return;
         }
         entries.forEach(entry => {
-            const key = `${entry.name}::${entry.amount}::${tier}`;
+            const entryKeyId = entry.id !== undefined && entry.id !== null ? entry.id : "-";
+            const key = `${entry.name}::${entry.amount}::${tier}::${entryKeyId}`;
             if (!seen.has(key)) {
                 seen.add(key);
-                rewards.push({ name: entry.name, amount: entry.amount, chanceText: `TOP${tier}` });
+                rewards.push({
+                    name: entry.name,
+                    amount: entry.amount,
+                    chanceText: `TOP${tier}`,
+                    id: entry.id,
+                    type: entry.type || null
+                });
             }
         });
     });
