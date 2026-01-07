@@ -720,6 +720,14 @@ h1 {
     overflow-y: auto;
 }
 
+.date-format-note {
+    margin: 6px 4px 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: #000000;
+    text-align: center;
+}
+
 /* Progress bar */
 .loading-message {
     text-align: center;

@@ -426,6 +426,7 @@ function renderEvents(events) {
     if (!container) return;
     container.innerHTML = "";
     container.style.visibility = "visible";
+    removeDateFormatNote();
 
     if (!events || events.length === 0) {
         const empty = document.createElement("div");
@@ -484,6 +485,8 @@ function renderEvents(events) {
         card.appendChild(meta);
         container.appendChild(card);
     });
+
+    ensureDateFormatNote(container);
 }
 
 function renderCalendar(events) {
@@ -491,6 +494,7 @@ function renderCalendar(events) {
     if (!container) return;
     container.innerHTML = "";
     container.style.visibility = "visible";
+    removeDateFormatNote();
 
     if (!events || events.length === 0) {
         const empty = document.createElement("div");
@@ -663,6 +667,18 @@ function renderCalendar(events) {
         const colCells = table.querySelectorAll(`[data-col-index="${colIndex}"]`);
         colCells.forEach(el => el.classList.add("calendar-selected"));
     });
+}
+
+function ensureDateFormatNote(container) {
+    const note = document.createElement("div");
+    note.className = "date-format-note";
+    note.textContent = "Note: Dates are shown in day/month/year format.";
+    container.appendChild(note);
+}
+
+function removeDateFormatNote() {
+    const existing = document.querySelector(".date-format-note");
+    if (existing) existing.remove();
 }
 
 function normalizeCalendarBodyRowHeights(tbody) {
