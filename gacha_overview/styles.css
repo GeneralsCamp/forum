@@ -131,6 +131,67 @@ h1 {
     transform: translateY(0);
 }
 
+/* --- REWARD LAYOUT --- */
+.reward-title {
+    border-bottom: 1px solid white;
+    margin-bottom: 0;
+}
+
+.reward-body {
+    border-top: 1px solid white;
+}
+
+.reward-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-right: 1px solid white;
+    min-height: 140px;
+}
+
+.reward-image-placeholder {
+    color: #f3c24a;
+    font-weight: bold;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    user-select: none;
+}
+
+.reward-image-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    padding: 6px;
+}
+
+.reward-stat {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    padding: 6px;
+}
+
+.reward-stat:not(:last-child) {
+    border-bottom: 1px solid white;
+}
+
+.reward-stat-value {
+    padding-left: 8px;
+    color: white;
+    font-size: 14px;
+}
+
+.reward-stat-label {
+    font-weight: bolder;
+    padding-left: 8px;
+    color: white;
+    font-size: 14px;
+}
+
 /* --- SCROLLBARS --- */
 ::-webkit-scrollbar {
     width: 10px;

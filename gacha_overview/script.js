@@ -11,6 +11,7 @@ let equipmentById = {};
 let constructionById = {};
 let decorationsById = {};
 let unitsById = {};
+let imageUrlMap = {};
 
 const rarityStyles = {
     1: { label: "common", color: "#ffffffff" },
@@ -81,6 +82,10 @@ function lowercaseKeysRecursive(input) {
         return out;
     }
     return input;
+}
+
+function normalizeName(value) {
+    return String(value || "").toLowerCase().replace(/[^a-z0-9]/g, "");
 }
 
 // --- DATA HELPERS ---
@@ -520,6 +525,77 @@ function getRarityColor(rarity) {
     return style ? style.color : null;
 }
 
+function getDecorationImageUrl(reward) {
+    if (!reward || reward.type !== "decoration") return null;
+    const decoId = resolveRewardIdStrict(reward);
+    if (!decoId) return null;
+    const item = decorationsById[String(decoId)];
+    const cleanType = item ? normalizeName(item.type || item.Type) : "";
+    return cleanType ? imageUrlMap[cleanType] || null : null;
+}
+
+// --- IMAGE LOADING (DLL PARSING) ---
+async function getImageUrlMap() {
+    const base = "https://empire-html5.goodgamestudios.com/default/assets/itemassets/";
+    try {
+        const indexUrl = "https://empire-html5.goodgamestudios.com/default/index.html";
+        const indexRes = await fetchWithFallback(indexUrl);
+        const indexHtml = await indexRes.text();
+
+        const dllMatch = indexHtml.match(/<link\s+id=["']dll["']\s+rel=["']preload["']\s+href=["']([^"']+)["']/i);
+        if (!dllMatch) throw new Error("DLL: not found");
+        const dllRelativeUrl = dllMatch[1];
+        const dllUrl = `https://empire-html5.goodgamestudios.com/default/${dllRelativeUrl}`;
+
+        console.log("");
+        console.log(`DLL version: ${dllRelativeUrl}`);
+        console.log(`DLL URL: %c${dllUrl}`, "color:blue; text-decoration:underline;");
+        console.log("");
+
+        const dllRes = await fetchWithFallback(dllUrl);
+        const text = await dllRes.text();
+
+        const regex = /Building\/Deco\/[^\s"'`<>]+?--\d+/g;
+        const matches = [...text.matchAll(regex)];
+        const uniquePaths = [...new Set(matches.map(m => m[0]))];
+
+        const map = {};
+        for (const path of uniquePaths) {
+            const fileName = path.split("/").pop();
+            const nameWithTimestamp = fileName.split("--")[0];
+            const cleanNameRaw = nameWithTimestamp.replace(/^Deco_Building_/, "");
+            const cleanName = normalizeName(cleanNameRaw);
+            map[cleanName] = `${base}${path}.webp`;
+        }
+
+        return map;
+    } catch (error) {
+        console.error("getImageUrlMap error", error);
+        return {};
+    }
+}
+
+function copyTextToClipboard(text) {
+    if (!text) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).catch(() => {});
+        return;
+    }
+    const temp = document.createElement("textarea");
+    temp.value = text;
+    temp.style.position = "fixed";
+    temp.style.top = "-9999px";
+    document.body.appendChild(temp);
+    temp.focus();
+    temp.select();
+    try {
+        document.execCommand("copy");
+    } catch (err) {
+        console.warn("Copy failed:", err);
+    }
+    document.body.removeChild(temp);
+}
+
 // --- UI RENDERING ---
 function setLoadingProgress(step, totalSteps, text) {
     const status = document.getElementById("loadingStatus");
@@ -802,27 +878,34 @@ function renderRewards(rewards, label = "Chance") {
         const idText = (reward.id !== undefined && reward.id !== null && reward.id !== "") ? String(reward.id) : "-";
         let idDisplay = idText;
         if (idText !== "-" && reward.type === "decoration") {
-            idDisplay = `<a class="id-link" href="https://generalscamp.github.io/forum/decorations" target="_blank" rel="noopener">${idText}</a>`;
+            idDisplay = `<a class="id-link" data-id="${idText}" href="https://generalscamp.github.io/forum/decorations" target="_blank" rel="noopener">${idText}</a>`;
         } else if (idText !== "-" && reward.type === "construction") {
-            idDisplay = `<a class="id-link" href="https://generalscamp.github.io/forum/building_items/" target="_blank" rel="noopener">${idText}</a>`;
+            idDisplay = `<a class="id-link" data-id="${idText}" href="https://generalscamp.github.io/forum/building_items/" target="_blank" rel="noopener">${idText}</a>`;
         }
+        const imageUrl = getDecorationImageUrl(reward);
+        const imageBlock = imageUrl
+            ? `<img src="${imageUrl}" class="reward-image-img" loading="lazy" alt="">`
+            : `<div class="reward-image-placeholder">img</div>`;
         col.innerHTML = `
       <div class="box flex-fill">
         <div class="box-content">
-          <h2 class="ci-title">${reward.name}</h2>
-          <div class="card-table border-top">
-            <div class="row g-0">
-              <div class="col-4 card-cell border-end d-flex flex-column justify-content-center">
-                <strong>Amount</strong>
-                <div>${amountText}</div>
+          <h2 class="ci-title reward-title">${reward.name}</h2>
+          <div class="reward-body row g-0 align-items-stretch">
+            <div class="col-6 reward-image">
+              ${imageBlock}
+            </div>
+            <div class="col-6 d-flex flex-column">
+              <div class="reward-stat card-cell flex-fill">
+                <div class="reward-stat-label">Amount</div>
+                <div class="reward-stat-value">${amountText}</div>
               </div>
-              <div class="col-4 card-cell border-end d-flex flex-column justify-content-center">
-                <strong>${label}</strong>
-                <div${chanceStyle}>${chanceText}</div>
+              <div class="reward-stat card-cell flex-fill">
+                <div class="reward-stat-label">${label}</div>
+                <div class="reward-stat-value"${chanceStyle}>${chanceText}</div>
               </div>
-              <div class="col-4 card-cell d-flex flex-column justify-content-center">
-                <strong>ID</strong>
-                <div>${idDisplay}</div>
+              <div class="reward-stat card-cell flex-fill">
+                <div class="reward-stat-label">ID</div>
+                <div class="reward-stat-value">${idDisplay}</div>
               </div>
             </div>
           </div>
@@ -918,19 +1001,31 @@ function handleResize() {
 
 window.addEventListener("resize", handleResize);
 window.addEventListener("DOMContentLoaded", handleResize);
+document.addEventListener("click", event => {
+    const link = event.target.closest(".id-link");
+    if (!link) return;
+    const id = link.getAttribute("data-id") || link.textContent.trim();
+    if (!id || id === "-") return;
+    copyTextToClipboard(id);
+});
 
 async function init() {
     try {
-        const totalSteps = 4;
+        const totalSteps = 5;
         let step = 0;
 
         setLoadingProgress(++step, totalSteps, "Checking item version...");
         const itemVersion = await getItemVersion();
+        const itemUrl = `https://empire-html5.goodgamestudios.com/default/items/items_v${itemVersion}.json`;
         console.log(`Item version: ${itemVersion}`);
+        console.log(`Item URL: %c${itemUrl}`, "color:blue; text-decoration:underline;");
+        console.log("");
 
         setLoadingProgress(++step, totalSteps, "Checking language version...");
         const langVersion = await getLangVersion();
         console.log(`Language version: ${langVersion}`);
+        const langUrl = `https://langserv.public.ggs-ep.com/12@${langVersion}/en/*`;
+        console.log(`Language URL: %c${langUrl}`, "color:blue; text-decoration:underline;");
 
         setLoadingProgress(++step, totalSteps, "Loading language data...");
         await getLanguageData(langVersion);
@@ -960,6 +1055,9 @@ async function init() {
             });
             decorationsById = { ...buildDecorationLookup(decoBuildings), ...decorationsById };
         }
+
+        setLoadingProgress(++step, totalSteps, "Loading images...");
+        imageUrlMap = await getImageUrlMap();
 
         setupSelectors();
 
