@@ -29,7 +29,7 @@ const customEventImages = [
     { name: "Outer Realms", url: "./img/outerrealms.webp", priority: 6, nickname: "" },
     { name: "The Imperial Patronage", url: "./img/patronage.webp", priority: 9, nickname: "Imperial Patronage" },
     { name: "The Bladecoast", url: "./img/bladecoast.webp", priority: 10, nickname: "" },
-    { name: "The Grand Tournament", url: "./img/grandtournament.webp", priority: 11, nickname: "" },
+    { name: "The Grand Tournament", url: "./img/grandtournament.webp", priority: 11, nickname: "Grand Tournament" },
     { name: "Rift Raid", url: "./img/riftraid.webp", priority: 8, nickname: "" }
 ];
 
@@ -119,6 +119,10 @@ function parseDateRange(text) {
     const end = parseDateToken(tokens[1] || tokens[0]);
     if (!start || !end) return null;
     return { start, end };
+}
+function normalizeUtcDate(date) {
+    if (!date) return null;
+    return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
 }
 
 function getSortedEvents(events) {
@@ -512,6 +516,33 @@ function renderCalendar(events) {
         return { title: event.title, ranges };
     });
 
+    const nonLtpeRanges = rangesByEvent
+        .filter(entry => entry.title.toLowerCase() !== "ltpe")
+        .flatMap(entry => entry.ranges);
+    const minNonLtpeDate = nonLtpeRanges.length > 0
+        ? new Date(Math.min(...nonLtpeRanges.map(range => normalizeUtcDate(range.start).getTime())))
+        : null;
+
+    if (minNonLtpeDate) {
+        rangesByEvent.forEach(entry => {
+            if (entry.title.toLowerCase() !== "ltpe") return;
+            entry.ranges = entry.ranges
+                .map(range => {
+                    if (normalizeUtcDate(range.start).getTime() < minNonLtpeDate.getTime()) {
+                        const adjusted = { ...range };
+                        adjusted.start = new Date(minNonLtpeDate.getTime());
+                        adjusted.trimmedStart = true;
+                        if (normalizeUtcDate(adjusted.start).getTime() > normalizeUtcDate(adjusted.end).getTime()) {
+                            return null;
+                        }
+                        return adjusted;
+                    }
+                    return range;
+                })
+                .filter(Boolean);
+        });
+    }
+
     const allRanges = rangesByEvent.flatMap(entry => entry.ranges);
     if (allRanges.length === 0) {
         const empty = document.createElement("div");
@@ -624,12 +655,15 @@ function renderCalendar(events) {
             let edge = false;
             let activeRangeIndex = -1;
             entry.ranges.forEach((range, rangeIndex) => {
-                const startTime = range.start.getTime();
-                const endTime = range.end.getTime();
+                const startTime = normalizeUtcDate(range.start).getTime();
+                const endTime = normalizeUtcDate(range.end).getTime();
                 if (dateTime >= startTime && dateTime <= endTime) {
                     active = true;
                     if (activeRangeIndex === -1) activeRangeIndex = rangeIndex;
-                    if (dateTime === startTime || dateTime === endTime) {
+                    const isStart = dateTime === startTime;
+                    const isEnd = dateTime === endTime;
+                    const trimmedStart = range.trimmedStart === true;
+                    if ((isStart && !trimmedStart) || isEnd) {
                         edge = true;
                     }
                 }

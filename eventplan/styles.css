@@ -236,6 +236,8 @@ h1 {
     padding: 2px 4px;
     text-align: center;
     min-width: 22px;
+    height: 40px;
+    min-height: 40px;
 }
 
 .calendar-title-cell {
