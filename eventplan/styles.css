@@ -190,6 +190,22 @@ h1 {
     line-height: 1.3;
 }
 
+.event-dates span {
+    display: inline;
+}
+
+.event-dates span:not(:last-child)::after {
+    content: ", ";
+}
+
+.snapshot-multiline .event-dates span {
+    display: block;
+}
+
+.snapshot-multiline .event-dates span:not(:last-child)::after {
+    content: ", ";
+}
+
 .event-extra {
     font-size: 14px;
     font-weight: 700;
@@ -302,6 +318,14 @@ h1 {
 
     .event-title {
         font-size: 18px;
+    }
+
+    .event-dates span {
+        display: block;
+    }
+
+    .event-dates span:not(:last-child)::after {
+        content: ", ";
     }
 }
 

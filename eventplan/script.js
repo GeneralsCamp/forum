@@ -468,13 +468,10 @@ function renderEvents(events) {
         dates.className = "event-dates";
 
         if (event.dates.length > 0) {
-            event.dates.forEach((date, index) => {
+            event.dates.forEach(date => {
                 const span = document.createElement("span");
                 span.textContent = date;
                 dates.appendChild(span);
-                if (index < event.dates.length - 1) {
-                    dates.appendChild(document.createTextNode(", "));
-                }
             });
         } else {
             dates.textContent = "No date data.";
@@ -752,6 +749,7 @@ function setupDownloadButton() {
             snapshot.style.gridTemplateColumns = "repeat(3, minmax(0, 1fr))";
             snapshot.style.padding = "12px 14px 18px";
             snapshot.style.visibility = "visible";
+            snapshot.classList.add("snapshot-multiline");
 
             const sandbox = document.createElement("div");
             sandbox.style.position = "fixed";
