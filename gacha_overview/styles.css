@@ -159,12 +159,6 @@ h1 {
     user-select: none;
 }
 
-.reward-image-img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    padding: 6px;
-}
 
 .reward-stat {
     flex: 1 1 auto;
@@ -350,6 +344,10 @@ h1 {
     object-fit: contain;
     padding-left: 2%;
     padding-right: 2%;
+}
+
+.card-image-currency {
+    padding: 15%;
 }
 
 .image-modal {

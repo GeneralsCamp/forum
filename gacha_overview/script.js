@@ -12,6 +12,12 @@ let constructionById = {};
 let decorationsById = {};
 let unitsById = {};
 let imageUrlMap = {};
+let constructionImageUrlMap = {};
+let dllTextCache = "";
+let equipmentImageUrlMap = {};
+let lookSkinsById = {};
+let unitImageUrlMap = {};
+let collectableCurrencyImageUrlMap = {};
 
 const rarityStyles = {
     1: { label: "common", color: "#ffffffff" },
@@ -426,7 +432,7 @@ function resolveRewardEntries(reward) {
             const langKey = `currency_name_${rawName}`.toLowerCase();
             const name = lang[langKey] || rawName;
             const val = Number(reward[addKey]);
-            entries.push({ name, amount: Number.isNaN(val) ? 1 : val, id: null, type: "currency" });
+            entries.push({ name, amount: Number.isNaN(val) ? 1 : val, id: null, type: "currency", addKeyName: rawName });
         }
     }
 
@@ -510,6 +516,13 @@ function getRewardAmount(reward) {
     return 1;
 }
 
+function getAddKeyName(reward) {
+    if (!reward || typeof reward !== "object") return null;
+    const addKey = Object.keys(reward).find(key => key.toLowerCase().startsWith("add"));
+    if (!addKey) return null;
+    return addKey.slice(3);
+}
+
 function formatPercent(value) {
     if (!Number.isFinite(value)) return "0%";
     const rounded = Math.round(value * 100) / 100;
@@ -527,33 +540,101 @@ function getRarityColor(rarity) {
 
 function getDecorationImageUrl(reward) {
     if (!reward || reward.type !== "decoration") return null;
-    const decoId = resolveRewardIdStrict(reward);
+    const decoId = reward.id != null ? reward.id : resolveRewardIdStrict(reward);
     if (!decoId) return null;
     const item = decorationsById[String(decoId)];
-    const cleanType = item ? normalizeName(item.type || item.Type) : "";
+    const rawKey = item ? (item.type || item.Type || item.name || item.Name) : "";
+    const cleanType = normalizeName(rawKey);
     return cleanType ? imageUrlMap[cleanType] || null : null;
 }
 
+function getConstructionImageUrl(reward) {
+    if (!reward || reward.type !== "construction") return null;
+    const consId = reward.id != null ? reward.id : resolveRewardIdStrict(reward);
+    if (!consId) return null;
+    const item = constructionById[String(consId)];
+    const rawName = item ? (item.name || item.Name) : "";
+    const cleanName = normalizeName(rawName);
+    const urls = cleanName ? constructionImageUrlMap[cleanName] : null;
+    return (urls && (urls.placedUrl || urls.iconUrl)) || null;
+}
+
+function getEquipmentImageUrl(reward) {
+    if (!reward || reward.type !== "equipment") return null;
+    const equipId = reward.id != null ? reward.id : resolveRewardIdStrict(reward);
+    if (!equipId) return null;
+    const item = equipmentById[String(equipId)];
+    const skinId = item ? (item.skinID || item.skinId) : null;
+    const skinName = skinId ? lookSkinsById[String(skinId)] : null;
+    const rawName = skinName || (item ? (item.skinName || item.name || item.Name) : "");
+    const cleanName = normalizeName(rawName);
+    const urls = cleanName ? equipmentImageUrlMap[cleanName] : null;
+    if (!urls) return null;
+    const mapObjects = urls.mapObjects || {};
+    const movements = urls.movements || {};
+    const hasMapObjects = Object.keys(mapObjects).length > 0;
+    const hasMovements = Object.keys(movements).length > 0;
+    if (hasMapObjects) {
+        return mapObjects.castleUrl ||
+            mapObjects.outpostUrl ||
+            mapObjects.metroUrl ||
+            mapObjects.capitalUrl ||
+            null;
+    }
+    if (hasMovements) {
+        return movements.moveNormal ||
+            movements.moveBoat ||
+            null;
+    }
+    return null;
+}
+
+function getUnitImageUrl(reward) {
+    if (!reward || reward.type !== "unit") return null;
+    const unitId = reward.id != null ? reward.id : resolveRewardIdStrict(reward);
+    if (!unitId) return null;
+    const unit = unitsById[String(unitId)];
+    const rawName = unit ? (unit.name || unit.Name) : "";
+    const rawType = unit ? (unit.type || unit.Type) : "";
+    if (!rawName || !rawType) return null;
+    const key = normalizeName(`${rawName}_unit_${rawType}`);
+    return unitImageUrlMap[key] || null;
+}
+
+function getCurrencyImageUrl(reward) {
+    if (!reward || typeof reward !== "object") return null;
+    const rawName = reward.addKeyName || getAddKeyName(reward);
+    if (!rawName) return null;
+    const cleanName = normalizeName(rawName);
+    return cleanName ? collectableCurrencyImageUrlMap[cleanName] || null : null;
+}
+
 // --- IMAGE LOADING (DLL PARSING) ---
+async function getDllText() {
+    if (dllTextCache) return dllTextCache;
+    const indexUrl = "https://empire-html5.goodgamestudios.com/default/index.html";
+    const indexRes = await fetchWithFallback(indexUrl);
+    const indexHtml = await indexRes.text();
+
+    const dllMatch = indexHtml.match(/<link\s+id=["']dll["']\s+rel=["']preload["']\s+href=["']([^"']+)["']/i);
+    if (!dllMatch) throw new Error("DLL: not found");
+    const dllRelativeUrl = dllMatch[1];
+    const dllUrl = `https://empire-html5.goodgamestudios.com/default/${dllRelativeUrl}`;
+
+    console.log("");
+    console.log(`DLL version: ${dllRelativeUrl}`);
+    console.log(`DLL URL: %c${dllUrl}`, "color:blue; text-decoration:underline;");
+    console.log("");
+
+    const dllRes = await fetchWithFallback(dllUrl);
+    dllTextCache = await dllRes.text();
+    return dllTextCache;
+}
+
 async function getImageUrlMap() {
     const base = "https://empire-html5.goodgamestudios.com/default/assets/itemassets/";
     try {
-        const indexUrl = "https://empire-html5.goodgamestudios.com/default/index.html";
-        const indexRes = await fetchWithFallback(indexUrl);
-        const indexHtml = await indexRes.text();
-
-        const dllMatch = indexHtml.match(/<link\s+id=["']dll["']\s+rel=["']preload["']\s+href=["']([^"']+)["']/i);
-        if (!dllMatch) throw new Error("DLL: not found");
-        const dllRelativeUrl = dllMatch[1];
-        const dllUrl = `https://empire-html5.goodgamestudios.com/default/${dllRelativeUrl}`;
-
-        console.log("");
-        console.log(`DLL version: ${dllRelativeUrl}`);
-        console.log(`DLL URL: %c${dllUrl}`, "color:blue; text-decoration:underline;");
-        console.log("");
-
-        const dllRes = await fetchWithFallback(dllUrl);
-        const text = await dllRes.text();
+        const text = await getDllText();
 
         const regex = /Building\/Deco\/[^\s"'`<>]+?--\d+/g;
         const matches = [...text.matchAll(regex)];
@@ -571,6 +652,175 @@ async function getImageUrlMap() {
         return map;
     } catch (error) {
         console.error("getImageUrlMap error", error);
+        return {};
+    }
+}
+
+async function getConstructionImageUrlMap() {
+    const base = "https://empire-html5.goodgamestudios.com/default/assets/itemassets/";
+    try {
+        const text = await getDllText();
+
+        const regexIcon = /ConstructionItems\/ConstructionItem_([^\s"'`<>]+?)--\d+/g;
+        const regexPlaced = /Building\/[^\/]+\/([^\/]+)\/[^\/]+--\d+/g;
+
+        const map = {};
+
+        for (const match of text.matchAll(regexIcon)) {
+            const name = match[1];
+            const normalized = normalizeName(name);
+            const url = `${base}${match[0]}.webp`;
+            if (!map[normalized]) map[normalized] = {};
+            map[normalized].iconUrl = url;
+        }
+
+        for (const match of text.matchAll(regexPlaced)) {
+            const nameWithPrefix = match[1];
+            const name = nameWithPrefix.split("_Building_").pop();
+            const normalized = normalizeName(name);
+            const url = `${base}${match[0]}.webp`;
+            if (!map[normalized]) map[normalized] = {};
+            map[normalized].placedUrl = url;
+        }
+
+        return map;
+    } catch (error) {
+        console.error("getConstructionImageUrlMap error", error);
+        return {};
+    }
+}
+
+async function getEquipmentImageUrlMap() {
+    const base = "https://empire-html5.goodgamestudios.com/default/assets/itemassets/";
+    try {
+        const text = await getDllText();
+
+        const regexCastle = /Castle_Mapobject_Special_([A-Za-z0-9]+)--\d+/g;
+        const regexOutpost = /Outpost_Mapobject_Special_([A-Za-z0-9]+)--\d+/g;
+        const regexMetro = /Metropol_Mapobject_Special_([A-Za-z0-9]+)--\d+/g;
+        const regexCapital = /Capital_Mapobject_Special_([A-Za-z0-9]+)--\d+/g;
+        const regexMoveNormal = /Skin_Mapmovement_([A-Za-z0-9]+)_Common--\d+/g;
+        const regexMoveBoat = /Skin_Mapmovement_([A-Za-z0-9]+)_Eiland--\d+/g;
+
+        const map = {};
+
+        function addMatch(regex, keyName, folderBuilder) {
+            for (const match of text.matchAll(regex)) {
+                const fullMatch = match[0];
+                const name = match[1];
+                const normalized = normalizeName(name);
+
+                if (normalized === "halloween" && (keyName === "moveNormal" || keyName === "moveBoat")) {
+                    continue;
+                }
+
+                const [fileName, suffix] = fullMatch.split("--");
+
+                let fixedFileName = fileName;
+                if (fileName === "Outpost_Mapobject_Special_Sand") {
+                    fixedFileName = "Outpost_Mapobject_Special_Sand_8_2_0_Icon";
+                }
+
+                const path = folderBuilder(fixedFileName, suffix);
+                const url = `${base}${path}.webp`;
+
+                if (!map[normalized]) map[normalized] = { mapObjects: {}, movements: {} };
+
+                switch (keyName) {
+                    case "castleUrl":
+                    case "capitalUrl":
+                    case "metroUrl":
+                    case "outpostUrl":
+                        map[normalized].mapObjects[keyName] = url;
+                        break;
+                    case "moveNormal":
+                    case "moveBoat":
+                        map[normalized].movements[keyName] = url;
+                        break;
+                }
+            }
+
+            if (regex === regexCastle) {
+                const underworldKey = normalizeName("Underworld");
+                if (!map[underworldKey]) map[underworldKey] = { mapObjects: {}, movements: {} };
+
+                map[underworldKey].mapObjects.castleUrl =
+                    "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Worldmap/WorldmapObjects/Castles/Underworld_Special/Castle_Mapobject_Special_Underworld_5/Castle_Mapobject_Special_Underworld_5--1573584429307.webp";
+            }
+        }
+
+        addMatch(regexCastle, "castleUrl", (file, suffix) =>
+            `Worldmap/WorldmapObjects/Castles/${file}/${file}--${suffix}`
+        );
+
+        addMatch(regexOutpost, "outpostUrl", (file, suffix) =>
+            `Worldmap/WorldmapObjects/Outposts/${file}/${file}--${suffix}`
+        );
+
+        addMatch(regexMetro, "metroUrl", (file, suffix) =>
+            `Worldmap/WorldmapObjects/Landmarks/${file}/${file}--${suffix}`
+        );
+
+        addMatch(regexCapital, "capitalUrl", (file, suffix) =>
+            `Worldmap/WorldmapObjects/Landmarks/${file}/${file}--${suffix}`
+        );
+
+        addMatch(regexMoveNormal, "moveNormal", (file, suffix) =>
+            `Worldmap/WorldmapObjects/Movements/Skins/${file}/${file}--${suffix}`
+        );
+
+        addMatch(regexMoveBoat, "moveBoat", (file, suffix) =>
+            `Worldmap/WorldmapObjects/Movements/Skins/${file}/${file}--${suffix}`
+        );
+
+        return map;
+    } catch (error) {
+        console.error("getEquipmentImageUrlMap error", error);
+        return {};
+    }
+}
+
+async function getUnitImageUrlMap() {
+    const base = "https://empire-html5.goodgamestudios.com/default/assets/itemassets/";
+    try {
+        const text = await getDllText();
+        const regex = /Units\/[^\/]+\/[^\/]+\/[^\/]+?--\d+/g;
+        const matches = [...text.matchAll(regex)];
+        const uniquePaths = [...new Set(matches.map(m => m[0]))];
+
+        const map = {};
+        for (const path of uniquePaths) {
+            const fileName = path.split("/").pop();
+            const nameWithTimestamp = fileName.split("--")[0];
+            const key = normalizeName(nameWithTimestamp);
+            map[key] = `${base}${path}.webp`;
+        }
+        return map;
+    } catch (error) {
+        console.error("getUnitImageUrlMap error", error);
+        return {};
+    }
+}
+
+async function getCollectableCurrencyImageUrlMap() {
+    const base = "https://empire-html5.goodgamestudios.com/default/assets/itemassets/";
+    try {
+        const text = await getDllText();
+        const regex = /Collectables\/(?:Generals\/)?Collectable_Currency_[^\s"'`<>]+?--\d+/g;
+        const matches = [...text.matchAll(regex)];
+        const uniquePaths = [...new Set(matches.map(m => m[0]))];
+
+        const map = {};
+        for (const path of uniquePaths) {
+            const fileName = path.split("/").pop();
+            const nameWithTimestamp = fileName.split("--")[0];
+            const cleanNameRaw = nameWithTimestamp.replace(/^Collectable_Currency_/, "");
+            const key = normalizeName(cleanNameRaw);
+            map[key] = `${base}${path}.webp`;
+        }
+        return map;
+    } catch (error) {
+        console.error("getCollectableCurrencyImageUrlMap error", error);
         return {};
     }
 }
@@ -833,6 +1083,7 @@ function renderRewardsForSelection() {
         const percent = totalShares > 0 ? (rewardShares[id] / totalShares) * 100 : 0;
         const rewardId = resolveRewardId(reward, id);
         const displayId = resolveRewardIdStrict(reward);
+        const addKeyName = getAddKeyName(reward);
         const key = `${name}::${amount}::${percent}::${rewardId}`;
         if (!seen.has(key)) {
             seen.add(key);
@@ -843,7 +1094,8 @@ function renderRewardsForSelection() {
                 chanceText: formatPercent(percent),
                 rarity: meta.rarity,
                 id: displayId,
-                type: resolveRewardType(reward)
+                type: resolveRewardType(reward),
+                addKeyName
             });
         }
     });
@@ -882,19 +1134,33 @@ function renderRewards(rewards, label = "Chance") {
         } else if (idText !== "-" && reward.type === "construction") {
             idDisplay = `<a class="id-link" data-id="${idText}" href="https://generalscamp.github.io/forum/building_items/" target="_blank" rel="noopener">${idText}</a>`;
         }
-        const imageUrl = getDecorationImageUrl(reward);
+        let imageUrl = null;
+        let imageClass = "card-image";
+        if (reward.type === "decoration") {
+            imageUrl = getDecorationImageUrl(reward);
+        } else if (reward.type === "construction") {
+            imageUrl = getConstructionImageUrl(reward);
+        } else if (reward.type === "equipment") {
+            imageUrl = getEquipmentImageUrl(reward);
+        } else if (reward.type === "unit") {
+            imageUrl = getUnitImageUrl(reward);
+        }
+        if (!imageUrl) {
+            imageUrl = getCurrencyImageUrl(reward);
+            if (imageUrl) imageClass += " card-image-currency";
+        }
         const imageBlock = imageUrl
-            ? `<img src="${imageUrl}" class="reward-image-img" loading="lazy" alt="">`
+            ? `<div class="image-wrapper"><img src="${imageUrl}" class="${imageClass}" loading="lazy" alt=""></div>`
             : `<div class="reward-image-placeholder">img</div>`;
         col.innerHTML = `
       <div class="box flex-fill">
         <div class="box-content">
           <h2 class="ci-title reward-title">${reward.name}</h2>
           <div class="reward-body row g-0 align-items-stretch">
-            <div class="col-6 reward-image">
+            <div class="col-4 reward-image">
               ${imageBlock}
             </div>
-            <div class="col-6 d-flex flex-column">
+            <div class="col-8 d-flex flex-column">
               <div class="reward-stat card-cell flex-fill">
                 <div class="reward-stat-label">Amount</div>
                 <div class="reward-stat-value">${amountText}</div>
@@ -954,6 +1220,7 @@ function renderTopRewardsForSelection(eventId, setId) {
             const amount = getRewardAmount(reward);
             const rewardKeyId = resolveRewardId(reward, rewardId);
             const displayId = resolveRewardIdStrict(reward);
+            const addKeyName = getAddKeyName(reward);
             const key = `${name}::${amount}::${tier}::${rewardKeyId}`;
             if (!seen.has(key)) {
                 seen.add(key);
@@ -962,7 +1229,8 @@ function renderTopRewardsForSelection(eventId, setId) {
                     amount,
                     chanceText: `TOP${tier}`,
                     id: displayId,
-                    type: resolveRewardType(reward)
+                    type: resolveRewardType(reward),
+                    addKeyName
                 });
             }
             return;
@@ -977,7 +1245,8 @@ function renderTopRewardsForSelection(eventId, setId) {
                     amount: entry.amount,
                     chanceText: `TOP${tier}`,
                     id: entry.id,
-                    type: entry.type || null
+                    type: entry.type || null,
+                    addKeyName: entry.addKeyName || null
                 });
             }
         });
@@ -1035,11 +1304,12 @@ async function init() {
 
         const rewards = getArray(itemsData, ["rewards"]);
         const currencies = getArray(itemsData, ["currencies"]);
-        const equipment = getArray(itemsData, ["equipmentItems", "equipmentitems"]);
+        const equipment = getArray(itemsData, ["equipmentItems", "equipmentitems", "equipments"]);
         const constructions = getArray(itemsData, ["constructionItems", "constructionitems"]);
         const decorations = getArray(itemsData, ["decorations", "decorationItems", "decorationitems"]);
         const units = getArray(itemsData, ["units", "Units"]);
         const buildings = getArray(itemsData, ["buildings", "Buildings"]);
+        const worldmapSkins = getArray(itemsData, ["worldmapskins", "worldmapSkins", "worldMapSkins"]);
 
         rewardsById = buildLookup(rewards, "rewardID");
         currenciesById = buildLookup(currencies, "currencyID");
@@ -1047,6 +1317,13 @@ async function init() {
         constructionById = buildLookup(constructions, "constructionItemID");
         decorationsById = buildLookup(decorations, "decoWODID");
         unitsById = buildLookup(units, "wodID");
+        lookSkinsById = {};
+        worldmapSkins.forEach(skin => {
+            const id = skin.skinID;
+            if (id !== undefined && id !== null) {
+                lookSkinsById[String(id)] = skin.name || skin.Name || null;
+            }
+        });
         if (buildings.length > 0) {
             const decoBuildings = buildings.filter(b => {
                 const name = (b.name || "").toString().toLowerCase();
@@ -1058,6 +1335,10 @@ async function init() {
 
         setLoadingProgress(++step, totalSteps, "Loading images...");
         imageUrlMap = await getImageUrlMap();
+        constructionImageUrlMap = await getConstructionImageUrlMap();
+        equipmentImageUrlMap = await getEquipmentImageUrlMap();
+        unitImageUrlMap = await getUnitImageUrlMap();
+        collectableCurrencyImageUrlMap = await getCollectableCurrencyImageUrlMap();
 
         setupSelectors();
 
