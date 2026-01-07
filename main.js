@@ -20,8 +20,8 @@ const categories = {
     simulators: [
         { name: "Hall of Legends Simulator", desc: "Try point allocations without spending rubies.", icon: "hall-of-legends-simulator-icon.webp", link: "./hol_simulator/index.html", disabled: false },
         { name: "Castle Layout Simulator", desc: "Design and manage your layouts manually or automatically.", icon: "layout-icon.webp", link: "./layout_editor/index.html", disabled: false },
-        { name: "Imperial Patronage Simulator", desc: "Try to upgrade the decorations without any in-game resources.", icon: "patronage-icon.webp", link: "#", disabled: true },
-        { name: "Battle Simulator", desc: "Try to attack or defend without any in-game losses.", icon: "battle-simulator-icon.webp", link: "#", disabled: true }
+        //{ name: "Imperial Patronage Simulator", desc: "Try to upgrade the decorations without any in-game resources.", icon: "patronage-icon.webp", link: "#", disabled: true },
+        //{ name: "Battle Simulator", desc: "Try to attack or defend without any in-game losses.", icon: "battle-simulator-icon.webp", link: "#", disabled: true }
     ]
 };
 
