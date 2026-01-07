@@ -198,12 +198,50 @@ h1 {
     content: ", ";
 }
 
+.event-date-groups {
+    display: flex;
+    flex-direction: column;
+}
+
+.event-subtitle {
+    font-weight: 700;
+    color: #4d3520;
+}
+
+.event-dates-group span {
+    display: block;
+}
+
+.event-dates-group span:not(:last-child)::after {
+    content: "";
+}
+
 .snapshot-multiline .event-dates span {
     display: block;
 }
 
 .snapshot-multiline .event-dates span:not(:last-child)::after {
     content: ", ";
+}
+
+.event-date-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.event-subtitle {
+    font-weight: 700;
+    color: #4d3520;
+    margin-top: 2px;
+}
+
+.event-dates-group span {
+    display: block;
+}
+
+.event-dates-group span:not(:last-child)::after {
+    content: "";
 }
 
 .event-extra {
@@ -215,6 +253,10 @@ h1 {
 
 .event-extra div {
     margin-bottom: 2px;
+}
+
+p {
+    margin-bottom: 0;
 }
 
 /* --- CALENDAR VIEW --- */
@@ -699,7 +741,7 @@ h1 {
 
 .level-selector button:disabled {
     background-color: rgba(189, 154, 121, 0.6);
-    color: rgba(67, 49, 32, 0.6); 
+    color: rgba(67, 49, 32, 0.6);
     cursor: default;
     box-shadow: none;
 }
@@ -807,4 +849,3 @@ h1 {
     font-weight: bold;
     user-select: none;
 }
-

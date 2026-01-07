@@ -100,6 +100,81 @@ function extractDates(text, title) {
         .slice(0, 12);
 }
 
+function lineHasDateToken(line) {
+    return /(\d{1,2}[./-]\d{1,2}(?:[./-]\d{2,4})?)/.test(line);
+}
+
+function extractDateGroups(rawText, title) {
+    const lines = String(rawText || "")
+        .split(/\r?\n/)
+        .map(line => line.trim())
+        .filter(Boolean);
+    if (lines.length === 0) return null;
+
+    const titleLower = String(title || "").toLowerCase();
+    let removedTitle = false;
+    const cleaned = [];
+    lines.forEach(line => {
+        const normalized = normalizeText(line).toLowerCase();
+        if (!removedTitle && titleLower && normalized === titleLower) {
+            removedTitle = true;
+            return;
+        }
+        cleaned.push(line);
+    });
+
+    const groups = [];
+    let currentLabel = "";
+    let currentDates = [];
+    let hasLabel = false;
+
+    const flush = () => {
+        if (currentLabel || currentDates.length > 0) {
+            groups.push({ label: currentLabel, dates: currentDates });
+        }
+        currentLabel = "";
+        currentDates = [];
+    };
+
+    cleaned.forEach(line => {
+        if (lineHasDateToken(line)) {
+            currentDates.push(line);
+            return;
+        }
+        if (currentDates.length > 0 || currentLabel) {
+            flush();
+        }
+        currentLabel = line;
+        hasLabel = true;
+    });
+
+    flush();
+
+    const filtered = groups.filter(group => group.dates && group.dates.length > 0);
+    if (!hasLabel) return null;
+    return filtered.length > 0 ? filtered : null;
+}
+
+function extractLinesFromNode(node) {
+    if (!node) return [];
+    if (node.tagName && node.tagName.toLowerCase() === "p") {
+        const html = node.innerHTML.replace(/<br\s*\/?>/gi, "\n");
+        const temp = node.ownerDocument
+            ? node.ownerDocument.createElement("div")
+            : document.createElement("div");
+        temp.innerHTML = html;
+        return String(temp.textContent || "")
+            .split(/\r?\n/)
+            .map(line => line.trim())
+            .filter(Boolean);
+    }
+    return String(node.textContent || "")
+        .split(/\r?\n/)
+        .map(line => line.trim())
+        .filter(Boolean);
+}
+
+
 function parseDateToken(token) {
     const match = String(token || "").match(/(\d{1,2})[./-](\d{1,2})(?:[./-](\d{2,4}))?/);
     if (!match) return null;
@@ -281,7 +356,7 @@ function extractEventsFromGroups(root, baseUrl) {
             if (lower.includes("event plan") || lower.includes("eventplan")) return;
             if (lower.includes("current ltpe") || lower.includes("upcoming ltpe")) return;
 
-            const parts = [title];
+            const rawLines = [title];
             let imageUrl = "";
             let node = titleNode.nextElementSibling;
 
@@ -295,19 +370,21 @@ function extractEventsFromGroups(root, baseUrl) {
                         imageUrl = resolveImageUrl(img.getAttribute("src"), baseUrl);
                     }
                 }
-                if (node.textContent) {
-                    parts.push(node.textContent);
-                }
+                rawLines.push(...extractLinesFromNode(node));
                 node = node.nextElementSibling;
             }
 
-            const text = normalizeText(parts.join(" "));
-            const dates = extractDates(text, title);
+            const rawText = rawLines.join("\n");
+            const dateGroups = extractDateGroups(rawText, title);
+            const dates = dateGroups
+                ? dateGroups.flatMap(group => group.dates)
+                : extractDates(normalizeText(rawText), title);
             if (dates.length === 0 && !imageUrl) return;
 
             events.push({
                 title,
                 dates,
+                dateGroups,
                 imageUrl
             });
         });
@@ -469,21 +546,46 @@ function renderEvents(events) {
         title.className = "event-title";
         title.textContent = getDisplayTitle(event.title);
 
-        const dates = document.createElement("p");
-        dates.className = "event-dates";
+        if (event.dateGroups && event.dateGroups.length > 0) {
+            const groupWrap = document.createElement("div");
+            groupWrap.className = "event-date-groups";
 
-        if (event.dates.length > 0) {
-            event.dates.forEach(date => {
-                const span = document.createElement("span");
-                span.textContent = date;
-                dates.appendChild(span);
+            event.dateGroups.forEach(group => {
+                if (group.label) {
+                    const subtitle = document.createElement("div");
+                    subtitle.className = "event-subtitle";
+                    subtitle.textContent = group.label;
+                    groupWrap.appendChild(subtitle);
+                }
+                const groupDates = document.createElement("p");
+                groupDates.className = "event-dates event-dates-group";
+                group.dates.forEach(date => {
+                    const span = document.createElement("span");
+                    span.textContent = date;
+                    groupDates.appendChild(span);
+                });
+                groupWrap.appendChild(groupDates);
             });
-        } else {
-            dates.textContent = "No date data.";
-        }
 
-        meta.appendChild(title);
-        meta.appendChild(dates);
+            meta.appendChild(title);
+            meta.appendChild(groupWrap);
+        } else {
+            const dates = document.createElement("p");
+            dates.className = "event-dates";
+
+            if (event.dates.length > 0) {
+                event.dates.forEach(date => {
+                    const span = document.createElement("span");
+                    span.textContent = date;
+                    dates.appendChild(span);
+                });
+            } else {
+                dates.textContent = "No date data.";
+            }
+
+            meta.appendChild(title);
+            meta.appendChild(dates);
+        }
 
         card.appendChild(img);
         card.appendChild(meta);
@@ -510,9 +612,23 @@ function renderCalendar(events) {
 
     const sortedEvents = getSortedEvents(events);
     const rangesByEvent = sortedEvents.map(event => {
-        const ranges = (event.dates || [])
-            .map(parseDateRange)
-            .filter(Boolean);
+        let ranges = [];
+        if (event.dateGroups && event.dateGroups.length > 0) {
+            event.dateGroups.forEach(group => {
+                const label = group.label || "";
+                (group.dates || []).forEach(dateText => {
+                    const parsed = parseDateRange(dateText);
+                    if (parsed) {
+                        ranges.push({ start: parsed.start, end: parsed.end, label });
+                    }
+                });
+            });
+        } else {
+            ranges = (event.dates || [])
+                .map(parseDateRange)
+                .filter(Boolean)
+                .map(range => ({ start: range.start, end: range.end, label: "" }));
+        }
         return { title: event.title, ranges };
     });
 
@@ -654,12 +770,16 @@ function renderCalendar(events) {
             let active = false;
             let edge = false;
             let activeRangeIndex = -1;
+            let invasionActive = false;
             entry.ranges.forEach((range, rangeIndex) => {
                 const startTime = normalizeUtcDate(range.start).getTime();
                 const endTime = normalizeUtcDate(range.end).getTime();
                 if (dateTime >= startTime && dateTime <= endTime) {
                     active = true;
                     if (activeRangeIndex === -1) activeRangeIndex = rangeIndex;
+                    if (range.label && range.label.toLowerCase().includes("invasion")) {
+                        invasionActive = true;
+                    }
                     const isStart = dateTime === startTime;
                     const isEnd = dateTime === endTime;
                     const trimmedStart = range.trimmedStart === true;
@@ -674,6 +794,9 @@ function renderCalendar(events) {
                 if (entry.title.toLowerCase() === "ltpe" && activeRangeIndex >= 0) {
                     const base = "#6f8ad9";
                     color = activeRangeIndex === 1 ? lightenColor(base, 0.33) : base;
+                }
+                if (entry.title.toLowerCase() === "berimond" && invasionActive) {
+                    color = lightenColor(color, 0.33);
                 }
                 td.style.setProperty("--event-color", color);
                 td.textContent = edge ? "0,5" : "1";
