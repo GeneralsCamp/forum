@@ -708,6 +708,21 @@ function renderCurrentView() {
     }
 }
 
+function getGameKeyFromHash() {
+    const hash = window.location.hash.replace("#", "").toLowerCase();
+    if (hash === "e4k") return "e4k";
+    if (hash === "em" || hash === "empire") return "empire";
+    return null;
+}
+
+function updateHashForGame(key) {
+    if (key === "e4k") {
+        window.location.hash = "e4k";
+    } else if (key === "empire") {
+        window.location.hash = "em";
+    }
+}
+
 function setupDownloadButton() {
     const button = document.getElementById("downloadButton");
     if (!button) return;
@@ -839,8 +854,12 @@ function setupSelectors() {
             option.textContent = info.label;
             gameSelect.appendChild(option);
         });
-        gameSelect.value = "empire";
-        gameSelect.addEventListener("change", () => loadEvents(gameSelect.value));
+        const hashKey = getGameKeyFromHash();
+        gameSelect.value = hashKey || "empire";
+        gameSelect.addEventListener("change", () => {
+            updateHashForGame(gameSelect.value);
+            loadEvents(gameSelect.value);
+        });
     }
 
     if (viewSelect) {
@@ -876,6 +895,11 @@ window.addEventListener("DOMContentLoaded", () => {
     setupSelectors();
     setupDownloadButton();
     preloadAllEvents().then(() => {
+        const hashKey = getGameKeyFromHash();
+        if (hashKey) {
+            const gameSelect = document.getElementById("gameSelect");
+            if (gameSelect) gameSelect.value = hashKey;
+        }
         renderCurrentView();
     });
 });
