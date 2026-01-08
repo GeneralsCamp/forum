@@ -200,6 +200,14 @@ function normalizeUtcDate(date) {
     return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
 }
 
+function rangesOverlap(a, b) {
+    const aStart = normalizeUtcDate(a.start).getTime();
+    const aEnd = normalizeUtcDate(a.end).getTime();
+    const bStart = normalizeUtcDate(b.start).getTime();
+    const bEnd = normalizeUtcDate(b.end).getTime();
+    return bStart <= aEnd && bEnd >= aStart;
+}
+
 function getSortedEvents(events) {
     return [...events].sort((a, b) => {
         const aMatch = customEventImages.find(entry => entry.name.toLowerCase() === a.title.toLowerCase());
@@ -632,6 +640,27 @@ function renderCalendar(events) {
         return { title: event.title, ranges, imageUrl: event.imageUrl };
     });
 
+    const altLightTitles = new Set(["outer realms", "beyond the horizon"]);
+    rangesByEvent.forEach(entry => {
+        if (!altLightTitles.has(entry.title.toLowerCase())) return;
+        const sortedRanges = [...entry.ranges].sort((a, b) => {
+            const aStart = normalizeUtcDate(a.start).getTime();
+            const bStart = normalizeUtcDate(b.start).getTime();
+            return aStart - bStart;
+        });
+        let prev = null;
+        let alt = false;
+        sortedRanges.forEach(range => {
+            if (prev && rangesOverlap(prev, range)) {
+                alt = !alt;
+            } else {
+                alt = false;
+            }
+            range.lightenAlt = alt;
+            prev = range;
+        });
+    });
+
     const nonLtpeRanges = rangesByEvent
         .filter(entry => entry.title.toLowerCase() !== "ltpe")
         .flatMap(entry => entry.ranges);
@@ -790,13 +819,15 @@ function renderCalendar(events) {
             let active = false;
             let edge = false;
             let activeRangeIndex = -1;
+            let activeRange = null;
             let invasionActive = false;
             entry.ranges.forEach((range, rangeIndex) => {
                 const startTime = normalizeUtcDate(range.start).getTime();
                 const endTime = normalizeUtcDate(range.end).getTime();
                 if (dateTime >= startTime && dateTime <= endTime) {
                     active = true;
-                    if (activeRangeIndex === -1) activeRangeIndex = rangeIndex;
+                    activeRangeIndex = rangeIndex;
+                    activeRange = range;
                     if (range.label && range.label.toLowerCase().includes("invasion")) {
                         invasionActive = true;
                     }
@@ -811,11 +842,15 @@ function renderCalendar(events) {
             if (active) {
                 td.classList.add("active");
                 let color = palette[idx % palette.length];
-                if (entry.title.toLowerCase() === "ltpe" && activeRangeIndex >= 0) {
+                const lowerTitle = entry.title.toLowerCase();
+                if (lowerTitle === "ltpe" && activeRangeIndex >= 0) {
                     const base = "#6f8ad9";
                     color = activeRangeIndex === 1 ? lightenColor(base, 0.33) : base;
                 }
-                if (entry.title.toLowerCase() === "berimond" && invasionActive) {
+                if (activeRange && activeRange.lightenAlt) {
+                    color = lightenColor(color, 0.3);
+                }
+                if (lowerTitle === "berimond" && invasionActive) {
                     color = lightenColor(color, 0.33);
                 }
                 td.style.setProperty("--event-color", color);
