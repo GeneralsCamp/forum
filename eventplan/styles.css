@@ -136,7 +136,6 @@ h1 {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 0;
-    padding: 6px 4px 14px;
     background-color: #f3e6c8;
     border-radius: 14px;
     visibility: hidden;
@@ -263,13 +262,33 @@ p {
 .calendar-scroll {
     width: 100%;
     overflow: auto;
+    border-radius: 14px;
+    background-color: #f3e6c8;
+    border: 1px solid #c7b08f;
 }
 
 .calendar-table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
     font-size: 12px;
     color: #2b1c0e;
+}
+
+.calendar-table thead tr:first-child th:first-child {
+    border-top-left-radius: 14px;
+}
+
+.calendar-table thead tr:first-child th:last-child {
+    border-top-right-radius: 14px;
+}
+
+.calendar-table tbody tr:last-child th:first-child {
+    border-bottom-left-radius: 0;
+}
+
+.calendar-table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 0;
 }
 
 .calendar-table th,
@@ -289,6 +308,12 @@ p {
     position: sticky;
     left: 0;
     z-index: 3;
+}
+
+.calendar-title-cell,
+.calendar-event-name {
+    width: 240px;
+    min-width: 240px;
 }
 
 .calendar-month-row th {
@@ -314,6 +339,28 @@ p {
     position: sticky;
     left: 0;
     z-index: 2;
+}
+
+.calendar-event-name-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.calendar-event-name-wrap span {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.calendar-event-icon {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    flex-shrink: 0;
 }
 
 .calendar-cell.active {
@@ -385,7 +432,7 @@ p {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background-color: #f2d9bb;
+    background-color: #a37a5a;
 }
 
 /* --- FORM ELEMENTS --- */

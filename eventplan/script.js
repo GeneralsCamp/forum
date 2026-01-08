@@ -629,7 +629,7 @@ function renderCalendar(events) {
                 .filter(Boolean)
                 .map(range => ({ start: range.start, end: range.end, label: "" }));
         }
-        return { title: event.title, ranges };
+        return { title: event.title, ranges, imageUrl: event.imageUrl };
     });
 
     const nonLtpeRanges = rangesByEvent
@@ -756,7 +756,27 @@ function renderCalendar(events) {
         const tr = document.createElement("tr");
         const nameCell = document.createElement("th");
         nameCell.className = "calendar-event-name";
-        nameCell.textContent = getDisplayTitle(entry.title);
+        const displayTitle = getDisplayTitle(entry.title);
+        const nameWrap = document.createElement("div");
+        nameWrap.className = "calendar-event-name-wrap";
+
+        const custom = customEventImages.find(
+            entryImage => entryImage.name.toLowerCase() === entry.title.toLowerCase()
+        );
+        const iconUrl = custom?.url || entry.imageUrl || "";
+        if (iconUrl) {
+            const icon = document.createElement("img");
+            icon.className = "calendar-event-icon";
+            icon.src = iconUrl;
+            icon.alt = displayTitle;
+            icon.loading = "lazy";
+            nameWrap.appendChild(icon);
+        }
+
+        const titleSpan = document.createElement("span");
+        titleSpan.textContent = displayTitle;
+        nameWrap.appendChild(titleSpan);
+        nameCell.appendChild(nameWrap);
         tr.appendChild(nameCell);
 
         dates.forEach((date, index) => {
