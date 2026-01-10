@@ -505,7 +505,7 @@ h1 {
     width: 64px;
     height: 64px;
     border-radius: 50%;
-    background-color: #2e323d;
+    background-color: #4c5263;
     border: 3px solid #999;
     display: flex;
     align-items: center;
@@ -514,7 +514,7 @@ h1 {
 }
 
 .skill-group.maxed {
-    border-color: #f4b551;
+    border: #f4b551 2px solid;
 }
 
 .skill-group img {
