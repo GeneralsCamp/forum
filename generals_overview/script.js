@@ -121,7 +121,17 @@ function buildGroupedSkills(generalId) {
 
     skills.forEach(skill => {
         const tier = Number(skill.tier);
-        const groupId = resolveAbilityGroupId(skill);
+        const rawGroupId = String(skill.skillgroupid || "");
+
+        // ability csak akkor, ha kicsi (3/3)
+        const isAbilityLike = skills
+            .filter(s => s.skillgroupid === skill.skillgroupid)
+            .length <= 3;
+
+        const groupId = isAbilityLike
+            ? resolveAbilityGroupId(skill)
+            : rawGroupId;
+
 
         if (!grouped[tier]) grouped[tier] = {};
         if (!grouped[tier][groupId]) {
@@ -401,16 +411,38 @@ function renderSkillTreeGrouped(generalId) {
         content.className = "skill-tier-content";
 
         Object.values(grouped[tier])
-            .sort((a, b) => Number(a.groupId) - Number(b.groupId))
+            .sort((a, b) => {
+                const aIsAbility = a.maxLevel <= 3;
+                const bIsAbility = b.maxLevel <= 3;
+
+                if (aIsAbility !== bIsAbility) {
+                    return aIsAbility ? -1 : 1;
+                }
+
+                return Number(b.groupId) - Number(a.groupId);
+            })
             .forEach(group => {
 
-                const iconUrl = resolveSkillIcon(group.sampleSkill);
+
+                const isAbilityLike = group.maxLevel <= 3;
+
+                const iconUrl = isAbilityLike
+                    ? resolveSkillIcon(group.sampleSkill)
+                    : fallbackIconMap[
+                    skillTypeMap[
+                    getBaseSkillName(group.sampleSkill.name)
+                    ]
+                    ] || "./img/unknown-icon.webp";
 
                 const groupDiv = document.createElement("div");
                 groupDiv.className = "skill-group";
-                const abilityType = getAbilityTypeFromGroup(group.groupId);
-                groupDiv.classList.add(abilityType);
 
+                if (isAbilityLike) {
+                    groupDiv.title = `Ability Group ID: ${group.groupId}`;
+
+                    const abilityType = getAbilityTypeFromGroup(group.groupId);
+                    groupDiv.classList.add(abilityType);
+                }
 
                 if (group.currentLevel >= group.maxLevel) {
                     groupDiv.classList.add("maxed");
