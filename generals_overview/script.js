@@ -123,7 +123,6 @@ function buildGroupedSkills(generalId) {
         const tier = Number(skill.tier);
         const rawGroupId = String(skill.skillgroupid || "");
 
-        // ability csak akkor, ha kicsi (3/3)
         const isAbilityLike = skills
             .filter(s => s.skillgroupid === skill.skillgroupid)
             .length <= 3;
@@ -198,6 +197,35 @@ function getAbilityTypeFromGroup(groupId) {
     return "unknown";
 }
 
+function createSkillOverview(viewContainer, skillTreeEl) {
+    const overview = document.createElement("div");
+    overview.id = "skillOverview";
+    overview.className = "skill-overview empty";
+    overview.textContent = "";
+
+    viewContainer.insertBefore(overview, skillTreeEl);
+}
+
+function resolveSkillDisplayName(skill) {
+    const base = getBaseSkillName(skill.name);
+    const rarityMap = {
+        Common: "Common",
+        Rare: "Rare",
+        Epic: "Epic",
+        Legendary: "Legendary"
+    };
+
+    const rarity = Object.keys(rarityMap).find(r =>
+        skill.name.toLowerCase().includes(r.toLowerCase())
+    );
+
+    if (rarity) {
+        const key = `generals_skill_name_${base}${rarity}`;
+        return lang[key.toLowerCase()] || base;
+    }
+
+    return base;
+}
 
 // ================== DLL ==================
 async function getDllText() {
@@ -391,6 +419,14 @@ function renderSkillTreeGrouped(generalId) {
     const container = document.getElementById("skillTreeGrouped");
     if (!container) return;
 
+    const viewSkills = container.parentElement;
+
+    if (!document.getElementById("skillOverview")) {
+        createSkillOverview(viewSkills, container);
+    }
+
+    if (!container) return;
+
     container.innerHTML = "";
 
     const grouped = buildGroupedSkills(generalId);
@@ -436,6 +472,51 @@ function renderSkillTreeGrouped(generalId) {
 
                 const groupDiv = document.createElement("div");
                 groupDiv.className = "skill-group";
+
+                groupDiv.addEventListener("click", () => {
+                    const overview = document.getElementById("skillOverview");
+                    if (!overview) return;
+
+                    overview.classList.remove("empty");
+                    overview.innerHTML = "";
+
+                    const iconWrapper = document.createElement("div");
+                    iconWrapper.className = "skill-group";
+
+                    if (isAbilityLike) {
+                        const abilityType = getAbilityTypeFromGroup(group.groupId);
+                        iconWrapper.classList.add(abilityType);
+                    }
+
+                    const iconImg = document.createElement("img");
+                    iconImg.src = iconUrl;
+                    iconImg.alt = "";
+
+                    iconWrapper.appendChild(iconImg);
+
+                    const info = document.createElement("div");
+                    info.className = "skill-overview-info";
+
+                    const name = document.createElement("div");
+                    name.textContent =
+                        lang[`generals_abilities_name_${group.groupId}`] ||
+                        resolveSkillDisplayName(group.sampleSkill) ||
+                        "Unknown";
+
+                    const type = document.createElement("div");
+                    const abilityTypeText = isAbilityLike
+                        ? getAbilityTypeFromGroup(group.groupId)
+                        : "skill";
+
+                    type.textContent = `Type: ${abilityTypeText}`;
+                    type.className = `skill-overview-type ${abilityTypeText}`;
+
+                    info.appendChild(name);
+                    info.appendChild(type);
+
+                    overview.appendChild(iconWrapper);
+                    overview.appendChild(info);
+                });
 
                 if (isAbilityLike) {
                     groupDiv.title = `Ability Group ID: ${group.groupId}`;

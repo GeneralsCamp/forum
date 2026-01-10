@@ -91,14 +91,14 @@ h1 {
 }
 
 @media (min-width: 769px) {
-    .note > .col-md-1 {
+    .note>.col-md-1 {
         display: flex;
         justify-content: center;
     }
 }
 
 @media (max-width: 769px) {
-    .note > .col-md-1 {
+    .note>.col-md-1 {
         display: none;
     }
 }
@@ -484,6 +484,8 @@ h1 {
     background-color: rgb(145, 98, 65);
     padding: 10px 6px;
     border-bottom: white 1px solid;
+    border-left: white 1px solid;
+    border-right: white 1px solid;
 }
 
 .skill-tier-label {
@@ -588,4 +590,57 @@ h1 {
     .skill-tier-content {
         gap: 10px;
     }
+}
+
+/* ===== Skill Overview Panel ===== */
+.skill-overview {
+    height: 96px;
+    padding: 10px 6px;
+    margin-bottom: 0;
+
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    background-color: rgb(145, 98, 65);
+    border: 1px solid white;
+}
+
+.skill-overview.empty {
+    opacity: 0.6;
+}
+
+.skill-overview-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 14px;
+}
+
+.skill-overview-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    color: white;
+}
+
+.skill-overview-info > div:first-child {
+    font-weight: 700;
+    color: #f4b551;
+}
+
+.skill-overview img {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+}
+
+.skill-overview .skill-group {
+    width: 64px;
+    height: 64px;
+    cursor: default;
+}
+
+.skill-overview .skill-group-level {
+    display: none;
 }
