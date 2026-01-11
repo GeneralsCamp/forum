@@ -30,6 +30,7 @@ const skillTypeMap = {
     UnitAmountFlank: "attack",
     UnitAmountFront: "attack",
     BonusPowerYard: "attack",
+    additionalWavesSiege: "attack",
 };
 
 const fallbackIconMap = {
@@ -119,14 +120,15 @@ function buildGroupedSkills(generalId) {
         const tier = Number(skill.tier);
         const rawGroupId = String(skill.skillgroupid || "");
 
-        const isAbilityLike = skills
+        const levelCount = skills
             .filter(s => s.skillgroupid === skill.skillgroupid)
-            .length <= 3;
+            .length;
+
+        const isAbilityLike = levelCount > 1 && levelCount <= 3;
 
         const groupId = isAbilityLike
             ? resolveAbilityGroupId(skill)
             : rawGroupId;
-
 
         if (!grouped[tier]) grouped[tier] = {};
         if (!grouped[tier][groupId]) {
@@ -302,22 +304,30 @@ function resolveAbilityDescription(groupId, skill, ability, type) {
     return text;
 }
 
-function resolveSkillDescription(skill, type) {
+function resolveSkillDescription(skill) {
     if (!skill?.effects) return "";
 
     const [, value] = skill.effects.split("&");
     const baseName = getBaseSkillName(skill.name);
+    if (!baseName) return "";
 
-    const rarity =
-        skill.name.match(/Legendary|Epic|Rare|Common/i)?.[0] || "";
+    let text = lang[`generals_skill_desc_${baseName}`.toLowerCase()];
 
-    if (!baseName || !rarity) return "";
+    if (!text) {
+        const rarities = ["Legendary", "Epic", "Rare", "Common"];
+        for (const r of rarities) {
+            const k = `generals_skill_desc_${baseName}${r}`.toLowerCase();
+            if (lang[k]) {
+                text = lang[k];
+                break;
+            }
+        }
+    }
 
-    const key = `generals_skill_desc_${baseName}${rarity}`;
-    const text = lang[key.toLowerCase()];
     if (!text) return "";
 
     const replacedText = text.replace("{0}", value);
+
     const valueNum = Number(value);
     if (isNaN(valueNum)) return replacedText;
 
@@ -600,7 +610,7 @@ function renderSkillTreeGrouped(generalId) {
             .forEach(group => {
 
 
-                const isAbilityLike = group.maxLevel <= 3;
+                const isAbilityLike = group.maxLevel > 1 && group.maxLevel <= 3;
 
                 const iconUrl = isAbilityLike
                     ? resolveSkillIcon(group.sampleSkill)

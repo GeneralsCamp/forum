@@ -1,5 +1,4 @@
 /* --- BASE STYLES --- */
-
 :root {
     --rarity-common: rgb(178, 178, 178);
     --rarity-rare: rgb(160, 217, 72);
@@ -29,15 +28,9 @@ h1 {
     body {
         margin: 0 !important;
     }
-
-    #overlay {
-        background-color: rgba(0, 0, 0, 0);
-    }
 }
 
-
 /* --- LAYOUT --- */
-
 .container {
     background-color: rgb(67, 51, 38);
     display: flex;
@@ -69,7 +62,6 @@ h1 {
 
 
 /* --- NOTES AND ALERTS --- */
-
 .note {
     background-color: rgb(119, 80, 54);
     color: white;
@@ -82,12 +74,6 @@ h1 {
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-}
-
-.warning-icon {
-    font-size: 30px;
-    margin-right: 20px;
-    font-weight: bold;
 }
 
 @media (min-width: 769px) {
@@ -103,63 +89,7 @@ h1 {
     }
 }
 
-/* --- BOXES AND CARDS --- */
-.box {
-    display: flex;
-    align-items: stretch;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    text-decoration: none;
-    color: #000;
-    transition: box-shadow 0.3s ease, transform 0.3s ease;
-    border: 2px solid white;
-}
-
-.box-content {
-    flex: 1;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 0;
-    position: relative;
-    background-color: rgb(145, 98, 65);
-    border-radius: 10px;
-}
-
-.box-content h2 {
-    font-size: 18px;
-    margin: 0;
-    font-weight: bold;
-    color: #F3C24A;
-    padding: 2px;
-}
-
-.box-content p {
-    margin: 0;
-    font-size: 13px;
-    color: white;
-    font-weight: 500;
-}
-
-.box[disabled] {
-    pointer-events: none;
-    opacity: 0.5;
-    filter: blur(1px);
-    cursor: not-allowed;
-    transition: all 0.3s ease;
-}
-
-.card-section.border-top {
-    border-top: 1px solid white !important;
-    opacity: 1 !important;
-}
-
-.ci-title {
-    padding: 5px;
-}
-
-
 /* --- SCROLLBARS --- */
-
 ::-webkit-scrollbar {
     width: 10px;
     background-color: #f2d9bb;
@@ -174,45 +104,7 @@ h1 {
     background-color: #f2d9bb;
 }
 
-
 /* --- FORM ELEMENTS --- */
-
-.custom-input,
-.custom-select,
-.custom-button,
-.form-control:focus,
-.form-control:disabled {
-    background-color: #f3e0c2;
-    color: #3e2a16;
-    border: 2px solid #bd9a79;
-    font-weight: bold;
-    border-radius: 8px;
-}
-
-.custom-input::placeholder {
-    color: #8d7155;
-}
-
-.custom-input:focus,
-.custom-select:focus,
-.custom-button:focus {
-    box-shadow: 0 0 0 0.2rem rgba(243, 194, 74, 0.5);
-    border-color: #f3c24a;
-    outline: none;
-}
-
-.custom-button {
-    background-color: #f3c24a;
-    color: #433120;
-    text-align: center;
-    padding: 6px 12px;
-    transition: background-color 0.3s ease;
-}
-
-.custom-button:hover {
-    background-color: #e2b33d;
-}
-
 .form-select,
 .form-select option,
 .btn-custom {
@@ -238,9 +130,14 @@ h1 {
     outline: none;
 }
 
+.form-select:focus,
+.btn-custom:focus {
+    border-color: #f3c24a !important;
+    box-shadow: 0 0 0 0.2rem rgba(243, 194, 74, 0.4) !important;
+    outline: none !important;
+}
 
 /* --- DROPDOWN MENUS --- */
-
 .dropdown-menu-dark {
     background-color: #7c5a3b;
     border: 1px solid #f3c24a;
@@ -266,40 +163,7 @@ h1 {
     color: #433120;
 }
 
-
-/* --- IMAGE AND MEDIA --- */
-
-.image-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px 0;
-}
-
-.card-image {
-    max-width: 100%;
-    max-height: 120px;
-    object-fit: contain;
-    padding-left: 2%;
-    padding-right: 2%;
-}
-
-.card-image-currency {
-    padding: 15%;
-}
-
-.no-image-text {
-    font-style: italic;
-    color: #e2b33d;
-    text-align: center;
-    padding: 2rem;
-    font-weight: bold;
-    user-select: none;
-}
-
-
 /* --- HOME BUTTON --- */
-
 .home-icon-link {
     position: fixed;
     right: 10px;
@@ -330,9 +194,7 @@ h1 {
     font-size: 18px;
 }
 
-
 /* --- LOADING / PROGRESS --- */
-
 .loading-message {
     text-align: center;
     padding: 5px;
@@ -378,9 +240,7 @@ h1 {
     pointer-events: none;
 }
 
-
 /* --- GENERAL ICON --- */
-
 .general-icon {
     width: 64px;
     height: 64px;
@@ -420,9 +280,7 @@ h1 {
     background-color: rgb(165, 85, 27);
 }
 
-
 /* --- COST TABLE --- */
-
 .cost-table {
     width: 100%;
     border-collapse: separate;
@@ -467,9 +325,7 @@ h1 {
     font-size: medium;
 }
 
-
 /* --- SKILL TREE --- */
-
 .skill-tree-grouped {
     display: flex;
     flex-direction: column;
@@ -511,6 +367,8 @@ h1 {
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    transform: scale(0.98);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .skill-group.maxed {
@@ -638,10 +496,6 @@ h1 {
     flex-shrink: 0;
 }
 
-.skill-overview {
-    align-items: center;
-}
-
 .skill-overview-content {
     display: flex;
     align-items: center;
@@ -669,12 +523,6 @@ h1 {
     color: #f4b551;
 }
 
-/* --- Skill selection scale --- */
-.skill-group {
-    transform: scale(0.98);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
 .skill-group.selected {
     transform: scale(1.05);
     box-shadow: 0 0 8px rgba(244, 181, 81, 0.7);
@@ -694,11 +542,15 @@ h1 {
 }
 
 @media (max-width: 400px) {
-    .general-icon, .skill-group, .skill-overview img {
+
+    .general-icon,
+    .skill-group,
+    .skill-overview img {
         width: 40px !important;
         height: 40px !important;
     }
+
     .skill-overview {
-       height: 50px;
+        height: 50px;
     }
 }
