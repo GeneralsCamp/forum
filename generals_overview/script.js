@@ -311,6 +311,14 @@ function resolveAbilityDescription(groupId, skill, ability, type) {
 
     const values = resolveAbilityEffectValues(skill, ability, type);
 
+    if (groupId === "1023") {
+        const v0 = values[0] ?? "0";
+        text = text.replace("{0}", v0);
+        text = text.replace("{1}", "10");
+        text = text.replace("{2}", ability.triggerperwave || "1");
+        return text.trim();
+    }
+
     values.forEach((v, i) => {
         text = text.replace(`{${i}}`, v);
     });
@@ -318,12 +326,14 @@ function resolveAbilityDescription(groupId, skill, ability, type) {
     if (groupId === "1033" && values.length >= 1) {
         text = text.replace("{1}", values[0]);
     }
+
     if (groupId === "1035" && values.length >= 1) {
         const base = Number(values[0]);
         if (!isNaN(base)) {
             text = text.replace("{1}", base * 2);
         }
     }
+
     text = text.replace(/\{0\}/g, "");
     text = text.replace(/\{1\}/g, ability.triggerperwave || "1");
     text = text.replace(/\{2\}/g, ability.triggerperwave || "1");
