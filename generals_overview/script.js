@@ -334,6 +334,21 @@ function resolveAbilityDescription(groupId, skill, ability, type) {
         }
     }
 
+    if (groupId === "1028") {
+        const v0 = values[0] ?? "0";
+
+        if (type === "attack") {
+            text = text.replace("{0}", v0);
+            text = text.replace("{1}", v0);
+        } else if (type === "defense") {
+            text = text.replace("{0}", v0);
+            text = text.replace("{1}", "");
+        }
+
+        text = text.replace("{2}", ability.triggerperwave || "1");
+        return text.trim();
+    }
+
     text = text.replace(/\{0\}/g, "");
     text = text.replace(/\{1\}/g, ability.triggerperwave || "1");
     text = text.replace(/\{2\}/g, ability.triggerperwave || "1");
