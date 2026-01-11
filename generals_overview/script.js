@@ -216,23 +216,21 @@ function createSkillOverview(viewContainer, skillTreeEl) {
 
 function resolveSkillDisplayName(skill) {
     const base = getBaseSkillName(skill.name);
-    const rarityMap = {
-        Common: "Common",
-        Rare: "Rare",
-        Epic: "Epic",
-        Legendary: "Legendary"
-    };
 
-    const rarity = Object.keys(rarityMap).find(r =>
-        skill.name.toLowerCase().includes(r.toLowerCase())
-    );
-
-    if (rarity) {
-        const key = `generals_skill_name_${base}${rarity}`;
-        return lang[key.toLowerCase()] || base;
+    const plainKey = `generals_skill_name_${base}`.toLowerCase();
+    if (lang[plainKey]) {
+        return lang[plainKey];
     }
 
-    return base;
+    const rarities = ["Legendary", "Epic", "Rare", "Common"];
+    for (const r of rarities) {
+        const key = `generals_skill_name_${base}${r}`.toLowerCase();
+        if (lang[key]) {
+            return lang[key];
+        }
+    }
+
+    return base || "Unknown";
 }
 
 function getAbilitySlotIndex(general, abilityGroupId) {
@@ -292,16 +290,43 @@ function resolveAbilityDescription(groupId, skill, ability, type) {
     let text = lang[key.toLowerCase()];
     if (!text) return "";
 
-    const values = resolveAbilityEffectValues(skill, ability);
+    if (groupId === "1021") {
+        const placeholderKey =
+            "generals_abilities_desc_upgrade_placeholder_1021";
+
+        const placeholderText = lang[placeholderKey.toLowerCase()];
+        const wave = ability?.triggerperwave || "1";
+
+        if (placeholderText) {
+            const injected = placeholderText.replace("{0}", wave);
+            text = text.replace("{0}", ` ${injected}`);
+        } else {
+            text = text.replace("{0}", "");
+        }
+
+        return text.trim();
+    }
+
+    const values = resolveAbilityEffectValues(skill, ability, type);
 
     values.forEach((v, i) => {
         text = text.replace(`{${i}}`, v);
     });
 
+    if (groupId === "1033" && values.length >= 1) {
+        text = text.replace("{1}", values[0]);
+    }
+    if (groupId === "1035" && values.length >= 1) {
+        const base = Number(values[0]);
+        if (!isNaN(base)) {
+            text = text.replace("{1}", base * 2);
+        }
+    }
+    text = text.replace(/\{0\}/g, "");
     text = text.replace(/\{1\}/g, ability.triggerperwave || "1");
     text = text.replace(/\{2\}/g, ability.triggerperwave || "1");
 
-    return text;
+    return text.trim();
 }
 
 function resolveSkillDescription(skill) {
@@ -340,10 +365,10 @@ function resolveSkillDescription(skill) {
     const maxBonus = valueNum * maxLevel;
 
     if (replacedText.includes("%")) {
-        return `${replacedText} (+${maxBonus}%)`;
+        return `${replacedText} (max.: ${maxBonus}%)`;
     }
 
-    return `${replacedText} (+${maxBonus})`;
+    return `${replacedText} (max.: ${maxBonus})`;
 }
 
 function resolveAbilityEffectValues(skill, ability, type) {
