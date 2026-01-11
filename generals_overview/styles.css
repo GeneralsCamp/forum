@@ -395,7 +395,7 @@ h1 {
     overflow: hidden;
 }
 
-.general-icon img {
+.note .general-icon img {
     width: 140%;
     height: 140%;
     object-fit: cover;
@@ -606,10 +606,6 @@ h1 {
     border: 1px solid white;
 }
 
-.skill-overview.empty {
-    opacity: 0.6;
-}
-
 .skill-overview-info {
     display: flex;
     flex-direction: column;
@@ -624,7 +620,7 @@ h1 {
     color: white;
 }
 
-.skill-overview-info > div:first-child {
+.skill-overview-info>div:first-child {
     font-weight: 700;
     color: #f4b551;
 }
@@ -643,4 +639,54 @@ h1 {
 
 .skill-overview .skill-group-level {
     display: none;
+}
+
+.skill-overview .general-icon {
+    width: 64px;
+    height: 64px;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.skill-overview {
+    align-items: center;
+}
+
+.skill-overview-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* --- Skill Details Panels --- */
+.skill-details-row {
+    display: flex;
+    margin-top: 12px;
+}
+
+.skill-detail-panel {
+    flex: 0 0 50%;
+    background-color: rgb(145, 98, 65);
+    border: 1px solid white;
+    padding: 8px;
+    min-height: 120px;
+    color: white;
+}
+
+.skill-detail-title {
+    font-weight: 700;
+    color: #f4b551;
+    margin-bottom: 6px;
+}
+
+/* --- Skill selection scale --- */
+.skill-group {
+    transform: scale(0.9);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.skill-group.selected {
+    transform: scale(1);
+    box-shadow: 0 0 8px rgba(244, 181, 81, 0.7);
+    z-index: 2;
 }

@@ -105,11 +105,6 @@ function resolveGeneralPortraitId(general) {
     return String(general.generalid || "");
 }
 
-function setText(id, value) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = value;
-}
-
 function formatNumber(value) {
     if (value === "-" || value === "" || value == null) return "-";
     return Number(value).toLocaleString("hu-HU");
@@ -201,7 +196,17 @@ function createSkillOverview(viewContainer, skillTreeEl) {
     const overview = document.createElement("div");
     overview.id = "skillOverview";
     overview.className = "skill-overview empty";
-    overview.textContent = "";
+
+    const generalIcon = document.createElement("div");
+    generalIcon.className = "general-icon";
+    generalIcon.id = "overviewGeneralIcon";
+
+    const content = document.createElement("div");
+    content.className = "skill-overview-content";
+    content.id = "skillOverviewContent";
+
+    overview.appendChild(generalIcon);
+    overview.appendChild(content);
 
     viewContainer.insertBefore(overview, skillTreeEl);
 }
@@ -256,6 +261,48 @@ function getAbilitySlotIndex(general, abilityGroupId) {
     }
 
     return null;
+}
+
+function createSkillDetailPanels(container) {
+    const row = document.createElement("div");
+    row.className = "skill-details-row";
+    row.id = "skillDetailsRow";
+
+    const attack = document.createElement("div");
+    attack.className = "skill-detail-panel";
+    attack.id = "attackDetailPanel";
+    attack.innerHTML = `<div class="skill-detail-title">Attack</div>`;
+
+    const defense = document.createElement("div");
+    defense.className = "skill-detail-panel";
+    defense.id = "defenseDetailPanel";
+    defense.innerHTML = `<div class="skill-detail-title">Defense</div>`;
+
+    row.appendChild(attack);
+    row.appendChild(defense);
+
+    container.appendChild(row);
+}
+
+function resolveAbilityDescription(groupId, skill, ability, type) {
+    const effectStr = skill.effects || "";
+    const [value] = effectStr.split("&");
+
+    const key = `generals_abilities_desc_${type}_${groupId}`;
+    let text = lang[key.toLowerCase()];
+    if (!text) return "";
+
+    const triggerName =
+        lang[
+        (itemsData.generalabilitytriggers || [])
+            .find(t => t.abilitytriggerid === ability.abilitytriggerid)
+            ?.name?.toLowerCase()
+        ] || "";
+
+    return text
+        .replace("{0}", value)
+        .replace("{1}", ability.triggerperwave || "")
+        .replace("{2}", triggerName);
 }
 
 // ================== DLL ==================
@@ -406,23 +453,39 @@ function renderGeneral(id) {
     const g = generalsById[id];
     if (!g) return;
 
-    setText("generalRarity", getRarityName(g.generalrarityid));
-    setText("generalMaxLevel", g.maxlevel);
-    setText("generalMaxStars", g.maxstarlevel);
+    renderCosts(g);
+    renderSkillTreeGrouped(g.generalid);
+}
 
-    const portraitId = resolveGeneralPortraitId(g);
-    const portraitSrc = generalPortraitMap[portraitId] || "";
+function renderSkillTreeGrouped(generalId) {
+    const container = document.getElementById("skillTreeGrouped");
+    if (!container) return;
 
-    const treePortraitEl = document.getElementById("skillTreeGeneralPortrait");
-    if (treePortraitEl) {
-        treePortraitEl.src = portraitSrc;
-        treePortraitEl.alt = portraitSrc ? "" : "IMG";
+    if (!document.getElementById("skillDetailsRow")) {
+        createSkillDetailPanels(container.parentElement);
     }
 
+    const viewSkills = container.parentElement;
 
-    const iconWrapper = document.querySelector(".general-icon");
-    if (iconWrapper) {
-        iconWrapper.classList.remove(
+    if (!document.getElementById("skillOverview")) {
+        createSkillOverview(viewSkills, container);
+    }
+
+    const general = generalsById[generalId];
+    const portraitId = resolveGeneralPortraitId(general);
+    const portraitSrc = generalPortraitMap[portraitId] || "";
+
+    const overviewIconWrapper = document.getElementById("overviewGeneralIcon");
+    if (overviewIconWrapper) {
+        overviewIconWrapper.innerHTML = "";
+
+        const img = document.createElement("img");
+        img.src = portraitSrc;
+        img.alt = "";
+
+        overviewIconWrapper.appendChild(img);
+
+        overviewIconWrapper.classList.remove(
             "rarity-common",
             "rarity-rare",
             "rarity-epic",
@@ -436,24 +499,10 @@ function renderGeneral(id) {
             "4": "rarity-legendary"
         };
 
-        const rarityClass = rarityMap[g.generalrarityid];
+        const rarityClass = rarityMap[general.generalrarityid];
         if (rarityClass) {
-            iconWrapper.classList.add(rarityClass);
+            overviewIconWrapper.classList.add(rarityClass);
         }
-    }
-
-    renderCosts(g);
-    renderSkillTreeGrouped(g.generalid);
-}
-
-function renderSkillTreeGrouped(generalId) {
-    const container = document.getElementById("skillTreeGrouped");
-    if (!container) return;
-
-    const viewSkills = container.parentElement;
-
-    if (!document.getElementById("skillOverview")) {
-        createSkillOverview(viewSkills, container);
     }
 
     if (!container) return;
@@ -505,11 +554,19 @@ function renderSkillTreeGrouped(generalId) {
                 groupDiv.className = "skill-group";
 
                 groupDiv.addEventListener("click", () => {
+                    const attackPanel = document.getElementById("attackDetailPanel");
+                    const defensePanel = document.getElementById("defenseDetailPanel");
+
+                    attackPanel.innerHTML = `<div class="skill-detail-title">Attack</div>`;
+                    defensePanel.innerHTML = `<div class="skill-detail-title">Defense</div>`;
+
                     const overview = document.getElementById("skillOverview");
                     if (!overview) return;
 
                     overview.classList.remove("empty");
-                    overview.innerHTML = "";
+                    const content = document.getElementById("skillOverviewContent");
+                    content.innerHTML = "";
+                    overview.classList.remove("empty");
 
                     const iconWrapper = document.createElement("div");
                     iconWrapper.className = "skill-group";
@@ -550,6 +607,34 @@ function renderSkillTreeGrouped(generalId) {
                     const abilityTypeText = isAbilityLike
                         ? getAbilityTypeFromGroup(group.groupId)
                         : "skill";
+                    if (isAbilityLike) {
+                        const ability = abilitiesByGroupId[group.groupId];
+                        if (!ability) return;
+
+                        if (ability.abilityattackeffectid && ability.abilityattackeffectid !== "0") {
+                            const desc = resolveAbilityDescription(
+                                group.groupId,
+                                group.sampleSkill,
+                                ability,
+                                "attack"
+                            );
+                            if (desc) {
+                                attackPanel.innerHTML += `<div>${desc}</div>`;
+                            }
+                        }
+
+                        if (ability.abilitydefenseeffectid && ability.abilitydefenseeffectid !== "0") {
+                            const desc = resolveAbilityDescription(
+                                group.groupId,
+                                group.sampleSkill,
+                                ability,
+                                "defense"
+                            );
+                            if (desc) {
+                                defensePanel.innerHTML += `<div>${desc}</div>`;
+                            }
+                        }
+                    }
 
                     type.textContent = `Type: ${abilityTypeText}`;
                     type.className = `skill-overview-type ${abilityTypeText}`;
@@ -557,8 +642,8 @@ function renderSkillTreeGrouped(generalId) {
                     info.appendChild(name);
                     info.appendChild(type);
 
-                    overview.appendChild(iconWrapper);
-                    overview.appendChild(info);
+                    content.appendChild(iconWrapper);
+                    content.appendChild(info);
                 });
 
                 if (isAbilityLike) {
@@ -588,6 +673,17 @@ function renderSkillTreeGrouped(generalId) {
 
         row.appendChild(content);
         container.appendChild(row);
+
+        const firstTierRow = container.querySelector(".skill-tier-row");
+        if (!firstTierRow) return;
+
+        const firstAbility = firstTierRow.querySelector(
+            ".skill-group.attack, .skill-group.defense, .skill-group.both"
+        );
+
+        if (firstAbility) {
+            firstAbility.click();
+        }
     });
 }
 
