@@ -10,6 +10,7 @@ let generalsById = {};
 let skillsByGeneral = {};
 let raritiesById = {};
 let abilitiesByGroupId = {};
+let abilityEffectsById = {};
 
 // images
 let dllTextCache = "";
@@ -285,24 +286,83 @@ function createSkillDetailPanels(container) {
 }
 
 function resolveAbilityDescription(groupId, skill, ability, type) {
-    const effectStr = skill.effects || "";
-    const [value] = effectStr.split("&");
-
     const key = `generals_abilities_desc_${type}_${groupId}`;
     let text = lang[key.toLowerCase()];
     if (!text) return "";
 
-    const triggerName =
-        lang[
-        (itemsData.generalabilitytriggers || [])
-            .find(t => t.abilitytriggerid === ability.abilitytriggerid)
-            ?.name?.toLowerCase()
-        ] || "";
+    const values = resolveAbilityEffectValues(skill, ability);
 
-    return text
-        .replace("{0}", value)
-        .replace("{1}", ability.triggerperwave || "")
-        .replace("{2}", triggerName);
+    values.forEach((v, i) => {
+        text = text.replace(`{${i}}`, v);
+    });
+
+    text = text.replace(/\{1\}/g, ability.triggerperwave || "1");
+    text = text.replace(/\{2\}/g, ability.triggerperwave || "1");
+
+    return text;
+}
+
+function resolveSkillDescription(skill, type) {
+    if (!skill?.effects) return "";
+
+    const [, value] = skill.effects.split("&");
+    const baseName = getBaseSkillName(skill.name);
+
+    const rarity =
+        skill.name.match(/Legendary|Epic|Rare|Common/i)?.[0] || "";
+
+    if (!baseName || !rarity) return "";
+
+    const key = `generals_skill_desc_${baseName}${rarity}`;
+    const text = lang[key.toLowerCase()];
+    if (!text) return "";
+
+    const replacedText = text.replace("{0}", value);
+    const valueNum = Number(value);
+    if (isNaN(valueNum)) return replacedText;
+
+    const maxLevel = skillsByGeneral[skill.generalid]
+        .filter(s => s.skillgroupid === skill.skillgroupid)
+        .length;
+
+    if (maxLevel <= 1) return replacedText;
+
+    const maxBonus = valueNum * maxLevel;
+
+    if (replacedText.includes("%")) {
+        return `${replacedText} (+${maxBonus}%)`;
+    }
+
+    return `${replacedText} (+${maxBonus})`;
+}
+
+function resolveAbilityEffectValues(skill, ability, type) {
+    if (!ability) return [];
+
+    const effectId =
+        type === "attack"
+            ? ability.abilityattackeffectid
+            : ability.abilitydefenseeffectid;
+
+    if (!effectId || effectId === "0") return [];
+
+    const effect = abilityEffectsById[String(effectId)];
+    if (!effect?.effects) return [];
+
+    return effect.effects
+        .split(",")
+        .map(e => e.split("&")[1]);
+}
+
+function resolveAbilityTriggerText(ability) {
+    if (!ability) return "";
+
+    const trigger = (itemsData.generalabilitytriggers || [])
+        .find(t => t.abilitytriggerid === ability.abilitytriggerid);
+
+    if (!trigger?.name) return "";
+
+    return lang[trigger.name.toLowerCase()] || "";
 }
 
 // ================== DLL ==================
@@ -552,6 +612,11 @@ function renderSkillTreeGrouped(generalId) {
 
                 const groupDiv = document.createElement("div");
                 groupDiv.className = "skill-group";
+                const cost = group.sampleSkill.costskillpoints;
+
+                if (cost) {
+                    groupDiv.title = `Skill points cost: ${cost}`
+                }
 
                 groupDiv.addEventListener("click", () => {
                     container.querySelectorAll(".skill-group.selected")
@@ -610,6 +675,25 @@ function renderSkillTreeGrouped(generalId) {
                     const abilityTypeText = isAbilityLike
                         ? getAbilityTypeFromGroup(group.groupId)
                         : "skill";
+                    if (!isAbilityLike) {
+                        const skillType =
+                            skillTypeMap[getBaseSkillName(group.sampleSkill.name)];
+
+                        if (skillType === "attack") {
+                            const desc = resolveSkillDescription(group.sampleSkill, "attack");
+                            if (desc) {
+                                attackPanel.innerHTML += `<div>${desc}</div>`;
+                            }
+                        }
+
+                        if (skillType === "defense") {
+                            const desc = resolveSkillDescription(group.sampleSkill, "defense");
+                            if (desc) {
+                                defensePanel.innerHTML += `<div>${desc}</div>`;
+                            }
+                        }
+                    }
+
                     if (isAbilityLike) {
                         const ability = abilitiesByGroupId[group.groupId];
                         if (!ability) return;
@@ -654,8 +738,6 @@ function renderSkillTreeGrouped(generalId) {
                 });
 
                 if (isAbilityLike) {
-                    groupDiv.title = `Ability Group ID: ${group.groupId}`;
-
                     const abilityType = getAbilityTypeFromGroup(group.groupId);
                     groupDiv.classList.add(abilityType);
                 }
@@ -844,6 +926,11 @@ async function init() {
         raritiesById = buildLookup(
             itemsData.generalrarities || [],
             "generalrarityid"
+        );
+
+        abilityEffectsById = buildLookup(
+            itemsData.generalabilityeffects || [],
+            "abilityeffectid"
         );
 
         skillsByGeneral = {};
