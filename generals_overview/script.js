@@ -215,16 +215,18 @@ function createSkillOverview(viewContainer, skillTreeEl) {
 }
 
 function resolveSkillDisplayName(skill) {
-    const base = getBaseSkillName(skill.name);
+    if (!skill?.name) return "Unknown";
 
+    const base = getBaseSkillName(skill.name);
     const plainKey = `generals_skill_name_${base}`.toLowerCase();
     if (lang[plainKey]) {
         return lang[plainKey];
     }
 
-    const rarities = ["Legendary", "Epic", "Rare", "Common"];
-    for (const r of rarities) {
-        const key = `generals_skill_name_${base}${r}`.toLowerCase();
+    const rarityMatch = skill.name.match(/Legendary|Epic|Rare|Common/i);
+    if (rarityMatch) {
+        const rarity = rarityMatch[0];
+        const key = `generals_skill_name_${base}${rarity}`.toLowerCase();
         if (lang[key]) {
             return lang[key];
         }
