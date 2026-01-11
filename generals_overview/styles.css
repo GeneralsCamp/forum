@@ -103,9 +103,7 @@ h1 {
     }
 }
 
-
 /* --- BOXES AND CARDS --- */
-
 .box {
     display: flex;
     align-items: stretch;
@@ -608,7 +606,6 @@ h1 {
 .skill-overview-info {
     display: flex;
     flex-direction: column;
-    gap: 2px;
     font-size: 14px;
 }
 
@@ -675,7 +672,6 @@ h1 {
 .skill-detail-title {
     font-weight: 700;
     color: #f4b551;
-    margin-bottom: 6px;
 }
 
 /* --- Skill selection scale --- */
@@ -700,5 +696,15 @@ h1 {
     .skill-detail-panel {
         flex: 1 1 auto;
         width: 100%;
+    }
+}
+
+@media (max-width: 400px) {
+    .general-icon, .skill-group, .skill-overview img {
+        width: 40px !important;
+        height: 40px !important;
+    }
+    .skill-overview {
+       height: 50px;
     }
 }

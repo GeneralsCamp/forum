@@ -597,13 +597,11 @@ function renderSkillTreeGrouped(generalId) {
                         resolveSkillDisplayName(group.sampleSkill) ||
                         "Unknown";
 
+                    let slotIndex = null;
+
                     if (isAbilityLike) {
                         const general = generalsById[generalId];
-                        const slotIndex = getAbilitySlotIndex(general, group.groupId);
-
-                        if (slotIndex != null) {
-                            displayName += ` (Slot ${slotIndex})`;
-                        }
+                        slotIndex = getAbilitySlotIndex(general, group.groupId);
                     }
 
                     name.textContent = displayName;
@@ -641,8 +639,12 @@ function renderSkillTreeGrouped(generalId) {
                         }
                     }
 
-                    type.textContent = `Type: ${abilityTypeText}`;
-                    type.className = `skill-overview-type ${abilityTypeText}`;
+                    if (slotIndex != null) {
+                        type.textContent = `Slot: ${slotIndex}`;
+                        type.className = "skill-overview-type";
+                    } else {
+                        type.textContent = "";
+                    }
 
                     info.appendChild(name);
                     info.appendChild(type);
