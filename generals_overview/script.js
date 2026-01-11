@@ -554,6 +554,11 @@ function renderSkillTreeGrouped(generalId) {
                 groupDiv.className = "skill-group";
 
                 groupDiv.addEventListener("click", () => {
+                    container.querySelectorAll(".skill-group.selected")
+                        .forEach(el => el.classList.remove("selected"));
+
+                    groupDiv.classList.add("selected");
+
                     const attackPanel = document.getElementById("attackDetailPanel");
                     const defensePanel = document.getElementById("defenseDetailPanel");
 

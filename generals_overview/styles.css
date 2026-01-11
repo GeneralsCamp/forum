@@ -600,7 +600,6 @@ h1 {
 
     display: flex;
     align-items: center;
-    gap: 16px;
 
     background-color: rgb(145, 98, 65);
     border: 1px solid white;
@@ -681,12 +680,25 @@ h1 {
 
 /* --- Skill selection scale --- */
 .skill-group {
-    transform: scale(0.9);
+    transform: scale(0.98);
     transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .skill-group.selected {
-    transform: scale(1);
+    transform: scale(1.05);
     box-shadow: 0 0 8px rgba(244, 181, 81, 0.7);
     z-index: 2;
+}
+
+/* --- Skill detail panels mobile layout --- */
+@media (max-width: 768px) {
+    .skill-details-row {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .skill-detail-panel {
+        flex: 1 1 auto;
+        width: 100%;
+    }
 }
