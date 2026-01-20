@@ -1007,3 +1007,10 @@ p {
     text-align: left;
     color: #2b1c0e;
 }
+
+.export-subtitle {
+    font-weight: 800;
+    color: #4d3520;
+    margin-top: 6px;
+    margin-bottom: 2px;
+}

@@ -1036,17 +1036,34 @@ function buildExportDom(events, gameKey) {
         const dates = document.createElement("div");
         dates.className = "export-dates";
 
-        const dateList = event.dates || [];
-        if (dateList.length > 0) {
-            dateList.forEach(d => {
-                const line = document.createElement("div");
-                line.textContent = d;
-                dates.appendChild(line);
+        if (event.dateGroups && event.dateGroups.length > 0) {
+            event.dateGroups.forEach(group => {
+                if (group.label) {
+                    const sub = document.createElement("div");
+                    sub.className = "export-subtitle";
+                    sub.textContent = group.label;
+                    dates.appendChild(sub);
+                }
+
+                (group.dates || []).forEach(d => {
+                    const line = document.createElement("div");
+                    line.textContent = d;
+                    dates.appendChild(line);
+                });
             });
         } else {
-            const line = document.createElement("div");
-            line.textContent = "No date data.";
-            dates.appendChild(line);
+            const dateList = event.dates || [];
+            if (dateList.length > 0) {
+                dateList.forEach(d => {
+                    const line = document.createElement("div");
+                    line.textContent = d;
+                    dates.appendChild(line);
+                });
+            } else {
+                const line = document.createElement("div");
+                line.textContent = "No date data.";
+                dates.appendChild(line);
+            }
         }
 
         meta.appendChild(h3);
