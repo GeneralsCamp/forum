@@ -896,3 +896,114 @@ p {
     font-weight: bold;
     user-select: none;
 }
+
+.schedule-header {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 3px 5px;
+    background-color: #ead6b3;
+    border-bottom: 1px solid #c7b08f;
+}
+
+.schedule-header-icon {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.schedule-header-title {
+    font-size: 16px;
+    font-weight: 900;
+    color: #2b1c0e;
+    text-align: center;
+}
+
+/* EXPORT MODE (DOWNLOAD PNG) */
+.export-root {
+    width: 1320px;
+    background: #f3e6c8;
+    padding: 18px 18px 16px;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+.export-header {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: #ead6b3;
+    border: 1px solid #c7b08f;
+    margin-bottom: 12px;
+}
+
+.export-header-icon {
+    width: 45px;
+    height: auto;
+    object-fit: contain;
+}
+
+.export-header-title {
+    font-size: 26px;
+    font-weight: 900;
+    color: #2b1c0e;
+}
+
+.export-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.export-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 10px;
+    box-sizing: border-box;
+    min-height: 150px;
+}
+
+.export-icon {
+    width: 80px;
+    height: auto;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.export-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.export-title {
+    font-size: 26px;
+    font-weight: 900;
+    color: #2b1c0e;
+    line-height: 1.1;
+}
+
+.export-dates {
+    font-size: 18px;
+    font-weight: 500;
+    color: #2b1c0e;
+    line-height: 1.35;
+}
+
+.export-dates div {
+    margin: 0;
+    padding: 0;
+}
+
+.export-note {
+    margin-top: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: left;
+    color: #2b1c0e;
+}

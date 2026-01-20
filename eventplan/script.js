@@ -38,6 +38,11 @@ const eventCache = {
     e4k: null
 };
 
+const gameIcons = {
+    empire: "./img/logo-em.webp",
+    e4k: "./img/logo-e4k.webp"
+};
+
 function lightenColor(hexColor, amount) {
     const hex = String(hexColor || "").replace("#", "").trim();
     if (hex.length !== 6) return hexColor;
@@ -65,6 +70,32 @@ const monthNames = [
     "November",
     "December"
 ];
+
+function renderScheduleHeader(container) {
+    const gameKey = getSelectedGameKey();
+    const label = eventSources[gameKey]?.label || gameKey;
+    const iconUrl = gameIcons[gameKey] || "";
+
+    const header = document.createElement("div");
+    header.className = "schedule-header";
+
+    if (iconUrl) {
+        const img = document.createElement("img");
+        img.className = "schedule-header-icon";
+        img.src = iconUrl;
+        img.alt = label;
+        img.loading = "lazy";
+        header.appendChild(img);
+    }
+
+    const title = document.createElement("div");
+    title.className = "schedule-header-title";
+    title.textContent = label;
+
+    header.appendChild(title);
+
+    container.appendChild(header);
+}
 
 function normalizeText(text) {
     return String(text || "").replace(/\s+/g, " ").trim();
@@ -516,6 +547,7 @@ function renderEvents(events) {
     container.innerHTML = "";
     container.style.visibility = "visible";
     removeDateFormatNote();
+    renderScheduleHeader(container);
 
     if (!events || events.length === 0) {
         const empty = document.createElement("div");
@@ -948,6 +980,93 @@ function updateHashForGame(key) {
     }
 }
 
+function buildExportDom(events, gameKey) {
+    const label = eventSources[gameKey]?.label || gameKey;
+
+    const gameIconUrl =
+        gameKey === "empire"
+            ? "./img/logo-em.webp"
+            : "./img/logo-e4k.webp";
+
+    const root = document.createElement("div");
+    root.className = "export-root";
+
+    const header = document.createElement("div");
+    header.className = "export-header";
+
+    const icon = document.createElement("img");
+    icon.className = "export-header-icon";
+    icon.src = gameIconUrl;
+    icon.alt = label;
+
+    const title = document.createElement("div");
+    title.className = "export-header-title";
+    title.textContent = label;
+
+    header.appendChild(icon);
+    header.appendChild(title);
+    root.appendChild(header);
+
+    const grid = document.createElement("div");
+    grid.className = "export-grid";
+
+    const sortedEvents = getSortedEvents(events || []);
+
+    sortedEvents.forEach(event => {
+        const card = document.createElement("div");
+        card.className = "export-card";
+
+        const img = document.createElement("img");
+        img.className = "export-icon";
+        img.alt = event.title || "Event";
+
+        const custom = customEventImages.find(e =>
+            e.name.toLowerCase() === String(event.title || "").toLowerCase()
+        );
+
+        img.src = custom?.url || event.imageUrl || placeholderImage;
+
+        const meta = document.createElement("div");
+        meta.className = "export-meta";
+
+        const h3 = document.createElement("div");
+        h3.className = "export-title";
+        h3.textContent = getDisplayTitle(event.title);
+
+        const dates = document.createElement("div");
+        dates.className = "export-dates";
+
+        const dateList = event.dates || [];
+        if (dateList.length > 0) {
+            dateList.forEach(d => {
+                const line = document.createElement("div");
+                line.textContent = d;
+                dates.appendChild(line);
+            });
+        } else {
+            const line = document.createElement("div");
+            line.textContent = "No date data.";
+            dates.appendChild(line);
+        }
+
+        meta.appendChild(h3);
+        meta.appendChild(dates);
+
+        card.appendChild(img);
+        card.appendChild(meta);
+        grid.appendChild(card);
+    });
+
+    root.appendChild(grid);
+
+    const note = document.createElement("div");
+    note.className = "export-note";
+    note.textContent = "Note: Dates are shown in day/month/year format.";
+    root.appendChild(note);
+
+    return root;
+}
+
 function setupDownloadButton() {
     const button = document.getElementById("downloadButton");
     if (!button) return;
@@ -960,52 +1079,40 @@ function setupDownloadButton() {
         }
 
         const gameKey = getSelectedGameKey();
-        if (!eventCache[gameKey]) {
+        const events = eventCache[gameKey];
+
+        if (!events) {
             alert("Event plan is still loading.");
             return;
         }
 
-        const grid = ensureEventGrid();
-        if (!grid) return;
-
         button.disabled = true;
+
         try {
-            const snapshot = grid.cloneNode(true);
-            snapshot.style.width = "1320px";
-            snapshot.style.maxWidth = "1320px";
-            snapshot.style.margin = "0";
-            snapshot.style.gridTemplateColumns = "repeat(3, minmax(0, 1fr))";
-            snapshot.style.padding = "12px 14px 18px";
-            snapshot.style.visibility = "visible";
-            snapshot.classList.add("snapshot-multiline");
+            const exportDom = buildExportDom(events, gameKey);
 
             const sandbox = document.createElement("div");
             sandbox.style.position = "fixed";
             sandbox.style.left = "-9999px";
             sandbox.style.top = "0";
-            sandbox.style.width = "1320px";
             sandbox.style.backgroundColor = "#f3e6c8";
-            sandbox.appendChild(snapshot);
+            sandbox.appendChild(exportDom);
             document.body.appendChild(sandbox);
 
-            const targetWidth = snapshot.scrollWidth;
-            const targetHeight = snapshot.scrollHeight;
-
-            const canvas = await html2canvas(snapshot, {
+            const canvas = await html2canvas(exportDom, {
                 backgroundColor: "#f3e6c8",
                 useCORS: true,
-                scale: 2,
-                width: targetWidth,
-                height: targetHeight,
-                windowWidth: targetWidth,
-                windowHeight: targetHeight
+                scale: 2
             });
+
             const link = document.createElement("a");
             const dateStamp = new Date().toISOString().slice(0, 10);
             const gameLabel = eventSources[gameKey]?.label || gameKey;
+
             link.download = `${gameLabel.replace(/[^a-z0-9]+/gi, "_")}_event_plan_${dateStamp}.png`;
             link.href = canvas.toDataURL("image/png");
             link.click();
+
             document.body.removeChild(sandbox);
         } catch (err) {
             console.error("Download error:", err);
