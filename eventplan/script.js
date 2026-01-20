@@ -739,12 +739,18 @@ function renderCalendar(events) {
         cursor.setUTCDate(cursor.getUTCDate() + 1);
     }
 
-    const todayLocal = new Date();
-    const todayUtc = new Date(Date.UTC(
-        todayLocal.getFullYear(),
-        todayLocal.getMonth(),
-        todayLocal.getDate()
-    ));
+    const berlinParts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Europe/Berlin",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+    }).formatToParts(new Date());
+
+    const berlinYear = Number(berlinParts.find(p => p.type === "year")?.value);
+    const berlinMonth = Number(berlinParts.find(p => p.type === "month")?.value);
+    const berlinDay = Number(berlinParts.find(p => p.type === "day")?.value);
+
+    const todayUtc = new Date(Date.UTC(berlinYear, berlinMonth - 1, berlinDay));
 
     const months = [];
     dates.forEach(date => {
@@ -900,6 +906,15 @@ function renderCalendar(events) {
     requestAnimationFrame(() => {
         normalizeCalendarBodyRowHeights(tbody);
     });
+
+    const todayIndex = dates.findIndex(d => d.getTime() === todayUtc.getTime());
+    if (todayIndex >= 0) {
+        const todayCells = table.querySelectorAll(`[data-col-index="${todayIndex}"]`);
+        todayCells.forEach(el => {
+            el.classList.add("calendar-today-left-border");
+            el.classList.add("calendar-today-right-border");
+        });
+    }
 
     table.addEventListener("click", event => {
         const target = event.target;
