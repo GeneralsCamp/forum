@@ -191,32 +191,44 @@ function formatPercent(p) {
 
 // --- RENDER ---
 function createLootBoxCard(box) {
-    const displayName = getLootBoxDisplayName(box);
-    const chances = getKeyChancesForLootBox(box);
+  const displayName = getLootBoxDisplayName(box);
+  const chances = getKeyChancesForLootBox(box);
 
-    const imgUrl = lootBoxImageUrlMap[box.name] || null;
+  const imgUrl = lootBoxImageUrlMap[box.name] || null;
+  const wanted = ["Rare", "Epic", "Legendary"];
 
-    const chancesHtml = chances.length
-        ? chances
-            .map((c) => {
-                const icon = c.iconUrl
-                    ? `<img src="${c.iconUrl}" alt="${c.keyType}" style="height:22px; width:auto; vertical-align:middle; margin-right:6px;">`
-                    : "";
+  const chanceMap = {};
+  chances.forEach(c => (chanceMap[c.keyType] = c));
 
-                return `<div>${icon}<strong>${formatPercent(c.percent)}</strong></div>`;
-            })
-            .join("")
-        : `<div class="text-muted">No key chances found</div>`;
+  const keyRowsHtml = wanted
+    .map((type, idx) => {
+      const c = chanceMap[type];
 
-    const imageSection = imgUrl
-        ? `
+      const icon = c?.iconUrl
+        ? `<img src="${c.iconUrl}" alt="${type}" style="height:22px; width:auto;">`
+        : "";
+
+      const percent = c ? formatPercent(c.percent) : "0.00%";
+      const border = idx < wanted.length - 1 ? "border-bottom" : "";
+
+      return `
+        <div class="card-cell d-flex align-items-center justify-content-center gap-2 flex-fill ${border}">
+          ${icon}
+          <strong>${percent}</strong>
+        </div>
+      `;
+    })
+    .join("");
+
+  const imageSection = imgUrl
+    ? `
       <div class="col-5 card-cell border-end d-flex justify-content-center align-items-center">
         <div class="image-wrapper">
           <img src="${imgUrl}" alt="${displayName}" class="card-image w-100" loading="lazy">
         </div>
       </div>
     `
-        : `
+    : `
       <div class="col-5 card-cell border-end d-flex justify-content-center align-items-center">
         <div class="image-wrapper">
           <div class="no-image-text">no image</div>
@@ -224,7 +236,7 @@ function createLootBoxCard(box) {
       </div>
     `;
 
-    return `
+  return `
     <div class="col-md-6 col-sm-12 d-flex flex-column">
       <div class="box flex-fill">
         <div class="box-content">
@@ -232,13 +244,11 @@ function createLootBoxCard(box) {
           <h2 class="ci-title">${displayName}</h2>
 
           <div class="card-table border-top">
-            <div class="row g-0">
+            <div class="row g-0 h-100">
               ${imageSection}
 
-              <div class="col-7 card-cell d-flex flex-column justify-content-center">
-                <div class="card-section">
-                  <div>${chancesHtml}</div>
-                </div>
+              <div class="col-7 d-flex flex-column lootbox-keys-col">
+                ${keyRowsHtml}
               </div>
 
             </div>
