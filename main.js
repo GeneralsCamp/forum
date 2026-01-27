@@ -5,7 +5,8 @@ const categories = {
         { name: "Look-items Overview", desc: "This page loads the in-game look items automatically!", icon: "look-items.webp", link: "./look_items/index.html", disabled: false },
         { name: "Gacha Overview", desc: "This page loads the in-game gacha rewards automatically!", icon: "gacha-icon.webp", link: "./gacha_overview/index.html", disabled: false },
         { name: "Generals Overview", desc: "This page loads the in-game generals automatically!", icon: "generals-icon.webp", link: "./generals_overview/index.html", disabled: false },
-        { name: "Event plan Overview", desc: "This page loads the event plans automatically!", icon: "event-plan-icon.webp", link: "./eventplan/index.html", disabled: false }
+        { name: "Event plan Overview", desc: "This page loads the event plans automatically!", icon: "event-plan-icon.webp", link: "./eventplan/index.html", disabled: false },
+        { name: "Lootbox Overview", desc: "This page loads the in-game lootboxes and key chances automatically!", icon: "lootbox-icon.webp", link: "./lootboxes/index.html", disabled: false }
     ],
 
     calculators: [
