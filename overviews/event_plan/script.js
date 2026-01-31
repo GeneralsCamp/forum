@@ -1103,24 +1103,29 @@ function setupDownloadButton() {
     const button = document.getElementById("downloadButton");
     if (!button) return;
 
-    button.addEventListener("click", async () => {
-        const view = getSelectedViewKey();
-        if (view !== "overview") {
-            alert("Download is only available in Normal view.");
-            return;
-        }
+    let isDownloading = false;
 
-        const gameKey = getSelectedGameKey();
-        const events = eventCache[gameKey];
+    button.addEventListener("click", async (e) => {
+        e.preventDefault();
 
-        if (!events) {
-            alert("Event plan is still loading.");
-            return;
-        }
-
-        button.disabled = true;
+        if (isDownloading) return;
+        isDownloading = true;
 
         try {
+            const view = getSelectedViewKey();
+            if (view !== "overview") {
+                alert("Download is only available in Normal view.");
+                return;
+            }
+
+            const gameKey = getSelectedGameKey();
+            const events = eventCache[gameKey];
+
+            if (!events) {
+                alert("Event plan is still loading.");
+                return;
+            }
+
             const exportDom = buildExportDom(events, gameKey);
 
             const sandbox = document.createElement("div");
@@ -1143,14 +1148,18 @@ function setupDownloadButton() {
 
             link.download = `${gameLabel.replace(/[^a-z0-9]+/gi, "_")}_event_plan_${dateStamp}.png`;
             link.href = canvas.toDataURL("image/png");
-            link.click();
 
-            document.body.removeChild(sandbox);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+
+            sandbox.remove();
+
         } catch (err) {
             console.error("Download error:", err);
             alert("Download failed.");
         } finally {
-            button.disabled = false;
+            isDownloading = false;
         }
     });
 }
