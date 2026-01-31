@@ -1,6 +1,7 @@
 export const availableLanguages = [
-  "en","de","fr","pl","hu","ro","es",
-  "ru","el","nl","cs","ar","it","ja"
+"en","ar","es","bg","pt","cs","de","da",
+"fi","fr","el","hu","it","ja","ko","lt",
+"nl","no","pl","ro","ru","sv","sk", "tr"
 ];
 
 export function getInitialLanguage() {

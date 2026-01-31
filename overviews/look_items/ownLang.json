@@ -9,7 +9,6 @@
       "no_image": "No image"
     }
   },
-
   "hu": {
     "filters": {
       "search_placeholder": "Kinézet tárgyak keresése...",
@@ -18,6 +17,226 @@
     },
     "ui": {
       "no_image": "Nincs kép"
+    }
+  },
+  "de": {
+    "filters": {
+      "search_placeholder": "Aussehen-Gegenstände suchen...",
+      "show_commander": "Kommandanten-Skins",
+      "show_castellan": "Kastellan-Skins"
+    },
+    "ui": {
+      "no_image": "Kein Bild"
+    }
+  },
+  "fr": {
+    "filters": {
+      "search_placeholder": "Rechercher des apparences...",
+      "show_commander": "Skins de commandant",
+      "show_castellan": "Skins de châtelain"
+    },
+    "ui": {
+      "no_image": "Aucune image"
+    }
+  },
+  "pl": {
+    "filters": {
+      "search_placeholder": "Szukaj wyglądów...",
+      "show_commander": "Skórki dowódcy",
+      "show_castellan": "Skórki kasztelana"
+    },
+    "ui": {
+      "no_image": "Brak obrazu"
+    }
+  },
+  "ro": {
+    "filters": {
+      "search_placeholder": "Caută obiecte de aspect...",
+      "show_commander": "Aspecte comandant",
+      "show_castellan": "Aspecte castelan"
+    },
+    "ui": {
+      "no_image": "Fără imagine"
+    }
+  },
+  "es": {
+    "filters": {
+      "search_placeholder": "Buscar apariencias...",
+      "show_commander": "Aspectos de comandante",
+      "show_castellan": "Aspectos de castellano"
+    },
+    "ui": {
+      "no_image": "Sin imagen"
+    }
+  },
+  "ru": {
+    "filters": {
+      "search_placeholder": "Поиск внешнего вида...",
+      "show_commander": "Облики командиров",
+      "show_castellan": "Облики кастеляна"
+    },
+    "ui": {
+      "no_image": "Нет изображения"
+    }
+  },
+  "el": {
+    "filters": {
+      "search_placeholder": "Αναζήτηση εμφανίσεων...",
+      "show_commander": "Εμφανίσεις διοικητή",
+      "show_castellan": "Εμφανίσεις καστελάνου"
+    },
+    "ui": {
+      "no_image": "Χωρίς εικόνα"
+    }
+  },
+  "nl": {
+    "filters": {
+      "search_placeholder": "Uiterlijken zoeken...",
+      "show_commander": "Commandant-skins",
+      "show_castellan": "Kastellaan-skins"
+    },
+    "ui": {
+      "no_image": "Geen afbeelding"
+    }
+  },
+  "cs": {
+    "filters": {
+      "search_placeholder": "Hledat vzhledy...",
+      "show_commander": "Vzhledy velitele",
+      "show_castellan": "Vzhledy kastelána"
+    },
+    "ui": {
+      "no_image": "Žádný obrázek"
+    }
+  },
+  "ar": {
+    "filters": {
+      "search_placeholder": "البحث عن المظاهر...",
+      "show_commander": "مظاهر القائد",
+      "show_castellan": "مظاهر القلعة"
+    },
+    "ui": {
+      "no_image": "لا توجد صورة"
+    }
+  },
+  "it": {
+    "filters": {
+      "search_placeholder": "Cerca aspetti...",
+      "show_commander": "Aspetti del comandante",
+      "show_castellan": "Aspetti del castellano"
+    },
+    "ui": {
+      "no_image": "Nessuna immagine"
+    }
+  },
+  "ja": {
+    "filters": {
+      "search_placeholder": "外観アイテムを検索...",
+      "show_commander": "司令官スキン",
+      "show_castellan": "城代スキン"
+    },
+    "ui": {
+      "no_image": "画像なし"
+    }
+  },
+  "bg": {
+    "filters": {
+      "search_placeholder": "Търсене на външен вид...",
+      "show_commander": "Облици на командир",
+      "show_castellan": "Облици на кастелан"
+    },
+    "ui": {
+      "no_image": "Няма изображение"
+    }
+  },
+  "pt": {
+    "filters": {
+      "search_placeholder": "Pesquisar aparências...",
+      "show_commander": "Aparências do comandante",
+      "show_castellan": "Aparências do castelão"
+    },
+    "ui": {
+      "no_image": "Sem imagem"
+    }
+  },
+  "da": {
+    "filters": {
+      "search_placeholder": "Søg efter udseender...",
+      "show_commander": "Kommandør-skins",
+      "show_castellan": "Kastellan-skins"
+    },
+    "ui": {
+      "no_image": "Intet billede"
+    }
+  },
+  "fi": {
+    "filters": {
+      "search_placeholder": "Hae ulkoasuja...",
+      "show_commander": "Komentajan ulkoasut",
+      "show_castellan": "Kastellaanin ulkoasut"
+    },
+    "ui": {
+      "no_image": "Ei kuvaa"
+    }
+  },
+  "ko": {
+    "filters": {
+      "search_placeholder": "외형 검색...",
+      "show_commander": "지휘관 스킨",
+      "show_castellan": "성주 스킨"
+    },
+    "ui": {
+      "no_image": "이미지 없음"
+    }
+  },
+  "lt": {
+    "filters": {
+      "search_placeholder": "Ieškoti išvaizdų...",
+      "show_commander": "Vado išvaizdos",
+      "show_castellan": "Kasteliono išvaizdos"
+    },
+    "ui": {
+      "no_image": "Nėra paveikslėlio"
+    }
+  },
+  "no": {
+    "filters": {
+      "search_placeholder": "Søk etter utseender...",
+      "show_commander": "Kommandør-utseender",
+      "show_castellan": "Kastellan-utseender"
+    },
+    "ui": {
+      "no_image": "Ingen bilde"
+    }
+  },
+  "sv": {
+    "filters": {
+      "search_placeholder": "Sök utseenden...",
+      "show_commander": "Befälhavarskins",
+      "show_castellan": "Kastellanskins"
+    },
+    "ui": {
+      "no_image": "Ingen bild"
+    }
+  },
+  "sk": {
+    "filters": {
+      "search_placeholder": "Hľadať vzhľady...",
+      "show_commander": "Vzhľady veliteľa",
+      "show_castellan": "Vzhľady kastelána"
+    },
+    "ui": {
+      "no_image": "Žiadny obrázok"
+    }
+  },
+  "tr": {
+    "filters": {
+      "search_placeholder": "Görünüm ara...",
+      "show_commander": "Komutan görünümleri",
+      "show_castellan": "Kastellan görünümleri"
+    },
+    "ui": {
+      "no_image": "Resim yok"
     }
   }
 }
