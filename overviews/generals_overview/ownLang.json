@@ -1,0 +1,309 @@
+{
+  "en": {
+    "ui": {
+      "attack": "Attack",
+      "defense": "Defense",
+      "slot": "Slot",
+      "skill": "Skill",
+      "ability": "Ability",
+      "skill_points": "Skill points cost",
+      "total": "Total",
+      "level": "Level",
+      "shards": "Shards",
+      "xp": "XP",
+      "select_general": "Select general",
+      "view_skills": "Skill tree",
+      "view_costs": "Upgrade costs",
+      "attack_panel": "Attack",
+      "defense_panel": "Defense",
+      "no_generals": "No generals available",
+      "unknown": "Unknown"
+    }
+  },
+
+  "hu": {
+    "ui": {
+      "attack": "Támadás",
+      "defense": "Védelem",
+      "slot": "Hely",
+      "skill": "Képesség",
+      "ability": "Különleges képesség",
+      "skill_points": "Képességpont költség",
+      "total": "Összesen",
+      "level": "Szint",
+      "shards": "Töredék",
+      "xp": "TP",
+      "select_general": "Parancsnok kiválasztása",
+      "view_skills": "Képességfa",
+      "view_costs": "Fejlesztési költségek",
+      "attack_panel": "Támadó hatások",
+      "defense_panel": "Védelmi hatások",
+      "no_generals": "Nincs elérhető parancsnok",
+      "unknown": "Ismeretlen"
+    }
+  },
+
+  "de": {
+    "ui": {
+      "attack": "Angriff",
+      "defense": "Verteidigung",
+      "slot": "Slot",
+      "skill": "Fähigkeit",
+      "ability": "Spezialfähigkeit",
+      "skill_points": "Fähigkeitspunktkosten",
+      "total": "Gesamt",
+      "level": "Level",
+      "shards": "Splitter",
+      "xp": "EP",
+      "select_general": "General auswählen",
+      "view_skills": "Fähigkeitenbaum",
+      "view_costs": "Upgrade-Kosten",
+      "attack_panel": "Angriff",
+      "defense_panel": "Verteidigung",
+      "no_generals": "Keine Generäle verfügbar",
+      "unknown": "Unbekannt"
+    }
+  },
+
+  "fr": {
+    "ui": {
+      "attack": "Attaque",
+      "defense": "Défense",
+      "slot": "Emplacement",
+      "skill": "Compétence",
+      "ability": "Capacité spéciale",
+      "skill_points": "Coût en points de compétence",
+      "total": "Total",
+      "level": "Niveau",
+      "shards": "Fragments",
+      "xp": "XP",
+      "select_general": "Sélectionner un général",
+      "view_skills": "Arbre de compétences",
+      "view_costs": "Coûts d'amélioration",
+      "attack_panel": "Attaque",
+      "defense_panel": "Défense",
+      "no_generals": "Aucun général disponible",
+      "unknown": "Inconnu"
+    }
+  },
+
+  "pl": {
+    "ui": {
+      "attack": "Atak",
+      "defense": "Obrona",
+      "slot": "Slot",
+      "skill": "Umiejętność",
+      "ability": "Zdolność specjalna",
+      "skill_points": "Koszt punktów umiejętności",
+      "total": "Łącznie",
+      "level": "Poziom",
+      "shards": "Odłamki",
+      "xp": "PD",
+      "select_general": "Wybierz generała",
+      "view_skills": "Drzewko umiejętności",
+      "view_costs": "Koszty ulepszeń",
+      "attack_panel": "Atak",
+      "defense_panel": "Obrona",
+      "no_generals": "Brak dostępnych generałów",
+      "unknown": "Nieznane"
+    }
+  },
+
+  "ro": {
+    "ui": {
+      "attack": "Atac",
+      "defense": "Apărare",
+      "slot": "Slot",
+      "skill": "Abilitate",
+      "ability": "Abilitate specială",
+      "skill_points": "Cost puncte abilitate",
+      "total": "Total",
+      "level": "Nivel",
+      "shards": "Fragmente",
+      "xp": "XP",
+      "select_general": "Selectează generalul",
+      "view_skills": "Arbore de abilități",
+      "view_costs": "Costuri upgrade",
+      "attack_panel": "Atac",
+      "defense_panel": "Apărare",
+      "no_generals": "Niciun general disponibil",
+      "unknown": "Necunoscut"
+    }
+  },
+
+  "es": {
+    "ui": {
+      "attack": "Ataque",
+      "defense": "Defensa",
+      "slot": "Ranura",
+      "skill": "Habilidad",
+      "ability": "Habilidad especial",
+      "skill_points": "Costo de puntos de habilidad",
+      "total": "Total",
+      "level": "Nivel",
+      "shards": "Fragmentos",
+      "xp": "XP",
+      "select_general": "Seleccionar general",
+      "view_skills": "Árbol de habilidades",
+      "view_costs": "Costes de mejora",
+      "attack_panel": "Ataque",
+      "defense_panel": "Defensa",
+      "no_generals": "No hay generales disponibles",
+      "unknown": "Desconocido"
+    }
+  },
+
+  "ru": {
+    "ui": {
+      "attack": "Атака",
+      "defense": "Защита",
+      "slot": "Слот",
+      "skill": "Навык",
+      "ability": "Особая способность",
+      "skill_points": "Стоимость очков навыка",
+      "total": "Итого",
+      "level": "Уровень",
+      "shards": "Осколки",
+      "xp": "XP",
+      "select_general": "Выберите генерала",
+      "view_skills": "Дерево навыков",
+      "view_costs": "Стоимость улучшений",
+      "attack_panel": "Атака",
+      "defense_panel": "Защита",
+      "no_generals": "Нет доступных генералов",
+      "unknown": "Неизвестно"
+    }
+  },
+
+  "el": {
+    "ui": {
+      "attack": "Επίθεση",
+      "defense": "Άμυνα",
+      "slot": "Θέση",
+      "skill": "Δεξιότητα",
+      "ability": "Ειδική ικανότητα",
+      "skill_points": "Κόστος πόντων δεξιότητας",
+      "total": "Σύνολο",
+      "level": "Επίπεδο",
+      "shards": "Θραύσματα",
+      "xp": "XP",
+      "select_general": "Επιλέξτε στρατηγό",
+      "view_skills": "Δέντρο δεξιοτήτων",
+      "view_costs": "Κόστη αναβάθμισης",
+      "attack_panel": "Επίθεση",
+      "defense_panel": "Άμυνα",
+      "no_generals": "Δεν υπάρχουν διαθέσιμοι στρατηγοί",
+      "unknown": "Άγνωστο"
+    }
+  },
+
+  "nl": {
+    "ui": {
+      "attack": "Aanval",
+      "defense": "Verdediging",
+      "slot": "Slot",
+      "skill": "Vaardigheid",
+      "ability": "Speciale vaardigheid",
+      "skill_points": "Kosten vaardigheidspunten",
+      "total": "Totaal",
+      "level": "Level",
+      "shards": "Scherven",
+      "xp": "XP",
+      "select_general": "Selecteer generaal",
+      "view_skills": "Vaardighedenboom",
+      "view_costs": "Upgradekosten",
+      "attack_panel": "Aanval",
+      "defense_panel": "Verdediging",
+      "no_generals": "Geen generaals beschikbaar",
+      "unknown": "Onbekend"
+    }
+  },
+
+  "cs": {
+    "ui": {
+      "attack": "Útok",
+      "defense": "Obrana",
+      "slot": "Slot",
+      "skill": "Dovednost",
+      "ability": "Speciální schopnost",
+      "skill_points": "Cena bodů dovedností",
+      "total": "Celkem",
+      "level": "Úroveň",
+      "shards": "Střepy",
+      "xp": "XP",
+      "select_general": "Vyberte generála",
+      "view_skills": "Strom dovedností",
+      "view_costs": "Náklady na vylepšení",
+      "attack_panel": "Útok",
+      "defense_panel": "Obrana",
+      "no_generals": "Žádní generálové nejsou k dispozici",
+      "unknown": "Neznámé"
+    }
+  },
+
+  "it": {
+    "ui": {
+      "attack": "Attacco",
+      "defense": "Difesa",
+      "slot": "Slot",
+      "skill": "Abilità",
+      "ability": "Abilità speciale",
+      "skill_points": "Costo punti abilità",
+      "total": "Totale",
+      "level": "Livello",
+      "shards": "Frammenti",
+      "xp": "XP",
+      "select_general": "Seleziona generale",
+      "view_skills": "Albero abilità",
+      "view_costs": "Costi di potenziamento",
+      "attack_panel": "Attacco",
+      "defense_panel": "Difesa",
+      "no_generals": "Nessun generale disponibile",
+      "unknown": "Sconosciuto"
+    }
+  },
+
+  "ja": {
+    "ui": {
+      "attack": "攻撃",
+      "defense": "防御",
+      "slot": "スロット",
+      "skill": "スキル",
+      "ability": "特殊能力",
+      "skill_points": "スキルポイント消費",
+      "total": "合計",
+      "level": "レベル",
+      "shards": "欠片",
+      "xp": "XP",
+      "select_general": "将軍を選択",
+      "view_skills": "スキルツリー",
+      "view_costs": "アップグレードコスト",
+      "attack_panel": "攻撃",
+      "defense_panel": "防御",
+      "no_generals": "利用可能な将軍がいません",
+      "unknown": "不明"
+    }
+  },
+
+  "ar": {
+    "ui": {
+      "attack": "هجوم",
+      "defense": "دفاع",
+      "slot": "خانة",
+      "skill": "مهارة",
+      "ability": "قدرة خاصة",
+      "skill_points": "تكلفة نقاط المهارة",
+      "total": "الإجمالي",
+      "level": "المستوى",
+      "shards": "شظايا",
+      "xp": "XP",
+      "select_general": "اختر القائد",
+      "view_skills": "شجرة المهارات",
+      "view_costs": "تكاليف الترقية",
+      "attack_panel": "هجوم",
+      "defense_panel": "دفاع",
+      "no_generals": "لا يوجد قادة متاحون",
+      "unknown": "غير معروف"
+    }
+  }
+}

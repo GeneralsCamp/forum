@@ -1,0 +1,240 @@
+{
+  "en": {
+    "ui": {
+      "amount": "Amount",
+      "chance": "Chance",
+      "ranking": "Ranking",
+      "id": "ID",
+      "no_rewards": "No rewards for this selection.",
+      "latest_version": "Latest version",
+      "version": "Version",
+      "old": "old",
+      "no_events": "No gacha events found",
+      "no_sets": "No versions",
+      "no_levels": "No levels",
+      "top_rewards": "TOP rewards",
+      "level": "Level"
+    }
+  },
+  "de": {
+    "ui": {
+      "amount": "Menge",
+      "chance": "Chance",
+      "ranking": "Rang",
+      "id": "ID",
+      "no_rewards": "Keine Belohnungen für diese Auswahl.",
+      "latest_version": "Neueste Version",
+      "version": "Version",
+      "old": "alt",
+      "no_events": "Keine Gacha-Events gefunden",
+      "no_sets": "Keine Versionen",
+      "no_levels": "Keine Level",
+      "top_rewards": "TOP-Belohnungen",
+      "level": "Level"
+    }
+  },
+  "fr": {
+    "ui": {
+      "amount": "Quantité",
+      "chance": "Chance",
+      "ranking": "Classement",
+      "id": "ID",
+      "no_rewards": "Aucune récompense pour cette sélection.",
+      "latest_version": "Dernière version",
+      "version": "Version",
+      "old": "ancien",
+      "no_events": "Aucun événement gacha trouvé",
+      "no_sets": "Aucune version",
+      "no_levels": "Aucun niveau",
+      "top_rewards": "Récompenses TOP",
+      "level": "Niveau"
+    }
+  },
+  "pl": {
+    "ui": {
+      "amount": "Ilość",
+      "chance": "Szansa",
+      "ranking": "Ranking",
+      "id": "ID",
+      "no_rewards": "Brak nagród dla tego wyboru.",
+      "latest_version": "Najnowsza wersja",
+      "version": "Wersja",
+      "old": "stary",
+      "no_events": "Nie znaleziono wydarzeń gacha",
+      "no_sets": "Brak wersji",
+      "no_levels": "Brak poziomów",
+      "top_rewards": "Nagrody TOP",
+      "level": "Poziom"
+    }
+  },
+  "hu": {
+    "ui": {
+      "amount": "Mennyiség",
+      "chance": "Esély",
+      "ranking": "Helyezés",
+      "id": "Azonosító",
+      "no_rewards": "Ehhez a kiválasztáshoz nincs jutalom.",
+      "latest_version": "Legfrissebb verzió",
+      "version": "Verzió",
+      "old": "régi",
+      "no_events": "Nincs gacha esemény",
+      "no_sets": "Nincs verzió",
+      "no_levels": "Nincs szint",
+      "top_rewards": "TOP jutalmak",
+      "level": "Szint"
+    }
+  },
+  "ro": {
+    "ui": {
+      "amount": "Cantitate",
+      "chance": "Șansă",
+      "ranking": "Clasament",
+      "id": "ID",
+      "no_rewards": "Nu există recompense pentru această selecție.",
+      "latest_version": "Cea mai recentă versiune",
+      "version": "Versiune",
+      "old": "vechi",
+      "no_events": "Nu au fost găsite evenimente gacha",
+      "no_sets": "Nicio versiune",
+      "no_levels": "Niciun nivel",
+      "top_rewards": "Recompense TOP",
+      "level": "Nivel"
+    }
+  },
+  "es": {
+    "ui": {
+      "amount": "Cantidad",
+      "chance": "Probabilidad",
+      "ranking": "Clasificación",
+      "id": "ID",
+      "no_rewards": "No hay recompensas para esta selección.",
+      "latest_version": "Última versión",
+      "version": "Versión",
+      "old": "antiguo",
+      "no_events": "No se encontraron eventos gacha",
+      "no_sets": "Sin versiones",
+      "no_levels": "Sin niveles",
+      "top_rewards": "Recompensas TOP",
+      "level": "Nivel"
+    }
+  },
+  "ru": {
+    "ui": {
+      "amount": "Количество",
+      "chance": "Шанс",
+      "ranking": "Рейтинг",
+      "id": "ID",
+      "no_rewards": "Нет наград для этого выбора.",
+      "latest_version": "Последняя версия",
+      "version": "Версия",
+      "old": "старый",
+      "no_events": "События gacha не найдены",
+      "no_sets": "Нет версий",
+      "no_levels": "Нет уровней",
+      "top_rewards": "ТОП награды",
+      "level": "Уровень"
+    }
+  },
+  "el": {
+    "ui": {
+      "amount": "Ποσότητα",
+      "chance": "Πιθανότητα",
+      "ranking": "Κατάταξη",
+      "id": "ID",
+      "no_rewards": "Δεν υπάρχουν ανταμοιβές για αυτήν την επιλογή.",
+      "latest_version": "Τελευταία έκδοση",
+      "version": "Έκδοση",
+      "old": "παλιό",
+      "no_events": "Δεν βρέθηκαν γεγονότα gacha",
+      "no_sets": "Καμία έκδοση",
+      "no_levels": "Κανένα επίπεδο",
+      "top_rewards": "ΚΟΡΥΦΑΙΕΣ ανταμοιβές",
+      "level": "Επίπεδο"
+    }
+  },
+  "nl": {
+    "ui": {
+      "amount": "Aantal",
+      "chance": "Kans",
+      "ranking": "Ranglijst",
+      "id": "ID",
+      "no_rewards": "Geen beloningen voor deze selectie.",
+      "latest_version": "Nieuwste versie",
+      "version": "Versie",
+      "old": "oud",
+      "no_events": "Geen gacha-evenementen gevonden",
+      "no_sets": "Geen versies",
+      "no_levels": "Geen niveaus",
+      "top_rewards": "TOP-beloningen",
+      "level": "Niveau"
+    }
+  },
+  "cs": {
+    "ui": {
+      "amount": "Množství",
+      "chance": "Šance",
+      "ranking": "Pořadí",
+      "id": "ID",
+      "no_rewards": "Pro tento výběr nejsou žádné odměny.",
+      "latest_version": "Nejnovější verze",
+      "version": "Verze",
+      "old": "starý",
+      "no_events": "Nenalezeny žádné gacha události",
+      "no_sets": "Žádné verze",
+      "no_levels": "Žádné úrovně",
+      "top_rewards": "TOP odměny",
+      "level": "Úroveň"
+    }
+  },
+  "ar": {
+    "ui": {
+      "amount": "الكمية",
+      "chance": "الاحتمال",
+      "ranking": "الترتيب",
+      "id": "المعرف",
+      "no_rewards": "لا توجد مكافآت لهذا الاختيار.",
+      "latest_version": "أحدث إصدار",
+      "version": "الإصدار",
+      "old": "قديم",
+      "no_events": "لم يتم العثور على أحداث gacha",
+      "no_sets": "لا توجد إصدارات",
+      "no_levels": "لا توجد مستويات",
+      "top_rewards": "أفضل المكافآت",
+      "level": "المستوى"
+    }
+  },
+  "it": {
+    "ui": {
+      "amount": "Quantità",
+      "chance": "Probabilità",
+      "ranking": "Classifica",
+      "id": "ID",
+      "no_rewards": "Nessuna ricompensa per questa selezione.",
+      "latest_version": "Ultima versione",
+      "version": "Versione",
+      "old": "vecchio",
+      "no_events": "Nessun evento gacha trovato",
+      "no_sets": "Nessuna versione",
+      "no_levels": "Nessun livello",
+      "top_rewards": "Ricompense TOP",
+      "level": "Livello"
+    }
+  },
+  "ja": {
+    "ui": {
+      "amount": "数量",
+      "chance": "確率",
+      "ranking": "ランキング",
+      "id": "ID",
+      "no_rewards": "この選択には報酬がありません。",
+      "latest_version": "最新バージョン",
+      "version": "バージョン",
+      "old": "旧",
+      "no_events": "ガチャイベントが見つかりません",
+      "no_sets": "バージョンなし",
+      "no_levels": "レベルなし",
+      "top_rewards": "トップ報酬",
+      "level": "レベル"
+    }
+  }
+}

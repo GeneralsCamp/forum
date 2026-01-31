@@ -1,0 +1,50 @@
+.effect-icon {
+    width: 20px;
+    height: auto;
+    vertical-align: middle;
+    margin-right: 2px;
+}
+
+.bi-zoom-in {
+    font-size: 1.2rem;
+    color: white;
+}
+
+.box-content hr {
+    width: 100%;
+    border: 0;
+    border-top: 1px solid white !important;
+    opacity: 1 !important;
+    margin: 0;
+}
+
+.border-end {
+    border-right: 1px solid white !important;
+}
+
+#sizeFilters {
+    min-width: 100% !important;
+}
+
+#topButtonsContainer {
+    position: fixed;
+    right: 10px;
+    bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.max-bonus {
+    font-style: italic;
+    color: rgb(234, 224, 224);
+    font-size: 12px;
+    cursor: pointer;
+}
+
+@media (max-width:768px) {
+    .max-bonus {
+        white-space: nowrap;
+    }
+}

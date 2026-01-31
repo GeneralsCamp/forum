@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GGE Event Plan</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <link rel="icon" type="image/webp" href="/img_base/favicon.ico">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="/overviews/shared/shared.css">
+  <link rel="stylesheet" href="/overviews/event_plan/event_plan.css">
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-12 mb-2">
+        <div class="col-12 page-title">
+          <h1>GGE EVENT PLAN</h1>
+        </div>
+
+        <div id="topButtonsContainer">
+          <button id="downloadButton" class="download-icon-link" type="button" aria-label="Download event plan">
+            <div class="home-icon">
+              <i class="bi bi-download"></i>
+            </div>
+          </button>
+
+          <a href="https://generalscamp.github.io/forum/" class="home-icon-link">
+            <div class="home-icon">
+              <i class="bi bi-house"></i>
+            </div>
+          </a>
+        </div>
+
+        <div class="row note gx-1 gy-1 align-items-center pb-2">
+          <div class="col-md-6 col-sm-12">
+            <select id="gameSelect" class="form-select custom-select text-center" aria-label="Game">
+              <option value="" selected>Select game...</option>
+            </select>
+          </div>
+          <div class="col-md-6 col-sm-12">
+            <select id="viewSelect" class="form-select custom-select text-center" aria-label="Views">
+              <option value="" selected>Select view...</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+      <main id="content" class="container-fluid">
+        <div id="loadingBox" class="loading-message">
+          <h3 id="loadingStatus">Initializing...</h3>
+          <div class="progress">
+            <div id="loadingProgress" class="progress-bar"></div>
+            <span id="loadingPercentText" class="progress-text">0%</span>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+</body>
+
+</html>

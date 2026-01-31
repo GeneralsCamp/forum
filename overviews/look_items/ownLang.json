@@ -1,0 +1,23 @@
+{
+  "en": {
+    "filters": {
+      "search_placeholder": "Search look items...",
+      "show_commander": "Commander skins",
+      "show_castellan": "Castellan skins"
+    },
+    "ui": {
+      "no_image": "No image"
+    }
+  },
+
+  "hu": {
+    "filters": {
+      "search_placeholder": "Kinézet tárgyak keresése...",
+      "show_commander": "Parancsnok kinézetek",
+      "show_castellan": "Várnagy kinézetek"
+    },
+    "ui": {
+      "no_image": "Nincs kép"
+    }
+  }
+}

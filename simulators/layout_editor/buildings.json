@@ -1,0 +1,482 @@
+[
+  {
+    "name": "Stone works",
+    "width": 5,
+    "height": 5,
+    "color": "183 197 53",
+    "image": "images/stoneWorks.webp",
+    "description": "Size: 5x5"
+  },
+  {
+    "name": "Forest lodge",
+    "width": 5,
+    "height": 5,
+    "color": "183 197 53",
+    "image": "images/forestLodge.webp",
+    "description": "Size: 5x5"
+  },
+  {
+    "name": "Granary",
+    "width": 5,
+    "height": 5,
+    "color": "183 197 53",
+    "image": "images/granary.webp",
+    "description": "Size: 5x5"
+  },
+  {
+    "name": "Relic apiary",
+    "width": 5,
+    "height": 5,
+    "color": "183 197 53",
+    "image": "images/relicApiary.png",
+    "description": "Size: 5x5"
+  },
+  {
+    "name": "Relic mead distillery",
+    "width": 5,
+    "height": 5,
+    "color": "183 197 53",
+    "image": "images/relicMeadDistillery.png",
+    "description": "Size: 5x5"
+  },
+  {
+    "name": "Relic honey gardens",
+    "width": 5,
+    "height": 5,
+    "color": "183 197 53",
+    "image": "images/relicHoneyGardens.png",
+    "description": "Size: 5x5"
+  },
+  {
+    "name": "Relic barrel workshop",
+    "width": 5,
+    "height": 5,
+    "color": "183 197 53",
+    "image": "images/relicBarrelWorkshop.png",
+    "description": "Size: 5x5"
+  },
+  {
+    "name": "Hunting lodge",
+    "width": 5,
+    "height": 5,
+    "color": "183 197 53",
+    "image": "images/huntingLodge.webp",
+    "description": "Size: 5x5"
+  },
+  {
+    "name": "Refinery",
+    "width": 5,
+    "height": 5,
+    "color": "183 197 53",
+    "image": "images/refinery.png",
+    "description": "Size: 5x5"
+  },
+  {
+    "name": "Construction yard",
+    "width": 5,
+    "height": 5,
+    "color": "183 197 53",
+    "image": "images/constructionYard.png",
+    "description": "Size: 5x5"
+  },
+  {
+    "name": "Relic brewery",
+    "width": 5,
+    "height": 5,
+    "color": "183 197 53",
+    "image": "images/relicBrewery.png",
+    "description": "Size: 5x5"
+  },
+  {
+    "name": "Toolsmith",
+    "width": 5,
+    "height": 5,
+    "color": "183 197 53",
+    "image": "images/toolsmith.png",
+    "description": "Size: 5x5"
+  },
+  {
+    "name": "Imperial Council Hall",
+    "width": 5,
+    "height": 5,
+    "color": "183 197 53",
+    "image": "images/imperialCouncilHall.webp",
+    "description": "Size: 5x5"
+  },
+  {
+    "name": "Reinforced Vault",
+    "width": 5,
+    "height": 5,
+    "color": "183 197 53",
+    "image": "images/reinforcedVault.webp",
+    "description": "Size: 5x5"
+  },
+  {
+    "name": "Decoration",
+    "width": 5,
+    "height": 5,
+    "color": "111 68 119",
+    "image": "images/decoration5x5.png",
+    "description": "Size: 5x5"
+  },
+  {
+    "name": "Stronghold",
+    "width": 5,
+    "height": 5,
+    "color": "61 130 141",
+    "image": "images/stronghold.png",
+    "description": "Size: 5x5"
+  },
+  {
+    "name": "Forge",
+    "width": 5,
+    "height": 5,
+    "color": "61 130 141",
+    "image": "images/forge.png",
+    "description": "Size: 5x5"
+  },
+  {
+    "name": "University",
+    "width": 5,
+    "height": 5,
+    "color": "61 130 141",
+    "image": "images/university.png",
+    "description": "Size: 5x5"
+  },
+  {
+    "name": "Armory",
+    "width": 5,
+    "height": 5,
+    "color": "61 130 141",
+    "image": "images/armory.png",
+    "description": "Size: 5x5"
+  },
+  {
+    "name": "Military hospital",
+    "width": 5,
+    "height": 5,
+    "color": "61 130 141",
+    "image": "images/militaryHospital.png",
+    "description": "Size: 5x5"
+  },
+  {
+    "name": "Stables",
+    "width": 5,
+    "height": 5,
+    "color": "61 130 141",
+    "image": "images/stables.png",
+    "description": "Size: 5x5"
+  },
+  {
+    "name": "Watchtower",
+    "width": 5,
+    "height": 5,
+    "color": "61 130 141",
+    "image": "images/watchtower.png",
+    "description": "Size: 5x5"
+  },
+  {
+    "name": "Relicus",
+    "width": 5,
+    "height": 5,
+    "color": "61 130 141",
+    "image": "images/relicus.webp",
+    "description": "Size: 5x5"
+  },
+  {
+    "name": "Decoration",
+    "width": 5,
+    "height": 10,
+    "color": "111 68 119",
+    "image": "images/decoration5x10.png",
+    "description": "Size: 5x10"
+  },
+  {
+    "name": "Relic woodcutter",
+    "width": 5,
+    "height": 10,
+    "color": "183 197 53",
+    "image": "images/relicWoodcutter.png",
+    "description": "Size: 5x10"
+  },
+  {
+    "name": "Relic quarry",
+    "width": 5,
+    "height": 10,
+    "color": "183 197 53",
+    "image": "images/relicQuarry.png",
+    "description": "Size: 5x10"
+  },
+  {
+    "name": "Relic cattle farm",
+    "width": 5,
+    "height": 10,
+    "color": "183 197 53",
+    "image": "images/relicCattleFarm.webp",
+    "description": "Size: 5x10"
+  },
+  {
+    "name": "Storehouse",
+    "width": 5,
+    "height": 10,
+    "color": "183 197 53",
+    "image": "images/storehouse.png",
+    "description": "Size: 5x10"
+  },
+  {
+    "name": "Relic greenhouse",
+    "width": 5,
+    "height": 10,
+    "color": "183 197 53",
+    "image": "images/relicGreenhouse.png",
+    "description": "Size: 5x10"
+  },
+  {
+    "name": "Relic conservatory",
+    "width": 5,
+    "height": 10,
+    "color": "183 197 53",
+    "image": "images/relicConservatory.png",
+    "description": "Size: 5x10"
+  },
+  {
+    "name": "Drill ground",
+    "width": 5,
+    "height": 10,
+    "color": "61 130 141",
+    "image": "images/drillGround.png",
+    "description": "Size: 5x10"
+  },
+  {
+    "name": "Hall of legends",
+    "width": 5,
+    "height": 10,
+    "color": "61 130 141",
+    "image": "images/hol.webp",
+    "description": "Size: 5x10"
+  },
+  {
+    "name": "Stonemason",
+    "width": 9,
+    "height": 6,
+    "color": "183 197 53",
+    "image": "images/stonemason.png",
+    "description": "Size: 9x6"
+  },
+  {
+    "name": "Marketplace",
+    "width": 9,
+    "height": 6,
+    "color": "183 197 53",
+    "image": "images/marketplace.png",
+    "description": "Size: 9x6"
+  },
+  {
+    "name": "Sawmill",
+    "width": 9,
+    "height": 6,
+    "color": "183 197 53",
+    "image": "images/sawmill.png",
+    "description": "Size: 9x6"
+  },
+  {
+    "name": "Bakery",
+    "width": 9,
+    "height": 6,
+    "color": "183 197 53",
+    "image": "images/bakery.png",
+    "description": "Size: 9x6"
+  },
+  {
+    "name": "Flour mill",
+    "width": 9,
+    "height": 6,
+    "color": "183 197 53",
+    "image": "images/flourMill.png",
+    "description": "Size: 9x6"
+  },
+  {
+    "name": "Dragon hoard",
+    "width": 10,
+    "height": 8,
+    "color": "183 197 53",
+    "image": "images/dragonHoard.webp",
+    "description": "Size: 10x8"
+  },
+  {
+    "name": "Dragon breath forge",
+    "width": 10,
+    "height": 8,
+    "color": "183 197 53",
+    "image": "images/dragonBreathForge.webp",
+    "description": "Size: 10x8"
+  },
+  {
+    "name": "Defense workshop",
+    "width": 10,
+    "height": 8,
+    "color": "61 130 141",
+    "image": "images/defenseWorkshop.png",
+    "description": "Size: 10x8"
+  },
+  {
+    "name": "Offense workshop",
+    "width": 10,
+    "height": 8,
+    "color": "61 130 141",
+    "image": "images/offenseWorkshop.png",
+    "description": "Size: 10x8"
+  },
+  {
+    "name": "Guardhouse",
+    "width": 6,
+    "height": 6,
+    "color": "61 130 141",
+    "image": "images/guardhouse.png",
+    "description": "Size: 6x6"
+  },
+  {
+    "name": "Tavern",
+    "width": 6,
+    "height": 6,
+    "color": "61 130 141",
+    "image": "images/tavern.png",
+    "description": "Size: 6x6"
+  },
+  {
+    "name": "Estate",
+    "width": 8,
+    "height": 8,
+    "color": "128 128 128",
+    "image": "images/estate.png",
+    "description": "Size: 8x8"
+  },
+  {
+    "name": "District",
+    "width": 10,
+    "height": 10,
+    "color": "128 128 128",
+    "image": "images/district.png",
+    "description": "Size: 10x10"
+  },
+  {
+    "name": "The Keep",
+    "width": 12,
+    "height": 12,
+    "color": "128 128 128",
+    "image": "images/theKeep.png",
+    "description": "Size: 12x12"
+  },
+  {
+    "name": "RT",
+    "width": 3,
+    "height": 4,
+    "color": "61 130 141",
+    "image": "images/rt.png",
+    "description": "Size: 3x4"
+  },
+  {
+    "name": "Deco",
+    "width": 3,
+    "height": 3,
+    "color": "111 68 119",
+    "image": "images/deco3x3.png",
+    "description": "Size: 3x3"
+  },
+  {
+    "name": "Deco",
+    "width": 2,
+    "height": 2,
+    "color": "111 68 119",
+    "image": "images/deco2x2.webp",
+    "description": "Size: 2x2"
+  },
+  {
+    "name": "Deco",
+    "width": 3,
+    "height": 4,
+    "color": "111 68 119",
+    "image": "images/deco3x4.png",
+    "description": "Size: 3x4"
+  },
+  {
+    "name": "Decoration",
+    "width": 10,
+    "height": 20,
+    "color": "111 68 119",
+    "image": "images/decoration10x20.webp",
+    "description": "Size: 10x20"
+  },
+  {
+    "name": "Decoration",
+    "width": 20,
+    "height": 20,
+    "color": "111 68 119",
+    "image": "images/decoration20x20.webp",
+    "description": "Size: 20x20"
+  },
+  {
+    "name": "Encampment",
+    "width": 6,
+    "height": 6,
+    "color": "61 130 141",
+    "image": "images/encampment.png",
+    "description": "Size: 6x6"
+  },
+  {
+    "name": "Loot warehouse",
+    "width": 10,
+    "height": 8,
+    "color": "61 130 141",
+    "image": "images/lootWarehouse.png",
+    "description": "Size: 10x8"
+  },
+  {
+    "name": "Barracks",
+    "width": 6,
+    "height": 6,
+    "color": "61 130 141",
+    "image": "images/barracks.png",
+    "description": "Size: 6x6"
+  },
+  {
+    "name": "Relic bakery",
+    "width": 5,
+    "height": 5,
+    "color": "183 197 53",
+    "image": "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/Bakery/BGBakery_Building_Level1/BGBakery_Building_Level1--1573584429307.webp",
+    "description": "Size: 5x5"
+  },
+  {
+    "name": "CC",
+    "width": 3,
+    "height": 3,
+    "color": "183 197 53",
+    "image": "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/Crane/Crane_Building_Level1/Crane_Building_Level1--1573584429307.webp",
+    "description": "Size: 3x3"
+  },
+  {
+    "name": "Merchants' storehouse",
+    "width": 8,
+    "height": 10,
+    "color": "183 197 53",
+    "image": "images/metroStorehouse.webp",
+    "description": "Size: 8x10"
+  },
+  {
+    "name": "Palace",
+    "width": 25,
+    "height": 25,
+    "color": "61 130 141",
+    "image": "images/palace.webp",
+    "description": "Size: 25x25"
+  },
+  {
+    "name": "Emporium",
+    "width": 25,
+    "height": 25,
+    "color": "183 197 53",
+    "image": "images/emporium.webp",
+    "description": "Size: 25x25"
+  }
+]

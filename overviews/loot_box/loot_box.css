@@ -1,0 +1,12 @@
+.ci-title {
+    padding: 5px;
+}
+
+.no-image-text {
+    font-style: italic;
+    color: #e2b33d;
+    text-align: center;
+    padding: 2rem;
+    font-weight: bold;
+    user-select: none;
+}
