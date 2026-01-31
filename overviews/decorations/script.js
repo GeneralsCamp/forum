@@ -532,12 +532,6 @@ function applyHashSearch() {
   searchInput.value = id;
 
   applyFiltersAndSorting();
-
-  setTimeout(() => {
-    document.querySelector("#cards")?.scrollIntoView({
-      behavior: "smooth"
-    });
-  }, 150);
 }
 
 function setupMaxCapClick() {
