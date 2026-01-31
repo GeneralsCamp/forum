@@ -780,9 +780,15 @@ function renderCalendar(events) {
     months.forEach(entry => {
         const th = document.createElement("th");
         th.colSpan = entry.count;
-        th.textContent = `${monthNames[entry.month]} ${entry.year}`;
+
+        if (entry.count > 3) {
+            th.textContent = `${monthNames[entry.month]} ${entry.year}`;
+        } else {
+            th.textContent = "";
+        }
         monthRow.appendChild(th);
     });
+
     thead.appendChild(monthRow);
 
     const dayRow = document.createElement("tr");
