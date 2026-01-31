@@ -33,7 +33,13 @@
       "level": "Level",
       "primary": "Primary",
       "appearance": "Appearance",
-      "relic": "Relic"
+      "relic": "Relic",
+      "day": "day",
+      "days": "days",
+      "hour": "hour",
+      "hours": "hours",
+      "minute": "minute",
+      "minutes": "minutes"
     }
   },
   "de": {
@@ -70,7 +76,13 @@
       "level": "Level",
       "primary": "Primär",
       "appearance": "Aussehen",
-      "relic": "Relikt"
+      "relic": "Relikt",
+      "day": "Tag",
+      "days": "Tage",
+      "hour": "Stunde",
+      "hours": "Stunden",
+      "minute": "Minute",
+      "minutes": "Minuten"
     }
   },
   "fr": {
@@ -107,7 +119,13 @@
       "level": "Niveau",
       "primary": "Primaire",
       "appearance": "Apparence",
-      "relic": "Relique"
+      "relic": "Relique",
+      "day": "jour",
+      "days": "jours",
+      "hour": "heure",
+      "hours": "heures",
+      "minute": "minute",
+      "minutes": "minutes"
     }
   },
   "hu": {
@@ -144,7 +162,13 @@
       "level": "Szint",
       "primary": "Elsődleges",
       "appearance": "Kinézet",
-      "relic": "Relikvia"
+      "relic": "Relikvia",
+      "day": "nap",
+      "days": "nap",
+      "hour": "óra",
+      "hours": "óra",
+      "minute": "perc",
+      "minutes": "perc"
     }
   },
   "es": {
@@ -181,7 +205,13 @@
       "level": "Nivel",
       "primary": "Primario",
       "appearance": "Apariencia",
-      "relic": "Reliquia"
+      "relic": "Reliquia",
+      "day": "día",
+      "days": "días",
+      "hour": "hora",
+      "hours": "horas",
+      "minute": "minuto",
+      "minutes": "minutos"
     }
   },
   "ru": {
@@ -218,7 +248,13 @@
       "level": "Уровень",
       "primary": "Основной",
       "appearance": "Внешний вид",
-      "relic": "Реликвия"
+      "relic": "Реликвия",
+      "day": "день",
+      "days": "дней",
+      "hour": "час",
+      "hours": "часов",
+      "minute": "минута",
+      "minutes": "минут"
     }
   },
   "ja": {
@@ -255,7 +291,13 @@
       "level": "レベル",
       "primary": "メイン",
       "appearance": "外観",
-      "relic": "遺物"
+      "relic": "遺物",
+      "day": "日",
+      "days": "日",
+      "hour": "時間",
+      "hours": "時間",
+      "minute": "分",
+      "minutes": "分"
     }
   },
   "pl": {
@@ -292,7 +334,13 @@
       "level": "Poziom",
       "primary": "Główny",
       "appearance": "Wygląd",
-      "relic": "Relikt"
+      "relic": "Relikt",
+      "day": "dzień",
+      "days": "dni",
+      "hour": "godzina",
+      "hours": "godzin",
+      "minute": "minuta",
+      "minutes": "minut"
     }
   },
   "ro": {
@@ -329,7 +377,13 @@
       "level": "Nivel",
       "primary": "Principal",
       "appearance": "Aspect",
-      "relic": "Relicvă"
+      "relic": "Relicvă",
+      "day": "zi",
+      "days": "zile",
+      "hour": "oră",
+      "hours": "ore",
+      "minute": "minut",
+      "minutes": "minute"
     }
   },
   "el": {
@@ -366,7 +420,13 @@
       "level": "Επίπεδο",
       "primary": "Κύριο",
       "appearance": "Εμφάνιση",
-      "relic": "Κειμήλιο"
+      "relic": "Κειμήλιο",
+      "day": "ημέρα",
+      "days": "ημέρες",
+      "hour": "ώρα",
+      "hours": "ώρες",
+      "minute": "λεπτό",
+      "minutes": "λεπτά"
     }
   },
   "nl": {
@@ -403,7 +463,13 @@
       "level": "Niveau",
       "primary": "Primair",
       "appearance": "Uiterlijk",
-      "relic": "Reliek"
+      "relic": "Reliek",
+      "day": "dag",
+      "days": "dagen",
+      "hour": "uur",
+      "hours": "uur",
+      "minute": "minuut",
+      "minutes": "minuten"
     }
   },
   "cs": {
@@ -440,7 +506,13 @@
       "level": "Úroveň",
       "primary": "Hlavní",
       "appearance": "Vzhled",
-      "relic": "Relikvie"
+      "relic": "Relikvie",
+      "day": "den",
+      "days": "dny",
+      "hour": "hodina",
+      "hours": "hodin",
+      "minute": "minuta",
+      "minutes": "minut"
     }
   },
   "ar": {
@@ -477,7 +549,13 @@
       "level": "المستوى",
       "primary": "أساسي",
       "appearance": "المظهر",
-      "relic": "أثر"
+      "relic": "أثر",
+      "day": "يوم",
+      "days": "أيام",
+      "hour": "ساعة",
+      "hours": "ساعات",
+      "minute": "دقيقة",
+      "minutes": "دقائق"
     }
   },
   "it": {
@@ -514,7 +592,13 @@
       "level": "Livello",
       "primary": "Primario",
       "appearance": "Aspetto",
-      "relic": "Reliquia"
+      "relic": "Reliquia",
+      "day": "giorno",
+      "days": "giorni",
+      "hour": "ora",
+      "hours": "ore",
+      "minute": "minuto",
+      "minutes": "minuti"
     }
   }
 }

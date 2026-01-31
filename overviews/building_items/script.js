@@ -144,6 +144,13 @@ async function applyOwnLang() {
         level: ui.level || "Level",
         public_order: ui.public_order || "Public order",
 
+        minute: ui.minute || "minute",
+        minutes: ui.minutes || "minutes",
+        hour: ui.hour || "hour",
+        hours: ui.hours || "hours",
+        day: ui.day || "day",
+        days: ui.days || "days",
+
         no_image: ui.no_image || "no image"
     };
 }
@@ -395,14 +402,24 @@ function getLevelText(item, rarityName) {
 
 function formatDuration(seconds) {
     if (!seconds) return "";
+
     seconds = Number(seconds);
+
     const days = Math.floor(seconds / 86400);
     const hours = Math.floor((seconds % 86400) / 3600);
     const mins = Math.floor((seconds % 3600) / 60);
+
     let result = "";
-    if (days) result += `${days} day${days === 1 ? "" : "s"} `;
-    if (hours) result += `${hours} hour${hours === 1 ? "" : "s"} `;
-    if (mins) result += `${mins} minute${mins === 1 ? "" : "s"}`;
+
+    if (days)
+        result += `${days} ${days === 1 ? UI_LANG.day : UI_LANG.days} `;
+
+    if (hours)
+        result += `${hours} ${hours === 1 ? UI_LANG.hour : UI_LANG.hours} `;
+
+    if (mins)
+        result += `${mins} ${mins === 1 ? UI_LANG.minute : UI_LANG.minutes}`;
+
     return result.trim();
 }
 
