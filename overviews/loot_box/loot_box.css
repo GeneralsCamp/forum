@@ -208,7 +208,14 @@
   }
 }
 
-#lootBoxModal,
-#lootBoxModal * {
-  overflow-x: hidden !important;
+#lootBoxModal {
+  overflow-x: hidden;
+}
+
+#lootBoxModal .modal-body {
+  overflow-x: hidden;
+}
+
+.loot-rewards {
+  overflow-x: auto;
 }
