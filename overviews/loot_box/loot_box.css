@@ -1,12 +1,214 @@
+:root {
+  --rarity-common: rgb(178, 178, 178);
+  --rarity-rare: rgb(160, 217, 72);
+  --rarity-epic: rgb(201, 134, 255);
+  --rarity-legendary: rgb(247, 148, 32);
+}
+
 .ci-title {
-    padding: 5px;
+  padding: 5px;
 }
 
 .no-image-text {
-    font-style: italic;
-    color: #e2b33d;
-    text-align: center;
-    padding: 2rem;
-    font-weight: bold;
-    user-select: none;
+  font-style: italic;
+  color: #e2b33d;
+  text-align: center;
+  padding: 2rem;
+  font-weight: bold;
+  user-select: none;
+}
+
+#lootBoxModal .modal-content {
+  background-color: #433120;
+  border-radius: 10px;
+  border: 1px solid #443326;
+  overflow: hidden;
+}
+
+#lootBoxModal .modal-header {
+  background-color: rgb(119, 80, 54);
+  border-bottom: 1px solid #443326;
+  padding: 6px 10px;
+}
+
+#lootBoxModal .modal-title {
+  color: #F3C24A;
+  font-weight: bolder;
+  font-size: 22px;
+  text-align: center;
+  width: 100%;
+}
+
+#lootBoxModal .modal-body {
+  background-color: rgb(145, 98, 65);
+  padding: 0;
+  max-height: 450px;
+  min-height: 450px;
+  overflow-y: auto;
+}
+
+#lootBoxModal .modal-body::-webkit-scrollbar {
+  width: 10px;
+}
+
+#lootBoxModal .modal-body::-webkit-scrollbar-thumb {
+  background-color: #bd9a79;
+  border-radius: 5px;
+}
+
+#lootBoxModal .modal-body::-webkit-scrollbar-track {
+  background-color: #f2d9bb;
+}
+
+.loot-row {
+  position: relative;
+
+  display: grid;
+  grid-template-columns: 130px 100px 1fr;
+  align-items: center;
+
+  min-height: 72px;
+  background-color: #7b5336;
+  border-bottom: 2px solid #5a3c27;
+}
+
+.loot-row::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+}
+
+.loot-row.rarity-common::before {
+  background-color: var(--rarity-common);
+}
+
+.loot-row.rarity-rare::before {
+  background-color: var(--rarity-rare);
+}
+
+.loot-row.rarity-epic::before {
+  background-color: var(--rarity-epic);
+}
+
+.loot-row.rarity-legendary::before {
+  background-color: var(--rarity-legendary);
+}
+
+.loot-rarity {
+  padding-left: 18px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #f5e6cf;
+  white-space: nowrap;
+}
+
+.loot-chance {
+  text-align: center;
+  font-size: 15px;
+  font-weight: bold;
+  color: #f5e6cf;
+  white-space: nowrap;
+}
+
+.loot-rewards {
+  display: flex;
+  gap: 10px;
+  padding: 8px 14px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.loot-rewards::-webkit-scrollbar {
+  height: 8px;
+}
+
+.loot-rewards::-webkit-scrollbar-thumb {
+  background: #c9ab7a;
+  border-radius: 4px;
+}
+
+.loot-rewards::-webkit-scrollbar-track {
+  background: #6b4a30;
+}
+
+
+.loot-reward {
+  width: 64px;
+  height: 64px;
+
+  background-color: #f7edd7;
+  border-radius: 6px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  position: relative;
+  box-sizing: border-box;
+}
+
+.loot-reward img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.loot-amount {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  height: 18px;
+  background: rgba(0, 0, 0, 0.4);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-bottom-right-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+
+.loot-amount span {
+  font-size: 13px;
+  font-weight: bold;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+}
+
+@media (max-width: 768px) {
+  .loot-row {
+    grid-template-columns: 70px 50px 1fr;
+  }
+
+  .loot-rarity {
+    font-size: 12px;
+  }
+
+  .loot-chance {
+    font-size: 12px;
+  }
+
+  .loot-reward {
+    width: 50px;
+    height: 50px;
+    min-width: 50px !important;
+    min-height: 50px !important;
+  }
+
+  .loot-reward img {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+#lootBoxModal,
+#lootBoxModal * {
+  overflow-x: hidden !important;
 }
