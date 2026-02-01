@@ -156,49 +156,65 @@ async function applyOwnLang() {
 }
 
 // --- EFFECTS AND LEGACY FIELD HANDLING ---
-const legacyEffectFields = ["unitWallCount", "recruitSpeedBoost", "woodStorage", "stoneStorage", "ReduceResearchResourceCosts", "Stoneproduction", "Woodproduction", "Foodproduction", "foodStorage", "unboostedFoodProduction", "defensiveToolsSpeedBoost", "defensiveToolsCostsReduction", "meadStorage", "recruitCostReduction", "honeyStorage", "hospitalCapacity", "healSpeed", "marketCarriages", "XPBoostBuildBuildings", "stackSize", "glassStorage", "Glassproduction", "ironStorage", "Ironproduction", "coalStorage", "Coalproduction", "oilStorage", "Oilproduction", "offensiveToolsCostsReduction", "feastCostsReduction", "Meadreduction", "surviveBoost", "unboostedStoneProduction", "unboostedWoodProduction", "offensiveToolsSpeedBoost", "espionageTravelBoost"];
-
-const effectNameOverrides = {
-    "lootBonusPVE": "Loot bonus from NPC targets",
-    "defenseBonusNotMainCastle": "Bonus to the strength of defensive units not in the main castle", //relicequip_effect_description_relicDefenseBonusNotMainCastleCapA_undefined with %
-    "attackUnitAmountReinforcementBonus": "Troop capacity for final assault",
-    "attackUnitAmountReinforcementBoost": "Troop capacity for final assault",
-    "PublicOrderBonusMain": "Public order bonus in the main castle", //webshop_subscription_effect_description_publicOrderBonusMain_short without %
-    "rangeBonusTCI": "Ranged unit attack strength when attacking", //ci_effect_offensiveRangeBonusTCI_tt with %
-    "meleeBonusTCI": "Melee unit attack strength when attacking", //ci_effect_offensiveMeleeBonusTCI_tt with %
-    "defenseUnitAmountYardMinorBoost": "Bonus to courtyard defense troop capacity", //effect_name_defenseUnitAmountYardBonus with %
-};
+const legacyEffectFields = ["unitWallCount", "recruitSpeedBoost", "woodStorage", "stoneStorage", "ReduceResearchResourceCosts",
+    "Stoneproduction", "Woodproduction", "Foodproduction", "foodStorage", "unboostedFoodProduction", "defensiveToolsSpeedBoost",
+    "defensiveToolsCostsReduction", "meadStorage", "recruitCostReduction", "honeyStorage", "hospitalCapacity", "healSpeed",
+    "marketCarriages", "XPBoostBuildBuildings", "stackSize", "glassStorage", "Glassproduction", "ironStorage", "Ironproduction",
+    "coalStorage", "Coalproduction", "oilStorage", "Oilproduction", "offensiveToolsCostsReduction", "feastCostsReduction",
+    "Meadreduction", "surviveBoost", "unboostedStoneProduction", "unboostedWoodProduction", "offensiveToolsSpeedBoost",
+    "espionageTravelBoost"];
 
 function addLegacyEffects(item, effectsList) {
+
     function getLangKey(fieldName) {
         const lower = fieldName.toLowerCase();
         for (const key in lang) {
             const keyLower = key.toLowerCase();
-            if (keyLower.endsWith('_tt') && keyLower.includes(lower)) {
+            if (keyLower.endsWith("_tt") && keyLower.includes(lower)) {
                 return lang[key];
             }
         }
         return fieldName;
     }
 
+    const renderedText = effectsList.join(" ").toLowerCase();
+
     legacyEffectFields.forEach(field => {
+
         const val = item[field];
-        if (val !== undefined && val !== null && val !== "") {
-            const effectName = getLangKey(field);
+        if (val === undefined || val === null || val === "") return;
 
-            const langKey = `ci_effect_${field.toLowerCase()}`;
-            const isPercent = lang[langKey]?.includes("%");
+        const template = lang[`ci_effect_${field.toLowerCase()}`];
+        const labelFallback = getLangKey(field);
 
-            const formattedValue = isPercent
-                ? `${formatNumber(val)}%`
-                : formatNumber(val);
+        if (template && template.includes("{0}")) {
 
-            const endsWithColon = effectName.trim().endsWith(":");
-            const effectText = endsWithColon
-                ? `${effectName} ${formattedValue}`
-                : `${effectName}: ${formattedValue}`;
+            let label = template
+                .replace(/\{0\}/g, "")
+                .replace(/[%+\-]/g, "")
+                .replace(/:+/g, "")
+                .trim();
 
-            effectsList.push(effectText);
+            label = label.charAt(0).toUpperCase() + label.slice(1);
+
+            const sign = val < 0 ? "-" : "+";
+            const absVal = Math.abs(val);
+
+            const hasPercent = template.includes("%");
+            const valueText =
+                `${sign}${formatNumber(absVal)}${hasPercent ? "%" : ""}`;
+
+            const rendered = `${label}: ${valueText}`;
+
+            if (!renderedText.includes(rendered.toLowerCase())) {
+                effectsList.push(rendered);
+            }
+            return;
+        }
+
+        const fallback = `${labelFallback}: ${formatNumber(val)}`;
+        if (!renderedText.includes(fallback.toLowerCase())) {
+            effectsList.push(fallback);
         }
     });
 }
@@ -207,31 +223,46 @@ function getLocalizedEffectName(effectDef, variant = null) {
     if (!effectDef) return null;
 
     const original = effectDef.name;
-    const allLower = original.toLowerCase();
+    const lower = original.toLowerCase();
 
-    if (effectNameOverrides[original]) return effectNameOverrides[original];
-    if (effectNameOverrides[allLower]) return effectNameOverrides[allLower];
+    const legacyTooltipKeys = [];
 
-    const candidates = [];
+    if (variant !== null)
+        legacyTooltipKeys.push(`ci_effect_${lower}_${variant}_tt`);
 
-    if (variant !== null) {
+    legacyTooltipKeys.push(`ci_effect_${lower}_tt`);
 
-        candidates.push(`ci_effect_${allLower}_${variant}_tt`);
-
-        candidates.push(`effect_name_${allLower}_${variant}`);
+    for (const key of legacyTooltipKeys) {
+        if (lang[key]) return { text: lang[key], mode: "legacy" };
+        if (lang[key.toLowerCase()])
+            return { text: lang[key.toLowerCase()], mode: "legacy" };
     }
 
-    candidates.push(`effect_name_${allLower}`);
-    candidates.push(`ci_effect_${allLower}_tt`);
+    const legacyNameKeys = [];
 
-    candidates.push(allLower);
+    if (variant !== null)
+        legacyNameKeys.push(`effect_name_${lower}_${variant}`);
 
-    for (const key of candidates) {
-        if (lang[key]) return lang[key];
-        if (lang[key.toLowerCase()]) return lang[key.toLowerCase()];
+    legacyNameKeys.push(`effect_name_${lower}`);
+
+    for (const key of legacyNameKeys) {
+        if (lang[key]) return { text: lang[key], mode: "legacy" };
+        if (lang[key.toLowerCase()])
+            return { text: lang[key.toLowerCase()], mode: "legacy" };
     }
 
-    return original;
+    const templateKeys = [
+        `ci_effect_${lower}`,
+        `subscription_effect_description_${lower}`
+    ];
+
+    for (const key of templateKeys) {
+        if (lang[key]) return { text: lang[key], mode: "template" };
+        if (lang[key.toLowerCase()])
+            return { text: lang[key.toLowerCase()], mode: "template" };
+    }
+
+    return { text: original, mode: "fallback" };
 }
 
 function parseEffects(effectsStr) {
@@ -254,7 +285,11 @@ function parseEffects(effectsStr) {
         }
 
         const effectDef = effectDefinitions[id];
-        const localizedName = getLocalizedEffectName(effectDef, variant) || `Effect ID ${id}`;
+        const loc = getLocalizedEffectName(effectDef, variant);
+
+        const nameText = loc?.text || `Effect ID ${id}`;
+        const mode = loc?.mode || "fallback";
+
         const suffix = percentEffectIDs.has(id) ? "%" : "";
 
         let maxStr = "";
@@ -265,8 +300,33 @@ function parseEffects(effectsStr) {
             }
         }
 
-        const needsColon = !localizedName.includes(":");
-        return `${localizedName}${needsColon ? ":" : ""} ${formatter.format(val)}${suffix}${maxStr}`;
+        if (mode === "template") {
+
+            let label = nameText
+                .replace(/\{0\}/g, "")
+                .replace(/[%+\-]/g, "")
+                .replace(/:+/g, "")
+                .trim();
+
+            label = label.charAt(0).toUpperCase() + label.slice(1);
+
+            const templateHasMinus = /-\s*\{0\}/.test(nameText);
+            const templateHasPlus = /\+\s*\{0\}/.test(nameText);
+
+            let sign;
+            if (templateHasMinus) sign = "-";
+            else if (templateHasPlus) sign = "+";
+            else sign = val < 0 ? "-" : "+";
+
+            const absVal = Math.abs(val);
+
+            const valueText = `${sign}${formatter.format(absVal)}${suffix}`;
+
+            return `${label}: ${valueText}${maxStr}`;
+        }
+
+        const needsColon = !nameText.includes(":");
+        return `${nameText}${needsColon ? ":" : ""} ${formatter.format(val)}${suffix}${maxStr}`;
     });
 }
 
@@ -336,14 +396,17 @@ function groupItemsByNameEffectsLegacyAppearanceAndDuration(items) {
 
     for (const key in groups) {
         groups[key].sort((a, b) => {
-            const rarA = parseInt(a.rarenessID || 0);
-            const rarB = parseInt(b.rarenessID || 0);
 
+            if (Number(a.slotTypeID) === 1 && Number(b.slotTypeID) === 1) {
+                return Number(a.level || 0) - Number(b.level || 0);
+            }
+
+            const rarA = Number(a.rarenessID || 0);
+            const rarB = Number(b.rarenessID || 0);
             if (rarA !== rarB) return rarA - rarB;
 
             const totalEffectA = getTotalEffectValue(a);
             const totalEffectB = getTotalEffectValue(b);
-
             return totalEffectA - totalEffectB;
         });
     }
