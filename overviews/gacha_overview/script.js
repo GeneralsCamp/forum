@@ -1031,73 +1031,73 @@ document.addEventListener("click", event => {
 });
 
 async function init() {
+    try {
+        await coreInit({
+            loader,
+            itemLabel: "gacha",
+            langCode: currentLanguage,
+            normalizeNameFn: normalizeName,
 
-    await coreInit({
-        loader,
-        itemLabel: "gacha",
-        langCode: currentLanguage,
-        normalizeNameFn: normalizeName,
+            assets: {
+                decorations: true,
+                constructions: true,
+                looks: true,
+                units: true,
+                currencies: true
+            },
 
-        assets: {
-            decorations: true,
-            constructions: true,
-            looks: true,
-            units: true,
-            currencies: true
-        },
+            onReady: async ({
+                lang: L,
+                data,
+                imageMaps
+            }) => {
 
-        onReady: async ({
-            lang: L,
-            data,
-            imageMaps
-        }) => {
+                lang = L;
+                itemsData = data;
 
-            lang = L;
-            itemsData = data;
+                imageUrlMap = imageMaps?.decorations ?? {};
+                constructionImageUrlMap = imageMaps?.constructions ?? {};
+                equipmentImageUrlMap = imageMaps?.looks ?? {};
+                unitImageUrlMap = imageMaps?.units ?? {};
+                collectableCurrencyImageUrlMap = imageMaps?.currencies ?? {};
 
-            imageUrlMap = imageMaps?.decorations ?? {};
+                const rewards = getArray(itemsData, ["rewards"]);
+                const currencies = getArray(itemsData, ["currencies"]);
+                const equipment = getArray(itemsData, ["equipments"]);
+                const skins = getArray(itemsData, ["worldmapskins"]);
 
-            constructionImageUrlMap = imageMaps?.constructions ?? {};
+                lookSkinsById = {};
+                skins.forEach(s => {
+                    lookSkinsById[String(s.skinID)] = s.name;
+                });
 
-            equipmentImageUrlMap = imageMaps?.looks ?? {};
+                const constructions = getArray(itemsData, ["constructionItems"]);
+                const decorations = getArray(itemsData, ["buildings"]);
+                const units = getArray(itemsData, ["units"]);
 
-            unitImageUrlMap = imageMaps?.units ?? {};
+                rewardsById = buildLookup(rewards, "rewardID");
+                currenciesById = buildLookup(currencies, "currencyID");
+                equipmentById = buildLookup(equipment, "equipmentID");
+                constructionById = buildLookup(constructions, "constructionItemID");
+                decorationsById = buildLookup(decorations, "wodID");
+                unitsById = buildLookup(units, "wodID");
 
-            collectableCurrencyImageUrlMap = imageMaps?.currencies ?? {};
+                initLanguageSelector({
+                    currentLanguage,
+                    lang,
+                    onSelect: () => location.reload()
+                });
 
-            const rewards = getArray(itemsData, ["rewards"]);
-            const currencies = getArray(itemsData, ["currencies"]);
-            const equipment = getArray(itemsData, ["equipments"]);
-            const skins = getArray(itemsData, ["worldmapskins"]);
+                await loadOwnLang();
+                applyOwnLang();
 
-            lookSkinsById = {};
-            skins.forEach(s => {
-                lookSkinsById[String(s.skinID)] = s.name;
-            });
-
-            const constructions = getArray(itemsData, ["constructionItems"]);
-            const decorations = getArray(itemsData, ["buildings"]);
-            const units = getArray(itemsData, ["units"]);
-
-            rewardsById = buildLookup(rewards, "rewardID");
-            currenciesById = buildLookup(currencies, "currencyID");
-            equipmentById = buildLookup(equipment, "equipmentID");
-            constructionById = buildLookup(constructions, "constructionItemID");
-            decorationsById = buildLookup(decorations, "wodID");
-
-            unitsById = buildLookup(units, "wodID");
-
-            initLanguageSelector({
-                currentLanguage,
-                lang,
-                onSelect: () => location.reload()
-            });
-            await loadOwnLang();
-            applyOwnLang();
-
-            setupSelectors();
-        }
-    });
+                setupSelectors();
+            }
+        });
+    } catch (err) {
+        console.error(err);
+        loader.error("Something went wrong...", 30);
+    }
 }
 
 init();

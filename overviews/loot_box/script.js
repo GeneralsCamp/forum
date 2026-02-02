@@ -442,72 +442,77 @@ initAutoHeight({
 });
 
 async function init() {
-  await coreInit({
-    loader,
-    itemLabel: "loot boxes",
-    langCode: currentLanguage,
-    normalizeNameFn: normalizeName,
+  try {
+    await coreInit({
+      loader,
+      itemLabel: "loot boxes",
+      langCode: currentLanguage,
+      normalizeNameFn: normalizeName,
 
-    assets: {
-      lootboxes: true,
-      currencies: true,
-      units: true
-    },
+      assets: {
+        lootboxes: true,
+        currencies: true,
+        units: true
+      },
 
-    onReady: async ({
-      lang: L,
-      data,
-      imageMaps,
-    }) => {
+      onReady: async ({
+        lang: L,
+        data,
+        imageMaps,
+      }) => {
 
-      lang = L;
+        lang = L;
 
-      lootBoxes = Array.isArray(data.lootBoxes)
-        ? data.lootBoxes
-        : [];
+        lootBoxes = Array.isArray(data.lootBoxes)
+          ? data.lootBoxes
+          : [];
 
-      lootBoxKeyTombolas = Array.isArray(data.lootBoxKeyTombolas)
-        ? data.lootBoxKeyTombolas
-        : [];
+        lootBoxKeyTombolas = Array.isArray(data.lootBoxKeyTombolas)
+          ? data.lootBoxKeyTombolas
+          : [];
 
-      lootBoxImageUrlMap = imageMaps?.lootboxes ?? {};
-      currencyImageUrlMap = imageMaps?.currencies ?? {};
+        lootBoxImageUrlMap = imageMaps?.lootboxes ?? {};
+        currencyImageUrlMap = imageMaps?.currencies ?? {};
 
-      const units = Array.isArray(data.units) ? data.units : [];
-      unitsById = {};
-      units.forEach(u => {
-        unitsById[String(u.wodID)] = u;
-      });
+        const units = Array.isArray(data.units) ? data.units : [];
+        unitsById = {};
+        units.forEach(u => {
+          unitsById[String(u.wodID)] = u;
+        });
 
-      unitImageUrlMap = imageMaps?.units ?? {};
+        unitImageUrlMap = imageMaps?.units ?? {};
 
-      const rewards = Array.isArray(data.rewards) ? data.rewards : [];
-      rewardsById = {};
-      rewards.forEach(r => {
-        rewardsById[String(r.rewardID)] = r;
-      });
+        const rewards = Array.isArray(data.rewards) ? data.rewards : [];
+        rewardsById = {};
+        rewards.forEach(r => {
+          rewardsById[String(r.rewardID)] = r;
+        });
 
-      lootBoxTombolas = Array.isArray(data.lootBoxTombolas)
-        ? data.lootBoxTombolas
-        : [];
+        lootBoxTombolas = Array.isArray(data.lootBoxTombolas)
+          ? data.lootBoxTombolas
+          : [];
 
-      initLanguageSelector({
-        currentLanguage,
-        lang,
-        onSelect: () => location.reload()
-      });
+        initLanguageSelector({
+          currentLanguage,
+          lang,
+          onSelect: () => location.reload()
+        });
 
-      lootBoxes.sort((a, b) => {
-        const la = getLegendaryPercent(a);
-        const lb = getLegendaryPercent(b);
+        lootBoxes.sort((a, b) => {
+          const la = getLegendaryPercent(a);
+          const lb = getLegendaryPercent(b);
 
-        if (lb !== la) return lb - la;
-        return Number(a.sortOrder || 0) - Number(b.sortOrder || 0);
-      });
+          if (lb !== la) return lb - la;
+          return Number(a.sortOrder || 0) - Number(b.sortOrder || 0);
+        });
 
-      renderLootBoxes(lootBoxes);
-    }
-  });
+        renderLootBoxes(lootBoxes);
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    loader.error("Something went wrong...", 30);
+  }
 }
 
 init();

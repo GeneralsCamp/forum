@@ -958,70 +958,73 @@ initAutoHeight({
 });
 
 async function init() {
+    try {
+        await coreInit({
+            loader,
+            itemLabel: "generals",
+            langCode: currentLanguage,
+            normalizeNameFn: normalizeName,
 
-    await coreInit({
-        loader,
-        itemLabel: "generals",
-        langCode: currentLanguage,
-        normalizeNameFn: normalizeName,
+            assets: {
+                generals: true
+            },
 
-        assets: {
-            generals: true
-        },
+            onReady: async ({
+                lang: L,
+                data,
+                imageMaps
+            }) => {
 
-        onReady: async ({
-            lang: L,
-            data,
-            imageMaps
-        }) => {
+                lang = L;
+                itemsData = lowercaseKeysRecursive(data);
 
-            lang = L;
-            itemsData = lowercaseKeysRecursive(data);
+                generalsById = buildLookup(
+                    (itemsData.generals || []).filter(g => g.isnpcgeneral !== "1"),
+                    "generalid"
+                );
 
-            generalsById = buildLookup(
-                (itemsData.generals || []).filter(g => g.isnpcgeneral !== "1"),
-                "generalid"
-            );
+                raritiesById = buildLookup(
+                    itemsData.generalrarities || [],
+                    "generalrarityid"
+                );
 
-            raritiesById = buildLookup(
-                itemsData.generalrarities || [],
-                "generalrarityid"
-            );
+                abilityEffectsById = buildLookup(
+                    itemsData.generalabilityeffects || [],
+                    "abilityeffectid"
+                );
 
-            abilityEffectsById = buildLookup(
-                itemsData.generalabilityeffects || [],
-                "abilityeffectid"
-            );
+                skillsByGeneral = {};
+                (itemsData.generalskills || []).forEach(s => {
+                    if (!skillsByGeneral[s.generalid]) {
+                        skillsByGeneral[s.generalid] = [];
+                    }
+                    skillsByGeneral[s.generalid].push(s);
+                });
 
-            skillsByGeneral = {};
-            (itemsData.generalskills || []).forEach(s => {
-                if (!skillsByGeneral[s.generalid]) {
-                    skillsByGeneral[s.generalid] = [];
-                }
-                skillsByGeneral[s.generalid].push(s);
-            });
+                (itemsData.generalabilities || []).forEach(a => {
+                    abilitiesByGroupId[String(a.abilitygroupid)] = a;
+                });
 
-            (itemsData.generalabilities || []).forEach(a => {
-                abilitiesByGroupId[String(a.abilitygroupid)] = a;
-            });
+                generalPortraitMap = imageMaps.generals?.portraits ?? {};
+                abilityIconMap = imageMaps.generals?.abilities ?? {};
 
-            generalPortraitMap = imageMaps.generals?.portraits ?? {};
+                initLanguageSelector({
+                    currentLanguage,
+                    lang,
+                    onSelect: () => location.reload()
+                });
 
-            abilityIconMap = imageMaps.generals?.abilities ?? {};
+                await loadOwnLang();
+                applyOwnLang();
 
-            initLanguageSelector({
-                currentLanguage,
-                lang,
-                onSelect: () => location.reload()
-            });
-
-            await loadOwnLang();
-            applyOwnLang();
-
-            setupSelectors();
-            setupViewSwitcher();
-        }
-    });
+                setupSelectors();
+                setupViewSwitcher();
+            }
+        });
+    } catch (err) {
+        console.error(err);
+        loader.error("Something went wrong...", 30);
+    }
 }
 
 init();

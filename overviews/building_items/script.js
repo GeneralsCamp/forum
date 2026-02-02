@@ -197,7 +197,14 @@ function addLegacyEffects(item, effectsList) {
 
             label = label.charAt(0).toUpperCase() + label.slice(1);
 
-            const sign = val < 0 ? "-" : "+";
+            const templateHasMinus = /-\s*\{0\}/.test(template);
+            const templateHasPlus = /\+\s*\{0\}/.test(template);
+
+            let sign;
+            if (templateHasMinus) sign = "-";
+            else if (templateHasPlus) sign = "+";
+            else sign = val < 0 ? "-" : "+";
+
             const absVal = Math.abs(val);
 
             const hasPercent = template.includes("%");
@@ -907,53 +914,58 @@ initAutoHeight({
     subtractSelectors: [".note", ".page-title"],
     extraOffset: 18
 });
+
 async function init() {
+    try {
+        initImageModal();
 
-    initImageModal();
+        await coreInit({
+            loader,
+            langCode: currentLanguage,
+            normalizeNameFn: normalizeName,
+            itemLabel: "construction items",
 
-    await coreInit({
-        loader,
-        langCode: currentLanguage,
-        normalizeNameFn: normalizeName,
-        itemLabel: "construction items",
-        assets: {
-            constructions: true
-        },
+            assets: {
+                constructions: true
+            },
 
-        onReady: async ({
-            lang: L,
-            data,
-            imageMaps,
-            effectCtx
-        }) => {
+            onReady: async ({
+                lang: L,
+                data,
+                imageMaps,
+                effectCtx
+            }) => {
 
-            lang = L;
-            allItems = data.constructionItems || [];
-            imageUrlMap = imageMaps.constructions || {};
+                lang = L;
+                allItems = data.constructionItems || [];
+                imageUrlMap = imageMaps.constructions || {};
 
-            effectDefinitions = effectCtx.effectDefinitions;
-            effectCapsMap = effectCtx.effectCapsMap;
-            percentEffectIDs.clear();
+                effectDefinitions = effectCtx.effectDefinitions;
+                effectCapsMap = effectCtx.effectCapsMap;
 
-            effectCtx.percentEffectIDs
-                .forEach(id =>
+                percentEffectIDs.clear();
+                effectCtx.percentEffectIDs.forEach(id =>
                     percentEffectIDs.add(id)
                 );
 
-            initLanguageSelector({
-                currentLanguage,
-                lang,
-                onSelect: () => location.reload()
-            });
+                initLanguageSelector({
+                    currentLanguage,
+                    lang,
+                    onSelect: () => location.reload()
+                });
 
-            await loadOwnLang();
-            applyOwnLang();
+                await loadOwnLang();
+                applyOwnLang();
 
-            setupEventListeners();
-            applyFiltersAndSorting();
-            applyHashSearch();
-        }
-    });
+                setupEventListeners();
+                applyFiltersAndSorting();
+                applyHashSearch();
+            }
+        });
+    } catch (err) {
+        console.error(err);
+        loader.error("Something went wrong...", 30);
+    }
 }
 
 init();

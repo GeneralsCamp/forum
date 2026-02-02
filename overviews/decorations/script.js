@@ -685,55 +685,59 @@ window.addEventListener("DOMContentLoaded", () => {
 
 // --- INITIALIZATION AND EVENT SETUP ---
 async function init() {
+  try {
+    initImageModal();
 
-  initImageModal();
+    await coreInit({
+      loader,
+      langCode: currentLanguage,
+      normalizeNameFn: normalizeName,
 
-  await coreInit({
-    loader,
-    langCode: currentLanguage,
-    normalizeNameFn: normalizeName,
+      assets: {
+        decorations: true
+      },
 
-    assets: {
-      decorations: true
-    },
+      onReady: async ({
+        lang: L,
+        data,
+        imageMaps,
+        effectCtx
+      }) => {
 
-    onReady: async ({
-      lang: L,
-      data,
-      imageMaps,
-      effectCtx
-    }) => {
+        lang = L;
+        imageUrlMap = imageMaps.decorations || {};
+        effectDefinitions = effectCtx.effectDefinitions;
+        effectCapsMap = effectCtx.effectCapsMap;
 
-      lang = L;
-      imageUrlMap = imageMaps.decorations || {};
-      effectDefinitions = effectCtx.effectDefinitions;
-      effectCapsMap = effectCtx.effectCapsMap;
+        percentEffectIDs.clear();
+        effectCtx.percentEffectIDs.forEach(id =>
+          percentEffectIDs.add(id)
+        );
 
-      percentEffectIDs.clear();
-      effectCtx.percentEffectIDs.forEach(id =>
-        percentEffectIDs.add(id)
-      );
+        units = data.units || [];
 
-      units = data.units || [];
+        allDecorations =
+          extractDecorations(data.buildings || []);
 
-      allDecorations =
-        extractDecorations(data.buildings || []);
+        initLanguageSelector({
+          currentLanguage,
+          lang,
+          onSelect: () => location.reload()
+        });
 
-      initLanguageSelector({
-        currentLanguage,
-        lang,
-        onSelect: () => location.reload()
-      });
+        await loadOwnLang();
+        applyOwnLang();
 
-      await loadOwnLang();
-      applyOwnLang();
-
-      renderSizeFilters(allDecorations);
-      setupEventListeners();
-      applyFiltersAndSorting();
-      applyHashSearch();
-    }
-  });
+        renderSizeFilters(allDecorations);
+        setupEventListeners();
+        applyFiltersAndSorting();
+        applyHashSearch();
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    loader.error("Something went wrong...", 30);
+  }
 }
 
 init();

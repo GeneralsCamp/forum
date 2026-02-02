@@ -1,44 +1,59 @@
 export function createLoader({
-    statusSelector = "#loadingStatus",
-    barSelector = "#loadingProgress",
-    percentSelector = "#loadingPercentText",
-    animationMs = 25
+  statusSelector = "#loadingStatus",
+  barSelector = "#loadingProgress",
+  percentSelector = "#loadingPercentText",
+  animationMs = 25
 } = {}) {
 
-    const statusEl = document.querySelector(statusSelector);
-    const barEl = document.querySelector(barSelector);
-    const percentEl = document.querySelector(percentSelector);
+  const statusEl = document.querySelector(statusSelector);
+  const barEl = document.querySelector(barSelector);
+  const percentEl = document.querySelector(percentSelector);
 
-    function set(step, totalSteps, text) {
+  function set(step, totalSteps, text) {
+    if (!statusEl || !barEl || !percentEl) return;
 
-        if (!statusEl || !barEl || !percentEl) return;
+    const target = Math.round((step / totalSteps) * 100);
+    statusEl.textContent = text;
 
-        const target =
-            Math.round((step / totalSteps) * 100);
+    let current = parseInt(barEl.style.width) || 0;
 
-        statusEl.textContent = text;
+    const interval = setInterval(() => {
+      if (current >= target) {
+        clearInterval(interval);
+        return;
+      }
+      current++;
+      barEl.style.width = current + "%";
+      percentEl.textContent = current + "%";
+    }, animationMs);
+  }
 
-        let current =
-            parseInt(barEl.style.width) || 0;
+  function hide(boxSelector = "#loadingBox") {
+    const box = document.querySelector(boxSelector);
+    if (box) box.style.display = "none";
+  }
 
-        const interval = setInterval(() => {
+  function error(message = "Something went wrong...", seconds = 30) {
+    const box = document.querySelector("#loadingBox");
+    if (!box) return;
 
-            if (current >= target) {
-                clearInterval(interval);
-                return;
-            }
+    box.innerHTML = `
+      <h3>${message}</h3>
+      <p>Reload in <span id="retryCountdown">${seconds}</span> seconds</p>
+    `;
 
-            current++;
-            barEl.style.width = current + "%";
-            percentEl.textContent = current + "%";
+    let remaining = seconds;
+    const span = box.querySelector("#retryCountdown");
 
-        }, animationMs);
-    }
+    const interval = setInterval(() => {
+      remaining--;
+      if (span) span.textContent = remaining;
+      if (remaining <= 0) {
+        clearInterval(interval);
+        location.reload();
+      }
+    }, 1000);
+  }
 
-    function hide(boxSelector = "#loadingBox") {
-        const box = document.querySelector(boxSelector);
-        if (box) box.style.display = "none";
-    }
-
-    return { set, hide };
+  return { set, hide, error };
 }

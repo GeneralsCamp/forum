@@ -300,42 +300,46 @@ initAutoHeight({
 });
 
 async function init() {
+    try {
+        initImageModal();
 
-    initImageModal();
+        await coreInit({
+            loader,
+            langCode: currentLanguage,
+            normalizeNameFn: normalizeName,
+            itemLabel: "look items",
 
-    await coreInit({
-        loader,
-        langCode: currentLanguage,
-        normalizeNameFn: normalizeName,
-        itemLabel: "look items",
+            assets: {
+                looks: true
+            },
 
-        assets: {
-            looks: true
-        },
+            onReady: async ({
+                lang: L,
+                data,
+                imageMaps
+            }) => {
 
-        onReady: async ({
-            lang: L,
-            data,
-            imageMaps
-        }) => {
+                lang = L;
+                allItems = extractLookItems(data);
+                imageUrlMap = imageMaps.looks || {};
 
-            lang = L;
-            allItems = extractLookItems(data);
-            imageUrlMap = imageMaps.looks || {};
+                initLanguageSelector({
+                    currentLanguage,
+                    lang,
+                    onSelect: () => location.reload()
+                });
 
-            initLanguageSelector({
-                currentLanguage,
-                lang,
-                onSelect: () => location.reload()
-            });
+                await loadOwnLang();
+                applyOwnLang();
 
-            await loadOwnLang();
-            applyOwnLang();
-
-            setupEventListeners();
-            applyFiltersAndSorting();
-        }
-    });
+                setupEventListeners();
+                applyFiltersAndSorting();
+            }
+        });
+    } catch (err) {
+        console.error(err);
+        loader.error("Something went wrong...", 30);
+    }
 }
 
 init();

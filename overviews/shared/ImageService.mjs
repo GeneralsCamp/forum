@@ -29,6 +29,17 @@ async function getDllText() {
             const dllUrl =
                 `https://empire-html5.goodgamestudios.com/default/${dllMatch[1]}`;
 
+            const dllPath = dllMatch[1];
+            const versionMatch =
+                dllPath.match(/\.([a-f0-9]{10,})\.js$/i);
+
+            const dllVersion =
+                versionMatch ? versionMatch[1] : "unknown";
+
+            console.log("DLL version:", dllVersion);
+            console.log("DLL URL:", dllUrl);
+
+
             const dllRes =
                 await fetchWithFallback(dllUrl);
 
