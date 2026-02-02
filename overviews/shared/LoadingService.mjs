@@ -39,6 +39,8 @@ export function createLoader({
 
     box.innerHTML = `
       <h3>${message}</h3>
+      <p class="mb-1">The proxy server may be unavailable.</p>
+      <p class="mb-1">Please wait a moment (max. 3 min).</p>
       <p>Reload in <span id="retryCountdown">${seconds}</span> seconds</p>
     `;
 
