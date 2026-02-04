@@ -1,0 +1,134 @@
+:root {
+    --bg-dark: #1b1b1b;
+    --panel-dark: #2b2016;
+    --accent-gold: #f0c24d;
+    --text-main: #f2e7d7;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    height: 100vh;
+    background:
+        radial-gradient(circle at top, rgba(240, 194, 77, 0.28), transparent 62%),
+        #141414;
+    font-family: system-ui, sans-serif;
+    color: var(--text-main);
+    display: grid;
+    place-items: center;
+}
+
+.home-card {
+    background: linear-gradient(180deg, #3a2a1f, #24180f);
+    border: 1px solid rgba(240, 194, 77, 0.4);
+    border-radius: 18px;
+    padding: 40px 48px;
+    width: min(420px, 92vw);
+    text-align: center;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+}
+
+.title {
+    margin: 0;
+    font-size: 40px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent-gold);
+}
+
+.subtitle {
+    margin-top: 6px;
+    margin-bottom: 28px;
+    opacity: 0.85;
+    font-weight: 600;
+}
+
+.stats-wide {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    margin: 12px 0 18px;
+}
+
+.select-row {
+    margin: 10px 0 22px;
+    text-align: left;
+}
+
+.select-label {
+    display: block;
+    font-size: 12px;
+    opacity: 0.8;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.select-input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(0, 0, 0, 0.35);
+    color: var(--text-main);
+    font-weight: 700;
+    outline: none;
+}
+
+.select-input option {
+    background: #24180f;
+    color: var(--text-main);
+}
+
+.select-input:focus {
+    border-color: rgba(240, 194, 77, 0.7);
+    box-shadow: 0 0 0 3px rgba(240, 194, 77, 0.15);
+}
+
+.stat-wide {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 12px;
+    padding: 12px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+}
+
+.label {
+    display: inline-block;
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.value {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--accent-gold);
+}
+
+.btn-primary {
+    margin-top: 10px;
+    padding: 14px 36px;
+    font-size: 18px;
+    font-weight: 900;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    background: var(--accent-gold);
+    color: #3a2a1f;
+    box-shadow: 0 6px 0 rgba(0, 0, 0, 0.35);
+}
+
+.btn-primary:hover {
+    filter: brightness(1.05);
+}
+
+
+
