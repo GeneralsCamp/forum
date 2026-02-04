@@ -9,6 +9,17 @@
   padding: 5px;
 }
 
+.offering-card .box-content {
+  min-height: 120px;
+}
+
+.offering-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px 12px;
+}
+
 .no-image-text {
   font-style: italic;
   color: #e2b33d;

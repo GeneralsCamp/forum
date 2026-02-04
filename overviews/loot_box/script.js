@@ -9,9 +9,19 @@ let lootBoxes = [];
 let lootBoxKeyTombolas = [];
 let rewardsById = {};
 let lootBoxTombolas = [];
+let characters = [];
+let offeringsByCharacterId = {};
+let currenciesById = {};
+let buildingsById = {};
+let constructionItemsById = {};
+let equipmentsById = {};
+let skinsById = {};
 
 let lootBoxImageUrlMap = {};
 let currencyImageUrlMap = {};
+let decorationImageUrlMap = {};
+let constructionImageUrlMap = {};
+let lookImageUrlMap = {};
 
 const loader = createLoader();
 let currentLanguage = getInitialLanguage();
@@ -77,6 +87,115 @@ function formatPercent(p) {
   return `${p.toFixed(2)}%`;
 }
 
+// --- OFFERINGS ---
+function getCharacterDisplayName(character) {
+  if (!character) return "Unknown character";
+  const key = `dialog_generals_inn_character_${character.name}`.toLowerCase();
+  return lang[key] || character.name || `Character ${character.characterID}`;
+}
+
+function getCurrencyDisplayName(currency) {
+  if (!currency) return "Unknown offering";
+  const key = `currency_name_${currency.Name}`.toLowerCase();
+  return lang[key] || currency.Name || currency.JSONKey || `Currency ${currency.currencyID}`;
+}
+
+function getCurrencyImageUrl(currency) {
+  if (!currency) return null;
+  const raw = currency.assetName || currency.Name || currency.JSONKey || "";
+  return currencyImageUrlMap[normalizeName(raw)] || null;
+}
+
+function getDecorationImageUrl(decoId) {
+  if (!decoId) return null;
+  const building = buildingsById[String(decoId)];
+  const candidates = [
+    building?.type,
+    building?.comment2,
+    building?.name
+  ];
+
+  for (const raw of candidates) {
+    if (!raw) continue;
+    const key = normalizeName(raw);
+    const entry = decorationImageUrlMap[key];
+    if (!entry) continue;
+    if (typeof entry === "string") return entry;
+    if (entry.placedUrl) return entry.placedUrl;
+  }
+
+  return null;
+}
+
+function getConstructionImageUrl(constructionItemId) {
+  if (!constructionItemId) return null;
+  const item = constructionItemsById[String(constructionItemId)];
+  const candidates = [
+    item?.name,
+    item?.comment2,
+    item?.comment1
+  ];
+
+  for (const raw of candidates) {
+    if (!raw) continue;
+    const key = normalizeName(raw);
+    const entry = constructionImageUrlMap[key];
+    if (!entry) continue;
+    if (typeof entry === "string") return entry;
+    if (entry.iconUrl) return entry.iconUrl;
+    if (entry.placedUrl) return entry.placedUrl;
+  }
+
+  return null;
+}
+
+function getLookImageUrl(skinId) {
+  if (!skinId) return null;
+  const skin = skinsById[String(skinId)];
+  const skinName = skin?.name;
+  if (!skinName) return null;
+
+  const key = normalizeName(skinName);
+  const urls = lookImageUrlMap[key];
+  if (!urls) return null;
+
+  const mapObjects = urls.mapObjects || {};
+  const movements = urls.movements || {};
+
+  return (
+    mapObjects.castleUrl ||
+    mapObjects.outpostUrl ||
+    mapObjects.metroUrl ||
+    mapObjects.capitalUrl ||
+    movements.moveNormal ||
+    movements.moveBoat ||
+    null
+  );
+}
+
+function parseTombolaString(value) {
+  return String(value || "")
+    .split("#")
+    .map(x => x.trim())
+    .filter(Boolean)
+    .map(entry => {
+      const [currencyId, tombolaId] = entry.split("+").map(s => s.trim());
+      if (!currencyId || !tombolaId) return null;
+      return { currencyId, tombolaId };
+    })
+    .filter(Boolean);
+}
+
+function buildOfferingsForCharacter(character) {
+  const rows = parseTombolaString(character?.tombolas);
+  return rows.map(row => ({
+    characterId: String(character.characterID),
+    characterName: getCharacterDisplayName(character),
+    currencyId: String(row.currencyId),
+    tombolaId: String(row.tombolaId),
+  }));
+}
+
 // --- REWARDS ---
 let unitsById = {};
 let unitImageUrlMap = {};
@@ -94,16 +213,16 @@ function getEntryRarity(rewards) {
   return "common";
 }
 
-function openLootBoxModal(box) {
+function openTombolaModal({ title, tombolaId }) {
   const modalEl = document.getElementById("lootBoxModal");
   const modalTitle = modalEl.querySelector(".modal-title");
   const container = document.getElementById("lootBoxRewards");
 
-  modalTitle.textContent = getLootBoxDisplayName(box);
+  modalTitle.textContent = title || "Rewards";
   container.innerHTML = "";
 
   const entries = lootBoxTombolas.filter(
-    e => String(e.tombolaID) === String(box.lootBoxTombolaID)
+    e => String(e.tombolaID) === String(tombolaId)
   );
 
   if (entries.length === 0) {
@@ -116,32 +235,63 @@ function openLootBoxModal(box) {
     (sum, e) => sum + Number(e.shares || 0), 0
   );
 
-  entries.forEach(entry => {
-    const rewardIds = String(entry.rewardIDs)
-      .split(",")
-      .map(x => x.trim())
-      .filter(Boolean);
+  const rarityOrder = {
+    common: 1,
+    rare: 2,
+    epic: 3,
+    legendary: 4
+  };
 
-    const rewards = rewardIds
-      .map(id => rewardsById[id])
-      .filter(Boolean);
+  const cards = entries
+    .map(entry => {
+      const rewardIds = String(entry.rewardIDs)
+        .split(",")
+        .map(x => x.trim())
+        .filter(Boolean);
 
-    if (rewards.length === 0) return;
+      const rewards = rewardIds
+        .map(id => rewardsById[id])
+        .filter(Boolean);
 
-    const chance = totalShares > 0
-      ? (Number(entry.shares) / totalShares) * 100
-      : 0;
+      if (rewards.length === 0) return null;
 
+      const chance = totalShares > 0
+        ? (Number(entry.shares) / totalShares) * 100
+        : 0;
+
+      const rarity = getEntryRarity(rewards);
+
+      return {
+        rarity,
+        order: rarityOrder[rarity] || 99,
+        chance,
+        rewards
+      };
+    })
+    .filter(Boolean)
+    .sort((a, b) => {
+      if (a.order !== b.order) return a.order - b.order;
+      return b.chance - a.chance;
+    });
+
+  cards.forEach(card => {
     container.appendChild(
       createEntryCard({
-        rewards,
-        chance,
-        rarity: getEntryRarity(rewards)
+        rewards: card.rewards,
+        chance: card.chance,
+        rarity: card.rarity
       })
     );
   });
 
   new bootstrap.Modal(modalEl).show();
+}
+
+function openLootBoxModal(box) {
+  openTombolaModal({
+    title: getLootBoxDisplayName(box),
+    tombolaId: box.lootBoxTombolaID
+  });
 }
 
 function explodeReward(reward) {
@@ -198,6 +348,16 @@ function explodeReward(reward) {
     });
   }
 
+  if (reward.currency2) {
+    entries.push({
+      type: "rubies",
+      name: lang["rubies_name"] ?? lang["rubies"] ?? "Rubies",
+      amount: Number(reward.currency2) || 1,
+      imageUrl: "./img/ruby.png",
+      title: `currency2=${reward.currency2}`
+    });
+  }
+
   if (reward.vipPoints) {
     entries.push({
       type: "vipPoints",
@@ -234,27 +394,41 @@ function explodeReward(reward) {
       type: "relic",
       name: lang["relic_equipment"] || "Relic",
       amount: 1,
-      imageUrl: "./placeholder.webp",
+      imageUrl: "./img/relic.png",
       title: `relicEquipments=${reward.relicEquipments}`
     });
   }
 
   if (reward.constructionItemIDs) {
+    const constructionIds = String(reward.constructionItemIDs)
+      .split(",")
+      .map(x => x.trim())
+      .filter(Boolean);
+    const firstId = constructionIds[0];
+    const constructionImageUrl = getConstructionImageUrl(firstId);
     entries.push({
       type: "construction",
       name: lang["construction_item"] || "Construction Item",
       amount: 1,
-      imageUrl: "./placeholder.webp",
-      title: `constructionItemIDs=${reward.constructionItemIDs}`
+      imageUrl: constructionImageUrl || "./placeholder.webp",
+      title: `constructionItemIDs=${reward.constructionItemIDs}`,
+      id: firstId || null
     });
   }
 
   if (reward.equipmentIDs) {
+    const equipmentIds = String(reward.equipmentIDs)
+      .split(",")
+      .map(x => x.trim())
+      .filter(Boolean);
+    const firstId = equipmentIds[0];
+    const equipment = firstId ? equipmentsById[String(firstId)] : null;
+    const lookImageUrl = equipment?.skinID ? getLookImageUrl(equipment.skinID) : null;
     entries.push({
       type: "equipment",
       name: lang["equipment_item"] || "Equipment",
       amount: 1,
-      imageUrl: "./placeholder.webp",
+      imageUrl: lookImageUrl || "./img/equipment.png",
       title: `equipmentIDs=${reward.equipmentIDs}`
     });
   }
@@ -270,12 +444,14 @@ function explodeReward(reward) {
   }
 
   if (reward.decoWodID) {
+    const decoImageUrl = getDecorationImageUrl(reward.decoWodID);
     entries.push({
       type: "decoration",
       name: lang["decoration"] || "Decoration",
       amount: 1,
-      imageUrl: null,
-      title: `decoWodID=${reward.decoWodID}`
+      imageUrl: decoImageUrl,
+      title: `decoWodID=${reward.decoWodID}`,
+      id: String(reward.decoWodID)
     });
   }
 
@@ -309,14 +485,34 @@ function createEntryCard({ rewards, chance, rarity }) {
 
   const rewardCells = rewards
     .flatMap(r => explodeReward(r))
-    .map(e => `
-      <div class="loot-reward" title="${e.title ?? ""}">
-        ${e.imageUrl ? `<img src="${e.imageUrl}">` : ""}
-        <div class="loot-amount">
-          <span>${e.amount}</span>
+    .map(e => {
+      const core = `
+        <div class="loot-reward" title="${e.title ?? ""}">
+          ${e.imageUrl ? `<img src="${e.imageUrl}">` : ""}
+          <div class="loot-amount">
+            <span>${e.amount}</span>
+          </div>
         </div>
-      </div>
-    `)
+      `;
+
+      if (e.id && e.type === "decoration") {
+        return `
+          <a class="id-link" data-id="${e.id}" href="https://generalscamp.github.io/forum/overviews/decorations#${e.id}" target="_blank" rel="noopener">
+            ${core}
+          </a>
+        `;
+      }
+
+      if (e.id && e.type === "construction") {
+        return `
+          <a class="id-link" data-id="${e.id}" href="https://generalscamp.github.io/forum/overviews/building_items#${e.id}" target="_blank" rel="noopener">
+            ${core}
+          </a>
+        `;
+      }
+
+      return core;
+    })
     .join("");
 
   row.innerHTML = `
@@ -337,6 +533,31 @@ function createEntryCard({ rewards, chance, rarity }) {
   return row;
 }
 
+function createOfferingCard(offering) {
+  const currency = currenciesById[offering.currencyId];
+  const displayName = getCurrencyDisplayName(currency);
+  const imgUrl = getCurrencyImageUrl(currency);
+
+  const imageSection = imgUrl
+    ? `<img src="${imgUrl}" alt="${displayName}" class="card-image offering-image" loading="lazy">`
+    : `<div class="no-image-text">no image</div>`;
+
+  return `
+    <div class="col-md-4 col-sm-6 d-flex flex-column">
+      <div class="box flex-fill offering-card" data-tombola-id="${offering.tombolaId}" data-title="${displayName}">
+        <div class="box-content">
+          <h2 class="ci-title">${displayName}</h2>
+          <div class="offering-body">
+            <div class="image-wrapper">
+              ${imageSection}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 document.addEventListener("click", (e) => {
   const img = e.target.closest(".card-image");
   if (!img) return;
@@ -349,6 +570,17 @@ document.addEventListener("click", (e) => {
   if (!box) return;
 
   openLootBoxModal(box);
+});
+
+document.addEventListener("click", (e) => {
+  const card = e.target.closest(".offering-card");
+  if (!card) return;
+
+  const tombolaId = card.getAttribute("data-tombola-id");
+  const title = card.getAttribute("data-title");
+
+  if (!tombolaId) return;
+  openTombolaModal({ title, tombolaId });
 });
 
 // --- RENDER ---
@@ -434,6 +666,115 @@ function renderLootBoxes(list) {
   });
 }
 
+function renderOfferings(list) {
+  const container = document.getElementById("cards");
+  container.innerHTML = "";
+
+  if (!list || list.length === 0) {
+    container.innerHTML = `<div class="col-12">No offerings</div>`;
+    return;
+  }
+
+  list.forEach(offering => {
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = createOfferingCard(offering);
+    container.appendChild(wrapper.firstElementChild);
+  });
+}
+
+function buildOfferingsIndex() {
+  offeringsByCharacterId = {};
+
+  const all = [];
+  characters.forEach(character => {
+    const offerings = buildOfferingsForCharacter(character);
+    offeringsByCharacterId[String(character.characterID)] = offerings;
+    all.push(...offerings);
+  });
+
+  offeringsByCharacterId.all = all;
+}
+
+function setupCharacterSelect() {
+  const select = document.getElementById("characterSelect");
+  if (!select) return;
+
+  select.innerHTML = "";
+
+  const allOpt = document.createElement("option");
+  allOpt.value = "all";
+  allOpt.textContent = "All characters";
+  select.appendChild(allOpt);
+
+  characters
+    .slice()
+    .sort((a, b) => getCharacterDisplayName(a).localeCompare(getCharacterDisplayName(b)))
+    .forEach(character => {
+      const opt = document.createElement("option");
+      opt.value = String(character.characterID);
+      opt.textContent = getCharacterDisplayName(character);
+      select.appendChild(opt);
+    });
+
+  if (!select.dataset.bound) {
+    select.addEventListener("change", () => {
+      renderCurrentView();
+    });
+    select.dataset.bound = "true";
+  }
+}
+
+function setupViewSelect() {
+  const viewSelect = document.getElementById("viewSelect");
+  if (!viewSelect || viewSelect.dataset.bound) return;
+
+  viewSelect.addEventListener("change", () => {
+    updateHashForView(viewSelect.value);
+    renderCurrentView();
+  });
+
+  viewSelect.dataset.bound = "true";
+}
+
+function getViewFromHash() {
+  const hash = window.location.hash.replace("#", "").toLowerCase();
+  if (!hash) return null;
+  if (hash === "offerings" || hash === "offering") return "offerings";
+  if (hash === "boxes" || hash === "box" || hash === "mystery" || hash === "mystery_boxes") {
+    return "mystery_boxes";
+  }
+  return null;
+}
+
+function updateHashForView(view) {
+  if (view === "offerings") {
+    window.location.hash = "offerings";
+    return;
+  }
+  if (view === "mystery_boxes") {
+    window.location.hash = "boxes";
+  }
+}
+
+function renderCurrentView() {
+  const viewSelect = document.getElementById("viewSelect");
+  const characterSelect = document.getElementById("characterSelect");
+
+  const view = viewSelect?.value || "mystery_boxes";
+  updateHashForView(view);
+
+  if (view === "offerings") {
+    if (characterSelect) characterSelect.disabled = false;
+    const characterId = characterSelect?.value || "all";
+    const list = offeringsByCharacterId[characterId] || offeringsByCharacterId.all || [];
+    renderOfferings(list);
+    return;
+  }
+
+  if (characterSelect) characterSelect.disabled = true;
+  renderLootBoxes(lootBoxes);
+}
+
 // --- INIT ---
 initAutoHeight({
   contentSelector: "#content",
@@ -452,7 +793,10 @@ async function init() {
       assets: {
         lootboxes: true,
         currencies: true,
-        units: true
+        units: true,
+        decorations: true,
+        constructions: true,
+        looks: true
       },
 
       onReady: async ({
@@ -473,6 +817,9 @@ async function init() {
 
         lootBoxImageUrlMap = imageMaps?.lootboxes ?? {};
         currencyImageUrlMap = imageMaps?.currencies ?? {};
+        decorationImageUrlMap = imageMaps?.decorations ?? {};
+        constructionImageUrlMap = imageMaps?.constructions ?? {};
+        lookImageUrlMap = imageMaps?.looks ?? {};
 
         const units = Array.isArray(data.units) ? data.units : [];
         unitsById = {};
@@ -481,6 +828,32 @@ async function init() {
         });
 
         unitImageUrlMap = imageMaps?.units ?? {};
+
+        const buildings = Array.isArray(data.buildings) ? data.buildings : [];
+        buildingsById = {};
+        buildings.forEach(b => {
+          buildingsById[String(b.wodID)] = b;
+        });
+
+        const constructionItems = Array.isArray(data.constructionItems)
+          ? data.constructionItems
+          : [];
+        constructionItemsById = {};
+        constructionItems.forEach(item => {
+          constructionItemsById[String(item.constructionItemID)] = item;
+        });
+
+        const equipments = Array.isArray(data.equipments) ? data.equipments : [];
+        equipmentsById = {};
+        equipments.forEach(item => {
+          equipmentsById[String(item.equipmentID)] = item;
+        });
+
+        const skins = Array.isArray(data.worldmapskins) ? data.worldmapskins : [];
+        skinsById = {};
+        skins.forEach(item => {
+          skinsById[String(item.skinID)] = item;
+        });
 
         const rewards = Array.isArray(data.rewards) ? data.rewards : [];
         rewardsById = {};
@@ -492,11 +865,29 @@ async function init() {
           ? data.lootBoxTombolas
           : [];
 
+        const currencies = Array.isArray(data.currencies) ? data.currencies : [];
+        currenciesById = {};
+        currencies.forEach(c => {
+          currenciesById[String(c.currencyID)] = c;
+        });
+
+        characters = Array.isArray(data.characters) ? data.characters : [];
+        buildOfferingsIndex();
+
         initLanguageSelector({
           currentLanguage,
           lang,
           onSelect: () => location.reload()
         });
+
+        setupViewSelect();
+        setupCharacterSelect();
+
+        const hashView = getViewFromHash();
+        const viewSelect = document.getElementById("viewSelect");
+        if (hashView && viewSelect) {
+          viewSelect.value = hashView;
+        }
 
         lootBoxes.sort((a, b) => {
           const la = getLegendaryPercent(a);
@@ -506,7 +897,7 @@ async function init() {
           return Number(a.sortOrder || 0) - Number(b.sortOrder || 0);
         });
 
-        renderLootBoxes(lootBoxes);
+        renderCurrentView();
       }
     });
   } catch (err) {
