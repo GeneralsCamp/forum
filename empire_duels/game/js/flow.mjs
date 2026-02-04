@@ -287,6 +287,17 @@ export function createFlow({ state, constants, helpers }) {
       return;
     }
 
+    const lowHandThreshold = MAX_HAND / 2;
+    const drawForOwner = (owner) => {
+      const hand = owner === "player" ? state.playerHand : state.aiHand;
+      const draws = hand.length < lowHandThreshold ? 2 : 1;
+      for (let i = 0; i < draws; i++) {
+        drawCard(owner);
+      }
+    };
+
+    drawForOwner("player");
+    drawForOwner("ai");
     clearBoard();
 
     if (state.roundNumber >= state.roundsTotal) {
@@ -298,16 +309,20 @@ export function createFlow({ state, constants, helpers }) {
     state.selectedHandIndex = null;
     setTimeout(startRound, 700);
   }
-
   function endMatch() {
-    const victory = state.scores.playerTotal > state.scores.aiTotal;
+    const playerTotal = state.scores.playerTotal;
+    const aiTotal = state.scores.aiTotal;
+    const victory = playerTotal > aiTotal;
+    const draw = playerTotal === aiTotal;
+    const outcome = draw ? "draw" : (victory ? "victory" : "defeat");
 
     localStorage.setItem(
       "lastMatchResult",
       JSON.stringify({
+        outcome,
         victory,
-        playerScore: state.scores.playerTotal,
-        aiScore: state.scores.aiTotal,
+        playerScore: playerTotal,
+        aiScore: aiTotal,
         rounds: state.roundsTotal
       })
     );
@@ -332,3 +347,6 @@ export function createFlow({ state, constants, helpers }) {
     endMatch,
   };
 }
+
+
+

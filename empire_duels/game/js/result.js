@@ -4,14 +4,21 @@ if (!raw) {
 }
 
 const data = JSON.parse(raw);
+const outcome = data.outcome || (data.victory ? "victory" : "defeat");
 
-document.getElementById("resultTitle").textContent =
-    data.victory ? "Victory" : "Defeat";
+const titleEl = document.getElementById("resultTitle");
+const subEl = document.getElementById("resultSub");
 
-document.getElementById("resultSub").textContent =
-    data.victory
-        ? "You won the match."
-        : "You lost the match.";
+if (outcome === "draw") {
+    if (titleEl) titleEl.textContent = "Draw";
+    if (subEl) subEl.textContent = "The match ended in a draw.";
+} else if (outcome === "victory") {
+    if (titleEl) titleEl.textContent = "Victory";
+    if (subEl) subEl.textContent = "You won the match.";
+} else {
+    if (titleEl) titleEl.textContent = "Defeat";
+    if (subEl) subEl.textContent = "You lost the match.";
+}
 
 document.getElementById("resultScore").textContent =
     `${data.playerScore} - ${data.aiScore}`;
