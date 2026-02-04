@@ -87,6 +87,12 @@ function formatPercent(p) {
   return `${p.toFixed(2)}%`;
 }
 
+function getUiLabel(key, fallback) {
+  const raw = lang[String(key || "").toLowerCase()] || fallback;
+  if (!raw) return fallback || "";
+  return String(raw).replace(/:\s*$/, "");
+}
+
 // --- OFFERINGS ---
 function getCharacterDisplayName(character) {
   if (!character) return "Unknown character";
@@ -703,7 +709,7 @@ function setupCharacterSelect() {
 
   const allOpt = document.createElement("option");
   allOpt.value = "all";
-  allOpt.textContent = "All characters";
+  allOpt.textContent = getUiLabel("dialog_changePassword_show", "Show characters");
   select.appendChild(allOpt);
 
   characters
@@ -727,6 +733,17 @@ function setupCharacterSelect() {
 function setupViewSelect() {
   const viewSelect = document.getElementById("viewSelect");
   if (!viewSelect || viewSelect.dataset.bound) return;
+
+  const mysteryLabel = getUiLabel(
+    "dialog_mysteryBoxSystem_mysteryBoxHUB_header",
+    "Mystery boxes"
+  );
+  const offeringsLabel = getUiLabel("offerings_colon", "Offerings");
+
+  const mysteryOpt = viewSelect.querySelector('option[value="mystery_boxes"]');
+  const offeringsOpt = viewSelect.querySelector('option[value="offerings"]');
+  if (mysteryOpt) mysteryOpt.textContent = mysteryLabel;
+  if (offeringsOpt) offeringsOpt.textContent = offeringsLabel;
 
   viewSelect.addEventListener("change", () => {
     updateHashForView(viewSelect.value);
