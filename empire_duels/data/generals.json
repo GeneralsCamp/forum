@@ -1,0 +1,34 @@
+[
+    {
+        "id":  1,
+        "name":  "Horatio",
+        "type":  "friendly",
+        "rarity":  "epic",
+        "effect_id":  101,
+        "image":  "images/generals/horatio.png"
+    },
+    {
+        "id":  2,
+        "name":  "Leo",
+        "type":  "friendly",
+        "rarity":  "rare",
+        "effect_id":  102,
+        "image":  "images/generals/leo.png"
+    },
+    {
+        "id":  4,
+        "name":  "Toril",
+        "type":  "friendly",
+        "rarity":  "legendary",
+        "effect_id":  103,
+        "image":  "images/generals/toril.png"
+    },
+    {
+        "id":  3,
+        "name":  "Wolfgard",
+        "type":  "enemy",
+        "rarity":  "epic",
+        "effect_id":  201,
+        "image":  "images/generals/wolfgard.png"
+    }
+]
