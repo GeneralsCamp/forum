@@ -7,11 +7,24 @@ import {
   canPlayCardToLane,
   getOwnerPhase,
 } from "./board.mjs";
+import { getConstantDelta } from "./effects.mjs";
 
 export function createUi({ state, el, constants, handlers, helpers }) {
   const { MAX_HAND } = constants;
   const { onSlotClick, onSlotDragOver, onSlotDrop, onCardContextMenu, onCardSelected } = handlers;
-  const { getCardArt } = helpers;
+  const { getCardArt, playSfx } = helpers;
+  let lastHoverAt = 0;
+
+  function maybePlayConstantSfx(card, constDelta) {
+    if (!card) return;
+    const prev = card._last_const_delta;
+    card._last_const_delta = constDelta;
+    if (constDelta > 0 && (prev == null || prev <= 0)) {
+      playSfx?.("buff");
+    } else if (constDelta < 0 && (prev == null || prev >= 0)) {
+      playSfx?.("debuff");
+    }
+  }
 
   function toast(msg) {
     const MAX_TOASTS = 3;
@@ -83,6 +96,9 @@ export function createUi({ state, el, constants, handlers, helpers }) {
 
       if (delta > 0) statClass = "stat-chip--buff";
       else if (delta < 0) statClass = "stat-chip--debuff";
+
+      const constDelta = getConstantDelta(card, owner, laneKey, state, basePts);
+      maybePlayConstantSfx(card, constDelta);
     } else {
       pts = Math.max(0, pts);
     }
@@ -288,6 +304,13 @@ export function createUi({ state, el, constants, handlers, helpers }) {
       cardEl.addEventListener("contextmenu", (e) => {
         e.preventDefault();
         openCardModal(c);
+      });
+
+      cardEl.addEventListener("mouseenter", () => {
+        const now = Date.now();
+        if (now - lastHoverAt < 80) return;
+        lastHoverAt = now;
+        playSfx?.("click");
       });
 
       cardEl.addEventListener("dragstart", (e) => {

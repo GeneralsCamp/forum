@@ -18,6 +18,8 @@ export function createFlow({ state, constants, helpers }) {
     setGenerals,
     renderGameHeader,
     makeEmptyLane,
+    playSfx,
+    playCardPlaceSfx,
     onCardPlayed,
   } = helpers;
 
@@ -100,6 +102,7 @@ export function createFlow({ state, constants, helpers }) {
 
     state.phase = state.roundNumber % 2 === 1 ? "defense" : "attack";
     renderGameHeader();
+    playSfx?.("round-start");
 
     state.currentPlayer = Math.random() < 0.5 ? "player" : "ai";
 
@@ -164,6 +167,9 @@ export function createFlow({ state, constants, helpers }) {
     state.playerPassed = true;
 
     const drew = drawCard("player");
+    if (drew) {
+      playSfx?.("pick-card");
+    }
     if (isAuto) {
       toast("Auto PASS (no cards).");
     } else {
@@ -232,6 +238,7 @@ export function createFlow({ state, constants, helpers }) {
 
       const ok = placeCard(state, card, "ai", laneKey);
       if (ok) {
+        playCardPlaceSfx?.(card, laneKey);
         state.aiHand.splice(handIndex, 1);
         state.aiPassed = false;
         toast(`Enemy played: ${card.name}`);

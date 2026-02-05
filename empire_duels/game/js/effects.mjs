@@ -184,6 +184,31 @@ export function getCardDelta(card, owner, laneKey, state, getCardPoints) {
   return delta;
 }
 
+export function getConstantDelta(card, owner, laneKey, state, basePoints) {
+  let delta = 0;
+  const sources = getEffectSources(state);
+  const base = basePoints ?? 0;
+  for (const src of sources) {
+    delta += getEffectDelta(src, card, owner, laneKey, base, state);
+  }
+
+  const lane = state.rows?.[owner]?.[laneKey];
+  if (lane?.tool?.effect_id) {
+    const toolEffect = getEffectById(state.data.effects, lane.tool.effect_id);
+    if (toolEffect?.trigger === "constant") {
+      if (toolEffect.kind === "lane_bonus_per_unit") {
+        const count = lane.troops.filter(Boolean).length;
+        delta += count * (toolEffect.effect_params?.amount ?? 0);
+      }
+      if (toolEffect.kind === "lane_bonus_flat") {
+        delta += toolEffect.effect_params?.amount ?? 0;
+      }
+    }
+  }
+
+  return delta;
+}
+
 export function applyOnDeployEffects(card, owner, laneKey, state, getCardPoints) {
   if (!card?.effect_id) return;
 
@@ -196,6 +221,17 @@ export function applyOnDeployEffects(card, owner, laneKey, state, getCardPoints)
   }
   const params = eff.effect_params || {};
   const amount = params.amount ?? 0;
+  let buffed = false;
+  let debuffed = false;
+  const markBuffDebuff = (delta) => {
+    if (!delta) return;
+    if (delta > 0) buffed = true;
+    if (delta < 0) debuffed = true;
+  };
+  const flushBuffDebuff = () => {
+    if (buffed) state?.sfx?.play?.("buff");
+    if (debuffed) state?.sfx?.play?.("debuff");
+  };
   const addBonusSource = (target, bonusAmount) => {
     if (!bonusAmount) return;
     if (!target._bonus_sources) target._bonus_sources = [];
@@ -212,6 +248,8 @@ export function applyOnDeployEffects(card, owner, laneKey, state, getCardPoints)
     const bonus = enemyCount * amount;
     card._bonus = (card._bonus ?? 0) + bonus;
     addBonusSource(card, bonus);
+    markBuffDebuff(bonus);
+    flushBuffDebuff();
     return;
   }
 
@@ -227,8 +265,10 @@ export function applyOnDeployEffects(card, owner, laneKey, state, getCardPoints)
       if (base <= threshold) {
         t._bonus = (t._bonus ?? 0) + amount;
         addBonusSource(t, amount);
+        markBuffDebuff(amount);
       }
     }
+    flushBuffDebuff();
     return;
   }
 
@@ -239,7 +279,9 @@ export function applyOnDeployEffects(card, owner, laneKey, state, getCardPoints)
       if (!t) continue;
       t._bonus = (t._bonus ?? 0) + amount;
       addBonusSource(t, amount);
+      markBuffDebuff(amount);
     }
+    flushBuffDebuff();
     return;
   }
 
@@ -253,8 +295,10 @@ export function applyOnDeployEffects(card, owner, laneKey, state, getCardPoints)
       if (base >= threshold) {
         t._bonus = (t._bonus ?? 0) + amount;
         addBonusSource(t, amount);
+        markBuffDebuff(amount);
       }
     }
+    flushBuffDebuff();
     return;
   }
 
@@ -271,6 +315,12 @@ export function applyOnDeployEffects(card, owner, laneKey, state, getCardPoints)
 
       hand.push({ ...cardDef });
     }
+    return;
+  }
+
+  if (eff.kind === "lane_bonus_per_unit" || eff.kind === "lane_bonus_flat") {
+    if (amount > 0) state?.sfx?.play?.("buff");
+    else if (amount < 0) state?.sfx?.play?.("debuff");
     return;
   }
 

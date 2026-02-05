@@ -12,7 +12,6 @@ function loadMaxHand() {
 const MAX_HAND = loadMaxHand();
 const START_HAND = MAX_HAND - 3;
 const ROUNDS_TOTAL = 4;
-const BGM_VOLUME = 0.025;
 
 const el = {
     winsCount: document.getElementById("winsCount"),
@@ -329,6 +328,7 @@ function onSlotClick(e) {
         toast("Couldn't place the card (row might be full).");
         return;
     }
+    playCardPlaceSfx(card, laneKey);
     state.playerHand.splice(state.selectedHandIndex, 1);
     state.selectedHandIndex = null;
     state.playerPassed = false;
@@ -402,6 +402,7 @@ function onSlotDrop(e) {
         toast("Couldn't place the card (row might be full).");
         return;
     }
+    playCardPlaceSfx(card, laneKey);
     state.playerHand.splice(idx, 1);
     state.dragHandIndex = null;
     state.isDragging = false;
@@ -454,12 +455,64 @@ const modals = createModals({
 
 const { openCardModal, openGeneralModal, closeCardModal, showRoundModal } = modals;
 
+const SFX_CONFIG = {
+    bgm: { volume: 0.05 },
+    "pick-card": { file: "pick-card.mp3", volume: 0.2, overlap: false },
+    "melee-unit": { file: "melee-unit.mp3", volume: 0.2, overlap: true },
+    "ranged-unit": { file: "ranged-unit.mp3", volume: 0.2, overlap: true },
+    tools: { file: "tools.mp3", volume: 0.2, overlap: true },
+    debuff: { file: "debuff.mp3", volume: 0.2, overlap: false },
+    buff: { file: "buff.mp3", volume: 0.05, overlap: false },
+    "round-start": { file: "round-start.mp3", volume: 0.05, overlap: false },
+    click: { file: "click.mp3", volume: 0.1, overlap: true },
+};
+
+const sfx = {};
+for (const [key, cfg] of Object.entries(SFX_CONFIG)) {
+    if (!cfg.file) continue;
+    const audio = new Audio(`sounds/${cfg.file}`);
+    audio.preload = "auto";
+    audio.volume = cfg.volume ?? 0.6;
+    sfx[key] = audio;
+}
+
+function playSfx(name) {
+    const base = sfx[name];
+    const cfg = SFX_CONFIG[name];
+    if (!base || !cfg) return;
+    if (cfg.overlap === false) {
+        if (!base.paused) return;
+        base.currentTime = 0;
+        base.play().catch(() => {
+            // Autoplay or user gesture restrictions.
+        });
+        return;
+    }
+    const audio = base.cloneNode();
+    audio.volume = base.volume;
+    audio.play().catch(() => {
+        // Autoplay or user gesture restrictions.
+    });
+}
+
+state.sfx = { play: playSfx };
+
+function playCardPlaceSfx(card, laneKey) {
+    if (!card) return;
+    if (card.card_type === "tool") {
+        playSfx("tools");
+        return;
+    }
+    const isMelee = laneKey?.startsWith?.("melee_");
+    playSfx(isMelee ? "melee-unit" : "ranged-unit");
+}
+
 const ui = createUi({
     state,
     el,
     constants: { MAX_HAND },
     handlers: { onSlotClick, onSlotDragOver, onSlotDrop, onCardContextMenu },
-    helpers: { getCardArt },
+    helpers: { getCardArt, playSfx },
 });
 
 const {
@@ -496,6 +549,8 @@ const flow = createFlow({
     setGenerals,
     renderGameHeader,
     makeEmptyLane,
+    playSfx,
+    playCardPlaceSfx,
     },
 });
 
@@ -579,7 +634,7 @@ function bindEvents() {
 function startBgm() {
     if (!el.bgm) return;
     const applyVolume = () => {
-        el.bgm.volume = BGM_VOLUME;
+        el.bgm.volume = SFX_CONFIG.bgm.volume;
     };
     applyVolume();
     el.bgm.addEventListener("loadedmetadata", applyVolume, { once: true });
