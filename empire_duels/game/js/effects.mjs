@@ -116,11 +116,6 @@ export function getEffectDelta(source, target, targetOwner, targetLaneKey, targe
         delta = count * (eff.effect_params?.amount ?? 0);
       }
       break;
-    case "board_allied_tribe_veteran":
-      if (isAllied && target.tribe === eff.effect_params?.tribe) {
-        delta = eff.effect_params?.amount ?? 0;
-      }
-      break;
     case "row_allied_points_leq":
       if (sameLane && isAllied && targetBase <= (eff.effect_params?.threshold ?? 0)) {
         delta = eff.effect_params?.amount ?? 0;

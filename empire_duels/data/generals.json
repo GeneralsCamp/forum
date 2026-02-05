@@ -4,7 +4,7 @@
         "name":  "Horatio",
         "type":  "friendly",
         "rarity":  "epic",
-        "effect_id":  101,
+        "effect_id":  103,
         "image":  "images/generals/horatio.png"
     },
     {
@@ -20,15 +20,16 @@
         "name":  "Toril",
         "type":  "friendly",
         "rarity":  "legendary",
-        "effect_id":  103,
+        "effect_id":  101,
         "image":  "images/generals/toril.png"
     },
     {
         "id":  3,
         "name":  "Wolfgard",
         "type":  "enemy",
-        "rarity":  "epic",
+        "rarity":  "rare",
         "effect_id":  201,
-        "image":  "images/generals/wolfgard.png"
+        "image":  "images/generals/wolfgard.png",
+        "allowed_card_ids":  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38]
     }
 ]

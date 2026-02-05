@@ -66,8 +66,9 @@ export function createFlow({ state, constants, helpers }) {
   }
 
   function initGame(buildDeckWithRules, initLanes) {
-    state.playerDeck = buildDeckWithRules();
-    state.aiDeck = buildDeckWithRules();
+    setGenerals();
+    state.playerDeck = buildDeckWithRules(state.playerGeneral);
+    state.aiDeck = buildDeckWithRules(state.aiGeneral);
 
     state.playerHand = [];
     state.aiHand = [];
@@ -90,7 +91,6 @@ export function createFlow({ state, constants, helpers }) {
 
     state.roundNumber = 1;
 
-    setGenerals();
     startRound();
   }
 

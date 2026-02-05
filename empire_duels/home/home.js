@@ -41,7 +41,15 @@ function populateGenerals(selectEl) {
     return fetch("data/generals.json")
         .then(r => r.json())
         .then(generals => {
-            const friendly = generals.filter(g => g.type === "friendly");
+            const rarityOrder = { legendary: 4, epic: 3, rare: 2, common: 1 };
+            const friendly = generals
+                .filter(g => g.type === "friendly")
+                .sort((a, b) => {
+                    const ra = rarityOrder[String(a.rarity || "").toLowerCase()] || 0;
+                    const rb = rarityOrder[String(b.rarity || "").toLowerCase()] || 0;
+                    if (rb !== ra) return rb - ra;
+                    return String(a.name || "").localeCompare(String(b.name || ""));
+                });
             selectEl.innerHTML = "";
             for (const g of friendly) {
                 const opt = document.createElement("option");
@@ -71,7 +79,15 @@ function populateEnemyGenerals(selectEl) {
     return fetch("data/generals.json")
         .then(r => r.json())
         .then(generals => {
-            const enemies = generals.filter(g => g.type === "enemy");
+            const rarityOrder = { legendary: 4, epic: 3, rare: 2, common: 1 };
+            const enemies = generals
+                .filter(g => g.type === "enemy")
+                .sort((a, b) => {
+                    const ra = rarityOrder[String(a.rarity || "").toLowerCase()] || 0;
+                    const rb = rarityOrder[String(b.rarity || "").toLowerCase()] || 0;
+                    if (rb !== ra) return rb - ra;
+                    return String(a.name || "").localeCompare(String(b.name || ""));
+                });
             selectEl.innerHTML = "";
             for (const g of enemies) {
                 const opt = document.createElement("option");

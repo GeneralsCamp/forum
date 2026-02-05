@@ -161,8 +161,13 @@ function setGenerals() {
         state.data.generals[0];
 }
 
-function buildDeckWithRules() {
-    const allCards = state.data.cards;
+function buildDeckWithRules(general) {
+    const allowedIds = Array.isArray(general?.allowed_card_ids)
+        ? new Set(general.allowed_card_ids.map(Number))
+        : null;
+    const allCards = allowedIds
+        ? state.data.cards.filter(card => allowedIds.has(card.id))
+        : state.data.cards;
     const deckSize = Number(localStorage.getItem("empire_duels_deck_size") || 30) === 40 ? 40 : 30;
     const halfSize = Math.floor(deckSize / 2);
 

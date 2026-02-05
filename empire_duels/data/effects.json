@@ -5,7 +5,7 @@
             "max_base":  2,
             "mode":  "attack"
         },
-        "name":  "Bulwark Doctrine",
+        "name":  "Ironbound Oath",
         "id":  101,
         "type":  "defense",
         "kind":  "board_allied_card_mode",
@@ -17,14 +17,14 @@
             "card_id":  39,
             "amount":  1
         },
-        "name":  "Falcon Call",
+        "name":  "Falconer’s Call",
         "id":  102,
         "kind":  "add_card_to_hand",
         "trigger":  "active",
         "description":  "Active (once per match, your turn): add 1 Falcon to your hand. Does not end your turn."
     },
     {
-        "name":  "Titanbreaker Gaze",
+        "name":  "Giantslayer",
         "id":  103,
         "kind":  "board_enemy_top_card_half",
         "trigger":  "constant",
@@ -36,7 +36,7 @@
             "max_base":  2,
             "mode":  "defense"
         },
-        "name":  "Warhost Command",
+        "name":  "War Drums",
         "id":  201,
         "type":  "attack",
         "kind":  "board_allied_card_mode",
@@ -47,7 +47,7 @@
         "effect_params":  {
             "amount":  -1
         },
-        "name":  "Umbral Siphon",
+        "name":  "Shieldwall Breaker",
         "id":  1001,
         "kind":  "row_enemy_flat",
         "trigger":  "constant",
@@ -58,22 +58,11 @@
             "amount":  1,
             "tribe":  "mead"
         },
-        "name":  "Meadhall Canticle",
+        "name":  "Meadhall Oath",
         "id":  1002,
         "kind":  "board_allied_tribe_per_count",
         "trigger":  "deploy",
         "description":  "On deploy: allied Mead units gain +1 per Mead on your board."
-    },
-    {
-        "effect_params":  {
-            "amount":  1,
-            "tribe":  "horror"
-        },
-        "name":  "Horror Ascendance",
-        "id":  1003,
-        "kind":  "board_allied_tribe_veteran",
-        "trigger":  "constant",
-        "description":  "Constant: all allied Horror units gain +1."
     },
     {
         "effect_params":  {
@@ -131,7 +120,7 @@
         "effect_params":  {
             "amount":  -1
         },
-        "name":  "Gloom Hex",
+        "name":  "Withering Hex",
         "id":  2002,
         "kind":  "row_enemy_flat",
         "trigger":  "constant",
@@ -157,7 +146,7 @@
             ],
             "amount":  1
         },
-        "name":  "Veteran Reward",
+        "name":  "Call the Veterans",
         "id":  3001,
         "kind":  "add_card_to_hand",
         "trigger":  "deploy",
@@ -167,7 +156,7 @@
         "effect_params":  {
             "cap":  1
         },
-        "name":  "Aegis Screen",
+        "name":  "Aegis Line",
         "id":  2005,
         "kind":  "row_allied_immunity_enemy_negative",
         "trigger":  "constant",
