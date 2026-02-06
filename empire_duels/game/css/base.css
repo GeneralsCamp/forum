@@ -18,7 +18,8 @@
 }
 
 body {
-  background: #c9a07a;
+  background:
+    radial-gradient(circle at 50% 50%, #d4b18d 0%, #c49a74 45%, #b58662 100%);
   color: var(--text);
   height: 100vh;
   display: flex;

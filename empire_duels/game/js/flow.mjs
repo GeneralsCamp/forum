@@ -104,7 +104,7 @@ export function createFlow({ state, constants, helpers }) {
     renderGameHeader();
     playSfx?.("round-start");
 
-    state.currentPlayer = Math.random() < 0.5 ? "player" : "ai";
+    state.currentPlayer = state.phase === "attack" ? "player" : "ai";
 
     drawCard("player");
     drawCard("ai");
