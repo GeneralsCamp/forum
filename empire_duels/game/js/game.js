@@ -459,7 +459,7 @@ const SFX_CONFIG = {
     bgm: { volume: 0.05 },
     "pick-card": { file: "pick-card.mp3", volume: 0.2, overlap: false },
     "melee-unit": { file: "melee-unit.mp3", volume: 0.2, overlap: true },
-    "ranged-unit": { file: "ranged-unit.mp3", volume: 0.2, overlap: true },
+    "ranged-unit": { file: "ranged-unit.mp3", volume: 0.08, overlap: true },
     tools: { file: "tools.mp3", volume: 0.2, overlap: true },
     debuff: { file: "debuff.mp3", volume: 0.2, overlap: false },
     buff: { file: "buff.mp3", volume: 0.05, overlap: false },
@@ -503,8 +503,16 @@ function playCardPlaceSfx(card, laneKey) {
         playSfx("tools");
         return;
     }
-    const isMelee = laneKey?.startsWith?.("melee_");
+    const isMelee = card.slot_type === "any" || laneKey?.startsWith?.("melee_");
     playSfx(isMelee ? "melee-unit" : "ranged-unit");
+}
+
+let lastUiHoverAt = 0;
+function playHoverClickSfx() {
+    const now = Date.now();
+    if (now - lastUiHoverAt < 80) return;
+    lastUiHoverAt = now;
+    playSfx("click");
 }
 
 const ui = createUi({
@@ -589,6 +597,7 @@ function bindEvents() {
     el.passBtn.addEventListener("click", () => {
         playerPass(false);
     });
+    el.passBtn.addEventListener("mouseenter", playHoverClickSfx);
 
     if (el.cardModalBackdrop) {
         el.cardModalBackdrop.addEventListener("click", closeCardModal);
@@ -600,12 +609,14 @@ function bindEvents() {
         el.playerGeneralImg.addEventListener("click", () => {
             activatePlayerGeneralAbility();
         });
+        el.playerGeneralImg.addEventListener("mouseenter", playHoverClickSfx);
         el.playerGeneralImg.addEventListener("contextmenu", (e) => {
             e.preventDefault();
             openGeneralModal(state.playerGeneral);
         });
     }
     if (el.aiGeneralImg) {
+        el.aiGeneralImg.addEventListener("mouseenter", playHoverClickSfx);
         el.aiGeneralImg.addEventListener("contextmenu", (e) => {
             e.preventDefault();
             openGeneralModal(state.aiGeneral);

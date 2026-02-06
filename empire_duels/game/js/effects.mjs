@@ -302,6 +302,24 @@ export function applyOnDeployEffects(card, owner, laneKey, state, getCardPoints)
     return;
   }
 
+  if (eff.kind === "board_allied_tribe_per_count") {
+    const tribe = eff.effect_params?.tribe;
+    if (!tribe) return;
+    const count = countTribe(state, owner, tribe);
+    if (!count) return;
+    const bonus = count * amount;
+    const troops = getAllTroops(state, owner);
+    for (const t of troops) {
+      if (!t) continue;
+      if (t.tribe !== tribe) continue;
+      t._bonus = (t._bonus ?? 0) + bonus;
+      addBonusSource(t, bonus);
+      markBuffDebuff(bonus);
+    }
+    flushBuffDebuff();
+    return;
+  }
+
   if (eff.kind === "add_card_to_hand") {
     const hand = owner === "player" ? state.playerHand : state.aiHand;
     const { card_ids = [], amount: give = 1 } = eff.effect_params || {};
