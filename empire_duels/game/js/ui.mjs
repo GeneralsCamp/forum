@@ -229,6 +229,7 @@ export function createUi({ state, el, constants, handlers, helpers }) {
     const cards = state.playerHand;
     const draggingIndex = state.isDragging ? state.dragHandIndex : null;
     const selectedCard = state.selectedHandIndex !== null ? state.playerHand[state.selectedHandIndex] : null;
+    const lanes = ["ranged_1", "ranged_2", "melee_1", "melee_2"];
 
     const phase = state.phase;
     const modePriority = (card) => {
@@ -263,7 +264,10 @@ export function createUi({ state, el, constants, handlers, helpers }) {
       const modeClass = `mode-${String(c.modeType || "any").toLowerCase()}`;
       cardEl.className = `hand-card ${rarityClass} ${modeClass}`;
       if (state.selectedHandIndex === i) cardEl.classList.add("selected");
-      cardEl.draggable = (state.currentPlayer === "player");
+      const isPlayable = state.currentPlayer === "player"
+        && lanes.some(laneKey => canPlayCardToLane(state, c, "player", laneKey));
+      if (!isPlayable) cardEl.classList.add("disabled");
+      cardEl.draggable = (state.currentPlayer === "player" && isPlayable);
 
       cardEl.dataset.index = String(i);
       cardEl.dataset.cardId = String(c.id);
@@ -293,7 +297,14 @@ export function createUi({ state, el, constants, handlers, helpers }) {
     `;
 
       cardEl.addEventListener("click", () => {
-        if (state.currentPlayer !== "player") return;
+        if (state.currentPlayer !== "player") {
+          toast("Enemy turn. You can't play cards now.");
+          return;
+        }
+        if (!isPlayable) {
+          toast("This card can't be played this round.");
+          return;
+        }
         const wasSelected = state.selectedHandIndex === i;
         state.selectedHandIndex = wasSelected ? null : i;
         if (!wasSelected && onCardSelected) onCardSelected(c);
@@ -315,6 +326,7 @@ export function createUi({ state, el, constants, handlers, helpers }) {
 
       cardEl.addEventListener("dragstart", (e) => {
         if (state.currentPlayer !== "player") return;
+        if (!isPlayable) return;
 
         state.dragHandIndex = i;
         state.selectedHandIndex = null;

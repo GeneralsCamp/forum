@@ -515,6 +515,16 @@ function playHoverClickSfx() {
     playSfx("click");
 }
 
+function updateAbilityIndicator() {
+    const avatar = el.playerGeneralImg?.closest?.(".general-avatar");
+    if (!avatar) return;
+    const general = state.playerGeneral;
+    const eff = general?.effect_id ? getEffectById(state.data?.effects || [], general.effect_id) : null;
+    const hasActiveAbility = !!(eff && eff.trigger === "active" && eff.kind === "add_card_to_hand");
+    const ready = hasActiveAbility && state.currentPlayer === "player" && !state.generalAbilityUsed;
+    avatar.classList.toggle("ability-ready", ready);
+}
+
 const ui = createUi({
     state,
     el,
@@ -535,8 +545,14 @@ const {
     renderGameHeader,
 } = ui;
 
-const renderHandWithModal = () => renderHand(openCardModal);
-const renderAllWithModal = () => renderAll(openCardModal);
+const renderHandWithModal = () => {
+    renderHand(openCardModal);
+    updateAbilityIndicator();
+};
+const renderAllWithModal = () => {
+    renderAll(openCardModal);
+    updateAbilityIndicator();
+};
 
 const flow = createFlow({
     state,

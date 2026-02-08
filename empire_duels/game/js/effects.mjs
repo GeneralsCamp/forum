@@ -236,6 +236,7 @@ export function applyOnDeployEffects(card, owner, laneKey, state, getCardPoints)
     if (!bonusAmount) return;
     if (!target._bonus_sources) target._bonus_sources = [];
     target._bonus_sources.push({
+      effect_id: eff.id,
       name: eff.name || "On deploy",
       amount: bonusAmount,
     });

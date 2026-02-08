@@ -161,6 +161,25 @@
   flex-shrink: 0;
 }
 
+.general-avatar.ability-ready {
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.general-avatar.ability-ready::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(
+    #f0c24d 0 10deg,
+    transparent 10deg 24deg
+  );
+  -webkit-mask: radial-gradient(circle, transparent 0 64%, #000 64.8% 100%);
+  mask: radial-gradient(circle, transparent 0 64%, #000 64.8% 100%);
+  pointer-events: none;
+  opacity: 0.85;
+}
+
 
 .general-avatar img {
   width: 100%;

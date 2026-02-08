@@ -25,34 +25,45 @@ export function createModals({ state, el, helpers }) {
     if (owner && laneKey) {
       const base = getCardPoints(state, card, owner);
       const sources = getEffectSources(state);
-      const chips = [];
+      const chipMap = new Map();
+      const addChip = (key, name, delta) => {
+        if (!delta) return;
+        const existing = chipMap.get(key);
+        if (existing) {
+          existing.amount += delta;
+          return;
+        }
+        chipMap.set(key, { name, amount: delta });
+      };
       for (const src of sources) {
         const delta = getEffectDelta(src, card, owner, laneKey, base, state);
         if (!delta) continue;
         const name = src.effect?.name || "Effect";
-        const sign = delta > 0 ? "+" : "-";
-        const amount = Math.abs(delta);
-        const cls = delta > 0 ? "buff" : "debuff";
-        chips.push(`<span class="card-modal__effect-chip ${cls}">${sign}${amount} ${escapeHtml(name)}</span>`);
+        const key = src.effect?.id != null ? `effect:${src.effect.id}` : `effect:${name}`;
+        addChip(key, name, delta);
       }
       if (Array.isArray(card._bonus_sources)) {
         for (const src of card._bonus_sources) {
           const bonus = Number(src.amount) || 0;
           if (!bonus) continue;
-          const sign = bonus > 0 ? "+" : "-";
-          const amount = Math.abs(bonus);
-          const cls = bonus > 0 ? "buff" : "debuff";
           const name = src.name || "On deploy";
-          chips.push(`<span class="card-modal__effect-chip ${cls}">${sign}${amount} ${escapeHtml(name)}</span>`);
+          const key = src.effect_id != null ? `bonus:${src.effect_id}` : `bonus:${name}`;
+          addChip(key, name, bonus);
         }
       } else if (card._bonus) {
         const bonus = Number(card._bonus) || 0;
         if (bonus !== 0) {
-          const sign = bonus > 0 ? "+" : "-";
-          const amount = Math.abs(bonus);
-          const cls = bonus > 0 ? "buff" : "debuff";
-          chips.push(`<span class="card-modal__effect-chip ${cls}">${sign}${amount} On deploy</span>`);
+          addChip("bonus:On deploy", "On deploy", bonus);
         }
+      }
+      const chips = [];
+      for (const entry of chipMap.values()) {
+        const total = Number(entry.amount) || 0;
+        if (!total) continue;
+        const sign = total > 0 ? "+" : "-";
+        const amount = Math.abs(total);
+        const cls = total > 0 ? "buff" : "debuff";
+        chips.push(`<span class="card-modal__effect-chip ${cls}">${sign}${amount} ${escapeHtml(entry.name)}</span>`);
       }
       activeEffectsSection = chips.length > 0
         ? `<div class="card-modal__effect-list">${chips.join("")}</div>`
