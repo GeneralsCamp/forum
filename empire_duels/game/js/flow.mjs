@@ -124,10 +124,18 @@ export function createFlow({ state, constants, helpers }) {
   }
 
   function checkAutoPass() {
-    if (state.currentPlayer === "player" && state.playerHand.length === 0) {
+    const lanes = ["ranged_1", "ranged_2", "melee_1", "melee_2"];
+    const hasPlayable = (owner) => {
+      const hand = owner === "player" ? state.playerHand : state.aiHand;
+      if (hand.length === 0) return false;
+      return hand.some(card =>
+        lanes.some(laneKey => canPlayCardToLane(state, card, owner, laneKey))
+      );
+    };
+    if (state.currentPlayer === "player" && !hasPlayable("player")) {
       playerPass(true);
     }
-    if (state.currentPlayer === "ai" && state.aiHand.length === 0) {
+    if (state.currentPlayer === "ai" && !hasPlayable("ai")) {
       aiPass(true);
     }
   }

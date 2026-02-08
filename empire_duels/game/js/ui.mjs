@@ -155,7 +155,11 @@ export function createUi({ state, el, constants, handlers, helpers }) {
           const card = laneState.troops[i] ?? null;
           if (!card) {
             slot.innerHTML = `<div class="hint"><img src="${hintIconSrc}" alt=""></div>`;
-            if (activeCard && canPlayCardToLane(state, activeCard, owner, laneKey)) {
+            if (
+              activeCard &&
+              activeCard.card_type === "troop" &&
+              canPlayCardToLane(state, activeCard, owner, laneKey)
+            ) {
               slot.classList.add("highlight");
             }
             slot.addEventListener("click", onSlotClick);
@@ -191,7 +195,11 @@ export function createUi({ state, el, constants, handlers, helpers }) {
 
         if (!laneState.tool) {
           toolSlot.innerHTML = `<div class="hint"><img src="images/tool_slot_icon.png" alt=""></div>`;
-          if (activeCard && canPlayCardToLane(state, activeCard, owner, laneKey)) {
+          if (
+            activeCard &&
+            activeCard.card_type === "tool" &&
+            canPlayCardToLane(state, activeCard, owner, laneKey)
+          ) {
             toolSlot.classList.add("highlight");
           }
           toolSlot.addEventListener("click", onSlotClick);

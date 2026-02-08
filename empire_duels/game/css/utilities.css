@@ -171,15 +171,14 @@
   inset: -6px;
   border-radius: 50%;
   background: repeating-conic-gradient(
-    #f0c24d 0 10deg,
-    transparent 10deg 24deg
+    #f0c24d 0 16deg,
+    transparent 16deg 30deg
   );
-  -webkit-mask: radial-gradient(circle, transparent 0 64%, #000 64.8% 100%);
-  mask: radial-gradient(circle, transparent 0 64%, #000 64.8% 100%);
+  -webkit-mask: radial-gradient(circle, transparent 0 66.5%, #000 67.2% 100%);
+  mask: radial-gradient(circle, transparent 0 66.5%, #000 67.2% 100%);
   pointer-events: none;
   opacity: 0.85;
 }
-
 
 .general-avatar img {
   width: 100%;

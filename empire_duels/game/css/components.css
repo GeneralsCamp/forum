@@ -2,24 +2,28 @@
   background:
     radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.12), transparent 40%),
     linear-gradient(180deg, #6a635d, #3f3a35);
+  --hover-glow: rgba(210, 210, 210, 0.35);
 }
 
 .hand-card.rarity-rare {
   background:
     radial-gradient(circle at 20% 20%, rgba(120, 220, 160, 0.25), transparent 40%),
     linear-gradient(180deg, #2f6b3f, #214f2f);
+  --hover-glow: rgba(120, 220, 160, 0.45);
 }
 
 .hand-card.rarity-epic {
   background:
     radial-gradient(circle at 20% 20%, rgba(200, 140, 255, 0.25), transparent 40%),
     linear-gradient(180deg, #5a2f8a, #3c1f5f);
+  --hover-glow: rgba(200, 140, 255, 0.5);
 }
 
 .hand-card.rarity-legendary {
   background:
     radial-gradient(circle at 20% 20%, rgba(255, 200, 120, 0.3), transparent 40%),
     linear-gradient(180deg, #a35a1f, #6e3c14);
+  --hover-glow: rgba(255, 200, 120, 0.5);
 }
 
 .mini-card::after {
@@ -312,6 +316,15 @@
 
 .hand-card:hover {
   transform: translateY(-3px);
+  box-shadow:
+    0 10px 18px rgba(0, 0, 0, 0.35),
+    0 0 0 2px var(--hover-glow, rgba(255, 255, 255, 0.25)),
+    0 0 14px var(--hover-glow, rgba(255, 255, 255, 0.2));
+}
+
+.hand-card.disabled:hover {
+  transform: none;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35);
 }
 
 .hand-card.selected {
