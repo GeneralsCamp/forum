@@ -669,6 +669,7 @@ function setupSelectors() {
     });
 
     eventSelect.addEventListener("change", () => {
+        updateHashForEvent(eventSelect.value);
         updateSetOptions();
         updateLevelOptions();
         renderRewardsForSelection();
@@ -683,7 +684,10 @@ function setupSelectors() {
         renderRewardsForSelection();
     });
 
-    eventSelect.value = String(availableEvents[0].eventID);
+    const hashEvent = getEventFromHash();
+    const hasHashEvent = hashEvent && availableEvents.some(e => String(e.eventID) === String(hashEvent));
+    eventSelect.value = hasHashEvent ? String(hashEvent) : String(availableEvents[0].eventID);
+    updateHashForEvent(eventSelect.value);
     updateSetOptions();
     updateLevelOptions();
     renderRewardsForSelection();
@@ -780,6 +784,7 @@ function renderRewardsForSelection() {
         renderRewards([]);
         return;
     }
+    updateHashForEvent(eventId);
 
     if (level === "top") {
         renderTopRewardsForSelection(eventId, setId);
@@ -863,6 +868,16 @@ function renderRewardsForSelection() {
     renderRewards(rewards, UI_LANG.chance);
 }
 
+function getEventFromHash() {
+    const hash = window.location.hash.replace("#", "").trim();
+    return hash || null;
+}
+
+function updateHashForEvent(eventId) {
+    if (!eventId) return;
+    window.location.hash = String(eventId);
+}
+
 function renderRewards(rewards, label) {
     const container = document.getElementById("rewardRows");
     container.innerHTML = "";
@@ -888,12 +903,7 @@ function renderRewards(rewards, label) {
         const rarityColor = getRarityColor(reward.rarity);
         const chanceStyle = rarityColor ? ` style="color:${rarityColor};"` : "";
         const idText = (reward.id !== undefined && reward.id !== null && reward.id !== "") ? String(reward.id) : "-";
-        let idDisplay = idText;
-        if (idText !== "-" && reward.type === "decoration") {
-            idDisplay = `<a class="id-link" data-id="${idText}" href="https://generalscamp.github.io/forum/overviews/decorations#${idText}" target="_blank" rel="noopener">${idText}</a>`;
-        } else if (idText !== "-" && reward.type === "construction") {
-            idDisplay = `<a class="id-link" data-id="${idText}" href="https://generalscamp.github.io/forum/overviews/building_items#${idText}" target="_blank" rel="noopener">${idText}</a>`;
-        }
+        const idDisplay = idText;
         let imageUrl = null;
         let imageClass = "card-image";
         if (reward.type === "decoration") {
@@ -909,9 +919,15 @@ function renderRewards(rewards, label) {
             imageUrl = getCurrencyImageUrl(reward);
             if (imageUrl) imageClass += " card-image-currency";
         }
-        const imageBlock = imageUrl
+        const imageInner = imageUrl
             ? `<div class="image-wrapper"><img src="${imageUrl}" class="${imageClass}" loading="lazy" alt=""></div>`
             : `<div class="reward-image-placeholder">img</div>`;
+        let imageBlock = imageInner;
+        if (idText !== "-" && reward.type === "decoration") {
+            imageBlock = `<a class="id-link" data-id="${idText}" href="https://generalscamp.github.io/forum/overviews/decorations#${idText}" target="_blank" rel="noopener">${imageInner}</a>`;
+        } else if (idText !== "-" && reward.type === "construction") {
+            imageBlock = `<a class="id-link" data-id="${idText}" href="https://generalscamp.github.io/forum/overviews/building_items#${idText}" target="_blank" rel="noopener">${imageInner}</a>`;
+        }
         col.innerHTML = `
       <div class="box flex-fill">
         <div class="box-content">
