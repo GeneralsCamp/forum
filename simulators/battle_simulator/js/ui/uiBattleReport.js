@@ -238,7 +238,7 @@ function renderUnitSummaryHTML(unitsSummary, imageMap, isDefense = false) {
         <img src="./img/${unitImage}" class="unit-icon" alt="${type}">
         <div class="unit-info">
           <div class="unit-count">${formatNumber(count)}</div>
-          ${loss > 0 ? `<div class="unit-loss">-${formatNumber(loss)}</div>` : `<div class="unit-loss empty">0</div>`}
+          ${loss > 0 ? `<div class="unit-loss">-${formatNumber(loss)}</div>` : `<div class="unit-loss">-</div>`}
         </div>
       </div>
     `;
@@ -505,6 +505,10 @@ function computeWaveBattle(side, wave, defenseUnits, attackTotalMultiplier = 1, 
   let defenseMeleeMult = defenseMeleePercent / 100;
 
   const defenseTotals = computeDefenseTotals(defenseUnits);
+  const defenderBefore = new Map();
+  defenseUnits.forEach(unit => {
+    defenderBefore.set(toUnitKey(unit.type), unit.count);
+  });
 
   const defenseBaseRanged = defenseTotals.meleeRangedBase + defenseTotals.rangedRangedBase;
   const defenseBaseMelee = defenseTotals.meleeMeleeBase + defenseTotals.rangedMeleeBase;
@@ -630,12 +634,16 @@ function computeWaveBattle(side, wave, defenseUnits, attackTotalMultiplier = 1, 
     : !hasAttackRanged && hasAttackMelee
       ? totalDefenseMelee
       : (scaledDefenseRanged + scaledDefenseMelee);
-  const defendersKilledRatio = defenderAttackForRatio < defenderDefenseForRatio
-    ? Math.pow(defenderAttackForRatio / defenderDefenseForRatio, 1.5)
-    : 1;
+  const defendersKilledRatio = defenderAttackForRatio <= 0
+    ? 0
+    : defenderAttackForRatio < defenderDefenseForRatio
+      ? Math.pow(defenderAttackForRatio / defenderDefenseForRatio, 1.5)
+      : 1;
 
   const attackerTotalLoss = Math.min(rangedLoss + meleeLoss, attackerTotalCount);
-  const defenderTotalLoss = Math.min(Math.ceil(defenderTotalCount * defendersKilledRatio), defenderTotalCount);
+  const defenderTotalLoss = attackerTotalCount <= 0
+    ? 0
+    : Math.min(Math.ceil(defenderTotalCount * defendersKilledRatio), defenderTotalCount);
 
   const defenderCountTotal = defenderRangedCount + defenderMeleeCount;
   const defenderRangedShare = defenderCountTotal > 0 ? defenderRangedCount / defenderCountTotal : 0;
@@ -756,6 +764,7 @@ function computeWaveBattle(side, wave, defenseUnits, attackTotalMultiplier = 1, 
   return {
     attackerUnits: attackUnits,
     defenderUnits: defenseUnits,
+    defenderBefore,
     attackerLosses,
     defenderLosses,
     attackerTotalLoss,
@@ -1142,7 +1151,7 @@ function populateBattleReportModal(side) {
     if (hasUnits) {
       const slotLosses = waveResult ? distributeLossesAcrossSlots(wave.slots, waveResult.attackerLosses) : new Map();
       const defenderSummaryList = waveResult
-        ? buildSummaryList(waveResult.defenderRemaining || new Map(), waveResult.defenderLosses || new Map(), true)
+        ? buildSummaryList(waveResult.defenderBefore || new Map(), waveResult.defenderLosses || new Map(), true)
         : [];
       const waveHTML = `
         <div class="player-flank text-center">
@@ -1162,7 +1171,7 @@ function populateBattleReportModal(side) {
                           <img src="./img/${unitImage}" class="unit-icon" alt="${slot.type}">
                           <div class="unit-info">
                             <div class="unit-count">${formatNumber(slot.count)}</div>
-                            ${loss > 0 ? `<div class="unit-loss">-${formatNumber(loss)}</div>` : `<div class="unit-loss empty">0</div>`}
+                            ${loss > 0 ? `<div class="unit-loss">-${formatNumber(loss)}</div>` : `<div class="unit-loss">-</div>`}
                           </div>
                         </div>
                       `;
