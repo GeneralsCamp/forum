@@ -1,0 +1,458 @@
+{
+  "en": {
+    "ui": {
+      "id": "ID",
+      "individual": "Individual",
+      "no_rewards": "No rewards for this selection.",
+      "latest_version": "Latest version",
+      "version": "Version",
+      "old": "old",
+      "no_events": "No events found",
+      "no_sets": "No versions",
+      "no_modes": "No reward types",
+      "no_levels": "No levels",
+      "no_difficulties": "No difficulties",
+      "no_difficulty_for_event": "No difficulty for this event",
+      "top": "TOP",
+      "view_detailed": "Detailed",
+      "view_summary": "Summarized"
+    }
+  },
+  "ar": {
+    "ui": {
+      "id": "المعرف",
+      "individual": "فردي",
+      "no_rewards": "لا توجد مكافآت لهذا الاختيار.",
+      "latest_version": "أحدث إصدار",
+      "version": "الإصدار",
+      "old": "قديم",
+      "no_events": "لم يتم العثور على أحداث",
+      "no_sets": "لا توجد إصدارات",
+      "no_modes": "لا توجد أنواع مكافآت",
+      "no_levels": "لا توجد مستويات",
+      "no_difficulties": "لا توجد صعوبات",
+      "no_difficulty_for_event": "لا توجد صعوبة لهذا الحدث",
+      "top": "الأعلى",
+      "view_detailed": "Mofassal",
+      "view_summary": "Molakhkhas"
+    }
+  },
+  "es": {
+    "ui": {
+      "id": "ID",
+      "individual": "Individual",
+      "no_rewards": "No hay recompensas para esta selección.",
+      "latest_version": "Última versión",
+      "version": "Versión",
+      "old": "antiguo",
+      "no_events": "No se encontraron eventos",
+      "no_sets": "Sin versiones",
+      "no_modes": "Sin tipos de recompensa",
+      "no_levels": "Sin niveles",
+      "no_difficulties": "Sin dificultades",
+      "no_difficulty_for_event": "No hay dificultad para este evento",
+      "top": "TOP",
+      "view_detailed": "Detallado",
+      "view_summary": "Resumido"
+    }
+  },
+  "bg": {
+    "ui": {
+      "id": "ID",
+      "individual": "Индивидуално",
+      "no_rewards": "Няма награди за този избор.",
+      "latest_version": "Най-нова версия",
+      "version": "Версия",
+      "old": "стар",
+      "no_events": "Няма намерени събития",
+      "no_sets": "Няма версии",
+      "no_modes": "Няма типове награди",
+      "no_levels": "Няма нива",
+      "no_difficulties": "Няма трудности",
+      "no_difficulty_for_event": "Няма трудност за това събитие",
+      "top": "ТОП",
+      "view_detailed": "Podrobno",
+      "view_summary": "Obobshteno"
+    }
+  },
+  "pt": {
+    "ui": {
+      "id": "ID",
+      "individual": "Individual",
+      "no_rewards": "Nenhuma recompensa para esta seleção.",
+      "latest_version": "Versão mais recente",
+      "version": "Versão",
+      "old": "antigo",
+      "no_events": "Nenhum evento encontrado",
+      "no_sets": "Sem versões",
+      "no_modes": "Sem tipos de recompensa",
+      "no_levels": "Sem níveis",
+      "no_difficulties": "Sem dificuldades",
+      "no_difficulty_for_event": "Sem dificuldade para este evento",
+      "top": "TOP",
+      "view_detailed": "Detalhado",
+      "view_summary": "Resumido"
+    }
+  },
+  "cs": {
+    "ui": {
+      "id": "ID",
+      "individual": "Individuální",
+      "no_rewards": "Pro tento výběr nejsou žádné odměny.",
+      "latest_version": "Nejnovější verze",
+      "version": "Verze",
+      "old": "starý",
+      "no_events": "Nenalezeny žádné události",
+      "no_sets": "Žádné verze",
+      "no_modes": "Žádné typy odměn",
+      "no_levels": "Žádné úrovně",
+      "no_difficulties": "Žádné obtížnosti",
+      "no_difficulty_for_event": "Pro tuto událost není obtížnost",
+      "top": "TOP",
+      "view_detailed": "Podrobne",
+      "view_summary": "Souhrnne"
+    }
+  },
+  "de": {
+    "ui": {
+      "id": "ID",
+      "individual": "Einzeln",
+      "no_rewards": "Keine Belohnungen für diese Auswahl.",
+      "latest_version": "Neueste Version",
+      "version": "Version",
+      "old": "alt",
+      "no_events": "Keine Events gefunden",
+      "no_sets": "Keine Versionen",
+      "no_modes": "Keine Belohnungstypen",
+      "no_levels": "Keine Level",
+      "no_difficulties": "Keine Schwierigkeitsgrade",
+      "no_difficulty_for_event": "Kein Schwierigkeitsgrad für dieses Event",
+      "top": "TOP",
+      "view_detailed": "Detailliert",
+      "view_summary": "Zusammengefasst"
+    }
+  },
+  "da": {
+    "ui": {
+      "id": "ID",
+      "individual": "Individuel",
+      "no_rewards": "Ingen belønninger for dette valg.",
+      "latest_version": "Seneste version",
+      "version": "Version",
+      "old": "gammel",
+      "no_events": "Ingen begivenheder fundet",
+      "no_sets": "Ingen versioner",
+      "no_modes": "Ingen belønningstyper",
+      "no_levels": "Ingen niveauer",
+      "no_difficulties": "Ingen sværhedsgrader",
+      "no_difficulty_for_event": "Ingen sværhedsgrad for denne begivenhed",
+      "top": "TOP",
+      "view_detailed": "Detaljeret",
+      "view_summary": "Opsummeret"
+    }
+  },
+  "fi": {
+    "ui": {
+      "id": "ID",
+      "individual": "Yksilöllinen",
+      "no_rewards": "Tälle valinnalle ei ole palkintoja.",
+      "latest_version": "Uusin versio",
+      "version": "Versio",
+      "old": "vanha",
+      "no_events": "Tapahtumia ei löytynyt",
+      "no_sets": "Ei versioita",
+      "no_modes": "Ei palkintotyyppejä",
+      "no_levels": "Ei tasoja",
+      "no_difficulties": "Ei vaikeustasoja",
+      "no_difficulty_for_event": "Tälle tapahtumalle ei ole vaikeustasoa",
+      "top": "TOP",
+      "view_detailed": "Yksityiskohtainen",
+      "view_summary": "Yhteenveto"
+    }
+  },
+  "fr": {
+    "ui": {
+      "id": "ID",
+      "individual": "Individuel",
+      "no_rewards": "Aucune récompense pour cette sélection.",
+      "latest_version": "Dernière version",
+      "version": "Version",
+      "old": "ancien",
+      "no_events": "Aucun événement trouvé",
+      "no_sets": "Aucune version",
+      "no_modes": "Aucun type de récompense",
+      "no_levels": "Aucun niveau",
+      "no_difficulties": "Aucune difficulté",
+      "no_difficulty_for_event": "Aucune difficulté pour cet événement",
+      "top": "TOP",
+      "view_detailed": "Detaille",
+      "view_summary": "Resume"
+    }
+  },
+  "el": {
+    "ui": {
+      "id": "ID",
+      "individual": "Ατομικό",
+      "no_rewards": "Δεν υπάρχουν ανταμοιβές για αυτήν την επιλογή.",
+      "latest_version": "Τελευταία έκδοση",
+      "version": "Έκδοση",
+      "old": "παλιό",
+      "no_events": "Δεν βρέθηκαν γεγονότα",
+      "no_sets": "Καμία έκδοση",
+      "no_modes": "Κανένας τύπος ανταμοιβής",
+      "no_levels": "Κανένα επίπεδο",
+      "no_difficulties": "Καμία δυσκολία",
+      "no_difficulty_for_event": "Δεν υπάρχει δυσκολία για αυτό το γεγονός",
+      "top": "TOP",
+      "view_detailed": "Analytiko",
+      "view_summary": "Synopsi"
+    }
+  },
+  "hu": {
+    "ui": {
+      "id": "Azonosító",
+      "individual": "Egyéni",
+      "no_rewards": "Nincs jutalom ehhez a szűrőhöz.",
+      "latest_version": "Legújabb verzió",
+      "version": "Verzió",
+      "old": "régi",
+      "no_events": "Nincs található esemény",
+      "no_sets": "Nincs verzió",
+      "no_modes": "Nincs jutalomtípus",
+      "no_levels": "Nincs szint",
+      "no_difficulties": "Nincs nehézség",
+      "no_difficulty_for_event": "Ehhez az eseményhez nincs nehézség",
+      "top": "TOP",
+      "view_detailed": "Részletes",
+      "view_summary": "Összegzett"
+    }
+  },
+  "it": {
+    "ui": {
+      "id": "ID",
+      "individual": "Individuale",
+      "no_rewards": "Nessuna ricompensa per questa selezione.",
+      "latest_version": "Ultima versione",
+      "version": "Versione",
+      "old": "vecchio",
+      "no_events": "Nessun evento trovato",
+      "no_sets": "Nessuna versione",
+      "no_modes": "Nessun tipo di ricompensa",
+      "no_levels": "Nessun livello",
+      "no_difficulties": "Nessuna difficoltà",
+      "no_difficulty_for_event": "Nessuna difficoltà per questo evento",
+      "top": "TOP",
+      "view_detailed": "Dettagliato",
+      "view_summary": "Riepilogo"
+    }
+  },
+  "ja": {
+    "ui": {
+      "id": "ID",
+      "individual": "個人",
+      "no_rewards": "この選択には報酬がありません。",
+      "latest_version": "最新バージョン",
+      "version": "バージョン",
+      "old": "旧",
+      "no_events": "イベントが見つかりません",
+      "no_sets": "バージョンなし",
+      "no_modes": "報酬タイプなし",
+      "no_levels": "レベルなし",
+      "no_difficulties": "難易度なし",
+      "no_difficulty_for_event": "このイベントには難易度がありません",
+      "top": "TOP",
+      "view_detailed": "Shosai",
+      "view_summary": "Yoyaku"
+    }
+  },
+  "ko": {
+    "ui": {
+      "id": "ID",
+      "individual": "개인",
+      "no_rewards": "이 선택에 대한 보상이 없습니다.",
+      "latest_version": "최신 버전",
+      "version": "버전",
+      "old": "이전",
+      "no_events": "이벤트를 찾을 수 없습니다",
+      "no_sets": "버전 없음",
+      "no_modes": "보상 유형 없음",
+      "no_levels": "레벨 없음",
+      "no_difficulties": "난이도 없음",
+      "no_difficulty_for_event": "이 이벤트에는 난이도가 없습니다",
+      "top": "TOP",
+      "view_detailed": "Sangse",
+      "view_summary": "Yoyak"
+    }
+  },
+  "lt": {
+    "ui": {
+      "id": "ID",
+      "individual": "Individualus",
+      "no_rewards": "Šiam pasirinkimui nėra apdovanojimų.",
+      "latest_version": "Naujausia versija",
+      "version": "Versija",
+      "old": "sena",
+      "no_events": "Įvykių nerasta",
+      "no_sets": "Nėra versijų",
+      "no_modes": "Nėra apdovanojimų tipų",
+      "no_levels": "Nėra lygių",
+      "no_difficulties": "Nėra sudėtingumo lygių",
+      "no_difficulty_for_event": "Šiam įvykiui nėra sudėtingumo",
+      "top": "TOP",
+      "view_detailed": "Issamus",
+      "view_summary": "Santrauka"
+    }
+  },
+  "nl": {
+    "ui": {
+      "id": "ID",
+      "individual": "Individueel",
+      "no_rewards": "Geen beloningen voor deze selectie.",
+      "latest_version": "Nieuwste versie",
+      "version": "Versie",
+      "old": "oud",
+      "no_events": "Geen evenementen gevonden",
+      "no_sets": "Geen versies",
+      "no_modes": "Geen beloningstypen",
+      "no_levels": "Geen niveaus",
+      "no_difficulties": "Geen moeilijkheidsgraden",
+      "no_difficulty_for_event": "Geen moeilijkheid voor dit evenement",
+      "top": "TOP",
+      "view_detailed": "Gedetailleerd",
+      "view_summary": "Samengevat"
+    }
+  },
+  "no": {
+    "ui": {
+      "id": "ID",
+      "individual": "Individuell",
+      "no_rewards": "Ingen belønninger for dette valget.",
+      "latest_version": "Nyeste versjon",
+      "version": "Versjon",
+      "old": "gammel",
+      "no_events": "Ingen hendelser funnet",
+      "no_sets": "Ingen versjoner",
+      "no_modes": "Ingen belønningstyper",
+      "no_levels": "Ingen nivåer",
+      "no_difficulties": "Ingen vanskelighetsgrader",
+      "no_difficulty_for_event": "Ingen vanskelighetsgrad for denne hendelsen",
+      "top": "TOP",
+      "view_detailed": "Detaljert",
+      "view_summary": "Oppsummert"
+    }
+  },
+  "pl": {
+    "ui": {
+      "id": "ID",
+      "individual": "Indywidualne",
+      "no_rewards": "Brak nagród dla tego wyboru.",
+      "latest_version": "Najnowsza wersja",
+      "version": "Wersja",
+      "old": "stary",
+      "no_events": "Nie znaleziono wydarzeń",
+      "no_sets": "Brak wersji",
+      "no_modes": "Brak typów nagród",
+      "no_levels": "Brak poziomów",
+      "no_difficulties": "Brak poziomów trudności",
+      "no_difficulty_for_event": "Brak trudności dla tego wydarzenia",
+      "top": "TOP",
+      "view_detailed": "Szczegolowy",
+      "view_summary": "Podsumowany"
+    }
+  },
+  "ro": {
+    "ui": {
+      "id": "ID",
+      "individual": "Individual",
+      "no_rewards": "Nu există recompense pentru această selecție.",
+      "latest_version": "Cea mai recentă versiune",
+      "version": "Versiune",
+      "old": "vechi",
+      "no_events": "Nu au fost găsite evenimente",
+      "no_sets": "Nicio versiune",
+      "no_modes": "Niciun tip de recompensă",
+      "no_levels": "Niciun nivel",
+      "no_difficulties": "Nicio dificultate",
+      "no_difficulty_for_event": "Nu există dificultate pentru acest eveniment",
+      "top": "TOP",
+      "view_detailed": "Detaliat",
+      "view_summary": "Rezumat"
+    }
+  },
+  "ru": {
+    "ui": {
+      "id": "ID",
+      "individual": "Индивидуальный",
+      "no_rewards": "Нет наград для этого выбора.",
+      "latest_version": "Последняя версия",
+      "version": "Версия",
+      "old": "старый",
+      "no_events": "События не найдены",
+      "no_sets": "Нет версий",
+      "no_modes": "Нет типов наград",
+      "no_levels": "Нет уровней",
+      "no_difficulties": "Нет уровней сложности",
+      "no_difficulty_for_event": "Для этого события нет сложности",
+      "top": "ТОП",
+      "view_detailed": "Podrobno",
+      "view_summary": "Svodno"
+    }
+  },
+  "sv": {
+    "ui": {
+      "id": "ID",
+      "individual": "Individuell",
+      "no_rewards": "Inga belöningar för detta val.",
+      "latest_version": "Senaste version",
+      "version": "Version",
+      "old": "gammal",
+      "no_events": "Inga händelser hittades",
+      "no_sets": "Inga versioner",
+      "no_modes": "Inga belöningstyper",
+      "no_levels": "Inga nivåer",
+      "no_difficulties": "Inga svårighetsgrader",
+      "no_difficulty_for_event": "Ingen svårighetsgrad för detta evenemang",
+      "top": "TOP",
+      "view_detailed": "Detaljerad",
+      "view_summary": "Sammanfattad"
+    }
+  },
+  "sk": {
+    "ui": {
+      "id": "ID",
+      "individual": "Individuálne",
+      "no_rewards": "Pre tento výber nie sú žiadne odmeny.",
+      "latest_version": "Najnovšia verzia",
+      "version": "Verzia",
+      "old": "starý",
+      "no_events": "Nenašli sa žiadne udalosti",
+      "no_sets": "Žiadne verzie",
+      "no_modes": "Žiadne typy odmien",
+      "no_levels": "Žiadne úrovne",
+      "no_difficulties": "Žiadne úrovne obtiažnosti",
+      "no_difficulty_for_event": "Pre túto udalosť nie je obtiažnosť",
+      "top": "TOP",
+      "view_detailed": "Podrobne",
+      "view_summary": "Suhrnne"
+    }
+  },
+  "tr": {
+    "ui": {
+      "id": "ID",
+      "individual": "Bireysel",
+      "no_rewards": "Bu seçim için ödül yok.",
+      "latest_version": "En son sürüm",
+      "version": "Sürüm",
+      "old": "eski",
+      "no_events": "Etkinlik bulunamadı",
+      "no_sets": "Sürüm yok",
+      "no_modes": "Ödül türü yok",
+      "no_levels": "Seviye yok",
+      "no_difficulties": "Zorluk yok",
+      "no_difficulty_for_event": "Bu etkinlik için zorluk yok",
+      "top": "TOP",
+      "view_detailed": "Detayli",
+      "view_summary": "Ozet"
+    }
+  }
+}

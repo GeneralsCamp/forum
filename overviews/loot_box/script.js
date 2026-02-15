@@ -2,6 +2,7 @@ import { initAutoHeight } from "../shared/ResizeService.mjs";
 import { createLoader } from "../shared/LoadingService.mjs";
 import { coreInit } from "../shared/CoreInit.mjs";
 import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageService.mjs";
+import { createRewardResolver } from "../shared/RewardResolver.mjs";
 
 // --- GLOBAL VARIABLES ---
 let lang = {};
@@ -15,7 +16,9 @@ let currenciesById = {};
 let buildingsById = {};
 let constructionItemsById = {};
 let equipmentsById = {};
-let skinsById = {};
+let lootBoxesById = {};
+let lookSkinsById = {};
+let rewardResolver = null;
 
 let lootBoxImageUrlMap = {};
 let currencyImageUrlMap = {};
@@ -110,73 +113,6 @@ function getCurrencyImageUrl(currency) {
   if (!currency) return null;
   const raw = currency.assetName || currency.Name || currency.JSONKey || "";
   return currencyImageUrlMap[normalizeName(raw)] || null;
-}
-
-function getDecorationImageUrl(decoId) {
-  if (!decoId) return null;
-  const building = buildingsById[String(decoId)];
-  const candidates = [
-    building?.type,
-    building?.comment2,
-    building?.name
-  ];
-
-  for (const raw of candidates) {
-    if (!raw) continue;
-    const key = normalizeName(raw);
-    const entry = decorationImageUrlMap[key];
-    if (!entry) continue;
-    if (typeof entry === "string") return entry;
-    if (entry.placedUrl) return entry.placedUrl;
-  }
-
-  return null;
-}
-
-function getConstructionImageUrl(constructionItemId) {
-  if (!constructionItemId) return null;
-  const item = constructionItemsById[String(constructionItemId)];
-  const candidates = [
-    item?.name,
-    item?.comment2,
-    item?.comment1
-  ];
-
-  for (const raw of candidates) {
-    if (!raw) continue;
-    const key = normalizeName(raw);
-    const entry = constructionImageUrlMap[key];
-    if (!entry) continue;
-    if (typeof entry === "string") return entry;
-    if (entry.iconUrl) return entry.iconUrl;
-    if (entry.placedUrl) return entry.placedUrl;
-  }
-
-  return null;
-}
-
-function getLookImageUrl(skinId) {
-  if (!skinId) return null;
-  const skin = skinsById[String(skinId)];
-  const skinName = skin?.name;
-  if (!skinName) return null;
-
-  const key = normalizeName(skinName);
-  const urls = lookImageUrlMap[key];
-  if (!urls) return null;
-
-  const mapObjects = urls.mapObjects || {};
-  const movements = urls.movements || {};
-
-  return (
-    mapObjects.castleUrl ||
-    mapObjects.outpostUrl ||
-    mapObjects.metroUrl ||
-    mapObjects.capitalUrl ||
-    movements.moveNormal ||
-    movements.moveBoat ||
-    null
-  );
 }
 
 function parseTombolaString(value) {
@@ -302,44 +238,33 @@ function openLootBoxModal(box) {
 
 function explodeReward(reward) {
   const entries = [];
+  const resolved = rewardResolver
+    ? rewardResolver.resolveRewardEntries(reward)
+    : [];
 
-  for (const [key, value] of Object.entries(reward)) {
-    if (!key.toLowerCase().startsWith("add")) continue;
+  resolved.forEach((entry) => {
+    let imageUrl = null;
 
-    const raw = key.slice(3);
-
-    entries.push({
-      type: "currency",
-      name: lang[`${raw}_name`] ?? lang[raw] ?? raw,
-      amount: Number(value) || 1,
-      imageUrl: currencyImageUrlMap[normalizeName(raw)] || null,
-      title: key
-    });
-  }
-
-  if (reward.units) {
-    const [unitIdRaw, amountRaw] = String(reward.units).split("+");
-    const unitId = String(unitIdRaw);
-    const amount = Number(amountRaw) || 1;
-
-    const unit = unitsById[unitId];
-    const unitName =
-      unit
-        ? lang[`${unit.type}_name`.toLowerCase()] || unit.name || unit.type
-        : `Unit ${unitId}`;
-
-    const imageKey = unit
-      ? normalizeName(`${unit.name}_unit_${unit.type}`)
-      : null;
+    if (entry.type === "currency") {
+      imageUrl = rewardResolver.getCurrencyImageUrl(entry);
+    } else if (entry.type === "unit") {
+      imageUrl = rewardResolver.getUnitImageUrl(entry);
+    } else if (entry.type === "construction") {
+      imageUrl = rewardResolver.getConstructionImageUrl(entry);
+    } else if (entry.type === "decoration") {
+      imageUrl = rewardResolver.getDecorationImageUrl(entry);
+    } else if (entry.type === "equipment") {
+      imageUrl = rewardResolver.getEquipmentImageUrl(entry);
+    } else if (entry.type === "lootbox") {
+      imageUrl = rewardResolver.getLootBoxImageUrl(entry);
+    }
 
     entries.push({
-      type: "unit",
-      name: unitName,
-      amount,
-      imageUrl: imageKey ? unitImageUrlMap[imageKey] || null : null,
-      title: `units=${reward.units}`
+      ...entry,
+      imageUrl,
+      title: entry.id ? `${entry.type}=${entry.id}` : entry.type
     });
-  }
+  });
 
   const simpleResources = ["food", "wood", "stone"];
   for (const res of simpleResources) {
@@ -351,16 +276,6 @@ function explodeReward(reward) {
       amount: Number(reward[res]) || 1,
       imageUrl: currencyImageUrlMap[res] || "./placeholder.webp",
       title: `${res}=${reward[res]}`
-    });
-  }
-
-  if (reward.currency2) {
-    entries.push({
-      type: "rubies",
-      name: lang["rubies_name"] ?? lang["rubies"] ?? "Rubies",
-      amount: Number(reward.currency2) || 1,
-      imageUrl: "./img/ruby.png",
-      title: `currency2=${reward.currency2}`
     });
   }
 
@@ -405,40 +320,6 @@ function explodeReward(reward) {
     });
   }
 
-  if (reward.constructionItemIDs) {
-    const constructionIds = String(reward.constructionItemIDs)
-      .split(",")
-      .map(x => x.trim())
-      .filter(Boolean);
-    const firstId = constructionIds[0];
-    const constructionImageUrl = getConstructionImageUrl(firstId);
-    entries.push({
-      type: "construction",
-      name: lang["construction_item"] || "Construction Item",
-      amount: 1,
-      imageUrl: constructionImageUrl || "./placeholder.webp",
-      title: `constructionItemIDs=${reward.constructionItemIDs}`,
-      id: firstId || null
-    });
-  }
-
-  if (reward.equipmentIDs) {
-    const equipmentIds = String(reward.equipmentIDs)
-      .split(",")
-      .map(x => x.trim())
-      .filter(Boolean);
-    const firstId = equipmentIds[0];
-    const equipment = firstId ? equipmentsById[String(firstId)] : null;
-    const lookImageUrl = equipment?.skinID ? getLookImageUrl(equipment.skinID) : null;
-    entries.push({
-      type: "equipment",
-      name: lang["equipment_item"] || "Equipment",
-      amount: 1,
-      imageUrl: lookImageUrl || "./img/equipment.png",
-      title: `equipmentIDs=${reward.equipmentIDs}`
-    });
-  }
-
   if (reward.gemIDs) {
     entries.push({
       type: "gem",
@@ -446,18 +327,6 @@ function explodeReward(reward) {
       amount: 1,
       imageUrl: "./placeholder.webp",
       title: `gemIDs=${reward.gemIDs}`
-    });
-  }
-
-  if (reward.decoWodID) {
-    const decoImageUrl = getDecorationImageUrl(reward.decoWodID);
-    entries.push({
-      type: "decoration",
-      name: lang["decoration"] || "Decoration",
-      amount: 1,
-      imageUrl: decoImageUrl,
-      title: `decoWodID=${reward.decoWodID}`,
-      id: String(reward.decoWodID)
     });
   }
 
@@ -827,6 +696,10 @@ async function init() {
         lootBoxes = Array.isArray(data.lootBoxes)
           ? data.lootBoxes
           : [];
+        lootBoxesById = {};
+        lootBoxes.forEach((box) => {
+          lootBoxesById[String(box.lootBoxID)] = box;
+        });
 
         lootBoxKeyTombolas = Array.isArray(data.lootBoxKeyTombolas)
           ? data.lootBoxKeyTombolas
@@ -867,10 +740,35 @@ async function init() {
         });
 
         const skins = Array.isArray(data.worldmapskins) ? data.worldmapskins : [];
-        skinsById = {};
+        lookSkinsById = {};
         skins.forEach(item => {
-          skinsById[String(item.skinID)] = item;
+          lookSkinsById[String(item.skinID)] = item.name || item.Name || "";
         });
+
+        rewardResolver = createRewardResolver(
+          () => ({
+            lang,
+            unitsById,
+            currenciesById,
+            constructionById: constructionItemsById,
+            equipmentById: equipmentsById,
+            decorationsById: buildingsById,
+            lootBoxesById,
+            lookSkinsById,
+            currencyImageUrlMap,
+            unitImageUrlMap,
+            constructionImageUrlMap,
+            decorationImageUrlMap,
+            equipmentImageUrlMap: lookImageUrlMap,
+            lootBoxImageUrlMap
+          }),
+          {
+            includeCurrency2: true,
+            includeLootBox: true,
+            includeUnitLevel: false,
+            rubyImageUrl: "./img/ruby.png"
+          }
+        );
 
         const rewards = Array.isArray(data.rewards) ? data.rewards : [];
         rewardsById = {};
