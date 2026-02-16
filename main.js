@@ -198,9 +198,6 @@ async function renderLatestVideos() {
                     <img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="${title}" loading="lazy">
                     <span class="video-play-icon"><i class="bi bi-play-fill"></i></span>
                 </div>
-                <div class="video-card-content">
-                    <h3 class="video-card-title">${title}</h3>
-                </div>
             </a>
         `).join("");
 
