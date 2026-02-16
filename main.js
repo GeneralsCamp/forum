@@ -104,6 +104,35 @@ function renderNowPanel(list) {
     `).join("");
 }
 
+function isMobileDevice() {
+    return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || "");
+}
+
+function openYouTubeVideoPreferApp(videoId) {
+    const webUrl = `https://www.youtube.com/watch?v=${videoId}`;
+    const ua = navigator.userAgent || "";
+    const isAndroid = /Android/i.test(ua);
+    const isiOS = /iPhone|iPad|iPod/i.test(ua);
+
+    if (isAndroid) {
+        window.location.href = `intent://www.youtube.com/watch?v=${videoId}#Intent;package=com.google.android.youtube;scheme=https;end`;
+        setTimeout(() => {
+            window.open(webUrl, "_blank", "noopener");
+        }, 700);
+        return;
+    }
+
+    if (isiOS) {
+        window.location.href = `vnd.youtube://watch?v=${videoId}`;
+        setTimeout(() => {
+            window.open(webUrl, "_blank", "noopener");
+        }, 700);
+        return;
+    }
+
+    window.open(webUrl, "_blank", "noopener");
+}
+
 async function renderLatestVideos() {
     const container = document.querySelector("#latestVideos .video-grid");
     if (!container) return;
@@ -160,17 +189,35 @@ async function renderLatestVideos() {
         });
 
         const ggeOnly = uniquePairs.filter((item) => /goodgame empire/i.test(item.title));
-        const latestTen = ggeOnly.slice(0, 10);
-        if (!latestTen.length) throw new Error("No videos found");
+        const latestTwenty = ggeOnly.slice(0, 20);
+        if (!latestTwenty.length) throw new Error("No videos found");
 
-        container.innerHTML = latestTen.map(({ id, title }) => `
-            <a class="video-card video-link" href="https://www.youtube.com/watch?v=${id}" target="_blank" rel="noopener">
+        container.innerHTML = latestTwenty.map(({ id, title }) => `
+            <a class="video-card video-link" href="https://www.youtube.com/watch?v=${id}" data-video-id="${id}" target="_blank" rel="noopener">
                 <div class="video-frame-wrap">
                     <img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="${title}" loading="lazy">
                     <span class="video-play-icon"><i class="bi bi-play-fill"></i></span>
                 </div>
+                <div class="video-card-content">
+                    <h3 class="video-card-title">${title}</h3>
+                </div>
             </a>
         `).join("");
+
+        if (!container.dataset.mobileVideoHandlerBound) {
+            container.addEventListener("click", (event) => {
+                const link = event.target.closest(".video-link");
+                if (!link || !container.contains(link)) return;
+                if (!isMobileDevice()) return;
+
+                const videoId = link.dataset.videoId;
+                if (!videoId) return;
+
+                event.preventDefault();
+                openYouTubeVideoPreferApp(videoId);
+            });
+            container.dataset.mobileVideoHandlerBound = "1";
+        }
     } catch (err) {
         container.innerHTML = `
             <div class="video-loading">

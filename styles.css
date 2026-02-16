@@ -263,7 +263,9 @@ p {
     gap: 12px;
     overflow-x: auto;
     overflow-y: hidden;
-    scroll-snap-type: x mandatory;
+    scroll-snap-type: x proximity;
+    scroll-behavior: smooth;
+    overscroll-behavior-x: contain;
     padding-bottom: 4px;
 }
 
@@ -295,9 +297,10 @@ p {
     border: 2px solid white;
     border-radius: 16px;
     overflow: hidden;
-    min-height: 180px;
-    flex: 0 0 clamp(240px, 30vw, 360px);
+    flex: 0 0 clamp(168px, 21vw, 252px);
     scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
 }
 
 .video-link {
@@ -313,7 +316,7 @@ p {
 .video-frame-wrap {
     position: relative;
     width: 100%;
-    padding-top: 56.25%;
+    aspect-ratio: 16 / 9;
     background: #2f2014;
 }
 
@@ -342,6 +345,25 @@ p {
     pointer-events: none;
 }
 
+.video-card-content {
+    background: #1d1e22;
+    padding: 10px 12px;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+}
+
+.video-card-title {
+    margin: 0;
+    color: #fff;
+    font-size: 14px;
+    line-height: 1.2;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .video-loading {
     color: white;
     font-weight: 700;
@@ -350,7 +372,7 @@ p {
 
 @media only screen and (max-width: 700px) {
     .video-card {
-        flex-basis: min(86vw, 360px);
+        flex-basis: min(60vw, 252px);
     }
 }
 
@@ -360,7 +382,9 @@ p {
     gap: 12px;
     overflow-x: auto;
     overflow-y: hidden;
-    scroll-snap-type: x mandatory;
+    scroll-snap-type: x proximity;
+    scroll-behavior: smooth;
+    overscroll-behavior-x: contain;
     padding-bottom: 4px;
 }
 
