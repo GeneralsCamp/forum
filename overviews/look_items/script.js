@@ -3,12 +3,15 @@ import { createLoader } from "../shared/LoadingService.mjs";
 import { coreInit } from "../shared/CoreInit.mjs";
 import { initImageModal } from "../shared/ModalService.mjs";
 import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageService.mjs";
+import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
+import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
 
 // --- GLOBAL VARIABLES ---
 let lang = {};
 let ownLang = {};
 let allItems = [];
 let imageUrlMap = {};
+const composedLookImageCache = new Map();
 
 // --- FETCH FUNCTIONS ---
 const loader = createLoader();
@@ -125,12 +128,24 @@ function createLookCard(item, showFilter = null) {
     const mapObjects = urls.mapObjects || {};
     const movements = urls.movements || {};
 
-    const imgOrPlaceholder = (url) =>
-        url
-            ? `<img src="${url}" alt="${name}" class="img-fluid">`
-            : `<div class="no-image-text text-muted py-4">
+    const imgOrPlaceholder = (url) => {
+        if (!url) {
+            return `<div class="no-image-text text-muted py-4">
                 ${UI_LANG.no_image}
                </div>`;
+        }
+
+        const isRemoteItemAsset =
+            url.startsWith("https://empire-html5.goodgamestudios.com/default/assets/itemassets/") &&
+            /\.(webp|png)$/i.test(url);
+
+        if (!isRemoteItemAsset) {
+            return `<img src="${url}" alt="${name}" class="img-fluid">`;
+        }
+
+        const companion = deriveCompanionUrls(url);
+        return `<img src="${url}" alt="${name}" class="img-fluid" data-compose-asset="1" data-image-url="${companion.imageUrl}" data-json-url="${companion.jsonUrl}" data-js-url="${companion.jsUrl}">`;
+    };
 
     let cardsHtml = "";
 
@@ -269,6 +284,11 @@ function applyFiltersAndSorting() {
             .map(item =>
                 createLookCard(item, showFilter))
             .join("");
+
+    void hydrateComposedImages({
+        root: container,
+        cache: composedLookImageCache
+    });
 }
 
 function setupEventListeners() {

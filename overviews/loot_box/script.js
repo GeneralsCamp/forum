@@ -3,6 +3,8 @@ import { createLoader } from "../shared/LoadingService.mjs";
 import { coreInit } from "../shared/CoreInit.mjs";
 import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageService.mjs";
 import { createRewardResolver } from "../shared/RewardResolver.mjs";
+import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
+import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
 
 // --- GLOBAL VARIABLES ---
 let lang = {};
@@ -27,6 +29,7 @@ let constructionImageUrlMap = {};
 let lookImageUrlMap = {};
 let equipmentUniqueImageUrlMap = {};
 let uniqueGemImageUrlMap = {};
+const composedEquipmentImageCache = new Map();
 
 const loader = createLoader();
 let currentLanguage = getInitialLanguage();
@@ -279,6 +282,11 @@ function openTombolaModal({ title, tombolaId, keyType = null }) {
   });
 
   new bootstrap.Modal(modalEl).show();
+  void hydrateComposedImages({
+    root: container,
+    selector: 'img[data-compose-equipment="1"]:not([data-compose-ready])',
+    cache: composedEquipmentImageCache
+  });
 }
 
 function openLootBoxModal(box, keyType = null) {
@@ -315,9 +323,20 @@ function explodeReward(reward) {
       imageUrl = rewardResolver.getLootBoxImageUrl(entry);
     }
 
+    const isRemoteItemAsset = typeof imageUrl === "string" &&
+      imageUrl.startsWith("https://empire-html5.goodgamestudios.com/default/assets/itemassets/") &&
+      /\.(webp|png)$/i.test(imageUrl);
+    const shouldCompose = (
+      entry.type === "equipment" ||
+      entry.type === "gem" ||
+      entry.type === "construction"
+    ) && isRemoteItemAsset;
+    const composedSource = shouldCompose ? deriveCompanionUrls(imageUrl) : null;
+
     entries.push({
       ...entry,
       imageUrl,
+      composedSource,
       title: entry.id ? `${entry.type}=${entry.id}` : entry.type
     });
   });
@@ -377,11 +396,16 @@ function explodeReward(reward) {
   }
 
   if (reward.gemIDs) {
+    const gemImageUrl = getGemImageUrlByRewardValue(reward.gemIDs) || "./placeholder.webp";
+    const isComposedGem = typeof gemImageUrl === "string" &&
+      gemImageUrl.startsWith("https://empire-html5.goodgamestudios.com/default/assets/itemassets/") &&
+      /\.(webp|png)$/i.test(gemImageUrl);
     entries.push({
       type: "gem",
       name: lang["gem_item"] || "Gem",
       amount: 1,
-      imageUrl: getGemImageUrlByRewardValue(reward.gemIDs) || "./placeholder.webp",
+      imageUrl: gemImageUrl,
+      composedSource: isComposedGem ? deriveCompanionUrls(gemImageUrl) : null,
       title: `gemIDs=${reward.gemIDs}`
     });
   }
@@ -417,9 +441,12 @@ function createEntryCard({ rewards, chance, rarity }) {
   const rewardCells = rewards
     .flatMap(r => explodeReward(r))
     .map(e => {
+      const composedAttrs = e.composedSource
+        ? `data-compose-equipment="1" data-image-url="${e.composedSource.imageUrl}" data-json-url="${e.composedSource.jsonUrl}" data-js-url="${e.composedSource.jsUrl}"`
+        : "";
       const core = `
         <div class="loot-reward" title="${e.title ?? ""}">
-          ${e.imageUrl ? `<img src="${e.imageUrl}">` : ""}
+          ${e.imageUrl ? `<img src="${e.imageUrl}" ${composedAttrs}>` : ""}
           <div class="loot-amount">
             <span>${e.amount}</span>
           </div>

@@ -2,6 +2,8 @@ import { initAutoHeight } from "../shared/ResizeService.mjs";
 import { createLoader } from "../shared/LoadingService.mjs";
 import { coreInit } from "../shared/CoreInit.mjs";
 import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageService.mjs";
+import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
+import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
 import {
     createRewardResolver,
     normalizeName as sharedNormalizeName,
@@ -32,6 +34,7 @@ let collectableCurrencyImageUrlMap = {};
 let ownLang = {};
 let UI_LANG = {};
 let rewardResolver = null;
+const composedGachaImageCache = new Map();
 const loader = createLoader();
 let currentLanguage = getInitialLanguage();
 
@@ -533,8 +536,17 @@ function renderRewards(rewards, label) {
             imageUrl = getCurrencyImageUrl(reward);
             if (imageUrl) imageClass += " card-image-currency";
         }
+        const shouldCompose =
+            (reward.type === "decoration" || reward.type === "construction" || reward.type === "equipment") &&
+            typeof imageUrl === "string" &&
+            imageUrl.startsWith("https://empire-html5.goodgamestudios.com/default/assets/itemassets/") &&
+            /\.(webp|png)$/i.test(imageUrl);
+        const composeSource = shouldCompose ? deriveCompanionUrls(imageUrl) : null;
+        const composeAttrs = composeSource
+            ? ` data-compose-asset="1" data-image-url="${composeSource.imageUrl}" data-json-url="${composeSource.jsonUrl}" data-js-url="${composeSource.jsUrl}"`
+            : "";
         const imageInner = imageUrl
-            ? `<div class="image-wrapper"><img src="${imageUrl}" class="${imageClass}" loading="lazy" alt=""></div>`
+            ? `<div class="image-wrapper"><img src="${imageUrl}" class="${imageClass}" loading="lazy" alt=""${composeAttrs}></div>`
             : `<div class="reward-image-placeholder">img</div>`;
         let imageBlock = imageInner;
         if (idText !== "-" && reward.type === "decoration") {
@@ -568,6 +580,11 @@ function renderRewards(rewards, label) {
         </div>
       </div>`;
         container.appendChild(col);
+    });
+
+    void hydrateComposedImages({
+        root: container,
+        cache: composedGachaImageCache
     });
 }
 

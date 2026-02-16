@@ -4,6 +4,8 @@ import { createLoader } from "../shared/LoadingService.mjs";
 import { coreInit } from "../shared/CoreInit.mjs";
 import { initImageModal } from "../shared/ModalService.mjs";
 import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageService.mjs";
+import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
+import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
 
 // --- GLOBAL VARIABLES ---
 const loader = createLoader();
@@ -19,6 +21,7 @@ let allDecorations = [];
 let imageUrlMap = {};
 let specialFilter = null;
 let newWodIDsSet = new Set();
+const composedDecorationImageCache = new Map();
 
 // --- FETCH FUNCTIONS ---
 async function compareWithOldVersion() {
@@ -373,6 +376,12 @@ function createCard(item, imageUrlMap = {}) {
     imageUrlMap[cleanedType]?.placedUrl
     || imageUrlMap[cleanedType]?.iconUrl
     || "assets/img/unknown.webp";
+  const composeSource = imageUrl.startsWith("https://empire-html5.goodgamestudios.com/default/assets/itemassets/")
+    ? deriveCompanionUrls(imageUrl)
+    : null;
+  const composeAttrs = composeSource
+    ? `data-compose-asset="1" data-image-url="${composeSource.imageUrl}" data-json-url="${composeSource.jsonUrl}" data-js-url="${composeSource.jsUrl}"`
+    : "";
 
   const safeName = name.replace(/'/g, "\\'");
 
@@ -386,7 +395,7 @@ function createCard(item, imageUrlMap = {}) {
           <div class="row g-0">
             <div class="col-4 card-cell border-end d-flex justify-content-center align-items-center position-relative" style="cursor:pointer;">
               <div class="image-wrapper">
-                <img src="${imageUrl}" class="card-image w-100" loading="lazy" data-modal-src="${imageUrl}" data-modal-caption="${safeName}">
+                <img src="${imageUrl}" class="card-image w-100" loading="lazy" data-modal-src="${imageUrl}" data-modal-caption="${safeName}" ${composeAttrs}>
               </div>
               <span class="position-absolute bottom-0 end-0 p-1 rounded-circle m-1">
                  <i class="bi bi-zoom-in"></i>
@@ -446,6 +455,14 @@ function renderDecorations(decos) {
     }, 50);
 
     container.appendChild(card);
+  });
+
+  void hydrateComposedImages({
+    root: container,
+    cache: composedDecorationImageCache,
+    onApplied: (img, dataUrl) => {
+      img.dataset.modalSrc = dataUrl;
+    }
   });
 }
 

@@ -4,6 +4,8 @@ import { createLoader } from "../shared/LoadingService.mjs";
 import { coreInit } from "../shared/CoreInit.mjs";
 import { initImageModal } from "../shared/ModalService.mjs";
 import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageService.mjs";
+import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
+import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
 
 // --- GLOBAL VARIABLES ---
 let lang = {};
@@ -16,6 +18,7 @@ let showOnlyNew = false;
 let effectDefinitions = {};
 let effectCapsMap = {};
 const percentEffectIDs = new Set();
+const composedConstructionImageCache = new Map();
 const loader = createLoader();
 let currentLanguage = getInitialLanguage();
 
@@ -527,6 +530,13 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
         const normalizedName = normalizeName(item.name);
         const urls = imageUrlMap[normalizedName] || {};
         const placedUrl = urls.placedUrl || null;
+        const shouldCompose = typeof placedUrl === "string" &&
+            placedUrl.startsWith("https://empire-html5.goodgamestudios.com/default/assets/itemassets/") &&
+            /\.(webp|png)$/i.test(placedUrl);
+        const composeSource = shouldCompose ? deriveCompanionUrls(placedUrl) : null;
+        const composeAttrs = composeSource
+            ? `data-compose-asset="1" data-image-url="${composeSource.imageUrl}" data-json-url="${composeSource.jsonUrl}" data-js-url="${composeSource.jsUrl}"`
+            : "";
 
         const safeName = name.replace(/'/g, "\\'");
 
@@ -586,7 +596,8 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
                  data-modal-caption="${safeName}" 
                  alt="${name}" 
                  class="card-image w-100" 
-                 loading="lazy">
+                 loading="lazy"
+                 ${composeAttrs}>
           </div>
           <span class="position-absolute bottom-0 end-0 p-1 rounded-circle m-1">
             <i class="bi bi-zoom-in"></i>
@@ -658,6 +669,13 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
 
         function updateView() {
             boxContent.innerHTML = renderLevel(currentLevelIndex);
+            void hydrateComposedImages({
+                root: boxContent,
+                cache: composedConstructionImageCache,
+                onApplied: (img, dataUrl) => {
+                    img.dataset.modalSrc = dataUrl;
+                }
+            });
             bindEvents();
         }
 
@@ -711,6 +729,14 @@ function renderConstructionItems(items) {
         }, 50);
 
         container.appendChild(card);
+    });
+
+    void hydrateComposedImages({
+        root: container,
+        cache: composedConstructionImageCache,
+        onApplied: (img, dataUrl) => {
+            img.dataset.modalSrc = dataUrl;
+        }
     });
 }
 
