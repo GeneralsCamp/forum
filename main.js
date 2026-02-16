@@ -109,37 +109,59 @@ async function renderLatestVideos() {
     if (!container) return;
 
     const proxy = "https://my-proxy-8u49.onrender.com/";
+    const fixedChannelId = "UCzHQ9zuwxhmJ2xmmANwrZfw";
     const channelVideosUrl = "https://www.youtube.com/@GeneralsCamp/videos";
 
     try {
-        const res = await fetch(proxy + channelVideosUrl, {
+        let pairs = [];
+
+        const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${fixedChannelId}`;
+        const feedRes = await fetch(proxy + feedUrl, {
             headers: { "x-requested-with": "XMLHttpRequest" }
         });
-        if (!res.ok) throw new Error(`Failed to load channel page (${res.status})`);
-
-        const html = await res.text();
-        const pairs = [];
-        const regex = /"videoId":"([A-Za-z0-9_-]{11})","thumbnail":[\s\S]{0,1400}?"title":\{"runs":\[\{"text":"([^"]+)"/g;
-        let match = null;
-        while ((match = regex.exec(html)) !== null) {
-            const id = match[1];
-            const title = (match[2] || "").replace(/\\u0026/g, "&");
-            if (!id || !title) continue;
-            pairs.push({ id, title });
-            if (pairs.length >= 80) break;
+        if (feedRes.ok) {
+            const xmlText = await feedRes.text();
+            const xml = new DOMParser().parseFromString(xmlText, "application/xml");
+            const entries = Array.from(xml.querySelectorAll("entry"));
+            pairs = entries.map((entry) => {
+                const id =
+                    entry.querySelector("yt\\:videoId")?.textContent?.trim() ||
+                    entry.querySelector("videoId")?.textContent?.trim() ||
+                    "";
+                const title = entry.querySelector("title")?.textContent?.trim() || "";
+                return { id, title };
+            }).filter((x) => x.id && x.title);
         }
 
-        const filtered = [];
+        if (!pairs.length) {
+            const res = await fetch(proxy + channelVideosUrl, {
+                headers: { "x-requested-with": "XMLHttpRequest" }
+            });
+            if (!res.ok) throw new Error(`Failed to load channel page (${res.status})`);
+
+            const html = await res.text();
+            const regex = /"videoId":"([A-Za-z0-9_-]{11})","thumbnail":[\s\S]{0,2200}?"title":\{"runs":\[\{"text":"([^"]+)"/g;
+            let match = null;
+            while ((match = regex.exec(html)) !== null) {
+                const id = match[1];
+                const title = (match[2] || "").replace(/\\u0026/g, "&");
+                if (!id || !title) continue;
+                pairs.push({ id, title });
+                if (pairs.length >= 120) break;
+            }
+        }
+
+        const uniquePairs = [];
         const seenIds = new Set();
         pairs.forEach((item) => {
             if (seenIds.has(item.id)) return;
             seenIds.add(item.id);
-            if (!/goodgame empire/i.test(item.title)) return;
-            filtered.push(item);
+            uniquePairs.push(item);
         });
 
-        const latestTen = filtered.slice(0, 10);
-        if (!latestTen.length) throw new Error('No "Goodgame Empire" videos found');
+        const ggeOnly = uniquePairs.filter((item) => /goodgame empire/i.test(item.title));
+        const latestTen = ggeOnly.slice(0, 10);
+        if (!latestTen.length) throw new Error("No videos found");
 
         container.innerHTML = latestTen.map(({ id, title }) => `
             <a class="video-card video-link" href="https://www.youtube.com/watch?v=${id}" target="_blank" rel="noopener">
