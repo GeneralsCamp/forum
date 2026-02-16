@@ -229,3 +229,8 @@
 .loot-rewards {
   overflow-x: auto;
 }
+
+.offering-card .card-image,
+.offering-image {
+  max-height: 80px;
+}
