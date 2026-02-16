@@ -52,8 +52,65 @@ function renderCategory(list, targetId) {
     });
 }
 
+async function renderLatestVideos() {
+    const container = document.querySelector("#latestVideos .video-grid");
+    if (!container) return;
+
+    const proxy = "https://my-proxy-8u49.onrender.com/";
+    const channelVideosUrl = "https://www.youtube.com/@GeneralsCamp/videos";
+
+    try {
+        const res = await fetch(proxy + channelVideosUrl, {
+            headers: { "x-requested-with": "XMLHttpRequest" }
+        });
+        if (!res.ok) throw new Error(`Failed to load channel page (${res.status})`);
+
+        const html = await res.text();
+        const pairs = [];
+        // Keep id-title matching local to each video block to avoid cross-matching wrong titles.
+        const regex = /"videoId":"([A-Za-z0-9_-]{11})","thumbnail":[\s\S]{0,1400}?"title":\{"runs":\[\{"text":"([^"]+)"/g;
+        let match = null;
+        while ((match = regex.exec(html)) !== null) {
+            const id = match[1];
+            const title = (match[2] || "").replace(/\\u0026/g, "&");
+            if (!id || !title) continue;
+            pairs.push({ id, title });
+            if (pairs.length >= 80) break;
+        }
+
+        const filtered = [];
+        const seenIds = new Set();
+        pairs.forEach((item) => {
+            if (seenIds.has(item.id)) return;
+            seenIds.add(item.id);
+            if (!/goodgame empire/i.test(item.title)) return;
+            filtered.push(item);
+        });
+
+        const top3 = filtered.slice(0, 3);
+        if (!top3.length) throw new Error('No "Goodgame Empire" videos found');
+
+        container.innerHTML = top3.map(({ id, title }) => `
+            <a class="video-card video-link" href="https://www.youtube.com/watch?v=${id}" target="_blank" rel="noopener">
+                <div class="video-frame-wrap">
+                    <img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="${title}" loading="lazy">
+                    <span class="video-play-icon"><i class="bi bi-play-fill"></i></span>
+                </div>
+            </a>
+        `).join("");
+    } catch (err) {
+        container.innerHTML = `
+            <div class="video-loading">
+                Could not load videos right now.
+            </div>
+        `;
+        console.error(err);
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     renderCategory(categories.overviews, "overviews");
     renderCategory(categories.calculators, "calculators");
     renderCategory(categories.simulators, "simulators");
+    renderLatestVideos();
 });
