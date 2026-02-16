@@ -1,4 +1,4 @@
-import { initAutoHeight } from "../shared/ResizeService.mjs";
+﻿import { initAutoHeight } from "../shared/ResizeService.mjs";
 import { createLoader } from "../shared/LoadingService.mjs";
 import { coreInit } from "../shared/CoreInit.mjs";
 import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageService.mjs";
@@ -95,8 +95,7 @@ function applyOwnLang() {
 
     const pick = ({ ownKey, fallback, langKeys = [] }) =>
         getFromLang(langKeys) || L[ownKey] || fallback;
-    const isHu = String(currentLanguage || "").toLowerCase() === "hu";
-
+    
     UI_LANG = {
         amount: pick({ ownKey: "amount", fallback: "Amount", langKeys: ["amount"] }),
         requirement: pick({ ownKey: "requirement", fallback: "Requirement", langKeys: ["generic_points"] }),
@@ -104,11 +103,25 @@ function applyOwnLang() {
         mode: pick({ ownKey: "mode", fallback: "Mode", langKeys: ["gameMode_placeholder"] }),
         individual: pick({ ownKey: "individual", fallback: "Individual", langKeys: ["individual"] }),
         alliance: pick({ ownKey: "alliance", fallback: "Alliance", langKeys: ["alliance_colon"] }),
+        alliance_rewards: pick({
+            ownKey: "alliance_rewards",
+            fallback: "Alliance rewards",
+            langKeys: ["dialog_pointsEvent_rewardsList_allianceRewards_tooltip"]
+        }),
         level: pick({ ownKey: "level", fallback: "Level", langKeys: ["levelcount", "levelx_colon"] }),
         difficulty: pick({ ownKey: "difficulty", fallback: "Difficulty", langKeys: ["dialog_difficultyScaling_selectedDifficultyLevel_tooltip"] }),
-        view: pick({ ownKey: "view", fallback: isHu ? "Nézet" : "View", langKeys: [] }),
-        view_detailed: pick({ ownKey: "view_detailed", fallback: isHu ? "Részletes" : "Detailed", langKeys: [] }),
-        view_summary: pick({ ownKey: "view_summary", fallback: isHu ? "Összegzett" : "Summarized", langKeys: [] }),
+        view: pick({ ownKey: "view", fallback: "View", langKeys: [] }),
+        view_detailed: pick({ ownKey: "view_detailed", fallback: "Detailed", langKeys: [] }),
+        view_summary_activity: pick({
+            ownKey: "view_summary_activity",
+            fallback: "Summarized activity",
+            langKeys: []
+        }),
+        view_summary_all: pick({
+            ownKey: "view_summary_all",
+            fallback: "Summarized all",
+            langKeys: []
+        }),
 
         no_rewards: pick({ ownKey: "no_rewards", fallback: "No rewards for this selection.", langKeys: [] }),
         no_events: pick({ ownKey: "no_events", fallback: "No events found", langKeys: [] }),
@@ -231,6 +244,15 @@ function resolveRewardName(reward) {
     return rewardResolver ? rewardResolver.resolveRewardName(reward) : null;
 }
 
+function getBerimondFactionLabel(subType) {
+    const isRed = String(subType) === "1";
+    const langKey = isRed
+        ? "dialog_berimondInvasion_redFaction_name"
+        : "dialog_berimondInvasion_blueFaction_name";
+    const fallback = isRed ? "The House of Gerbrandt" : "The House of Ursidae";
+    return lang[langKey] || lang[langKey.toLowerCase()] || fallback;
+}
+
 function resolveRewardId(reward, fallbackId = null) {
     return rewardResolver ? rewardResolver.resolveRewardId(reward, fallbackId) : fallbackId;
 }
@@ -285,26 +307,6 @@ function getLootBoxImageUrl(reward) {
 }
 
 // --- UI RENDERING ---
-function copyTextToClipboard(text) {
-    if (!text) return;
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).catch(() => { });
-        return;
-    }
-    const temp = document.createElement("textarea");
-    temp.value = text;
-    temp.style.position = "fixed";
-    temp.style.top = "-9999px";
-    document.body.appendChild(temp);
-    temp.focus();
-    temp.select();
-    try {
-        document.execCommand("copy");
-    } catch (err) {
-        console.warn("Copy failed:", err);
-    }
-    document.body.removeChild(temp);
-}
 
 function getEventLabel(eventId, fallback = "Event") {
     const events = getArray(itemsData, ["events"]);
@@ -390,8 +392,8 @@ function getLevelLabel(eventId, leagueTypeId) {
         .sort((a, b) => (a.max - a.min) - (b.max - b.min));
 
     const best = matches[0];
-    if (!best) return `${UI_LANG.level} ${leagueTypeId}`;
-    return `${UI_LANG.level} ${leagueTypeId} (Lv ${best.min}-${best.max})`;
+    if (!best) return `Lv ${leagueTypeId}`;
+    return `Lv ${best.min}-${best.max}`;
 }
 
 function getEntriesFiltered({ eventId, mode, levelId = null }) {
@@ -449,8 +451,82 @@ function hasDifficultyFilter(eventId) {
 }
 
 function shouldRenderTopRewards(eventId) {
-    // Only Berimond should show TOP rewards.
-    return String(eventId) === "3";
+    return true;
+}
+
+function expandRewardIdTokens(rewardIdTokens) {
+    const expanded = [];
+    (rewardIdTokens || []).forEach(token => {
+        parseIdAmountToken(token).forEach(parsed => {
+            if (parsed && parsed.id !== null && parsed.id !== undefined) {
+                expanded.push(String(parsed.id));
+            }
+        });
+    });
+    return expanded;
+}
+
+function isTopRewardObject(reward) {
+    if (!reward) return false;
+    const c1 = String(reward.comment1 || "").toLowerCase();
+    const c2 = String(reward.comment2 || "").toLowerCase();
+    return c1.includes("top") || c2.includes("top");
+}
+
+function getTopRewardPairsForEntry({ entry, eventId, baseRewardIds, baseNeededPoints, scalingRewards, topValues }) {
+    if (!shouldRenderTopRewards(eventId)) return [];
+
+    const topTiers = [...(topValues || [])].sort((a, b) => b - a);
+    topTiers.push(1);
+
+    if (String(eventId) === "3") {
+        const rankingCount = Math.max(0, (baseRewardIds || []).length - (baseNeededPoints || []).length);
+        if (rankingCount <= 0) return [];
+
+        const tiers = [...(topValues || [])].sort((a, b) => a - b);
+        while (tiers.length < rankingCount) tiers.unshift(1);
+        if (tiers.length > rankingCount) tiers.splice(0, tiers.length - rankingCount);
+
+        const rankingRewardIds = (baseRewardIds || []).slice(-rankingCount);
+        return tiers
+            .map((tier, index) => ({
+                tier,
+                rewardId: rankingRewardIds[rankingRewardIds.length - 1 - index]
+            }))
+            .sort((a, b) => b.tier - a.tier)
+            .filter(pair => pair.rewardId);
+    }
+
+    const collectTopIds = (candidates) => {
+        const topIds = [];
+        for (let i = candidates.length - 1; i >= 0; i--) {
+            const rewardId = candidates[i];
+            const reward = rewardsById[String(rewardId)];
+            if (!isTopRewardObject(reward)) continue;
+            if (!topIds.includes(String(rewardId))) {
+                topIds.unshift(String(rewardId));
+            }
+            if (topIds.length >= topTiers.length) break;
+        }
+        return topIds;
+    };
+
+    let topRewardIds = collectTopIds(expandRewardIdTokens(scalingRewards || []));
+    if (topRewardIds.length === 0) {
+        topRewardIds = collectTopIds(expandRewardIdTokens(baseRewardIds || []));
+    }
+
+    if (topRewardIds.length === 0) return [];
+
+    while (topTiers.length < topRewardIds.length) topTiers.push(1);
+    if (topTiers.length > topRewardIds.length) {
+        topTiers.splice(topRewardIds.length);
+    }
+
+    return topRewardIds.map((rewardId, index) => ({
+        tier: topTiers[index],
+        rewardId
+    }));
 }
 
 function updateSelectorVisibility() {
@@ -523,10 +599,15 @@ function setupSelectors() {
         detailedOption.textContent = UI_LANG.view_detailed;
         viewSelect.appendChild(detailedOption);
 
-        const summaryOption = document.createElement("option");
-        summaryOption.value = "summary";
-        summaryOption.textContent = UI_LANG.view_summary;
-        viewSelect.appendChild(summaryOption);
+        const summaryActivityOption = document.createElement("option");
+        summaryActivityOption.value = "summary_activity";
+        summaryActivityOption.textContent = UI_LANG.view_summary_activity;
+        viewSelect.appendChild(summaryActivityOption);
+
+        const summaryAllOption = document.createElement("option");
+        summaryAllOption.value = "summary_all";
+        summaryAllOption.textContent = UI_LANG.view_summary_all;
+        viewSelect.appendChild(summaryAllOption);
 
         viewSelect.value = "detailed";
         viewSelect.addEventListener("change", () => {
@@ -545,10 +626,13 @@ function setupSelectors() {
     renderRewardsForSelection();
 }
 
-function summarizeRewards(rewards) {
+function summarizeRewards(rewards, includeTopRewards = true) {
+    const sourceRewards = includeTopRewards
+        ? rewards
+        : rewards.filter(reward => !reward.isTopReward);
     const map = new Map();
 
-    rewards.forEach(reward => {
+    sourceRewards.forEach(reward => {
         const key = [
             String(reward.type || ""),
             String(reward.id ?? ""),
@@ -598,13 +682,13 @@ function updateModeOptions() {
         if (hasBlue) {
             const blueOption = document.createElement("option");
             blueOption.value = "berimond_blue";
-            blueOption.textContent = "Berimond Blue";
+            blueOption.textContent = getBerimondFactionLabel("0");
             modeSelect.appendChild(blueOption);
         }
         if (hasRed) {
             const redOption = document.createElement("option");
             redOption.value = "berimond_red";
-            redOption.textContent = "Berimond Red";
+            redOption.textContent = getBerimondFactionLabel("1");
             modeSelect.appendChild(redOption);
         }
         if (!hasBlue && !hasRed) {
@@ -709,7 +793,7 @@ function updateDifficultyOptions() {
         difficultySelect.innerHTML = "";
         const option = document.createElement("option");
         option.value = fixed ? fixed.difficultyId : "alliance_fixed";
-        option.textContent = fixed ? `${UI_LANG.alliance} (${fixed.label})` : UI_LANG.alliance;
+        option.textContent = UI_LANG.alliance_rewards || UI_LANG.alliance;
         difficultySelect.appendChild(option);
         difficultySelect.value = option.value;
         difficultySelect.disabled = true;
@@ -852,7 +936,9 @@ function renderRewardsForSelection() {
                 const pointsValue = Number(neededPoints[i]);
                 const pointsText = Number.isNaN(pointsValue) ? String(neededPoints[i]) : formatNumber(pointsValue);
                 const requirementText = pointsText;
-                const modeText = scenario.difficultyId ? (difficultyLabelById[String(scenario.difficultyId)] || String(scenario.difficultyId)) : "-";
+                const modeText = mode === "alliance"
+                    ? UI_LANG.alliance_rewards
+                    : (scenario.difficultyId ? (difficultyLabelById[String(scenario.difficultyId)] || String(scenario.difficultyId)) : "-");
                 const entriesToPush = resolveRewardEntries(reward);
 
                 if (entriesToPush.length > 0) {
@@ -864,7 +950,8 @@ function renderRewardsForSelection() {
                             modeText,
                             id: it.id,
                             type: it.type || null,
-                            addKeyName: it.addKeyName || null
+                            addKeyName: it.addKeyName || null,
+                            isTopReward: false
                         });
                     });
                 } else {
@@ -875,28 +962,22 @@ function renderRewardsForSelection() {
                         modeText,
                         id: resolveRewardIdStrict(reward),
                         type: resolveRewardType(reward),
-                        addKeyName: getAddKeyName(reward)
+                        addKeyName: getAddKeyName(reward),
+                        isTopReward: false
                     });
                 }
             }
         });
 
-        // TOP rewards are tied to the selected level bracket, not to difficulty scaling.
-        const rankingCount = shouldRenderTopRewards(eventId)
-            ? Math.max(0, baseRewardIds.length - baseNeededPoints.length)
-            : 0;
-        if (rankingCount > 0) {
-            const tiers = [...topValues];
-            while (tiers.length < rankingCount) tiers.unshift(1);
-            if (tiers.length > rankingCount) {
-                tiers.splice(0, tiers.length - rankingCount);
-            }
-            const rankingRewardIds = baseRewardIds.slice(-rankingCount);
-            const rankingPairs = tiers.map((tier, index) => ({
-                tier,
-                rewardId: rankingRewardIds[rankingRewardIds.length - 1 - index]
-            })).sort((a, b) => b.tier - a.tier);
-
+        const rankingPairs = getTopRewardPairsForEntry({
+            entry,
+            eventId,
+            baseRewardIds,
+            baseNeededPoints,
+            scalingRewards,
+            topValues
+        });
+        if (rankingPairs.length > 0) {
             rankingPairs.forEach(pair => {
                 const reward = rewardsById[String(pair.rewardId)];
                 const requirementText = `${UI_LANG.top}${pair.tier}`;
@@ -912,7 +993,8 @@ function renderRewardsForSelection() {
                             modeText,
                             id: it.id,
                             type: it.type || null,
-                            addKeyName: it.addKeyName || null
+                            addKeyName: it.addKeyName || null,
+                            isTopReward: true
                         });
                     });
                 } else {
@@ -923,7 +1005,8 @@ function renderRewardsForSelection() {
                         modeText,
                         id: resolveRewardIdStrict(reward),
                         type: resolveRewardType(reward),
-                        addKeyName: getAddKeyName(reward)
+                        addKeyName: getAddKeyName(reward),
+                        isTopReward: true
                     });
                 }
             });
@@ -931,7 +1014,12 @@ function renderRewardsForSelection() {
     });
 
     const selectedView = viewSelect?.value || "detailed";
-    const outputRewards = selectedView === "summary" ? summarizeRewards(rewards) : rewards;
+    let outputRewards = rewards;
+    if (selectedView === "summary_activity") {
+        outputRewards = summarizeRewards(rewards, false);
+    } else if (selectedView === "summary_all") {
+        outputRewards = summarizeRewards(rewards, true);
+    }
 
     renderRewards(outputRewards, UI_LANG.requirement);
 }
@@ -1030,14 +1118,6 @@ initAutoHeight({
     contentSelector: "#content",
     subtractSelectors: [".note", ".page-title"],
     extraOffset: 18
-});
-
-document.addEventListener("click", event => {
-    const link = event.target.closest(".id-link");
-    if (!link) return;
-    const id = link.getAttribute("data-id") || link.textContent.trim();
-    if (!id || id === "-") return;
-    copyTextToClipboard(id);
 });
 
 async function init() {

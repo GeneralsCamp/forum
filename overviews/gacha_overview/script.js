@@ -235,26 +235,6 @@ function getCurrencyImageUrl(reward) {
 }
 
 // --- UI RENDERING ---
-function copyTextToClipboard(text) {
-    if (!text) return;
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).catch(() => { });
-        return;
-    }
-    const temp = document.createElement("textarea");
-    temp.value = text;
-    temp.style.position = "fixed";
-    temp.style.top = "-9999px";
-    document.body.appendChild(temp);
-    temp.focus();
-    temp.select();
-    try {
-        document.execCommand("copy");
-    } catch (err) {
-        console.warn("Copy failed:", err);
-    }
-    document.body.removeChild(temp);
-}
 
 function getEventLabel(event) {
     if (!event) return "Unknown event";
@@ -670,14 +650,6 @@ initAutoHeight({
     contentSelector: "#content",
     subtractSelectors: [".note", ".page-title"],
     extraOffset: 18
-});
-
-document.addEventListener("click", event => {
-    const link = event.target.closest(".id-link");
-    if (!link) return;
-    const id = link.getAttribute("data-id") || link.textContent.trim();
-    if (!id || id === "-") return;
-    copyTextToClipboard(id);
 });
 
 async function init() {

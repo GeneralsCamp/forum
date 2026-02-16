@@ -15,7 +15,9 @@
       "no_difficulty_for_event": "No difficulty for this event",
       "top": "TOP",
       "view_detailed": "Detailed",
-      "view_summary": "Summarized"
+      "view_summary": "Summarized",
+      "view_summary_activity": "Summarized activity",
+      "view_summary_all": "Summarized all"
     }
   },
   "ar": {
@@ -33,8 +35,10 @@
       "no_difficulties": "لا توجد صعوبات",
       "no_difficulty_for_event": "لا توجد صعوبة لهذا الحدث",
       "top": "الأعلى",
-      "view_detailed": "Mofassal",
-      "view_summary": "Molakhkhas"
+      "view_detailed": "مفصل",
+      "view_summary": "ملخص",
+      "view_summary_activity": "ملخص النشاط",
+      "view_summary_all": "ملخص الكل"
     }
   },
   "es": {
@@ -53,7 +57,9 @@
       "no_difficulty_for_event": "No hay dificultad para este evento",
       "top": "TOP",
       "view_detailed": "Detallado",
-      "view_summary": "Resumido"
+      "view_summary": "Resumido",
+      "view_summary_activity": "Resumen de actividad",
+      "view_summary_all": "Resumen total"
     }
   },
   "bg": {
@@ -71,8 +77,10 @@
       "no_difficulties": "Няма трудности",
       "no_difficulty_for_event": "Няма трудност за това събитие",
       "top": "ТОП",
-      "view_detailed": "Podrobno",
-      "view_summary": "Obobshteno"
+      "view_detailed": "Подробно",
+      "view_summary": "Обобщено",
+      "view_summary_activity": "Обобщена активност",
+      "view_summary_all": "Обобщено всичко"
     }
   },
   "pt": {
@@ -91,7 +99,9 @@
       "no_difficulty_for_event": "Sem dificuldade para este evento",
       "top": "TOP",
       "view_detailed": "Detalhado",
-      "view_summary": "Resumido"
+      "view_summary": "Resumido",
+      "view_summary_activity": "Resumo de atividade",
+      "view_summary_all": "Resumo de tudo"
     }
   },
   "cs": {
@@ -109,8 +119,10 @@
       "no_difficulties": "Žádné obtížnosti",
       "no_difficulty_for_event": "Pro tuto událost není obtížnost",
       "top": "TOP",
-      "view_detailed": "Podrobne",
-      "view_summary": "Souhrnne"
+      "view_detailed": "Podrobně",
+      "view_summary": "Souhrnně",
+      "view_summary_activity": "Souhrn aktivit",
+      "view_summary_all": "Souhrn všeho"
     }
   },
   "de": {
@@ -129,7 +141,9 @@
       "no_difficulty_for_event": "Kein Schwierigkeitsgrad für dieses Event",
       "top": "TOP",
       "view_detailed": "Detailliert",
-      "view_summary": "Zusammengefasst"
+      "view_summary": "Zusammengefasst",
+      "view_summary_activity": "Aktivität zusammengefasst",
+      "view_summary_all": "Alles zusammengefasst"
     }
   },
   "da": {
@@ -148,7 +162,9 @@
       "no_difficulty_for_event": "Ingen sværhedsgrad for denne begivenhed",
       "top": "TOP",
       "view_detailed": "Detaljeret",
-      "view_summary": "Opsummeret"
+      "view_summary": "Opsummeret",
+      "view_summary_activity": "Opsummeret aktivitet",
+      "view_summary_all": "Alt opsummeret"
     }
   },
   "fi": {
@@ -167,7 +183,9 @@
       "no_difficulty_for_event": "Tälle tapahtumalle ei ole vaikeustasoa",
       "top": "TOP",
       "view_detailed": "Yksityiskohtainen",
-      "view_summary": "Yhteenveto"
+      "view_summary": "Yhteenveto",
+      "view_summary_activity": "Yhteenveto aktiivisuudesta",
+      "view_summary_all": "Yhteenveto kaikesta"
     }
   },
   "fr": {
@@ -185,8 +203,10 @@
       "no_difficulties": "Aucune difficulté",
       "no_difficulty_for_event": "Aucune difficulté pour cet événement",
       "top": "TOP",
-      "view_detailed": "Detaille",
-      "view_summary": "Resume"
+      "view_detailed": "Détaillé",
+      "view_summary": "Résumé",
+      "view_summary_activity": "Résumé d’activité",
+      "view_summary_all": "Résumé complet"
     }
   },
   "el": {
@@ -204,8 +224,10 @@
       "no_difficulties": "Καμία δυσκολία",
       "no_difficulty_for_event": "Δεν υπάρχει δυσκολία για αυτό το γεγονός",
       "top": "TOP",
-      "view_detailed": "Analytiko",
-      "view_summary": "Synopsi"
+      "view_detailed": "Αναλυτικό",
+      "view_summary": "Σύνοψη",
+      "view_summary_activity": "Σύνοψη δραστηριότητας",
+      "view_summary_all": "Σύνοψη όλων"
     }
   },
   "hu": {
@@ -224,7 +246,9 @@
       "no_difficulty_for_event": "Ehhez az eseményhez nincs nehézség",
       "top": "TOP",
       "view_detailed": "Részletes",
-      "view_summary": "Összegzett"
+      "view_summary": "Összegzett",
+      "view_summary_activity": "Összegzett aktivitás",
+      "view_summary_all": "Összegzett minden"
     }
   },
   "it": {
@@ -243,7 +267,9 @@
       "no_difficulty_for_event": "Nessuna difficoltà per questo evento",
       "top": "TOP",
       "view_detailed": "Dettagliato",
-      "view_summary": "Riepilogo"
+      "view_summary": "Riepilogo",
+      "view_summary_activity": "Riepilogo attività",
+      "view_summary_all": "Riepilogo completo"
     }
   },
   "ja": {
@@ -261,8 +287,10 @@
       "no_difficulties": "難易度なし",
       "no_difficulty_for_event": "このイベントには難易度がありません",
       "top": "TOP",
-      "view_detailed": "Shosai",
-      "view_summary": "Yoyaku"
+      "view_detailed": "詳細",
+      "view_summary": "要約",
+      "view_summary_activity": "活動要約",
+      "view_summary_all": "全体要約"
     }
   },
   "ko": {
@@ -280,8 +308,10 @@
       "no_difficulties": "난이도 없음",
       "no_difficulty_for_event": "이 이벤트에는 난이도가 없습니다",
       "top": "TOP",
-      "view_detailed": "Sangse",
-      "view_summary": "Yoyak"
+      "view_detailed": "상세",
+      "view_summary": "요약",
+      "view_summary_activity": "활동 요약",
+      "view_summary_all": "전체 요약"
     }
   },
   "lt": {
@@ -299,8 +329,10 @@
       "no_difficulties": "Nėra sudėtingumo lygių",
       "no_difficulty_for_event": "Šiam įvykiui nėra sudėtingumo",
       "top": "TOP",
-      "view_detailed": "Issamus",
-      "view_summary": "Santrauka"
+      "view_detailed": "Išsamus",
+      "view_summary": "Santrauka",
+      "view_summary_activity": "Veiklos santrauka",
+      "view_summary_all": "Visko santrauka"
     }
   },
   "nl": {
@@ -319,7 +351,9 @@
       "no_difficulty_for_event": "Geen moeilijkheid voor dit evenement",
       "top": "TOP",
       "view_detailed": "Gedetailleerd",
-      "view_summary": "Samengevat"
+      "view_summary": "Samengevat",
+      "view_summary_activity": "Samenvatting activiteit",
+      "view_summary_all": "Samenvatting alles"
     }
   },
   "no": {
@@ -338,7 +372,9 @@
       "no_difficulty_for_event": "Ingen vanskelighetsgrad for denne hendelsen",
       "top": "TOP",
       "view_detailed": "Detaljert",
-      "view_summary": "Oppsummert"
+      "view_summary": "Oppsummert",
+      "view_summary_activity": "Oppsummert aktivitet",
+      "view_summary_all": "Oppsummert alt"
     }
   },
   "pl": {
@@ -356,8 +392,10 @@
       "no_difficulties": "Brak poziomów trudności",
       "no_difficulty_for_event": "Brak trudności dla tego wydarzenia",
       "top": "TOP",
-      "view_detailed": "Szczegolowy",
-      "view_summary": "Podsumowany"
+      "view_detailed": "Szczegółowy",
+      "view_summary": "Podsumowany",
+      "view_summary_activity": "Podsumowanie aktywności",
+      "view_summary_all": "Podsumowanie wszystkiego"
     }
   },
   "ro": {
@@ -376,7 +414,9 @@
       "no_difficulty_for_event": "Nu există dificultate pentru acest eveniment",
       "top": "TOP",
       "view_detailed": "Detaliat",
-      "view_summary": "Rezumat"
+      "view_summary": "Rezumat",
+      "view_summary_activity": "Rezumat activitate",
+      "view_summary_all": "Rezumat total"
     }
   },
   "ru": {
@@ -394,8 +434,10 @@
       "no_difficulties": "Нет уровней сложности",
       "no_difficulty_for_event": "Для этого события нет сложности",
       "top": "ТОП",
-      "view_detailed": "Podrobno",
-      "view_summary": "Svodno"
+      "view_detailed": "Подробно",
+      "view_summary": "Сводно",
+      "view_summary_activity": "Сводка активности",
+      "view_summary_all": "Сводка всего"
     }
   },
   "sv": {
@@ -414,7 +456,9 @@
       "no_difficulty_for_event": "Ingen svårighetsgrad för detta evenemang",
       "top": "TOP",
       "view_detailed": "Detaljerad",
-      "view_summary": "Sammanfattad"
+      "view_summary": "Sammanfattad",
+      "view_summary_activity": "Sammanfattad aktivitet",
+      "view_summary_all": "Sammanfattat allt"
     }
   },
   "sk": {
@@ -433,7 +477,9 @@
       "no_difficulty_for_event": "Pre túto udalosť nie je obtiažnosť",
       "top": "TOP",
       "view_detailed": "Podrobne",
-      "view_summary": "Suhrnne"
+      "view_summary": "Súhrnne",
+      "view_summary_activity": "Súhrn aktivity",
+      "view_summary_all": "Súhrn všetkého"
     }
   },
   "tr": {
@@ -451,8 +497,10 @@
       "no_difficulties": "Zorluk yok",
       "no_difficulty_for_event": "Bu etkinlik için zorluk yok",
       "top": "TOP",
-      "view_detailed": "Detayli",
-      "view_summary": "Ozet"
+      "view_detailed": "Detaylı",
+      "view_summary": "Özet",
+      "view_summary_activity": "Etkinlik özeti",
+      "view_summary_all": "Tümünün özeti"
     }
   }
 }
