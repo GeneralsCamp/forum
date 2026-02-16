@@ -82,6 +82,39 @@ export function parseLootBoxReward(value) {
   };
 }
 
+export function parseAllianceCoatLayoutReward(value) {
+  if (!value) return null;
+  const [idPart, durationPart] = String(value).split("+");
+  const layoutId = String(idPart || "").trim();
+  const duration = Number(durationPart);
+  return {
+    layoutId: layoutId || null,
+    duration: Number.isNaN(duration) ? null : duration,
+  };
+}
+
+function formatDurationCompact(seconds) {
+  const total = Number(seconds);
+  if (!Number.isFinite(total) || total <= 0) return null;
+  const days = Math.floor(total / 86400);
+  const hours = Math.floor((total % 86400) / 3600);
+  const mins = Math.floor((total % 3600) / 60);
+  const parts = [];
+  if (days > 0) parts.push(`${days}d`);
+  if (hours > 0) parts.push(`${hours}h`);
+  if (mins > 0 && days === 0) parts.push(`${mins}m`);
+  return parts.length > 0 ? parts.join(" ") : "0m";
+}
+
+function getAllianceLayoutName(lang, layoutId, layout, duration) {
+  const suffix = formatDurationCompact(duration);
+  const langKey = layoutId ? `alliancecoat_layout_name_${layoutId}`.toLowerCase() : null;
+  const localized = langKey && lang?.[langKey] ? lang[langKey] : null;
+  const comment = String(layout?.comment1 || "").trim();
+  const base = localized || comment || `Alliance layout ${layoutId || "?"}`;
+  return suffix ? `${base} (${suffix})` : base;
+}
+
 function getLangByPrefixes(lang, rawName, prefixes) {
   if (!rawName) return null;
   const lowerName = String(rawName).toLowerCase();
@@ -170,6 +203,12 @@ export function createRewardResolver(getContext, options = {}) {
     const c = ctx();
     const lang = c.lang || {};
 
+    if (reward.allianceCoatLayout) {
+      const parsed = parseAllianceCoatLayoutReward(reward.allianceCoatLayout);
+      const layout = parsed?.layoutId ? c.allianceCoatLayoutsById?.[String(parsed.layoutId)] : null;
+      return getAllianceLayoutName(lang, parsed?.layoutId, layout, parsed?.duration);
+    }
+
     if (opts.includeCurrency2 && reward.currency2 !== undefined && reward.currency2 !== null) {
       return lang.rubies_name || lang.rubies || "Rubies";
     }
@@ -247,6 +286,10 @@ export function createRewardResolver(getContext, options = {}) {
 
   api.resolveRewardId = (reward, fallbackId = null) => {
     if (!reward || typeof reward !== "object") return fallbackId;
+    if (reward.allianceCoatLayout) {
+      const parsed = parseAllianceCoatLayoutReward(reward.allianceCoatLayout);
+      if (parsed?.layoutId) return parsed.layoutId;
+    }
     if (opts.includeCurrency2 && reward.currency2 !== undefined && reward.currency2 !== null) return "currency2";
     if (opts.includeLootBox && reward.lootBox) {
       const parsed = parseLootBoxReward(reward.lootBox);
@@ -281,6 +324,7 @@ export function createRewardResolver(getContext, options = {}) {
 
   api.resolveRewardType = (reward) => {
     if (!reward || typeof reward !== "object") return null;
+    if (reward.allianceCoatLayout) return "alliance_layout";
     if (opts.includeCurrency2 && reward.currency2 !== undefined && reward.currency2 !== null) return "currency";
     if (opts.includeLootBox && reward.lootBox) return "lootbox";
     if (reward.units) return "unit";
@@ -300,6 +344,17 @@ export function createRewardResolver(getContext, options = {}) {
     const c = ctx();
     const lang = c.lang || {};
     const entries = [];
+
+    if (reward.allianceCoatLayout) {
+      const parsed = parseAllianceCoatLayoutReward(reward.allianceCoatLayout);
+      const layout = parsed?.layoutId ? c.allianceCoatLayoutsById?.[String(parsed.layoutId)] : null;
+      entries.push({
+        name: getAllianceLayoutName(lang, parsed?.layoutId, layout, parsed?.duration),
+        amount: 1,
+        id: parsed?.layoutId || null,
+        type: "alliance_layout",
+      });
+    }
 
     if (opts.includeCurrency2 && reward.currency2 !== undefined && reward.currency2 !== null) {
       const amount = Number(reward.currency2);
@@ -408,6 +463,7 @@ export function createRewardResolver(getContext, options = {}) {
 
   api.getRewardAmount = (reward) => {
     if (!reward || typeof reward !== "object") return 1;
+    if (reward.allianceCoatLayout) return 1;
     if (opts.includeLootBox && reward.lootBox) {
       const parsed = parseLootBoxReward(reward.lootBox);
       return parsed?.amount ?? 1;
@@ -431,6 +487,7 @@ export function createRewardResolver(getContext, options = {}) {
 
   api.getAddKeyName = (reward) => {
     if (!reward || typeof reward !== "object") return null;
+    if (reward.allianceCoatLayout) return null;
     if (opts.includeCurrency2 && reward.currency2 !== undefined && reward.currency2 !== null) return "rubies";
     const addKey = Object.keys(reward).find((key) => key.toLowerCase().startsWith("add"));
     return addKey ? addKey.slice(3) : null;
@@ -528,6 +585,14 @@ export function createRewardResolver(getContext, options = {}) {
     if (!box) return null;
     const key = normalizeName(String(box.name || "").trim());
     return c.lootBoxImageUrlMap?.[key] || null;
+  };
+
+  api.getAllianceLayoutImageUrl = (reward) => {
+    if (!reward || reward.type !== "alliance_layout") return null;
+    const c = ctx();
+    const layoutId = reward.id != null ? String(reward.id) : null;
+    if (!layoutId) return null;
+    return c.allianceLayoutImageUrlMap?.[layoutId] || null;
   };
 
   return api;

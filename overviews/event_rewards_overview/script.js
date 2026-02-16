@@ -32,6 +32,7 @@ let lookSkinsById = {};
 let unitImageUrlMap = {};
 let collectableCurrencyImageUrlMap = {};
 let lootBoxImageUrlMap = {};
+let allianceLayoutImageUrlMap = {};
 let ownLang = {};
 let UI_LANG = {};
 let difficultyTypeById = {};
@@ -304,6 +305,10 @@ function getCurrencyImageUrl(reward) {
 
 function getLootBoxImageUrl(reward) {
     return rewardResolver ? rewardResolver.getLootBoxImageUrl(reward) : null;
+}
+
+function getAllianceLayoutImageUrl(reward) {
+    return rewardResolver ? rewardResolver.getAllianceLayoutImageUrl(reward) : null;
 }
 
 // --- UI RENDERING ---
@@ -664,7 +669,11 @@ function summarizeRewards(rewards, includeTopRewards = true) {
         };
     });
 
-    summarized.sort((a, b) => String(a.name || "").localeCompare(String(b.name || "")));
+    summarized.sort((a, b) => {
+        const amountDiff = (Number(b.amount) || 0) - (Number(a.amount) || 0);
+        if (amountDiff !== 0) return amountDiff;
+        return String(a.name || "").localeCompare(String(b.name || ""));
+    });
     return summarized;
 }
 
@@ -1053,7 +1062,7 @@ function renderRewards(rewards, label) {
 
     rewards.forEach(reward => {
         const col = document.createElement("div");
-        col.className = "col-12 col-md-6 d-flex";
+        col.className = "col-12 col-sm-6 col-lg-4 d-flex";
         const amountText = formatNumber(reward.amount);
         const chanceText = reward.chanceText || "-";
         const modeText = reward.modeText || "-";
@@ -1070,6 +1079,8 @@ function renderRewards(rewards, label) {
             imageUrl = getUnitImageUrl(reward);
         } else if (reward.type === "lootbox") {
             imageUrl = getLootBoxImageUrl(reward);
+        } else if (reward.type === "alliance_layout") {
+            imageUrl = getAllianceLayoutImageUrl(reward);
         }
         if (!imageUrl) {
             imageUrl = getCurrencyImageUrl(reward);
@@ -1094,16 +1105,22 @@ function renderRewards(rewards, label) {
             </div>
             <div class="col-8 d-flex flex-column">
               <div class="reward-stat card-cell flex-fill">
-                <div class="reward-stat-label">${UI_LANG.amount}</div>
-                <div class="reward-stat-value">${amountText}</div>
+                <div class="reward-stat-line">
+                  <span class="reward-stat-label">${UI_LANG.amount}:</span>
+                  <span class="reward-stat-value">${amountText}</span>
+                </div>
               </div>
               <div class="reward-stat card-cell flex-fill">
-                <div class="reward-stat-label">${label}</div>
-                <div class="reward-stat-value">${chanceText}</div>
+                <div class="reward-stat-line">
+                  <span class="reward-stat-label">${label}:</span>
+                  <span class="reward-stat-value">${chanceText}</span>
+                </div>
               </div>
               <div class="reward-stat card-cell flex-fill">
-                <div class="reward-stat-label">${UI_LANG.mode}</div>
-                <div class="reward-stat-value">${modeText}</div>
+                <div class="reward-stat-line">
+                  <span class="reward-stat-label">${UI_LANG.mode}:</span>
+                  <span class="reward-stat-value">${modeText}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -1134,7 +1151,8 @@ async function init() {
                 looks: true,
                 units: true,
                 currencies: true,
-                lootboxes: true
+                lootboxes: true,
+                allianceLayouts: true
             },
 
             onReady: async ({
@@ -1152,6 +1170,7 @@ async function init() {
                 unitImageUrlMap = imageMaps?.units ?? {};
                 collectableCurrencyImageUrlMap = imageMaps?.currencies ?? {};
                 lootBoxImageUrlMap = imageMaps?.lootboxes ?? {};
+                allianceLayoutImageUrlMap = imageMaps?.allianceLayouts ?? {};
 
                 const rewards = getArray(itemsData, ["rewards"]);
                 const currencies = getArray(itemsData, ["currencies"]);
@@ -1167,6 +1186,7 @@ async function init() {
                 const constructions = getArray(itemsData, ["constructionItems"]);
                 const decorations = getArray(itemsData, ["buildings"]);
                 const units = getArray(itemsData, ["units"]);
+                const allianceCoatLayouts = getArray(itemsData, ["allianceCoatLayouts", "alliancecoatlayouts"]);
                 leagueEntries = getArray(itemsData, ["leaguetypeevents", "leagueTypeEvents", "leagueTypeevents"]);
                 const autoScalingDifficulties = getArray(itemsData, ["eventAutoScalingDifficulties", "eventautoscalingdifficulties"]);
                 const autoScalingDifficultyTypes = getArray(itemsData, ["eventAutoScalingDifficultyTypes", "eventautoscalingdifficultytypes"]);
@@ -1178,6 +1198,7 @@ async function init() {
                 decorationsById = buildLookup(decorations, "wodID");
                 unitsById = buildLookup(units, "wodID");
                 lootBoxesById = buildLookup(lootBoxes, "lootBoxID");
+                const allianceCoatLayoutsById = buildLookup(allianceCoatLayouts, "allianceCoatLayoutID");
                 difficultyTypeById = buildLookup(autoScalingDifficultyTypes, "difficultyTypeID");
                 rewardResolver = createRewardResolver(
                     () => ({
@@ -1194,7 +1215,9 @@ async function init() {
                         equipmentImageUrlMap,
                         unitImageUrlMap,
                         currencyImageUrlMap: collectableCurrencyImageUrlMap,
-                        lootBoxImageUrlMap
+                        lootBoxImageUrlMap,
+                        allianceCoatLayoutsById,
+                        allianceLayoutImageUrlMap
                     }),
                     {
                         includeCurrency2: true,

@@ -342,6 +342,21 @@ function parseLootBoxes(text, normalize) {
     return map;
 }
 
+function parseAllianceLayouts(text) {
+
+    const regex =
+        /Collectables\/allianceLayout\/Collectable_AllianceLayout_(\d+)\/Collectable_AllianceLayout_\1--\d+/g;
+
+    const map = {};
+
+    for (const m of text.matchAll(regex)) {
+        const id = String(m[1]);
+        map[id] = `${BASE}${m[0]}.webp`;
+    }
+
+    return map;
+}
+
 export async function loadImageMaps({
     decorations = false,
     constructions = false,
@@ -350,6 +365,7 @@ export async function loadImageMaps({
     looks = false,
     generals = false,
     lootboxes = false,
+    allianceLayouts = false,
     normalizeNameFn
 }) {
 
@@ -422,6 +438,15 @@ export async function loadImageMaps({
 
         result.lootboxes =
             parsedCache.lootboxes;
+    }
+
+    if (allianceLayouts) {
+
+        parsedCache.allianceLayouts ??=
+            parseAllianceLayouts(text);
+
+        result.allianceLayouts =
+            parsedCache.allianceLayouts;
     }
 
     return result;
