@@ -31,6 +31,20 @@ let uniqueGemImageUrlMap = {};
 const loader = createLoader();
 let currentLanguage = getInitialLanguage();
 
+const RARITY_ORDER = {
+  common: 1,
+  rare: 2,
+  epic: 3,
+  legendary: 4
+};
+
+const KEY_TYPE_MIN_RARITY = {
+  Common: RARITY_ORDER.common,
+  Rare: RARITY_ORDER.rare,
+  Epic: RARITY_ORDER.epic,
+  Legendary: RARITY_ORDER.legendary
+};
+
 // --- LOOTBOX HELPERS ---
 function normalizeName(value) {
   return String(value || "").toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -46,6 +60,7 @@ function getLootBoxDisplayName(box) {
 }
 
 function getKeyTypeFromEntry(entry) {
+  if (entry.addCommonMysteryBoxKey === "1") return "Common";
   if (entry.addRareMysteryBoxKey === "1") return "Rare";
   if (entry.addEpicMysteryBoxKey === "1") return "Epic";
   if (entry.addLegendaryMysteryBoxKey === "1") return "Legendary";
@@ -53,10 +68,19 @@ function getKeyTypeFromEntry(entry) {
 }
 
 function getKeyImageUrl(keyType) {
+  if (keyType === "Common") return currencyImageUrlMap[normalizeName("CommonMysteryBoxKey")] || null;
   if (keyType === "Rare") return currencyImageUrlMap[normalizeName("RareMysteryBoxKey")] || null;
   if (keyType === "Epic") return currencyImageUrlMap[normalizeName("EpicMysteryBoxKey")] || null;
   if (keyType === "Legendary") return currencyImageUrlMap[normalizeName("LegendaryMysteryBoxKey")] || null;
   return null;
+}
+
+function getKeyTypeLabel(keyType) {
+  if (keyType === "Common") return lang["currency_name_commonmysteryboxkey"] || "Common mystery key";
+  if (keyType === "Rare") return lang["currency_name_raremysteryboxkey"] || "Rare mystery key";
+  if (keyType === "Epic") return lang["currency_name_epicmysteryboxkey"] || "Epic mystery key";
+  if (keyType === "Legendary") return lang["currency_name_legendarymysteryboxkey"] || "Legendary mystery key";
+  return keyType || "Key";
 }
 
 function getKeyChancesForLootBox(box) {
@@ -152,7 +176,19 @@ function buildOfferingsForCharacter(character) {
 // --- REWARDS ---
 let unitsById = {};
 let unitImageUrlMap = {};
-function getEntryRarity(rewards) {
+function getRarityFromCategory(categoryValue) {
+  const category = Number(categoryValue);
+  if (category === 1) return "common";
+  if (category === 2) return "rare";
+  if (category === 3) return "epic";
+  if (category === 4) return "legendary";
+  return null;
+}
+
+function getEntryRarity(entry, rewards) {
+  const fromCategory = getRarityFromCategory(entry?.rewardCategory ?? entry?.rewardcategory);
+  if (fromCategory) return fromCategory;
+
   const r = rewards.find(x => typeof x.comment2 === "string");
   if (!r) return "common";
 
@@ -166,7 +202,7 @@ function getEntryRarity(rewards) {
   return "common";
 }
 
-function openTombolaModal({ title, tombolaId }) {
+function openTombolaModal({ title, tombolaId, keyType = null }) {
   const modalEl = document.getElementById("lootBoxModal");
   const modalTitle = modalEl.querySelector(".modal-title");
   const container = document.getElementById("lootBoxRewards");
@@ -184,18 +220,7 @@ function openTombolaModal({ title, tombolaId }) {
     return;
   }
 
-  const totalShares = entries.reduce(
-    (sum, e) => sum + Number(e.shares || 0), 0
-  );
-
-  const rarityOrder = {
-    common: 1,
-    rare: 2,
-    epic: 3,
-    legendary: 4
-  };
-
-  const cards = entries
+  const cardsRaw = entries
     .map(entry => {
       const rewardIds = String(entry.rewardIDs)
         .split(",")
@@ -208,24 +233,40 @@ function openTombolaModal({ title, tombolaId }) {
 
       if (rewards.length === 0) return null;
 
-      const chance = totalShares > 0
-        ? (Number(entry.shares) / totalShares) * 100
-        : 0;
-
-      const rarity = getEntryRarity(rewards);
+      const rarity = getEntryRarity(entry, rewards);
+      const shares = Number(entry.shares || 0);
 
       return {
         rarity,
-        order: rarityOrder[rarity] || 99,
-        chance,
+        order: RARITY_ORDER[rarity] || 99,
+        shares,
         rewards
       };
     })
-    .filter(Boolean)
+    .filter(Boolean);
+
+  const minRarity = keyType && KEY_TYPE_MIN_RARITY[keyType]
+    ? KEY_TYPE_MIN_RARITY[keyType]
+    : null;
+
+  const cards = cardsRaw
+    .filter(card => minRarity === null || card.order >= minRarity)
+    .map(card => ({ ...card }))
     .sort((a, b) => {
       if (a.order !== b.order) return a.order - b.order;
-      return b.chance - a.chance;
+      return b.shares - a.shares;
     });
+
+  const totalShares = cards.reduce((sum, card) => sum + card.shares, 0);
+  cards.forEach(card => {
+    card.chance = totalShares > 0 ? (card.shares / totalShares) * 100 : 0;
+  });
+
+  if (cards.length === 0) {
+    container.innerHTML = `<div class="col-12">No rewards</div>`;
+    new bootstrap.Modal(modalEl).show();
+    return;
+  }
 
   cards.forEach(card => {
     container.appendChild(
@@ -240,10 +281,11 @@ function openTombolaModal({ title, tombolaId }) {
   new bootstrap.Modal(modalEl).show();
 }
 
-function openLootBoxModal(box) {
+function openLootBoxModal(box, keyType = null) {
   openTombolaModal({
     title: getLootBoxDisplayName(box),
-    tombolaId: box.lootBoxTombolaID
+    tombolaId: box.lootBoxTombolaID,
+    keyType
   });
 }
 
@@ -458,7 +500,7 @@ document.addEventListener("click", (e) => {
   const box = lootBoxes.find(b => String(b.lootBoxID) === String(lootBoxId));
   if (!box) return;
 
-  openLootBoxModal(box);
+  openLootBoxModal(box, getSelectedKeyType());
 });
 
 document.addEventListener("click", (e) => {
@@ -479,12 +521,20 @@ function createLootBoxCard(box) {
 
   const imgUrl = lootBoxImageUrlMap[normalizeName(box.name?.trim())] ?? null;
 
-  const wanted = ["Rare", "Epic", "Legendary"];
+  const wanted = ["Common", "Rare", "Epic", "Legendary"];
 
   const chanceMap = {};
   chances.forEach(c => (chanceMap[c.keyType] = c));
 
-  const keyRowsHtml = wanted
+  const visibleTypes = wanted.filter((type) => {
+    if (type !== "Common") return true;
+    const c = chanceMap[type];
+    return Boolean(c && c.percent > 0);
+  });
+
+  const typesToRender = visibleTypes.length > 0 ? visibleTypes : wanted;
+
+  const keyRowsHtml = typesToRender
     .map((type, idx) => {
       const c = chanceMap[type];
 
@@ -493,7 +543,7 @@ function createLootBoxCard(box) {
         : "";
 
       const percent = c ? formatPercent(c.percent) : "0.00%";
-      const border = idx < wanted.length - 1 ? "border-bottom" : "";
+      const border = idx < typesToRender.length - 1 ? "border-bottom" : "";
 
       return `
         <div class="card-cell d-flex align-items-center justify-content-center gap-2 flex-fill ${border}">
@@ -584,10 +634,18 @@ function buildOfferingsIndex() {
   offeringsByCharacterId.all = all;
 }
 
-function setupCharacterSelect() {
+function setupSecondarySelect() {
   const select = document.getElementById("characterSelect");
-  if (!select) return;
+  if (!select || select.dataset.bound) return;
 
+  select.addEventListener("change", () => {
+    renderCurrentView();
+  });
+  select.dataset.bound = "true";
+}
+
+function setupCharacterOptions(select) {
+  const previous = select.value || "all";
   select.innerHTML = "";
 
   const allOpt = document.createElement("option");
@@ -605,12 +663,30 @@ function setupCharacterSelect() {
       select.appendChild(opt);
     });
 
-  if (!select.dataset.bound) {
-    select.addEventListener("change", () => {
-      renderCurrentView();
-    });
-    select.dataset.bound = "true";
-  }
+  select.value = offeringsByCharacterId[previous] ? previous : "all";
+}
+
+function setupKeyTypeOptions(select) {
+  const previous = select.value || "Common";
+  const options = ["Common", "Rare", "Epic", "Legendary"];
+
+  select.innerHTML = "";
+  options.forEach(type => {
+    const opt = document.createElement("option");
+    opt.value = type;
+    opt.textContent = getKeyTypeLabel(type);
+    select.appendChild(opt);
+  });
+
+  select.value = options.includes(previous) ? previous : "Common";
+}
+
+function getSelectedKeyType() {
+  const viewSelect = document.getElementById("viewSelect");
+  const secondarySelect = document.getElementById("characterSelect");
+  if (!viewSelect || !secondarySelect) return "Common";
+  if (viewSelect.value !== "mystery_boxes") return "Common";
+  return secondarySelect.value || "Common";
 }
 
 function setupViewSelect() {
@@ -658,20 +734,29 @@ function updateHashForView(view) {
 
 function renderCurrentView() {
   const viewSelect = document.getElementById("viewSelect");
-  const characterSelect = document.getElementById("characterSelect");
+  const secondarySelect = document.getElementById("characterSelect");
+  const secondaryWrap = document.getElementById("characterSelectWrap");
 
   const view = viewSelect?.value || "mystery_boxes";
   updateHashForView(view);
 
   if (view === "offerings") {
-    if (characterSelect) characterSelect.disabled = false;
-    const characterId = characterSelect?.value || "all";
+    if (secondaryWrap) secondaryWrap.style.display = "";
+    if (secondarySelect) {
+      setupCharacterOptions(secondarySelect);
+      secondarySelect.disabled = false;
+    }
+    const characterId = secondarySelect?.value || "all";
     const list = offeringsByCharacterId[characterId] || offeringsByCharacterId.all || [];
     renderOfferings(list);
     return;
   }
 
-  if (characterSelect) characterSelect.disabled = true;
+  if (secondaryWrap) secondaryWrap.style.display = "";
+  if (secondarySelect) {
+    setupKeyTypeOptions(secondarySelect);
+    secondarySelect.disabled = false;
+  }
   renderLootBoxes(lootBoxes);
 }
 
@@ -815,7 +900,7 @@ async function init() {
         });
 
         setupViewSelect();
-        setupCharacterSelect();
+        setupSecondarySelect();
 
         const hashView = getViewFromHash();
         const viewSelect = document.getElementById("viewSelect");
