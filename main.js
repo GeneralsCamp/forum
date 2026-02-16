@@ -25,6 +25,34 @@ const categories = {
     ]
 };
 
+const nowWorkingOn = [
+    {
+        title: "Units & Tools Overview",
+        text: "New webpage for reviewing units and tools.",
+        status: "Active"
+    },
+    {
+        title: "PvP guide video",
+        text: "Detailed PvP guide video covering both defense and attack.",
+        status: "Active"
+    },
+    {
+        title: "New Fungal Rift Raid event video",
+        text: "Showcasing additional details of the new event with in-game footage.",
+        status: "Planned"
+    },
+    {
+        title: "Battle Simulator",
+        text: "Paused until current overviews are stabilized.",
+        status: "Paused"
+    },
+    {
+        title: "Attack speed & Detection Calculator",
+        text: "Fixing the currently incorrect detection time calculation.",
+        status: "Paused"
+    }
+];
+
 function renderCategory(list, targetId) {
     const container = document.querySelector(`#${targetId} .category-grid`);
 
@@ -52,6 +80,30 @@ function renderCategory(list, targetId) {
     });
 }
 
+function renderNowPanel(list) {
+    const container = document.querySelector("#nowPanel .now-grid");
+    if (!container) return;
+
+    const getStatusClass = (status) => {
+        const v = String(status || "").toLowerCase();
+        if (v.includes("active") || v.includes("progress") || v.includes("megy")) return "status-active";
+        if (v.includes("pause") || v.includes("szunet")) return "status-paused";
+        if (v.includes("plan")) return "status-planned";
+        if (v.includes("done") || v.includes("kesz")) return "status-done";
+        return "status-default";
+    };
+
+    container.innerHTML = list.map(item => `
+        <article class="now-card">
+            <div class="now-card-head">
+                <h3>${item.title}</h3>
+                <span class="now-badge ${getStatusClass(item.status)}">${item.status}</span>
+            </div>
+            <p>${item.text}</p>
+        </article>
+    `).join("");
+}
+
 async function renderLatestVideos() {
     const container = document.querySelector("#latestVideos .video-grid");
     if (!container) return;
@@ -67,7 +119,6 @@ async function renderLatestVideos() {
 
         const html = await res.text();
         const pairs = [];
-        // Keep id-title matching local to each video block to avoid cross-matching wrong titles.
         const regex = /"videoId":"([A-Za-z0-9_-]{11})","thumbnail":[\s\S]{0,1400}?"title":\{"runs":\[\{"text":"([^"]+)"/g;
         let match = null;
         while ((match = regex.exec(html)) !== null) {
@@ -87,10 +138,10 @@ async function renderLatestVideos() {
             filtered.push(item);
         });
 
-        const top3 = filtered.slice(0, 3);
-        if (!top3.length) throw new Error('No "Goodgame Empire" videos found');
+        const latestTen = filtered.slice(0, 10);
+        if (!latestTen.length) throw new Error('No "Goodgame Empire" videos found');
 
-        container.innerHTML = top3.map(({ id, title }) => `
+        container.innerHTML = latestTen.map(({ id, title }) => `
             <a class="video-card video-link" href="https://www.youtube.com/watch?v=${id}" target="_blank" rel="noopener">
                 <div class="video-frame-wrap">
                     <img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="${title}" loading="lazy">
@@ -112,5 +163,6 @@ document.addEventListener("DOMContentLoaded", () => {
     renderCategory(categories.overviews, "overviews");
     renderCategory(categories.calculators, "calculators");
     renderCategory(categories.simulators, "simulators");
+    renderNowPanel(nowWorkingOn);
     renderLatestVideos();
 });
