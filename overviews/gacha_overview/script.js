@@ -511,7 +511,7 @@ function renderRewards(rewards, label) {
 
     rewards.forEach(reward => {
         const col = document.createElement("div");
-        col.className = "col-12 col-md-6 d-flex";
+        col.className = "col-12 col-sm-6 col-lg-4 d-flex";
         const amountText = formatNumber(reward.amount);
         const chanceText = reward.chanceText || "";
         const rarityColor = getRarityColor(reward.rarity);
@@ -552,16 +552,16 @@ function renderRewards(rewards, label) {
             </div>
             <div class="col-8 d-flex flex-column">
               <div class="reward-stat card-cell flex-fill">
-                <div class="reward-stat-label">${UI_LANG.amount}</div>
-                <div class="reward-stat-value">${amountText}</div>
+                <div class="reward-stat-line">
+                  <span class="reward-stat-label">${UI_LANG.amount}:</span>
+                  <span class="reward-stat-value">${amountText}</span>
+                </div>
               </div>
               <div class="reward-stat card-cell flex-fill">
-                <div class="reward-stat-label">${label}</div>
-                <div class="reward-stat-value"${chanceStyle}>${chanceText}</div>
-              </div>
-              <div class="reward-stat card-cell flex-fill">
-                <div class="reward-stat-label">${UI_LANG.id}</div>
-                <div class="reward-stat-value">${idDisplay}</div>
+                <div class="reward-stat-line">
+                  <span class="reward-stat-label">${label}:</span>
+                  <span class="reward-stat-value"${chanceStyle}>${chanceText}</span>
+                </div>
               </div>
             </div>
           </div>

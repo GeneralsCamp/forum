@@ -22,7 +22,7 @@
     justify-content: center;
     text-align: center;
     border-right: 1px solid white;
-    min-height: 140px;
+    min-height: 50px;
 }
 
 .reward-image-placeholder {
@@ -37,25 +37,34 @@
 .reward-stat {
     flex: 1 1 auto;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    text-align: center;
-    padding: 6px;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: left;
+    padding: 4px 8px;
 }
 
 .reward-stat:not(:last-child) {
     border-bottom: 1px solid white;
 }
 
+.reward-stat-line {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    width: 100%;
+    line-height: 1.2;
+    justify-content: flex-start;
+}
+
 .reward-stat-value,
 .reward-stat-label {
-    padding-left: 8px;
     color: white;
     font-size: 14px;
 }
 
 .reward-stat-label {
     font-weight: bolder;
+    white-space: nowrap;
 }
 
 .form-select:disabled,
@@ -67,6 +76,11 @@
 
 .card-image-currency {
     padding: 15%;
+}
+
+.card-image {
+    height: 100px;
+    max-width: 95%;
 }
 
 .card-cell a {
@@ -131,6 +145,6 @@
     text-align: center;
 }
 
-.card-cell {
-    padding: 2px 0;
+.image-wrapper {
+    padding: 0;
 }
