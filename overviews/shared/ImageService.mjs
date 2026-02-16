@@ -342,6 +342,36 @@ function parseLootBoxes(text, normalize) {
     return map;
 }
 
+function parseEquipmentUniques(text) {
+
+    const regex =
+        /Equipment\/Uniques\/Item_Unique_(\d+)\/Item_Unique_\1--\d+/g;
+
+    const map = {};
+
+    for (const m of text.matchAll(regex)) {
+        const id = String(m[1]);
+        map[id] = `${BASE}${m[0]}.webp`;
+    }
+
+    return map;
+}
+
+function parseUniqueGems(text) {
+
+    const regex =
+        /Equipment\/UniqueGems\/Item_Gem_Unique_(\d+)\/Item_Gem_Unique_\1--\d+/g;
+
+    const map = {};
+
+    for (const m of text.matchAll(regex)) {
+        const id = String(m[1]);
+        map[id] = `${BASE}${m[0]}.webp`;
+    }
+
+    return map;
+}
+
 function parseAllianceLayouts(text) {
 
     const regex =
@@ -363,6 +393,8 @@ export async function loadImageMaps({
     units = false,
     currencies = false,
     looks = false,
+    equipmentUniques = false,
+    uniqueGems = false,
     generals = false,
     lootboxes = false,
     allianceLayouts = false,
@@ -420,6 +452,24 @@ export async function loadImageMaps({
 
         result.looks =
             parsedCache.looks;
+    }
+
+    if (equipmentUniques) {
+
+        parsedCache.equipmentUniques ??=
+            parseEquipmentUniques(text);
+
+        result.equipmentUniques =
+            parsedCache.equipmentUniques;
+    }
+
+    if (uniqueGems) {
+
+        parsedCache.uniqueGems ??=
+            parseUniqueGems(text);
+
+        result.uniqueGems =
+            parsedCache.uniqueGems;
     }
 
     if (generals) {

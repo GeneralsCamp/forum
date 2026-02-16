@@ -25,6 +25,8 @@ let currencyImageUrlMap = {};
 let decorationImageUrlMap = {};
 let constructionImageUrlMap = {};
 let lookImageUrlMap = {};
+let equipmentUniqueImageUrlMap = {};
+let uniqueGemImageUrlMap = {};
 
 const loader = createLoader();
 let currentLanguage = getInitialLanguage();
@@ -126,6 +128,15 @@ function parseTombolaString(value) {
       return { currencyId, tombolaId };
     })
     .filter(Boolean);
+}
+
+function getGemImageUrlByRewardValue(gemValue) {
+  const raw = String(gemValue || "").trim();
+  if (!raw) return null;
+  const match = raw.match(/\d+/);
+  if (!match) return null;
+  const gemId = String(match[0]);
+  return uniqueGemImageUrlMap[gemId] || null;
 }
 
 function buildOfferingsForCharacter(character) {
@@ -255,6 +266,9 @@ function explodeReward(reward) {
       imageUrl = rewardResolver.getDecorationImageUrl(entry);
     } else if (entry.type === "equipment") {
       imageUrl = rewardResolver.getEquipmentImageUrl(entry);
+      if (!imageUrl) {
+        imageUrl = "./img/equipment.png";
+      }
     } else if (entry.type === "lootbox") {
       imageUrl = rewardResolver.getLootBoxImageUrl(entry);
     }
@@ -274,7 +288,7 @@ function explodeReward(reward) {
       type: res,
       name: lang[res] ?? res,
       amount: Number(reward[res]) || 1,
-      imageUrl: currencyImageUrlMap[res] || "./placeholder.webp",
+      imageUrl: `./img/${res}.png`,
       title: `${res}=${reward[res]}`
     });
   }
@@ -284,7 +298,7 @@ function explodeReward(reward) {
       type: "vipPoints",
       name: lang["vipPoints_name"] ?? "VIP points",
       amount: Number(reward.vipPoints),
-      imageUrl: currencyImageUrlMap["vippoints"] || "./placeholder.webp",
+      imageUrl: "./img/vipPoints.png",
       title: `vipPoints=${reward.vipPoints}`
     });
   }
@@ -305,7 +319,7 @@ function explodeReward(reward) {
       type: "vipTime",
       name: lang["vipTime_name"] ?? "VIP time",
       amount: label.join(" "),
-      imageUrl: currencyImageUrlMap["viptime"] || "./placeholder.webp",
+      imageUrl: "./img/vipTime.png",
       title: `vipTime=${reward.vipTime}`
     });
   }
@@ -325,7 +339,7 @@ function explodeReward(reward) {
       type: "gem",
       name: lang["gem_item"] || "Gem",
       amount: 1,
-      imageUrl: "./placeholder.webp",
+      imageUrl: getGemImageUrlByRewardValue(reward.gemIDs) || "./placeholder.webp",
       title: `gemIDs=${reward.gemIDs}`
     });
   }
@@ -682,7 +696,9 @@ async function init() {
         units: true,
         decorations: true,
         constructions: true,
-        looks: true
+        looks: true,
+        equipmentUniques: true,
+        uniqueGems: true
       },
 
       onReady: async ({
@@ -710,6 +726,8 @@ async function init() {
         decorationImageUrlMap = imageMaps?.decorations ?? {};
         constructionImageUrlMap = imageMaps?.constructions ?? {};
         lookImageUrlMap = imageMaps?.looks ?? {};
+        equipmentUniqueImageUrlMap = imageMaps?.equipmentUniques ?? {};
+        uniqueGemImageUrlMap = imageMaps?.uniqueGems ?? {};
 
         const units = Array.isArray(data.units) ? data.units : [];
         unitsById = {};
@@ -760,6 +778,7 @@ async function init() {
             constructionImageUrlMap,
             decorationImageUrlMap,
             equipmentImageUrlMap: lookImageUrlMap,
+            equipmentUniqueImageUrlMap,
             lootBoxImageUrlMap
           }),
           {

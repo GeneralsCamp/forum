@@ -548,6 +548,18 @@ export function createRewardResolver(getContext, options = {}) {
     );
   };
 
+  const originalGetEquipmentImageUrl = api.getEquipmentImageUrl;
+  api.getEquipmentImageUrl = (reward) => {
+    const bySkin = originalGetEquipmentImageUrl(reward);
+    if (bySkin) return bySkin;
+
+    const c = ctx();
+    const equipId = reward?.id != null ? String(reward.id) : String(api.resolveRewardIdStrict(reward) || "");
+    if (!equipId) return null;
+
+    return c.equipmentUniqueImageUrlMap?.[equipId] || null;
+  };
+
   api.getUnitImageUrl = (reward) => {
     if (!reward || reward.type !== "unit") return null;
     const c = ctx();
