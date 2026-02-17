@@ -327,15 +327,15 @@ function createCard(item, imageUrlMap = {}) {
   let sellPriceDisplay = "";
   if (item.sellLegendaryToken || item.sellLegendaryMaterial) {
     const parts = [];
-    if (item.sellLegendaryToken) parts.push(`<img src="./img/construction-token.png" class="effect-icon">x${formatNumber(item.sellLegendaryToken)}`);
-    if (item.sellLegendaryMaterial) parts.push(`<img src="./img/upgrade-token.png" class="effect-icon">x${formatNumber(item.sellLegendaryMaterial)}`);
+    if (item.sellLegendaryToken) parts.push(`<img src="../../img_base/construction-token.png" class="effect-icon">x${formatNumber(item.sellLegendaryToken)}`);
+    if (item.sellLegendaryMaterial) parts.push(`<img src="../../img_base/upgrade-token.png" class="effect-icon">x${formatNumber(item.sellLegendaryMaterial)}`);
     sellPriceDisplay = parts.join("<br>");
   } else {
     const sellPriceRaw = item.sellC1 || "0";
     if (Number(sellPriceRaw) === 0 && item.sellSoldierBiscuit) {
-      sellPriceDisplay = `<img src="./img/biscuit.png" class="effect-icon">x${formatNumber(item.sellSoldierBiscuit)}`;
+      sellPriceDisplay = `<img src="../../img_base/biscuit.png" class="effect-icon">x${formatNumber(item.sellSoldierBiscuit)}`;
     } else {
-      sellPriceDisplay = `<img src="./img/coin.png" class="effect-icon">x${formatNumber(sellPriceRaw)}`;
+      sellPriceDisplay = `<img src="../../img_base/coin.png" class="effect-icon">x${formatNumber(sellPriceRaw)}`;
     }
   }
 
@@ -404,19 +404,19 @@ function createCard(item, imageUrlMap = {}) {
             <div class="col-8 card-cell">
               <div class="row g-0">
                 <div class="col-6 card-cell border-end">
-                  <strong>${langData.label_public_order}</strong><br><img src="./img/po.png" class="effect-icon">${formatNumber(po)}
+                  <strong>${langData.label_public_order}</strong><br><img src="../../img_base/po.png" class="effect-icon">${formatNumber(po)}
                 </div>
                 <div class="col-6 card-cell">
-                  <strong>${langData.label_po_per_tile}</strong><br><img src="./img/po.png" class="effect-icon">${poPerTile}
+                  <strong>${langData.label_po_per_tile}</strong><br><img src="../../img_base/po.png" class="effect-icon">${poPerTile}
                 </div>
               </div>
               <hr>
               <div class="row g-0">
                 <div class="col-6 card-cell border-end">
-                  <strong>${langData.label_size}</strong><br><img src="./img/size.png" class="effect-icon">${size}
+                  <strong>${langData.label_size}</strong><br><img src="../../img_base/size.png" class="effect-icon">${size}
                 </div>
                 <div class="col-6 card-cell">
-                  <strong>${langData.label_might_points}</strong><br><img src="./img/might.png" class="effect-icon">${formatNumber(might)}
+                  <strong>${langData.label_might_points}</strong><br><img src="../../img_base/might.png" class="effect-icon">${formatNumber(might)}
                 </div>
               </div>
               <hr>
