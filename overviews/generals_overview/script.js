@@ -37,8 +37,8 @@ const skillTypeMap = {
 };
 
 const fallbackIconMap = {
-    attack: "./img/attack-icon.webp",
-    defense: "./img/defense-icon.webp",
+    attack: "../../img_base/attack-icon.webp",
+    defense: "../../img_base/defense-icon.webp",
 };
 
 // --- FETCH FUNCTIONS --
@@ -207,7 +207,7 @@ function resolveSkillIcon(skill) {
         return fallbackIconMap[type];
     }
 
-    return "./img/unknown-icon.webp";
+    return "../../img_base/unknown-icon.webp";
 }
 
 function getAbilityTypeFromGroup(groupId) {
@@ -686,7 +686,7 @@ function renderSkillTreeGrouped(generalId) {
                     skillTypeMap[
                     getBaseSkillName(group.sampleSkill.name)
                     ]
-                    ] || "./img/unknown-icon.webp";
+                    ] || "../../img_base/unknown-icon.webp";
 
                 const groupDiv = document.createElement("div");
                 groupDiv.className = "skill-group";

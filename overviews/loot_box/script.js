@@ -317,7 +317,7 @@ function explodeReward(reward) {
     } else if (entry.type === "equipment") {
       imageUrl = rewardResolver.getEquipmentImageUrl(entry);
       if (!imageUrl) {
-        imageUrl = "./img/equipment.png";
+        imageUrl = "../../img_base/equipment.png";
       }
     } else if (entry.type === "lootbox") {
       imageUrl = rewardResolver.getLootBoxImageUrl(entry);
@@ -349,7 +349,7 @@ function explodeReward(reward) {
       type: res,
       name: lang[res] ?? res,
       amount: Number(reward[res]) || 1,
-      imageUrl: `./img/${res}.png`,
+      imageUrl: `../../img_base/${res}.png`,
       title: `${res}=${reward[res]}`
     });
   }
@@ -359,7 +359,7 @@ function explodeReward(reward) {
       type: "vipPoints",
       name: lang["vipPoints_name"] ?? "VIP points",
       amount: Number(reward.vipPoints),
-      imageUrl: "./img/vipPoints.png",
+      imageUrl: "../../img_base/vipPoints.png",
       title: `vipPoints=${reward.vipPoints}`
     });
   }
@@ -380,7 +380,7 @@ function explodeReward(reward) {
       type: "vipTime",
       name: lang["vipTime_name"] ?? "VIP time",
       amount: label.join(" "),
-      imageUrl: "./img/vipTime.png",
+      imageUrl: "../../img_base/vipTime.png",
       title: `vipTime=${reward.vipTime}`
     });
   }
@@ -390,13 +390,13 @@ function explodeReward(reward) {
       type: "relic",
       name: lang["relic_equipment"] || "Relic",
       amount: 1,
-      imageUrl: "./img/relic.png",
+      imageUrl: "../../img_base/relic.png",
       title: `relicEquipments=${reward.relicEquipments}`
     });
   }
 
   if (reward.gemIDs) {
-    const gemImageUrl = getGemImageUrlByRewardValue(reward.gemIDs) || "./placeholder.webp";
+    const gemImageUrl = getGemImageUrlByRewardValue(reward.gemIDs) || "../../img_base/placeholder.webp";
     const isComposedGem = typeof gemImageUrl === "string" &&
       gemImageUrl.startsWith("https://empire-html5.goodgamestudios.com/default/assets/itemassets/") &&
       /\.(webp|png)$/i.test(gemImageUrl);
@@ -415,7 +415,7 @@ function explodeReward(reward) {
       type: "enchantedEquipment",
       name: lang["enchanted_equipment"] || "Enchanted Equipment",
       amount: 1,
-      imageUrl: "./placeholder.webp",
+      imageUrl: "../../img_base/placeholder.webp",
       title: `enchantedEquipmentIDs=${reward.enchantedEquipmentIDs}`
     });
   }
@@ -897,7 +897,7 @@ async function init() {
             includeCurrency2: true,
             includeLootBox: true,
             includeUnitLevel: false,
-            rubyImageUrl: "./img/ruby.png"
+            rubyImageUrl: "../../img_base/ruby.png"
           }
         );
 

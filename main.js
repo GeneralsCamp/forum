@@ -32,14 +32,9 @@ const nowWorkingOn = [
         status: "Active"
     },
     {
-        title: "PvP guide video",
-        text: "Detailed PvP guide video covering both defense and attack.",
+        title: "GT Event Overview",
+        text: "Building a dedicated page to track GT event quests, milestones, and reward details in one place.",
         status: "Active"
-    },
-    {
-        title: "New Fungal Rift Raid event video",
-        text: "Showcasing additional details of the new event with in-game footage.",
-        status: "Planned"
     },
     {
         title: "Battle Simulator",

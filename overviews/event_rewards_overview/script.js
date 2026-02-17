@@ -1244,7 +1244,7 @@ async function init() {
                         includeCurrency2: true,
                         includeLootBox: true,
                         includeUnitLevel: true,
-                        rubyImageUrl: "../loot_box/img/ruby.png"
+                        rubyImageUrl: "../../img_base/ruby.png"
                     }
                 );
                 difficultyByEvent = {};
