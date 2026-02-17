@@ -131,6 +131,8 @@ function openYouTubeVideoPreferApp(videoId) {
 async function renderLatestVideos() {
     const container = document.querySelector("#latestVideos .video-grid");
     if (!container) return;
+    const videosSection = document.getElementById("latestVideos");
+    const videosHeader = videosSection?.previousElementSibling;
 
     const proxy = "https://my-proxy-8u49.onrender.com/";
     const fixedChannelId = "UCzHQ9zuwxhmJ2xmmANwrZfw";
@@ -210,12 +212,16 @@ async function renderLatestVideos() {
             });
             container.dataset.mobileVideoHandlerBound = "1";
         }
+
+        if (videosSection) videosSection.style.display = "";
+        if (videosHeader && videosHeader.classList.contains("collapse-header")) {
+            videosHeader.style.display = "";
+        }
     } catch (err) {
-        container.innerHTML = `
-            <div class="video-loading">
-                Could not load videos right now.
-            </div>
-        `;
+        if (videosSection) videosSection.style.display = "none";
+        if (videosHeader && videosHeader.classList.contains("collapse-header")) {
+            videosHeader.style.display = "none";
+        }
         console.error(err);
     }
 }
