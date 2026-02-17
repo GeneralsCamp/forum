@@ -1,0 +1,218 @@
+{
+  "en": {
+    "travel_speed": "Travel speed",
+    "recruitment_cost": "Recruitment cost",
+    "sort_by": "Sort by",
+    "sort_default": "Default",
+    "filter_type_unit": "Unit",
+    "filter_type_tool": "Tool",
+    "search_placeholder": "Search by name..."
+  },
+  "ar": {
+    "travel_speed": "سرعة السفر",
+    "recruitment_cost": "تكلفة التجنيد",
+    "sort_by": "ترتيب حسب",
+    "sort_default": "افتراضي",
+    "filter_type_unit": "وحدة",
+    "filter_type_tool": "أداة",
+    "search_placeholder": "ابحث بالاسم..."
+  },
+  "es": {
+    "travel_speed": "Velocidad de viaje",
+    "recruitment_cost": "Coste de reclutamiento",
+    "sort_by": "Ordenar por",
+    "sort_default": "Predeterminado",
+    "filter_type_unit": "Unidad",
+    "filter_type_tool": "Herramienta",
+    "search_placeholder": "Buscar por nombre..."
+  },
+  "bg": {
+    "travel_speed": "Скорост на придвижване",
+    "recruitment_cost": "Цена за наемане",
+    "sort_by": "Сортиране по",
+    "sort_default": "По подразбиране",
+    "filter_type_unit": "Единица",
+    "filter_type_tool": "Инструмент",
+    "search_placeholder": "Търсене по име..."
+  },
+  "pt": {
+    "travel_speed": "Velocidade de viagem",
+    "recruitment_cost": "Custo de recrutamento",
+    "sort_by": "Ordenar por",
+    "sort_default": "Padrão",
+    "filter_type_unit": "Unidade",
+    "filter_type_tool": "Ferramenta",
+    "search_placeholder": "Pesquisar por nome..."
+  },
+  "cs": {
+    "travel_speed": "Rychlost přesunu",
+    "recruitment_cost": "Náklady na nábor",
+    "sort_by": "Seřadit podle",
+    "sort_default": "Výchozí",
+    "filter_type_unit": "Jednotka",
+    "filter_type_tool": "Nástroj",
+    "search_placeholder": "Hledat podle jména..."
+  },
+  "de": {
+    "travel_speed": "Reisegeschwindigkeit",
+    "recruitment_cost": "Rekrutierungskosten",
+    "sort_by": "Sortieren nach",
+    "sort_default": "Standard",
+    "filter_type_unit": "Einheit",
+    "filter_type_tool": "Werkzeug",
+    "search_placeholder": "Nach Namen suchen..."
+  },
+  "da": {
+    "travel_speed": "Rejsehastighed",
+    "recruitment_cost": "Rekrutteringsomkostning",
+    "sort_by": "Sorter efter",
+    "sort_default": "Standard",
+    "filter_type_unit": "Enhed",
+    "filter_type_tool": "Værktøj",
+    "search_placeholder": "Søg efter navn..."
+  },
+  "fi": {
+    "travel_speed": "Matkanopeus",
+    "recruitment_cost": "Rekrytointikustannus",
+    "sort_by": "Lajittele",
+    "sort_default": "Oletus",
+    "filter_type_unit": "Yksikkö",
+    "filter_type_tool": "Työkalu",
+    "search_placeholder": "Hae nimellä..."
+  },
+  "fr": {
+    "travel_speed": "Vitesse de déplacement",
+    "recruitment_cost": "Coût de recrutement",
+    "sort_by": "Trier par",
+    "sort_default": "Par défaut",
+    "filter_type_unit": "Unité",
+    "filter_type_tool": "Outil",
+    "search_placeholder": "Rechercher par nom..."
+  },
+  "el": {
+    "travel_speed": "Ταχύτητα μετακίνησης",
+    "recruitment_cost": "Κόστος στρατολόγησης",
+    "sort_by": "Ταξινόμηση κατά",
+    "sort_default": "Προεπιλογή",
+    "filter_type_unit": "Μονάδα",
+    "filter_type_tool": "Εργαλείο",
+    "search_placeholder": "Αναζήτηση με όνομα..."
+  },
+  "hu": {
+    "travel_speed": "Utazási sebesség",
+    "recruitment_cost": "Toborzási költség",
+    "sort_by": "Rendezés",
+    "sort_default": "Alapértelmezett",
+    "filter_type_unit": "Katona",
+    "filter_type_tool": "Eszköz",
+    "search_placeholder": "Keresés név alapján..."
+  },
+  "it": {
+    "travel_speed": "Velocità di viaggio",
+    "recruitment_cost": "Costo di reclutamento",
+    "sort_by": "Ordina per",
+    "sort_default": "Predefinito",
+    "filter_type_unit": "Unità",
+    "filter_type_tool": "Strumento",
+    "search_placeholder": "Cerca per nome..."
+  },
+  "ja": {
+    "travel_speed": "移動速度",
+    "recruitment_cost": "募兵コスト",
+    "sort_by": "並び替え",
+    "sort_default": "デフォルト",
+    "filter_type_unit": "ユニット",
+    "filter_type_tool": "ツール",
+    "search_placeholder": "名前で検索..."
+  },
+  "ko": {
+    "travel_speed": "이동 속도",
+    "recruitment_cost": "모집 비용",
+    "sort_by": "정렬 기준",
+    "sort_default": "기본값",
+    "filter_type_unit": "유닛",
+    "filter_type_tool": "도구",
+    "search_placeholder": "이름으로 검색..."
+  },
+  "lt": {
+    "travel_speed": "Kelionės greitis",
+    "recruitment_cost": "Verbavimo kaina",
+    "sort_by": "Rikiuoti pagal",
+    "sort_default": "Numatytasis",
+    "filter_type_unit": "Vienetas",
+    "filter_type_tool": "Įrankis",
+    "search_placeholder": "Ieškoti pagal pavadinimą..."
+  },
+  "nl": {
+    "travel_speed": "Reissnelheid",
+    "recruitment_cost": "Rekruteringskosten",
+    "sort_by": "Sorteren op",
+    "sort_default": "Standaard",
+    "filter_type_unit": "Eenheid",
+    "filter_type_tool": "Gereedschap",
+    "search_placeholder": "Zoeken op naam..."
+  },
+  "no": {
+    "travel_speed": "Reisehastighet",
+    "recruitment_cost": "Rekrutteringskostnad",
+    "sort_by": "Sorter etter",
+    "sort_default": "Standard",
+    "filter_type_unit": "Enhet",
+    "filter_type_tool": "Verktøy",
+    "search_placeholder": "Søk etter navn..."
+  },
+  "pl": {
+    "travel_speed": "Prędkość podróży",
+    "recruitment_cost": "Koszt rekrutacji",
+    "sort_by": "Sortuj według",
+    "sort_default": "Domyślne",
+    "filter_type_unit": "Jednostka",
+    "filter_type_tool": "Narzędzie",
+    "search_placeholder": "Szukaj po nazwie..."
+  },
+  "ro": {
+    "travel_speed": "Viteză de deplasare",
+    "recruitment_cost": "Cost recrutare",
+    "sort_by": "Sortează după",
+    "sort_default": "Implicit",
+    "filter_type_unit": "Unitate",
+    "filter_type_tool": "Unealtă",
+    "search_placeholder": "Caută după nume..."
+  },
+  "ru": {
+    "travel_speed": "Скорость передвижения",
+    "recruitment_cost": "Стоимость найма",
+    "sort_by": "Сортировать по",
+    "sort_default": "По умолчанию",
+    "filter_type_unit": "Юнит",
+    "filter_type_tool": "Инструмент",
+    "search_placeholder": "Поиск по названию..."
+  },
+  "sv": {
+    "travel_speed": "Resehastighet",
+    "recruitment_cost": "Rekryteringskostnad",
+    "sort_by": "Sortera efter",
+    "sort_default": "Standard",
+    "filter_type_unit": "Enhet",
+    "filter_type_tool": "Verktyg",
+    "search_placeholder": "Sök efter namn..."
+  },
+  "sk": {
+    "travel_speed": "Rýchlosť presunu",
+    "recruitment_cost": "Náklady na nábor",
+    "sort_by": "Zoradiť podľa",
+    "sort_default": "Predvolené",
+    "filter_type_unit": "Jednotka",
+    "filter_type_tool": "Nástroj",
+    "search_placeholder": "Hľadať podľa názvu..."
+  },
+  "tr": {
+    "travel_speed": "Seyahat hızı",
+    "recruitment_cost": "Askere alma maliyeti",
+    "sort_by": "Şuna göre sırala",
+    "sort_default": "Varsayılan",
+    "filter_type_unit": "Birim",
+    "filter_type_tool": "Araç",
+    "search_placeholder": "Ada göre ara..."
+  }
+}
