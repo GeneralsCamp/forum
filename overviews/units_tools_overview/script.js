@@ -83,6 +83,7 @@ function applyUiLabels() {
     recruitmentTime: lang["recruitspeed"] || "Recruitment speed",
     recruitmentCost: getOwnLangValue("recruitment_cost", "Recruitment cost"),
     attackWaves: getOwnLangValue("attack_waves_bonus", "Increase the number of available attack waves"),
+    toolLimit: getOwnLangValue("tool_limit", "Tool limit"),
     sortBy: getOwnLangValue("sort_by", "Sort by"),
     filterTypeUnit: lang["units"] || getOwnLangValue("filter_type_unit", "Unit"),
     filterTypeTool: lang["tools"] || getOwnLangValue("filter_type_tool", "Tool"),
@@ -301,9 +302,15 @@ function buildToolDynamicEffects(unit) {
       if (!String(value).includes("%")) value = `${value}%`;
     }
 
-    const title = getEffectDisplayName(effectName, effectId);
+    let title = getEffectDisplayName(effectName, effectId);
     let iconUrl = getEffectIcon(effectName);
     const titleLc = String(title).toLowerCase();
+    const effectNameLc = String(effectName).toLowerCase();
+
+    if (effectNameLc.includes("attackunitamount")) {
+      title = UI_LABELS.toolLimit;
+    }
+
     if (
       titleLc.includes("attack waves") ||
       titleLc.includes("available attack waves") ||
@@ -671,7 +678,7 @@ function createUnitCard(group, groupIndex) {
       { iconUrl: STAT_ICONS.lootValue, title: UI_LABELS.loot, value: getStat("lootValue", "0") },
       ...toolBaseBonuses,
       ...toolEffectStats,
-      { iconUrl: STAT_ICONS.unitLimit, title: UI_LABELS.attackWaves, value: getStat("amountPerWave", "0") },
+      { iconUrl: STAT_ICONS.unitLimit, title: UI_LABELS.toolLimit, value: getStat("amountPerWave", "0") },
       { iconUrl: getCurrencyIcon("khantablet"), title: "Khan tablet booster", value: formatPlusPercent(getStat("khanTabletBooster", "0")) },
       { iconUrl: getCurrencyIcon("khanmedal"), title: "Khan medal booster", value: formatPlusPercent(getStat("khanMedalBooster", "0")) },
       { iconUrl: getCurrencyIcon("samuraitoken"), title: "Samurai token booster", value: formatPlusPercent(getStat("samuraiTokenBooster", "0")) },
@@ -820,7 +827,7 @@ function createUnitCard(group, groupIndex) {
               ...toolModalEffectStats,
               { iconUrl: STAT_ICONS.lootValue, title: UI_LABELS.loot, value: getStat("lootValue", "0") },
               ...getToolBaseBonuses(unit, getStat),
-              { iconUrl: STAT_ICONS.unitLimit, title: UI_LABELS.attackWaves, value: getStat("amountPerWave", "0") },
+              { iconUrl: STAT_ICONS.unitLimit, title: UI_LABELS.toolLimit, value: getStat("amountPerWave", "0") },
               { iconUrl: getCurrencyIcon("khantablet"), title: "Khan tablet booster", value: formatPlusPercent(getStat("khanTabletBooster", "0")) },
               { iconUrl: getCurrencyIcon("khanmedal"), title: "Khan medal booster", value: formatPlusPercent(getStat("khanMedalBooster", "0")) },
               { iconUrl: getCurrencyIcon("samuraitoken"), title: "Samurai token booster", value: formatPlusPercent(getStat("samuraiTokenBooster", "0")) },

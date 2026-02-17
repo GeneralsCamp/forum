@@ -146,6 +146,24 @@
     flex-direction: row;
     align-items: center;
   }
+
+  .unit-modal-image-wrap {
+    min-width: 82px;
+    width: 82px;
+    height: 212px;
+    padding: 0 6px;
+  }
+
+  .modal-unit-image {
+    max-width: 84px;
+    max-height: 84px;
+    padding: 4px;
+  }
+
+  .unit-modal-list {
+    flex: 1;
+    min-width: 0;
+  }
 }
 
 .unit-stats-grid {
