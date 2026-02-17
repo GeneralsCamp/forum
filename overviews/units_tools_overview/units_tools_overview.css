@@ -88,7 +88,7 @@
   justify-content: center;
   align-items: center;
   min-width: 100px;
-  height: 200px;
+  height: 212px;
   border-right: 1px solid rgba(255, 255, 255, 0.35);
   padding: 0 12px;
   box-sizing: border-box;
@@ -106,7 +106,7 @@
 }
 
 .unit-modal-list {
-  max-height: 200px;
+  max-height: 212px;
   overflow-y: auto;
   padding-right: 4px;
   flex: 1;
@@ -143,11 +143,8 @@
 
 @media (max-width: 700px) {
   .unit-modal-layout {
-    flex-direction: column;
-  }
-
-  .unit-modal-image-wrap {
-    min-width: 0;
+    flex-direction: row;
+    align-items: center;
   }
 }
 
