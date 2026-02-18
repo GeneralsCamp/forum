@@ -55,8 +55,32 @@ const STAT_ICONS = {
   killAnyTroopsYardDefense: "../../simulators/battle_simulator/img/killAnyTroopsYardDefense-icon.png",
   woodCost: "../../img_base/wood.png",
   stoneCost: "../../img_base/stone.png",
+  gallantryBonus: "../../img_base/gallantryBoost.png",
+  rageBonus: "../../img_base/rageBoost.png",
+  xpBonus: "../../img_base/xpBoost.png",
   unknown: "../../img_base/placeholder.webp"
 };
+const EFFECT_ICON_RULES = [
+  { pattern: /additionalwaves|amountperwave|attackunitamount|attack\s*waves|tool\s*limit|wave/i, icon: STAT_ICONS.amountPerWave },
+  { pattern: /increase the wall capacity for defenders|wall capacity/i, icon: "../../simulators/battle_simulator/img/castellan-modal3.png" },
+  { pattern: /bonuswallcapacity|wall/i, icon: STAT_ICONS.wallBonus },
+  { pattern: /gate/i, icon: STAT_ICONS.gateBonus },
+  { pattern: /moat/i, icon: STAT_ICONS.moatBonus },
+  { pattern: /killdefendingmeleetroopsyard/i, icon: STAT_ICONS.killMeleeTroopsYard },
+  { pattern: /killdefendingrangedtroopsyard/i, icon: STAT_ICONS.killRangedTroopsYard },
+  { pattern: /killdefendinganytroopsyard/i, icon: STAT_ICONS.killAnyTroopsYard },
+  { pattern: /killattackingmeleetroopsyard/i, icon: STAT_ICONS.killMeleeTroopsYardDefense },
+  { pattern: /killattackingrangedtroopsyard/i, icon: STAT_ICONS.killRangedTroopsYardDefense },
+  { pattern: /killattackinganytroopsyard/i, icon: STAT_ICONS.killAnyTroopsYardDefense },
+  { pattern: /difficultyscalingdefenseboostyard|bonusyarddefensepower|attackboostyard|courtyard|yard/i, icon: "../../simulators/battle_simulator/img/cy-icon.png" },
+  { pattern: /fame|glory/i, icon: STAT_ICONS.fameBonus },
+  { pattern: /loot/i, icon: STAT_ICONS.lootValue },
+  { pattern: /speed|time|recruit|production/i, icon: STAT_ICONS.recruitmentTime },
+  { pattern: /ranged|range/i, icon: STAT_ICONS.rangedAttack },
+  { pattern: /melee/i, icon: STAT_ICONS.meleeAttack },
+  { pattern: /defense|defence/i, icon: STAT_ICONS.rangeDefence },
+  { pattern: /attack/i, icon: STAT_ICONS.rangedAttack }
+];
 
 function statCell(iconUrl, title, value) {
   return `<div class="unit-row card-cell"><span class="unit-label" title="${title}"><img src="${iconUrl}" alt="${title}" class="stat-icon"></span><span class="unit-value">${value}</span></div>`;
@@ -91,7 +115,7 @@ function applyUiLabels() {
     productionCost: getOwnLangValue("production_cost", lang["productioncost"] || "Production cost"),
     recruitmentCost: getOwnLangValue("recruitment_cost", "Recruitment cost"),
     rangedAttackBonus: lang["offrangebonus"] || getOwnLangValue("ranged_attack_bonus", "Ranged attack bonus"),
-    meleeAttackBonus: lang["offmeleebonus"] || getOwnLangValue("melee_attack_bonus", "Melee attack bonus"),
+    meleeAttackBonus: lang["attackpower_melee"] || lang["offmeleebonus"] || getOwnLangValue("melee_attack_bonus", "Melee attack bonus"),
     rangedDefenseBonus: lang["defrangebonus"] || getOwnLangValue("ranged_defense_bonus", "Ranged defense bonus"),
     meleeDefenseBonus: lang["defmeleebonus"] || getOwnLangValue("melee_defense_bonus", "Melee defense bonus"),
     wallBonus: lang["wallprotection"] || getOwnLangValue("wall_bonus", "Wall bonus"),
@@ -106,7 +130,7 @@ function applyUiLabels() {
     xpBonus: lang["xpbooster_name"] || getOwnLangValue("xp_bonus", "XP bonus"),
     c1Bonus: lang["currency_name_currency1"] || getOwnLangValue("c1_bonus", "C1 bonus"),
     ragePointBonus: lang["ragebooster_name"] || getOwnLangValue("rage_point_bonus", "Rage point bonus"),
-    reputationBonus: getOwnLangValue("reputation_bonus", "Reputation bonus"),
+    reputationBonus: lang["reputationbooster_name"] || getOwnLangValue("reputation_bonus", "Reputation bonus"),
     attackWaves: getOwnLangValue("attack_waves_bonus", "Increase the number of available attack waves"),
     toolLimit: lang["amountperwave"] || getOwnLangValue("tool_limit", "Tool limit"),
     sortBy: getOwnLangValue("sort_by", "Sort by"),
@@ -247,10 +271,6 @@ function getRecruitmentCostInfo(unit) {
     if (raw === undefined || raw === null || String(raw).trim() === "" || String(raw).trim() === "0") {
       continue;
     }
-    const numericRaw = Number(String(raw).trim());
-    if (!Number.isNaN(numericRaw) && numericRaw === 400) {
-      continue;
-    }
     const currencyLabel = lang?.[def.labelKey] || def.key.replace(/^cost/, "");
     return {
       value: formatStatValue(raw),
@@ -268,9 +288,107 @@ function getRecruitmentCostInfo(unit) {
   };
 }
 
+function createStatHelpers(unit) {
+  const getStat = (key, fallback = "-") => {
+    const v = unit?.[key];
+    return (v === undefined || v === null || String(v).trim() === "") ? fallback : formatStatValue(v);
+  };
+
+  const getFirstStat = (keys, fallback = "-") => {
+    for (const key of keys) {
+      const v = unit?.[key];
+      if (v !== undefined && v !== null && String(v).trim() !== "") return formatStatValue(v);
+    }
+    return fallback;
+  };
+
+  const getRecruitmentTimeStat = () => formatDurationMinSec(unit?.recruitmentTime);
+
+  return { getStat, getFirstStat, getRecruitmentTimeStat };
+}
+
+function buildUnitStatsAll({ getStat, getFirstStat, getRecruitmentTimeStat, supplyInfo, recruitmentCostInfo }) {
+  const stats = [
+    { iconUrl: STAT_ICONS.rangedAttack, title: UI_LABELS.rangedAttack, value: getFirstStat(["rangeAttack", "rangedAttack", "attackRange", "rangedStrength"], "0") },
+    { iconUrl: STAT_ICONS.meleeAttack, title: UI_LABELS.meleeAttack, value: getStat("meleeAttack", "0") },
+    { iconUrl: STAT_ICONS.rangeDefence, title: UI_LABELS.rangedDefence, value: getStat("rangeDefence", "0") },
+    { iconUrl: STAT_ICONS.meleeDefence, title: UI_LABELS.meleeDefence, value: getStat("meleeDefence", "0") },
+    { iconUrl: STAT_ICONS.speed, title: UI_LABELS.speed, value: getStat("speed") },
+    { iconUrl: STAT_ICONS.lootValue, title: UI_LABELS.loot, value: getStat("lootValue") },
+    { iconUrl: STAT_ICONS.might, title: UI_LABELS.might, value: getStat("mightValue", getStat("might")) },
+    { iconUrl: supplyInfo.iconUrl, title: supplyInfo.label, value: supplyInfo.value ?? "-" }
+  ];
+
+  const recruitmentTimeValue = getRecruitmentTimeStat();
+  const hasRecruitmentTime =
+    recruitmentTimeValue !== "-" &&
+    recruitmentTimeValue !== "00:00:00";
+
+  if (recruitmentCostInfo.hasCost && hasRecruitmentTime) {
+    stats.push(
+      { iconUrl: recruitmentCostInfo.iconUrl, title: recruitmentCostInfo.title, value: recruitmentCostInfo.value },
+      { iconUrl: STAT_ICONS.recruitmentTime, title: UI_LABELS.recruitmentTime, value: recruitmentTimeValue }
+    );
+  }
+
+  return stats;
+}
+
+function buildUnitStatsCard({ getStat, getFirstStat, supplyInfo }) {
+  return [
+    { iconUrl: STAT_ICONS.rangedAttack, title: "Ranged attack", value: getFirstStat(["rangeAttack", "rangedAttack", "attackRange", "rangedStrength"], "0") },
+    { iconUrl: STAT_ICONS.meleeAttack, title: "Melee attack", value: getStat("meleeAttack", "0") },
+    { iconUrl: STAT_ICONS.rangeDefence, title: "Ranged defence", value: getStat("rangeDefence", "0") },
+    { iconUrl: STAT_ICONS.meleeDefence, title: "Melee defence", value: getStat("meleeDefence", "0") },
+    { iconUrl: STAT_ICONS.speed, title: "Speed", value: getStat("speed", "0") },
+    { iconUrl: STAT_ICONS.lootValue, title: "Loot", value: getStat("lootValue", "0") },
+    { iconUrl: STAT_ICONS.might, title: "Might", value: getStat("mightValue", getStat("might", "0")) },
+    { iconUrl: supplyInfo.iconUrl, title: supplyInfo.label, value: supplyInfo.value }
+  ];
+}
+
+function buildToolStatsAll({ unit, getStat, getRecruitmentTimeStat, recruitmentCostInfo }) {
+  const toolBaseBonuses = getToolBaseBonuses(unit, getStat);
+  const toolEffectStats = buildToolDynamicEffects(unit);
+
+  return [
+    { iconUrl: STAT_ICONS.speed, title: UI_LABELS.speed, value: getStat("speed", "0") },
+    { iconUrl: STAT_ICONS.lootValue, title: UI_LABELS.loot, value: getStat("lootValue", "0") },
+    ...toolBaseBonuses,
+    ...toolEffectStats,
+    { iconUrl: STAT_ICONS.unitLimit, title: UI_LABELS.toolLimit, value: getStat("amountPerWave", "0") },
+    { iconUrl: getCurrencyIcon("khantablet"), title: UI_LABELS.khanTabletBooster, value: formatPlusPercent(getStat("khanTabletBooster", "0")) },
+    { iconUrl: getCurrencyIcon("khanmedal"), title: UI_LABELS.khanMedalBooster, value: formatPlusPercent(getStat("khanMedalBooster", "0")) },
+    { iconUrl: getCurrencyIcon("samuraitoken"), title: UI_LABELS.samuraiTokenBooster, value: formatPlusPercent(getStat("samuraiTokenBooster", "0")) },
+    { iconUrl: getCurrencyIcon("pearlrelic"), title: UI_LABELS.pearlBooster, value: formatPlusPercent(getStat("pearlBooster", "0")) },
+    { iconUrl: STAT_ICONS.gallantryBonus, title: UI_LABELS.pointBonus, value: formatPlusPercent(getStat("pointBonus", "0")) },
+    { iconUrl: STAT_ICONS.xpBonus, title: UI_LABELS.xpBonus, value: formatPlusPercent(getStat("xpBonus", "0")) },
+    { iconUrl: STAT_ICONS.costC1, title: UI_LABELS.c1Bonus, value: formatPlusPercent(getStat("c1Bonus", "0")) },
+    { iconUrl: STAT_ICONS.rageBonus, title: UI_LABELS.ragePointBonus, value: formatPlusPercent(getStat("ragePointBonus", "0")) },
+    { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.reputationBonus, value: formatPlusPercent(getStat("reputationBonus", "0")) },
+    { iconUrl: STAT_ICONS.recruitmentTime, title: UI_LABELS.productionSpeed, value: getRecruitmentTimeStat(), modalOnly: true },
+    { iconUrl: STAT_ICONS.woodCost, title: UI_LABELS.productionCost, value: getStat("costWood", "0"), modalOnly: true },
+    { iconUrl: STAT_ICONS.stoneCost, title: UI_LABELS.productionCost, value: getStat("costStone", "0"), modalOnly: true },
+    { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.productionCost, value: getStat("costSceatToken", "0"), hideIfOne: true, modalOnly: true },
+    { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.productionCost, value: getStat("costLegendaryToken", "0"), hideIfOne: true, modalOnly: true },
+    { iconUrl: getCostComponentIcon(1), title: UI_LABELS.productionCost, value: getStat("costComponent1", "0"), modalOnly: true },
+    { iconUrl: getCostComponentIcon(2), title: UI_LABELS.productionCost, value: getStat("costComponent2", "0"), modalOnly: true },
+    { iconUrl: getCostComponentIcon(3), title: UI_LABELS.productionCost, value: getStat("costComponent3", "0"), modalOnly: true },
+    { iconUrl: getCostComponentIcon(4), title: UI_LABELS.productionCost, value: getStat("costComponent4", "0"), modalOnly: true },
+    { iconUrl: getCostComponentIcon(5), title: UI_LABELS.productionCost, value: getStat("costComponent5", "0"), modalOnly: true },
+    { iconUrl: getCostComponentIcon(6), title: UI_LABELS.productionCost, value: getStat("costComponent6", "0"), modalOnly: true },
+    { iconUrl: getCostComponentIcon(7), title: UI_LABELS.productionCost, value: getStat("costComponent7", "0"), modalOnly: true },
+    { iconUrl: getCostComponentIcon(8), title: UI_LABELS.productionCost, value: getStat("costComponent8", "0"), modalOnly: true },
+    { iconUrl: recruitmentCostInfo.iconUrl, title: UI_LABELS.productionCost, value: recruitmentCostInfo.value, modalOnly: true }
+  ];
+}
+
 function getEffectDisplayName(effectName, effectId) {
   const key = String(effectName || "").toLowerCase();
   if (!key) return `Effect ${effectId}`;
+  if (key === "attackboostyard") {
+    return lang?.["attackboostyard"] || "Increase unit attack strength in the courtyard";
+  }
   if (key === "difficultyscalingdefenseboostyard" || key === "bonusyarddefensepower") {
     return lang?.["effect_name_difficultyscalingdefenseboostyard"] || "Strength in courtyard when defending";
   }
@@ -290,27 +408,26 @@ function getEffectDisplayName(effectName, effectId) {
   return key.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/_/g, " ");
 }
 
-function getEffectIcon(effectName) {
+function getEffectIcon(effectName, effectTitle = "") {
   const key = String(effectName || "").toLowerCase();
-  if (key === "attackboostyard") return "../../simulators/battle_simulator/img/cy-icon.png";
-  if (key === "difficultyscalingdefenseboostyard" || key === "bonusyarddefensepower") {
-    return "../../simulators/battle_simulator/img/cy-icon.png";
+  const title = String(effectTitle || "").toLowerCase();
+  const haystack = `${key} ${title}`;
+  for (const rule of EFFECT_ICON_RULES) {
+    if (rule.pattern.test(haystack)) return rule.icon;
   }
-  if (key === "bonuswallcapacity") return "../../simulators/battle_simulator/img/castellan-modal3.png";
-  if (key.includes("additionalwaves")) return STAT_ICONS.amountPerWave;
-  if (key.includes("amountperwave")) return STAT_ICONS.amountPerWave;
-  if (key.includes("attackunitamount")) return STAT_ICONS.amountPerWave;
-  if (key.includes("killdefendingmeleetroopsyard")) return STAT_ICONS.killMeleeTroopsYard;
-  if (key.includes("killdefendingrangedtroopsyard")) return STAT_ICONS.killRangedTroopsYard;
-  if (key.includes("killdefendinganytroopsyard")) return STAT_ICONS.killAnyTroopsYard;
-  if (key.includes("killattackingmeleetroopsyard")) return STAT_ICONS.killMeleeTroopsYardDefense;
-  if (key.includes("killattackingrangedtroopsyard")) return STAT_ICONS.killRangedTroopsYardDefense;
-  if (key.includes("killattackinganytroopsyard")) return STAT_ICONS.killAnyTroopsYardDefense;
-  if (key.includes("ranged")) return STAT_ICONS.rangedAttack;
-  if (key.includes("melee")) return STAT_ICONS.meleeAttack;
-  if (key.includes("attack")) return STAT_ICONS.rangedAttack;
-  if (key.includes("defense") || key.includes("defence")) return STAT_ICONS.rangeDefence;
   return STAT_ICONS.unknown;
+}
+
+function resolveEffectMeta(effectName, effectId) {
+  let title = getEffectDisplayName(effectName, effectId);
+  const effectNameLc = String(effectName).toLowerCase();
+  if (effectNameLc.includes("attackunitamount")) {
+    title = UI_LABELS.toolLimit;
+  }
+  return {
+    title,
+    iconUrl: getEffectIcon(effectName, title)
+  };
 }
 
 function buildToolDynamicEffects(unit) {
@@ -328,22 +445,22 @@ function buildToolDynamicEffects(unit) {
     const def = effectCtx?.effectDefinitions?.[effectId];
     const effectName = def?.name || `effect_${effectId}`;
     const isPercent = effectCtx?.percentEffectIDs?.has?.(effectId);
-    const forcePlusPercent = FORCE_PLUS_PERCENT_EFFECT_NAMES.has(String(effectName).toLowerCase());
+    const effectNameLc = String(effectName).toLowerCase();
+    const forcePlusPercent = FORCE_PLUS_PERCENT_EFFECT_NAMES.has(effectNameLc);
+    const autoPercentByName =
+      /(bonus|boost|booster|protection)/.test(effectNameLc) &&
+      !/(wave|amount|limit|kill|cost|time|speed)/.test(effectNameLc);
     const rawValue = String(valueRaw || "").trim();
     let value = formatStatValue(rawValue);
 
-    if ((isPercent || forcePlusPercent) && rawValue && rawValue !== "-") {
+    if ((isPercent || forcePlusPercent || autoPercentByName) && rawValue && rawValue !== "-") {
       value = formatPlusPercent(rawValue);
     }
 
-    let title = getEffectDisplayName(effectName, effectId);
-    let iconUrl = getEffectIcon(effectName);
+    const meta = resolveEffectMeta(effectName, effectId);
+    const title = meta.title;
+    const iconUrl = meta.iconUrl;
     const titleLc = String(title).toLowerCase();
-    const effectNameLc = String(effectName).toLowerCase();
-
-    if (effectNameLc.includes("attackunitamount")) {
-      title = UI_LABELS.toolLimit;
-    }
 
     const attackWavesLabelLc = String(UI_LABELS.attackWaves || "").toLowerCase();
     if (
@@ -351,7 +468,8 @@ function buildToolDynamicEffects(unit) {
       titleLc.includes("available attack waves") ||
       (attackWavesLabelLc && titleLc.includes(attackWavesLabelLc))
     ) {
-      iconUrl = STAT_ICONS.amountPerWave;
+      list.push({ iconUrl: STAT_ICONS.amountPerWave, title, value });
+      return;
     }
 
     list.push({ iconUrl, title, value });
@@ -643,95 +761,13 @@ function createUnitCard(group, groupIndex) {
       })()
       : `<img src="${fallbackImageUrl}" class="card-image w-100" loading="lazy" alt="${name}">`;
 
-    const getStat = (key, fallback = "-") => {
-      const v = unit?.[key];
-      return (v === undefined || v === null || String(v).trim() === "") ? fallback : formatStatValue(v);
-    };
-    const getRecruitmentTimeStat = () => {
-      const raw = unit?.recruitmentTime;
-      return formatDurationMinSec(raw);
-    };
-
-    const getFirstStat = (keys, fallback = "-") => {
-      for (const key of keys) {
-        const v = unit?.[key];
-        if (v !== undefined && v !== null && String(v).trim() !== "") return formatStatValue(v);
-      }
-      return fallback;
-    };
+    const { getStat, getFirstStat, getRecruitmentTimeStat } = createStatHelpers(unit);
 
     const supplyInfo = getSupplyInfo(unit, getStat);
-    const supplyLabel = supplyInfo.label;
-    const supplyValue = supplyInfo.value;
-    const supplyIcon = supplyInfo.iconUrl;
 
-    const rangedAttackValue = getFirstStat(["rangeAttack", "rangedAttack", "attackRange", "rangedStrength"], "0");
-    const meleeAttackValue = getStat("meleeAttack", "0");
-    const rangedDefenceValue = getStat("rangeDefence", "0");
-    const meleeDefenceValue = getStat("meleeDefence", "0");
     const recruitmentCostInfo = getRecruitmentCostInfo(unit);
-
-    const unitStatsAll = [
-      { iconUrl: STAT_ICONS.rangedAttack, title: UI_LABELS.rangedAttack, value: rangedAttackValue },
-      { iconUrl: STAT_ICONS.meleeAttack, title: UI_LABELS.meleeAttack, value: meleeAttackValue },
-      { iconUrl: STAT_ICONS.rangeDefence, title: UI_LABELS.rangedDefence, value: rangedDefenceValue },
-      { iconUrl: STAT_ICONS.meleeDefence, title: UI_LABELS.meleeDefence, value: meleeDefenceValue },
-      { iconUrl: STAT_ICONS.speed, title: UI_LABELS.speed, value: getStat("speed") },
-      { iconUrl: STAT_ICONS.lootValue, title: UI_LABELS.loot, value: getStat("lootValue") },
-      { iconUrl: STAT_ICONS.might, title: UI_LABELS.might, value: getStat("mightValue", getStat("might")) },
-      { iconUrl: supplyIcon, title: supplyLabel, value: supplyValue },
-      ...(recruitmentCostInfo.hasCost
-        ? [
-          { iconUrl: STAT_ICONS.recruitmentTime, title: UI_LABELS.recruitmentTime, value: getRecruitmentTimeStat() },
-          { iconUrl: recruitmentCostInfo.iconUrl, title: recruitmentCostInfo.title, value: recruitmentCostInfo.value }
-        ]
-        : [])
-    ];
-
-    const unitStatsCard = [
-      { iconUrl: STAT_ICONS.rangedAttack, title: "Ranged attack", value: getFirstStat(["rangeAttack", "rangedAttack", "attackRange", "rangedStrength"], "0") },
-      { iconUrl: STAT_ICONS.meleeAttack, title: "Melee attack", value: getStat("meleeAttack", "0") },
-      { iconUrl: STAT_ICONS.rangeDefence, title: "Ranged defence", value: getStat("rangeDefence", "0") },
-      { iconUrl: STAT_ICONS.meleeDefence, title: "Melee defence", value: getStat("meleeDefence", "0") },
-      { iconUrl: STAT_ICONS.speed, title: "Speed", value: getStat("speed", "0") },
-      { iconUrl: STAT_ICONS.lootValue, title: "Loot", value: getStat("lootValue", "0") },
-      { iconUrl: STAT_ICONS.might, title: "Might", value: getStat("mightValue", getStat("might", "0")) },
-      { iconUrl: supplyIcon, title: supplyLabel, value: supplyValue }
-    ];
-
-    const toolBaseBonuses = getToolBaseBonuses(unit, getStat);
-    const toolEffectStats = buildToolDynamicEffects(unit);
-
-    const toolStatsAll = [
-      { iconUrl: STAT_ICONS.speed, title: UI_LABELS.speed, value: getStat("speed", "0") },
-      { iconUrl: STAT_ICONS.lootValue, title: UI_LABELS.loot, value: getStat("lootValue", "0") },
-      ...toolBaseBonuses,
-      ...toolEffectStats,
-      { iconUrl: STAT_ICONS.unitLimit, title: UI_LABELS.toolLimit, value: getStat("amountPerWave", "0") },
-      { iconUrl: getCurrencyIcon("khantablet"), title: UI_LABELS.khanTabletBooster, value: formatPlusPercent(getStat("khanTabletBooster", "0")) },
-      { iconUrl: getCurrencyIcon("khanmedal"), title: UI_LABELS.khanMedalBooster, value: formatPlusPercent(getStat("khanMedalBooster", "0")) },
-      { iconUrl: getCurrencyIcon("samuraitoken"), title: UI_LABELS.samuraiTokenBooster, value: formatPlusPercent(getStat("samuraiTokenBooster", "0")) },
-      { iconUrl: getCurrencyIcon("pearlrelic"), title: UI_LABELS.pearlBooster, value: formatPlusPercent(getStat("pearlBooster", "0")) },
-      { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.pointBonus, value: formatPlusPercent(getStat("pointBonus", "0")) },
-      { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.xpBonus, value: formatPlusPercent(getStat("xpBonus", "0")) },
-      { iconUrl: STAT_ICONS.costC1, title: UI_LABELS.c1Bonus, value: formatPlusPercent(getStat("c1Bonus", "0")) },
-      { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.ragePointBonus, value: formatPlusPercent(getStat("ragePointBonus", "0")) },
-      { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.reputationBonus, value: formatPlusPercent(getStat("reputationBonus", "0")) },
-      { iconUrl: STAT_ICONS.recruitmentTime, title: UI_LABELS.productionSpeed, value: getRecruitmentTimeStat(), modalOnly: true },
-      { iconUrl: STAT_ICONS.woodCost, title: UI_LABELS.productionCost, value: getStat("costWood", "0"), modalOnly: true },
-      { iconUrl: STAT_ICONS.stoneCost, title: UI_LABELS.productionCost, value: getStat("costStone", "0"), modalOnly: true },
-      { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.productionCost, value: getStat("costSceatToken", "0"), hideIfOne: true, modalOnly: true },
-      { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.productionCost, value: getStat("costLegendaryToken", "0"), hideIfOne: true, modalOnly: true },
-      { iconUrl: getCostComponentIcon(1), title: UI_LABELS.productionCost, value: getStat("costComponent1", "0"), modalOnly: true },
-      { iconUrl: getCostComponentIcon(2), title: UI_LABELS.productionCost, value: getStat("costComponent2", "0"), modalOnly: true },
-      { iconUrl: getCostComponentIcon(3), title: UI_LABELS.productionCost, value: getStat("costComponent3", "0"), modalOnly: true },
-      { iconUrl: getCostComponentIcon(4), title: UI_LABELS.productionCost, value: getStat("costComponent4", "0"), modalOnly: true },
-      { iconUrl: getCostComponentIcon(5), title: UI_LABELS.productionCost, value: getStat("costComponent5", "0"), modalOnly: true },
-      { iconUrl: getCostComponentIcon(6), title: UI_LABELS.productionCost, value: getStat("costComponent6", "0"), modalOnly: true },
-      { iconUrl: getCostComponentIcon(7), title: UI_LABELS.productionCost, value: getStat("costComponent7", "0"), modalOnly: true },
-      { iconUrl: getCostComponentIcon(8), title: UI_LABELS.productionCost, value: getStat("costComponent8", "0"), modalOnly: true },
-      { iconUrl: recruitmentCostInfo.iconUrl, title: UI_LABELS.productionCost, value: recruitmentCostInfo.value, modalOnly: true }
-    ];
+    const unitStatsCard = buildUnitStatsCard({ getStat, getFirstStat, supplyInfo });
+    const toolStatsAll = buildToolStatsAll({ unit, getStat, getRecruitmentTimeStat, recruitmentCostInfo });
 
     const toolStatsCard = toolStatsAll.filter((s) =>
       s.title !== UI_LABELS.recruitmentCost &&
@@ -741,8 +777,6 @@ function createUnitCard(group, groupIndex) {
     const rowsForCard = category === "unit"
       ? buildStatGrid(unitStatsCard, { hideEmpty: false })
       : buildStatGrid(toolStatsCard, { hideEmpty: true, hideZero: true, fixedSlots: 4, gridClass: "unit-stats-grid--tool" });
-    const rowsForModal = category === "unit" ? unitStatsAll : toolStatsAll;
-
     return `
       <div class="level-selector d-flex justify-content-between align-items-center">
         ${hasLevels ? `
@@ -783,129 +817,81 @@ function createUnitCard(group, groupIndex) {
   setTimeout(() => {
     const root = document.getElementById(containerId);
     if (!root) return;
-
-    const bind = () => {
-      const prev = document.getElementById(`${containerId}-prev`);
-      const next = document.getElementById(`${containerId}-next`);
-      const trigger = root.querySelector(".unit-detail-trigger");
-      if (prev) {
-        prev.onclick = () => {
-          if (levelIndex > 0) {
-            levelIndex -= 1;
-            root.innerHTML = renderCurrent();
-            void hydrateComposedImages({ root, cache: composedUnitImageCache });
-            bind();
-          }
-        };
-      }
-      if (next) {
-        next.onclick = () => {
-          if (levelIndex < group.items.length - 1) {
-            levelIndex += 1;
-            root.innerHTML = renderCurrent();
-            void hydrateComposedImages({ root, cache: composedUnitImageCache });
-            bind();
-          }
-        };
-      }
-      if (trigger) {
-        trigger.onclick = () => {
-          const selectedLevelIndex = Number(trigger.dataset.levelIndex ?? levelIndex);
-          const unit = group.items[selectedLevelIndex] || group.items[levelIndex];
-          const getStat = (key, fallback = "-") => {
-            const v = unit?.[key];
-            return (v === undefined || v === null || String(v).trim() === "") ? fallback : formatStatValue(v);
-          };
-          const getFirstStat = (keys, fallback = "-") => {
-            for (const key of keys) {
-              const v = unit?.[key];
-              if (v !== undefined && v !== null && String(v).trim() !== "") return formatStatValue(v);
-            }
-            return fallback;
-          };
-          const modalSupplyInfo = getSupplyInfo(unit, getStat);
-          const supplyValue = modalSupplyInfo.value;
-          const supplyLabel = modalSupplyInfo.label;
-          const supplyIcon = modalSupplyInfo.iconUrl;
-          const recruitmentCostInfo = getRecruitmentCostInfo(unit);
-          const recruitmentTimeValue = formatDurationMinSec(unit?.recruitmentTime);
-          const category = getUnitCategory(unit);
-
-          const stats = category === "unit"
-            ? [
-              { iconUrl: STAT_ICONS.rangedAttack, title: UI_LABELS.rangedAttack, value: getFirstStat(["rangeAttack", "rangedAttack", "attackRange", "rangedStrength"]) },
-              { iconUrl: STAT_ICONS.meleeAttack, title: UI_LABELS.meleeAttack, value: getStat("meleeAttack") },
-              { iconUrl: STAT_ICONS.rangeDefence, title: UI_LABELS.rangedDefence, value: getStat("rangeDefence") },
-              { iconUrl: STAT_ICONS.meleeDefence, title: UI_LABELS.meleeDefence, value: getStat("meleeDefence") },
-              { iconUrl: STAT_ICONS.speed, title: UI_LABELS.speed, value: getStat("speed") },
-              { iconUrl: STAT_ICONS.lootValue, title: UI_LABELS.loot, value: getStat("lootValue") },
-              { iconUrl: STAT_ICONS.might, title: UI_LABELS.might, value: getStat("mightValue", getStat("might")) },
-              { iconUrl: supplyIcon, title: supplyLabel, value: supplyValue ?? "-" },
-              ...(recruitmentCostInfo.hasCost
-                ? [
-                  { iconUrl: recruitmentCostInfo.iconUrl, title: recruitmentCostInfo.title, value: recruitmentCostInfo.value },
-                  { iconUrl: STAT_ICONS.recruitmentTime, title: UI_LABELS.recruitmentTime, value: recruitmentTimeValue }
-                ]
-                : [])
-            ].filter((s) => {
-              const isCombatStat =
-                s.title === UI_LABELS.rangedAttack ||
-                s.title === UI_LABELS.meleeAttack ||
-                s.title === UI_LABELS.rangedDefence ||
-                s.title === UI_LABELS.meleeDefence;
-              if (isCombatStat && (s.value === "-" || s.value === "" || s.value == null)) return false;
-              return true;
-            })
-            : (() => {
-              const toolModalEffectStats = buildToolDynamicEffects(unit);
-              const toolModalStatsRaw = [
-              ...toolModalEffectStats,
-              { iconUrl: STAT_ICONS.lootValue, title: UI_LABELS.loot, value: getStat("lootValue", "0") },
-              ...getToolBaseBonuses(unit, getStat),
-              { iconUrl: STAT_ICONS.unitLimit, title: UI_LABELS.toolLimit, value: getStat("amountPerWave", "0") },
-              { iconUrl: getCurrencyIcon("khantablet"), title: UI_LABELS.khanTabletBooster, value: formatPlusPercent(getStat("khanTabletBooster", "0")) },
-              { iconUrl: getCurrencyIcon("khanmedal"), title: UI_LABELS.khanMedalBooster, value: formatPlusPercent(getStat("khanMedalBooster", "0")) },
-              { iconUrl: getCurrencyIcon("samuraitoken"), title: UI_LABELS.samuraiTokenBooster, value: formatPlusPercent(getStat("samuraiTokenBooster", "0")) },
-              { iconUrl: getCurrencyIcon("pearlrelic"), title: UI_LABELS.pearlBooster, value: formatPlusPercent(getStat("pearlBooster", "0")) },
-              { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.pointBonus, value: formatPlusPercent(getStat("pointBonus", "0")) },
-              { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.xpBonus, value: formatPlusPercent(getStat("xpBonus", "0")) },
-              { iconUrl: STAT_ICONS.costC1, title: UI_LABELS.c1Bonus, value: formatPlusPercent(getStat("c1Bonus", "0")) },
-              { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.ragePointBonus, value: formatPlusPercent(getStat("ragePointBonus", "0")) },
-              { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.reputationBonus, value: formatPlusPercent(getStat("reputationBonus", "0")) },
-              { iconUrl: STAT_ICONS.speed, title: UI_LABELS.speed, value: getStat("speed", "0") },
-              { iconUrl: STAT_ICONS.recruitmentTime, title: UI_LABELS.productionSpeed, value: recruitmentTimeValue },
-              { iconUrl: STAT_ICONS.woodCost, title: UI_LABELS.productionCost, value: getStat("costWood", "0") },
-              { iconUrl: STAT_ICONS.stoneCost, title: UI_LABELS.productionCost, value: getStat("costStone", "0") },
-              { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.productionCost, value: getStat("costSceatToken", "0"), hideIfOne: true },
-              { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.productionCost, value: getStat("costLegendaryToken", "0"), hideIfOne: true },
-              { iconUrl: getCostComponentIcon(1), title: UI_LABELS.productionCost, value: getStat("costComponent1", "0") },
-              { iconUrl: getCostComponentIcon(2), title: UI_LABELS.productionCost, value: getStat("costComponent2", "0") },
-              { iconUrl: getCostComponentIcon(3), title: UI_LABELS.productionCost, value: getStat("costComponent3", "0") },
-              { iconUrl: getCostComponentIcon(4), title: UI_LABELS.productionCost, value: getStat("costComponent4", "0") },
-              { iconUrl: getCostComponentIcon(5), title: UI_LABELS.productionCost, value: getStat("costComponent5", "0") },
-              { iconUrl: getCostComponentIcon(6), title: UI_LABELS.productionCost, value: getStat("costComponent6", "0") },
-              { iconUrl: getCostComponentIcon(7), title: UI_LABELS.productionCost, value: getStat("costComponent7", "0") },
-              { iconUrl: getCostComponentIcon(8), title: UI_LABELS.productionCost, value: getStat("costComponent8", "0") },
-              { iconUrl: recruitmentCostInfo.iconUrl, title: UI_LABELS.productionCost, value: recruitmentCostInfo.value }
-            ];
-
-              return toolModalStatsRaw.filter((s) => {
-                if (s.value === "-" || s.value === "" || s.value == null) return false;
-                if (isZeroStat(s.value)) return false;
-                if (s.hideIfOne && isOneStat(s.value)) return false;
-                return true;
-              });
-            })();
-
-          openUnitStatsModal({
-            name: `${getUnitName(unit)}${getUnitLevel(unit) !== "-" ? ` (Lvl.${getUnitLevel(unit)})` : ""}`,
-            stats
-          });
-        };
-      }
+    const rerender = () => {
+      root.innerHTML = renderCurrent();
+      void hydrateComposedImages({ root, cache: composedUnitImageCache });
     };
 
-    bind();
+    root.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+
+      const prev = target.closest(`#${containerId}-prev`);
+      if (prev) {
+        if (levelIndex > 0) {
+          levelIndex -= 1;
+          rerender();
+        }
+        return;
+      }
+
+      const next = target.closest(`#${containerId}-next`);
+      if (next) {
+        if (levelIndex < group.items.length - 1) {
+          levelIndex += 1;
+          rerender();
+        }
+        return;
+      }
+
+      const trigger = target.closest(".unit-detail-trigger");
+      if (!trigger) return;
+
+      const selectedLevelIndex = Number(trigger.dataset.levelIndex ?? levelIndex);
+      const unit = group.items[selectedLevelIndex] || group.items[levelIndex];
+      const { getStat, getFirstStat, getRecruitmentTimeStat } = createStatHelpers(unit);
+      const modalSupplyInfo = getSupplyInfo(unit, getStat);
+      const supplyValue = modalSupplyInfo.value;
+      const supplyLabel = modalSupplyInfo.label;
+      const supplyIcon = modalSupplyInfo.iconUrl;
+      const recruitmentCostInfo = getRecruitmentCostInfo(unit);
+      const category = getUnitCategory(unit);
+
+      const stats = category === "unit"
+        ? buildUnitStatsAll({
+          getStat,
+          getFirstStat,
+          getRecruitmentTimeStat,
+          supplyInfo: { label: supplyLabel, value: supplyValue, iconUrl: supplyIcon },
+          recruitmentCostInfo
+        }).filter((s) => {
+          const isCombatStat =
+            s.title === UI_LABELS.rangedAttack ||
+            s.title === UI_LABELS.meleeAttack ||
+            s.title === UI_LABELS.rangedDefence ||
+            s.title === UI_LABELS.meleeDefence;
+          if (isCombatStat && (s.value === "-" || s.value === "" || s.value == null || isZeroStat(s.value))) return false;
+          return true;
+        })
+        : (() => {
+          const filtered = buildToolStatsAll({ unit, getStat, getRecruitmentTimeStat, recruitmentCostInfo }).filter((s) => {
+            if (s.value === "-" || s.value === "" || s.value == null) return false;
+            if (isZeroStat(s.value)) return false;
+            if (s.hideIfOne && isOneStat(s.value)) return false;
+            return true;
+          });
+          const speedIndex = filtered.findIndex((s) => s.title === UI_LABELS.speed);
+          if (speedIndex === 0) {
+            filtered.push(filtered.shift());
+          }
+          return filtered;
+        })();
+
+      openUnitStatsModal({
+        name: `${getUnitName(unit)}${getUnitLevel(unit) !== "-" ? ` (Lvl.${getUnitLevel(unit)})` : ""}`,
+        stats
+      });
+    });
   }, 0);
 
   return html;
