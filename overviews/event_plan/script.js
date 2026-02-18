@@ -1,4 +1,4 @@
-const eventSources = {
+﻿const eventSources = {
     empire: {
         label: "Empire (Computer)",
         url: "https://communityhub.goodgamestudios.com/empire/event-plan/"
@@ -19,18 +19,18 @@ const fallbackProxy = "https://corsproxy.io/?";
 const placeholderImage = "";
 
 const customEventImages = [
-    { name: "LTPE", url: "./img/ltpe.webp", priority: 12, nickname: "" },
-    { name: "Nomad Invasion", url: "./img/nomadinvasion.webp", priority: 1, nickname: "" },
-    { name: "War of the Realms", url: "./img/waroftherealms.webp", priority: 4, nickname: "" },
-    { name: "Bloodcrow Invasion", url: "./img/bloodcrow.webp", priority: 3, nickname: "" },
-    { name: "Samurai Invasion", url: "./img/samuraiinvasion.webp", priority: 2, nickname: "" },
-    { name: "Berimond", url: "./img/berimond.webp", priority: 7, nickname: "" },
-    { name: "Beyond the Horizon", url: "./img/beyondthehorizon.webp", priority: 5, nickname: "" },
-    { name: "Outer Realms", url: "./img/outerrealms.webp", priority: 6, nickname: "" },
-    { name: "The Imperial Patronage", url: "./img/patronage.webp", priority: 9, nickname: "Imperial Patronage" },
-    { name: "The Bladecoast", url: "./img/bladecoast.webp", priority: 10, nickname: "" },
-    { name: "The Grand Tournament", url: "./img/grandtournament.webp", priority: 11, nickname: "Grand Tournament" },
-    { name: "Rift Raid", url: "./img/riftraid.webp", priority: 8, nickname: "" }
+    { name: "LTPE", url: "../../img_base/event_icons/ltpe.webp", priority: 12, nickname: "" },
+    { name: "Nomad Invasion", url: "../../img_base/event_icons/nomadinvasion.webp", priority: 1, nickname: "" },
+    { name: "War of the Realms", url: "../../img_base/event_icons/waroftherealms.webp", priority: 4, nickname: "" },
+    { name: "Bloodcrow Invasion", url: "../../img_base/event_icons/bloodcrow.webp", priority: 3, nickname: "" },
+    { name: "Samurai Invasion", url: "../../img_base/event_icons/samuraiinvasion.webp", priority: 2, nickname: "" },
+    { name: "Berimond", url: "../../img_base/event_icons/berimond.webp", priority: 7, nickname: "" },
+    { name: "Beyond the Horizon", url: "../../img_base/event_icons/beyondthehorizon.webp", priority: 5, nickname: "" },
+    { name: "Outer Realms", url: "../../img_base/event_icons/outerrealms.webp", priority: 6, nickname: "" },
+    { name: "The Imperial Patronage", url: "../../img_base/event_icons/patronage.webp", priority: 9, nickname: "Imperial Patronage" },
+    { name: "The Bladecoast", url: "../../img_base/event_icons/bladecoast.webp", priority: 10, nickname: "" },
+    { name: "The Grand Tournament", url: "../../img_base/event_icons/grandtournament.webp", priority: 11, nickname: "Grand Tournament" },
+    { name: "Rift Raid", url: "../../img_base/event_icons/riftraid.webp", priority: 8, nickname: "" }
 ];
 
 const eventCache = {
@@ -39,8 +39,8 @@ const eventCache = {
 };
 
 const gameIcons = {
-    empire: "./img/logo-em.webp",
-    e4k: "./img/logo-e4k.webp"
+    empire: "../../img_base/event_icons/logo-em.webp",
+    e4k: "../../img_base/event_icons/logo-e4k.webp"
 };
 
 function lightenColor(hexColor, amount) {
@@ -103,7 +103,7 @@ function normalizeText(text) {
 
 function extractDateTokens(text) {
     const tokens = [];
-    const regex = /(\d{1,2}[./-]\d{1,2}(?:[./-]\d{2,4})?)(?:\s*[-–]\s*(\d{1,2}[./-]\d{1,2}(?:[./-]\d{2,4})?))?/g;
+    const regex = /(\d{1,2}[./-]\d{1,2}(?:[./-]\d{2,4})?)(?:\s*[-â€“]\s*(\d{1,2}[./-]\d{1,2}(?:[./-]\d{2,4})?))?/g;
     let match = null;
 
     while ((match = regex.exec(text)) !== null) {
@@ -1006,8 +1006,8 @@ function buildExportDom(events, gameKey) {
 
     const gameIconUrl =
         gameKey === "empire"
-            ? "./img/logo-em.webp"
-            : "./img/logo-e4k.webp";
+            ? "../../img_base/event_icons/logo-em.webp"
+            : "../../img_base/event_icons/logo-e4k.webp";
 
     const root = document.createElement("div");
     root.className = "export-root";

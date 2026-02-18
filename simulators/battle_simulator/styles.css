@@ -299,13 +299,13 @@ body {
 }
 
 .square2:nth-child(1) {
-    background-image: url('./img/icon_commander_0.png');
+    background-image: url('../../img_base/battle_simulator/icon_commander_0.png');
     background-color: rgb(179, 109, 109);
     border: 2px solid rgb(133, 61, 61);
 }
 
 .square2:nth-child(2) {
-    background-image: url('./img/icon_basics.png');
+    background-image: url('../../img_base/battle_simulator/icon_basics.png');
     background-color: rgb(179, 109, 109);
     border: 2px solid rgb(133, 61, 61);
 }
@@ -317,13 +317,13 @@ body {
 }
 
 .square2:nth-child(4) {
-    background-image: url('./img/icon_basics.png');
+    background-image: url('../../img_base/battle_simulator/icon_basics.png');
     background-color: rgb(88, 117, 114);
     border: 2px solid rgb(58, 77, 75);
 }
 
 .square2:nth-child(5) {
-    background-image: url('./img/icon_castellan_0.png');
+    background-image: url('../../img_base/battle_simulator/icon_castellan_0.png');
     background-color: rgb(88, 117, 114);
     border: 2px solid rgb(58, 77, 75);
 }
@@ -731,11 +731,11 @@ input[type="number"] {
 
 .openAllWaves-button.active {
     background-color: rgb(243, 194, 74);
-    background-image: url('./img/openallwaves-icon2.webp');
+    background-image: url('../../img_base/battle_simulator/openallwaves-icon2.webp');
 }
 
 .openAllWaves-button {
-    background-image: url('./img/openallwaves-icon1.webp');
+    background-image: url('../../img_base/battle_simulator/openallwaves-icon1.webp');
     background-position: center;
     background-repeat: no-repeat;
     background-size: 80%;

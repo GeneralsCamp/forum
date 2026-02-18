@@ -235,7 +235,7 @@ function renderUnitSummaryHTML(unitsSummary, imageMap, isDefense = false) {
     const unitImage = imageMap[type] || (isDefense ? 'default-defense-icon.png' : 'default-attack-icon.png');
     return `
       <div class="unit-slot report-unit">
-        <img src="./img/${unitImage}" class="unit-icon" alt="${type}">
+        <img src="../../../../img_base/battle_simulator/${unitImage}" class="unit-icon" alt="${type}">
         <div class="unit-info">
           <div class="unit-count">${formatNumber(count)}</div>
           ${loss > 0 ? `<div class="unit-loss">-${formatNumber(loss)}</div>` : `<div class="unit-loss">-</div>`}
@@ -1168,7 +1168,7 @@ function populateBattleReportModal(side) {
                       const loss = slotLosses.get(slot.id) || 0;
                       return `
                         <div class="unit-slot report-unit">
-                          <img src="./img/${unitImage}" class="unit-icon" alt="${slot.type}">
+                          <img src="../../../../img_base/battle_simulator/${unitImage}" class="unit-icon" alt="${slot.type}">
                           <div class="unit-info">
                             <div class="unit-count">${formatNumber(slot.count)}</div>
                             ${loss > 0 ? `<div class="unit-loss">-${formatNumber(loss)}</div>` : `<div class="unit-loss">-</div>`}

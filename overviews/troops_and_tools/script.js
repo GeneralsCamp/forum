@@ -1,4 +1,4 @@
-import { initAutoHeight } from "../shared/ResizeService.mjs";
+﻿import { initAutoHeight } from "../shared/ResizeService.mjs";
 import { createLoader } from "../shared/LoadingService.mjs";
 import { coreInit } from "../shared/CoreInit.mjs";
 import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageService.mjs";
@@ -28,31 +28,31 @@ const STAT_ICONS = {
   supplyFood: "../../img_base/foodwastage.png",
   supplyMead: "../../img_base/meadwastage.png",
   supplyBeef: "../../img_base/beefwastage.png",
-  rangedAttack: "../../simulators/battle_simulator/img/ranged-icon.png",
-  meleeAttack: "../../simulators/battle_simulator/img/melee-icon.png",
-  meleeDefence: "../../simulators/battle_simulator/img/castellan-modal1.png",
-  rangeDefence: "../../simulators/battle_simulator/img/castellan-modal2.png",
+  rangedAttack: "../../img_base/battle_simulator/ranged-icon.png",
+  meleeAttack: "../../img_base/battle_simulator/melee-icon.png",
+  meleeDefence: "../../img_base/battle_simulator/castellan-modal1.png",
+  rangeDefence: "../../img_base/battle_simulator/castellan-modal2.png",
   might: "../../img_base/might.png",
-  lootValue: "../../simulators/battle_simulator/img/loot-icon.png",
-  speed: "../../simulators/battle_simulator/img/travelSpeed-icon.png",
+  lootValue: "../../img_base/battle_simulator/loot-icon.png",
+  speed: "../../img_base/battle_simulator/travelSpeed-icon.png",
   recruitmentTime: "../../img_base/time.png",
   costC1: "../../img_base/coin.png",
-  offRangeBonus: "../../simulators/battle_simulator/img/ranged-icon.png",
-  offMeleeBonus: "../../simulators/battle_simulator/img/melee-icon.png",
-  wallBonus: "../../simulators/battle_simulator/img/wall-icon.png",
-  gateBonus: "../../simulators/battle_simulator/img/gate-icon.png",
-  moatBonus: "../../simulators/battle_simulator/img/moat-icon.png",
-  defRangeBonus: "../../simulators/battle_simulator/img/castellan-modal2.png",
-  defMeleeBonus: "../../simulators/battle_simulator/img/castellan-modal1.png",
-  amountPerWave: "../../simulators/battle_simulator/img/additionalWave-icon.png",
-  unitLimit: "../../simulators/battle_simulator/img/unitLimit-icon.png",
-  fameBonus: "../../simulators/battle_simulator/img/glory-icon.png",
-  killMeleeTroopsYard: "../../simulators/battle_simulator/img/killMeleeTroopsYard-icon.png",
-  killRangedTroopsYard: "../../simulators/battle_simulator/img/killRangedTroopsYard-icon.png",
-  killAnyTroopsYard: "../../simulators/battle_simulator/img/killAnyTroopsYard-icon.png",
-  killMeleeTroopsYardDefense: "../../simulators/battle_simulator/img/killMeleeTroopsYardDefense-icon.png",
-  killRangedTroopsYardDefense: "../../simulators/battle_simulator/img/killRangedTroopsYardDefense-icon.png",
-  killAnyTroopsYardDefense: "../../simulators/battle_simulator/img/killAnyTroopsYardDefense-icon.png",
+  offRangeBonus: "../../img_base/battle_simulator/ranged-icon.png",
+  offMeleeBonus: "../../img_base/battle_simulator/melee-icon.png",
+  wallBonus: "../../img_base/battle_simulator/wall-icon.png",
+  gateBonus: "../../img_base/battle_simulator/gate-icon.png",
+  moatBonus: "../../img_base/battle_simulator/moat-icon.png",
+  defRangeBonus: "../../img_base/battle_simulator/castellan-modal2.png",
+  defMeleeBonus: "../../img_base/battle_simulator/castellan-modal1.png",
+  amountPerWave: "../../img_base/battle_simulator/additionalWave-icon.png",
+  unitLimit: "../../img_base/battle_simulator/unitLimit-icon.png",
+  fameBonus: "../../img_base/battle_simulator/glory-icon.png",
+  killMeleeTroopsYard: "../../img_base/battle_simulator/killMeleeTroopsYard-icon.png",
+  killRangedTroopsYard: "../../img_base/battle_simulator/killRangedTroopsYard-icon.png",
+  killAnyTroopsYard: "../../img_base/battle_simulator/killAnyTroopsYard-icon.png",
+  killMeleeTroopsYardDefense: "../../img_base/battle_simulator/killMeleeTroopsYardDefense-icon.png",
+  killRangedTroopsYardDefense: "../../img_base/battle_simulator/killRangedTroopsYardDefense-icon.png",
+  killAnyTroopsYardDefense: "../../img_base/battle_simulator/killAnyTroopsYardDefense-icon.png",
   woodCost: "../../img_base/wood.png",
   stoneCost: "../../img_base/stone.png",
   gallantryBonus: "../../img_base/gallantryBoost.png",
@@ -62,7 +62,7 @@ const STAT_ICONS = {
 };
 const EFFECT_ICON_RULES = [
   { pattern: /additionalwaves|amountperwave|attackunitamount|attack\s*waves|tool\s*limit|wave/i, icon: STAT_ICONS.amountPerWave },
-  { pattern: /increase the wall capacity for defenders|wall capacity/i, icon: "../../simulators/battle_simulator/img/castellan-modal3.png" },
+  { pattern: /increase the wall capacity for defenders|wall capacity/i, icon: "../../img_base/battle_simulator/castellan-modal3.png" },
   { pattern: /bonuswallcapacity|wall/i, icon: STAT_ICONS.wallBonus },
   { pattern: /gate/i, icon: STAT_ICONS.gateBonus },
   { pattern: /moat/i, icon: STAT_ICONS.moatBonus },
@@ -72,7 +72,7 @@ const EFFECT_ICON_RULES = [
   { pattern: /killattackingmeleetroopsyard/i, icon: STAT_ICONS.killMeleeTroopsYardDefense },
   { pattern: /killattackingrangedtroopsyard/i, icon: STAT_ICONS.killRangedTroopsYardDefense },
   { pattern: /killattackinganytroopsyard/i, icon: STAT_ICONS.killAnyTroopsYardDefense },
-  { pattern: /difficultyscalingdefenseboostyard|bonusyarddefensepower|attackboostyard|courtyard|yard/i, icon: "../../simulators/battle_simulator/img/cy-icon.png" },
+  { pattern: /difficultyscalingdefenseboostyard|bonusyarddefensepower|attackboostyard|courtyard|yard/i, icon: "../../img_base/battle_simulator/cy-icon.png" },
   { pattern: /fame|glory/i, icon: STAT_ICONS.fameBonus },
   { pattern: /loot/i, icon: STAT_ICONS.lootValue },
   { pattern: /speed|time|recruit|production/i, icon: STAT_ICONS.recruitmentTime },
@@ -353,8 +353,34 @@ function buildUnitStatsCard({ getStat, getFirstStat, supplyInfo }) {
 function buildToolStatsAll({ unit, getStat, getRecruitmentTimeStat, recruitmentCostInfo }) {
   const toolBaseBonuses = getToolBaseBonuses(unit, getStat);
   const toolEffectStats = buildToolDynamicEffects(unit);
+  const productionSpeedValue = getRecruitmentTimeStat();
+  const hasProductionSpeed =
+    productionSpeedValue !== "-" &&
+    productionSpeedValue !== "00:00:00";
 
-  return [
+  const toNum = (v) => {
+    const n = Number(String(v ?? "").trim());
+    return Number.isNaN(n) ? 0 : n;
+  };
+
+  const hasProductionCost =
+    toNum(unit?.costWood) > 0 ||
+    toNum(unit?.costStone) > 0 ||
+    toNum(unit?.costSceatToken) > 1 ||
+    toNum(unit?.costLegendaryToken) > 1 ||
+    toNum(unit?.costComponent1) > 0 ||
+    toNum(unit?.costComponent2) > 0 ||
+    toNum(unit?.costComponent3) > 0 ||
+    toNum(unit?.costComponent4) > 0 ||
+    toNum(unit?.costComponent5) > 0 ||
+    toNum(unit?.costComponent6) > 0 ||
+    toNum(unit?.costComponent7) > 0 ||
+    toNum(unit?.costComponent8) > 0 ||
+    Boolean(recruitmentCostInfo?.hasCost);
+
+  const includeProductionRows = hasProductionSpeed && hasProductionCost;
+
+  const stats = [
     { iconUrl: STAT_ICONS.speed, title: UI_LABELS.speed, value: getStat("speed", "0") },
     { iconUrl: STAT_ICONS.lootValue, title: UI_LABELS.loot, value: getStat("lootValue", "0") },
     ...toolBaseBonuses,
@@ -368,22 +394,29 @@ function buildToolStatsAll({ unit, getStat, getRecruitmentTimeStat, recruitmentC
     { iconUrl: STAT_ICONS.xpBonus, title: UI_LABELS.xpBonus, value: formatPlusPercent(getStat("xpBonus", "0")) },
     { iconUrl: STAT_ICONS.costC1, title: UI_LABELS.c1Bonus, value: formatPlusPercent(getStat("c1Bonus", "0")) },
     { iconUrl: STAT_ICONS.rageBonus, title: UI_LABELS.ragePointBonus, value: formatPlusPercent(getStat("ragePointBonus", "0")) },
-    { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.reputationBonus, value: formatPlusPercent(getStat("reputationBonus", "0")) },
-    { iconUrl: STAT_ICONS.recruitmentTime, title: UI_LABELS.productionSpeed, value: getRecruitmentTimeStat(), modalOnly: true },
-    { iconUrl: STAT_ICONS.woodCost, title: UI_LABELS.productionCost, value: getStat("costWood", "0"), modalOnly: true },
-    { iconUrl: STAT_ICONS.stoneCost, title: UI_LABELS.productionCost, value: getStat("costStone", "0"), modalOnly: true },
-    { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.productionCost, value: getStat("costSceatToken", "0"), hideIfOne: true, modalOnly: true },
-    { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.productionCost, value: getStat("costLegendaryToken", "0"), hideIfOne: true, modalOnly: true },
-    { iconUrl: getCostComponentIcon(1), title: UI_LABELS.productionCost, value: getStat("costComponent1", "0"), modalOnly: true },
-    { iconUrl: getCostComponentIcon(2), title: UI_LABELS.productionCost, value: getStat("costComponent2", "0"), modalOnly: true },
-    { iconUrl: getCostComponentIcon(3), title: UI_LABELS.productionCost, value: getStat("costComponent3", "0"), modalOnly: true },
-    { iconUrl: getCostComponentIcon(4), title: UI_LABELS.productionCost, value: getStat("costComponent4", "0"), modalOnly: true },
-    { iconUrl: getCostComponentIcon(5), title: UI_LABELS.productionCost, value: getStat("costComponent5", "0"), modalOnly: true },
-    { iconUrl: getCostComponentIcon(6), title: UI_LABELS.productionCost, value: getStat("costComponent6", "0"), modalOnly: true },
-    { iconUrl: getCostComponentIcon(7), title: UI_LABELS.productionCost, value: getStat("costComponent7", "0"), modalOnly: true },
-    { iconUrl: getCostComponentIcon(8), title: UI_LABELS.productionCost, value: getStat("costComponent8", "0"), modalOnly: true },
-    { iconUrl: recruitmentCostInfo.iconUrl, title: UI_LABELS.productionCost, value: recruitmentCostInfo.value, modalOnly: true }
+    { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.reputationBonus, value: formatPlusPercent(getStat("reputationBonus", "0")) }
   ];
+
+  if (includeProductionRows) {
+    stats.push(
+      { iconUrl: STAT_ICONS.recruitmentTime, title: UI_LABELS.productionSpeed, value: productionSpeedValue, modalOnly: true },
+      { iconUrl: STAT_ICONS.woodCost, title: UI_LABELS.productionCost, value: getStat("costWood", "0"), modalOnly: true },
+      { iconUrl: STAT_ICONS.stoneCost, title: UI_LABELS.productionCost, value: getStat("costStone", "0"), modalOnly: true },
+      { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.productionCost, value: getStat("costSceatToken", "0"), hideIfOne: true, modalOnly: true },
+      { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.productionCost, value: getStat("costLegendaryToken", "0"), hideIfOne: true, modalOnly: true },
+      { iconUrl: getCostComponentIcon(1), title: UI_LABELS.productionCost, value: getStat("costComponent1", "0"), modalOnly: true },
+      { iconUrl: getCostComponentIcon(2), title: UI_LABELS.productionCost, value: getStat("costComponent2", "0"), modalOnly: true },
+      { iconUrl: getCostComponentIcon(3), title: UI_LABELS.productionCost, value: getStat("costComponent3", "0"), modalOnly: true },
+      { iconUrl: getCostComponentIcon(4), title: UI_LABELS.productionCost, value: getStat("costComponent4", "0"), modalOnly: true },
+      { iconUrl: getCostComponentIcon(5), title: UI_LABELS.productionCost, value: getStat("costComponent5", "0"), modalOnly: true },
+      { iconUrl: getCostComponentIcon(6), title: UI_LABELS.productionCost, value: getStat("costComponent6", "0"), modalOnly: true },
+      { iconUrl: getCostComponentIcon(7), title: UI_LABELS.productionCost, value: getStat("costComponent7", "0"), modalOnly: true },
+      { iconUrl: getCostComponentIcon(8), title: UI_LABELS.productionCost, value: getStat("costComponent8", "0"), modalOnly: true },
+      { iconUrl: recruitmentCostInfo.iconUrl, title: UI_LABELS.productionCost, value: recruitmentCostInfo.value, modalOnly: true }
+    );
+  }
+
+  return stats;
 }
 
 function getEffectDisplayName(effectName, effectId) {
@@ -1008,12 +1041,33 @@ function setupEventListeners() {
   if (searchInput) searchInput.addEventListener("input", applyFilters);
   if (typeSelect) {
     typeSelect.addEventListener("change", () => {
+      updateLocationForType(typeSelect.value);
       updateOrderAvailability();
       applyFilters();
     });
   }
   if (orderSelect) orderSelect.addEventListener("change", applyFilters);
   if (toolTypeSelect) toolTypeSelect.addEventListener("change", applyFilters);
+}
+
+function getInitialTypeFromLocation() {
+  const params = new URLSearchParams(window.location.search);
+  const queryType = String(params.get("type") || "").toLowerCase();
+  if (queryType === "tool" || queryType === "tools") return "tool";
+  if (queryType === "unit" || queryType === "troop" || queryType === "troops") return "unit";
+
+  const hash = String(window.location.hash || "").replace("#", "").toLowerCase();
+  if (hash === "tools" || hash === "tool") return "tool";
+  if (hash === "troops" || hash === "troop" || hash === "units" || hash === "unit") return "unit";
+
+  return null;
+}
+
+function updateLocationForType(typeValue) {
+  const type = String(typeValue || "").toLowerCase() === "tool" ? "tools" : "troops";
+  const url = new URL(window.location.href);
+  url.hash = type;
+  window.history.replaceState({}, "", url.toString());
 }
 
 initAutoHeight({
@@ -1057,6 +1111,14 @@ async function init() {
         setupTypeOptions();
         setupOrderOptions();
         setupToolTypeOptions();
+        const initialType = getInitialTypeFromLocation();
+        const typeSelect = document.getElementById("typeSelect");
+        if (typeSelect && initialType) {
+          typeSelect.value = initialType;
+        }
+        if (typeSelect) {
+          updateLocationForType(typeSelect.value);
+        }
         updateOrderAvailability();
         setupEventListeners();
         applyFilters();

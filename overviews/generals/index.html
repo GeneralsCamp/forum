@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GGE Generals Overview</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <link rel="icon" type="image/webp" href="../../img_base/favicon.ico">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../shared/shared.css">
+  <link rel="stylesheet" href="./generals_overview.css">
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-12 mb-2">
+        <div class="col-12 page-title">
+          <h1>GENERALS OVERVIEW</h1>
+        </div>
+
+        <div id="topButtonsContainer">
+          <a href="#" id="languageButtonContainer" class="home-icon-link">
+            <div class="home-icon" title="Change language">
+              <i class="bi bi-globe"></i>
+            </div>
+          </a>
+
+          <a href="https://generalscamp.github.io/forum/" class="home-icon-link">
+            <div class="home-icon">
+              <i class="bi bi-house"></i>
+            </div>
+          </a>
+        </div>
+
+        <div class="row note gx-1 gy-1 align-items-center pb-2">
+          <div class="col-md-6 col-sm-12">
+            <select id="generalSelect" class="form-select custom-select text-center" aria-label="General selector">
+              <option value="" selected>Loading generals...</option>
+            </select>
+          </div>
+
+          <div class="col-md-6 col-sm-12">
+            <select id="viewSelect" class="form-select custom-select text-center" aria-label="View selector">
+              <option value="skills" selected>Skill tree</option>
+              <option value="costs">Upgrade costs</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <main id="content" class="container-fluid">
+        <div id="viewSkills" class="view-section">
+          <div id="skillTreeGrouped" class="skill-tree-grouped"></div>
+        </div>
+
+        <div id="viewCosts" class="view-section d-none">
+          <div class="box">
+            <div class="box-content">
+
+              <table class="cost-table">
+                <thead>
+                  <tr>
+                    <th class="col-level">Level</th>
+                    <th class="col-shards">Shard</th>
+                    <th class="col-xp">XP</th>
+                  </tr>
+                </thead>
+                <tbody id="costTableBody">
+                </tbody>
+              </table>
+
+            </div>
+          </div>
+        </div>
+
+        <div id="loadingBox" class="loading-message">
+          <h3 id="loadingStatus">Initializing...</h3>
+          <div class="progress">
+            <div id="loadingProgress" class="progress-bar"></div>
+            <span id="loadingPercentText" class="progress-text">0%</span>
+          </div>
+        </div>
+
+      </main>
+    </div>
+
+    <div class="modal fade" id="languageModal" tabindex="-1" aria-labelledby="languageModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title text-center w-100" id="languageModalLabel"></h5>
+          </div>
+          <div class="modal-body">
+            <div id="languageList" class="row"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script type="module" src="script.js"></script>
+</body>
+
+</html>

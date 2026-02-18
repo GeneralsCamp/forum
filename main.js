@@ -1,28 +1,30 @@
 const categories = {
     overviews: [
-        { name: "Decorations Overview", desc: "This page loads the in-game decorations automatically!", icon: "decorations.webp", link: "./overviews/decorations/index.html", disabled: false },
-        { name: "CI's & TCI's Overview", desc: "This page loads the in-game CI's & TCI's automatically!", icon: "ci-icon.webp", link: "./overviews/building_items/index.html", disabled: false },
-        { name: "Look-items Overview", desc: "This page loads the in-game look items automatically!", icon: "look-items.webp", link: "./overviews/look_items/index.html", disabled: false },
-        { name: "Generals Overview", desc: "This page loads the in-game generals automatically!", icon: "generals-icon.webp", link: "./overviews/generals_overview/index.html", disabled: false },
-        { name: "Event Rewards Overview", desc: "This page loads in-game event rewards with a vary of filters!", icon: "event-rewards-icon.webp", link: "./overviews/event_rewards_overview/index.html", disabled: false },
-        { name: "Gacha Overview", desc: "This page loads the in-game gacha rewards automatically!", icon: "gacha-icon.webp", link: "./overviews/gacha_overview/index.html", disabled: false },
-        { name: "Lootbox Overview", desc: "This page loads the in-game lootboxes key chances automatically!", icon: "lootbox-icon.webp", link: "./overviews/loot_box/index.html", disabled: false },
-        { name: "Troops & Tools Overview", desc: "Overview page for troops and tools with detailed stats.", icon: "troops-icon.png", link: "./overviews/units_tools_overview/index.html", disabled: false },
-        { name: "Event plan Overview", desc: "This page loads the event plans automatically!", icon: "event-plan-icon.webp", link: "./overviews/event_plan/index.html", disabled: false }
+        { name: "Decorations Overview", desc: "This page loads the in-game decorations automatically!", icon: "main_page/decorations.webp", link: "./overviews/decorations/index.html", disabled: false },
+        { name: "CI's & TCI's Overview", desc: "This page loads the in-game CI's & TCI's automatically!", icon: "main_page/ci-icon.webp", link: "./overviews/building_items/index.html", disabled: false },
+        { name: "Look-items Overview", desc: "This page loads the in-game look items automatically!", icon: "main_page/look-items.webp", link: "./overviews/look_items/index.html", disabled: false },
+        { name: "Generals Overview", desc: "This page loads the in-game generals automatically!", icon: "main_page/generals-icon.webp", link: "./overviews/generals/index.html", disabled: false },
+        { name: "Event Rewards Overview", desc: "This page loads in-game event rewards with a vary of filters!", icon: "main_page/event-rewards-icon.webp", link: "./overviews/event_rewards/index.html", disabled: false },
+        { name: "Gacha Overview", desc: "This page loads the in-game gacha rewards automatically!", icon: "main_page/gacha-icon.webp", link: "./overviews/gacha_events/index.html", disabled: false },
+        { name: "Mystery Boxes Overview", desc: "This page loads in-game mystery box key chances and full reward pools!", icon: "main_page/lootbox-icon.webp", link: "./overviews/loot_box/index.html#boxes", disabled: false },
+        { name: "Offerings Overview", desc: "This page loads in-game offerings and their linked reward pools!", icon: "main_page/offerings-icon.webp", link: "./overviews/loot_box/index.html#offerings", disabled: false },
+        { name: "Troops Overview", desc: "This page loads all in-game troops with detailed stats!", icon: "main_page/troops-icon.webp", link: "./overviews/troops_and_tools/index.html#troops", disabled: false },
+        { name: "Tools Overview", desc: "This page loads all in-game tools with detailed stats!", icon: "main_page/tools-icon.webp", link: "./overviews/troops_and_tools/index.html#tools", disabled: false },
+        { name: "Event plan Overview", desc: "This page loads the event plans automatically!", icon: "main_page/event-plan-icon.webp", link: "./overviews/event_plan/index.html", disabled: false }
     ],
 
     calculators: [
-        { name: "Food Production Calculator", desc: "Calculate your in-game food production easily.", icon: "food-production-icon.webp", link: "./calculators/food_production/index.html", disabled: false },
-        { name: "Mead Production Calculator", desc: "Calculate your mead production easily.", icon: "mead-icon.webp", link: "./calculators/mead_production/index.html", disabled: false },
-        { name: "Wall Limit Calculator", desc: "Calculate your wall unit limit with absolute accuracy.", icon: "wall-icon.webp", link: "./calculators/wall_limit/index.html", disabled: false },
-        { name: "Collector Event Calculator", desc: "Calculate that how many points you need to reach your goal.", icon: "collector-icon.webp", link: "./calculators/collector_event/index.html", disabled: false },
-        { name: "Detection Time Calculator", desc: "Calculate the exact land time, and detection time of an attack.", icon: "detection-icon.webp", link: "./calculators/travel_speed/index.html", disabled: false },
-        { name: "Rift Raid Point Calculator", desc: "Calculate Activity Points based on defeated/faced troops, area, and boss level.", icon: "rift-raid-points-icon.webp", link: "./calculators/rift_raid_points/index.html", disabled: false }
+        { name: "Food Production Calculator", desc: "Calculate your in-game food production easily.", icon: "main_page/food-production-icon.webp", link: "./calculators/food_production/index.html", disabled: false },
+        { name: "Mead Production Calculator", desc: "Calculate your mead production easily.", icon: "main_page/mead-icon.webp", link: "./calculators/mead_production/index.html", disabled: false },
+        { name: "Wall Limit Calculator", desc: "Calculate your wall unit limit with absolute accuracy.", icon: "main_page/wall-icon.webp", link: "./calculators/wall_limit/index.html", disabled: false },
+        { name: "Collector Event Calculator", desc: "Calculate that how many points you need to reach your goal.", icon: "main_page/collector-icon.webp", link: "./calculators/collector_event/index.html", disabled: false },
+        { name: "Detection Time Calculator", desc: "Calculate the exact land time, and detection time of an attack.", icon: "main_page/detection-icon.webp", link: "./calculators/travel_speed/index.html", disabled: false },
+        { name: "Rift Raid Point Calculator", desc: "Calculate Activity Points based on defeated/faced troops, area, and boss level.", icon: "main_page/rift-raid-points-icon.webp", link: "./calculators/rift_raid_points/index.html", disabled: false }
     ],
 
     simulators: [
-        { name: "Castle Layout Simulator", desc: "Design and manage your layouts manually or automatically.", icon: "layout-icon.webp", link: "./simulators/layout_editor/index.html", disabled: false },
-        { name: "Hall of Legends Simulator", desc: "Try point allocations without spending rubies.", icon: "hall-of-legends-simulator-icon.webp", link: "./simulators/hol_simulator/index.html", disabled: false },
+        { name: "Castle Layout Simulator", desc: "Design and manage your layouts manually or automatically.", icon: "main_page/layout-icon.webp", link: "./simulators/layout_editor/index.html", disabled: false },
+        { name: "Hall of Legends Simulator", desc: "Try point allocations without spending rubies.", icon: "main_page/hall-of-legends-simulator-icon.webp", link: "./simulators/hol_simulator/index.html", disabled: false },
     ]
 };
 

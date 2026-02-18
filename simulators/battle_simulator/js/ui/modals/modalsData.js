@@ -27,19 +27,19 @@ export const modalsData = [
 <div class="row presets-footer">
     <div class="col-6">
         <button class="btn btn-apply" id="applyPresetBtn">
-            <img src="./img/icon_applyOne.webp" alt="Apply" class="icon" />
+            <img src="../../../../../img_base/battle_simulator/icon_applyOne.webp" alt="Apply" class="icon" />
         </button>
         <p>Apply preset to wave</p>
     </div>
     <div class="col-6">
         <button class="btn btn-apply-all" id="applyPresetAllBtn">
-            <img src="./img/icon_applyAll.webp" alt="Apply to All" class="icon" />
+            <img src="../../../../../img_base/battle_simulator/icon_applyAll.webp" alt="Apply to All" class="icon" />
         </button>
         <p>Apply preset to all waves</p>
     </div>
     <div class="col-6">
         <button class="btn btn-save" id="savePresetBtn">
-            <img src="./img/icon_save.webp" alt="Save" class="icon" />
+            <img src="../../../../../img_base/battle_simulator/icon_save.webp" alt="Save" class="icon" />
         </button>
         <p>Save selected wave to preset</p>
     </div>
@@ -54,16 +54,16 @@ export const modalsData = [
         <div class="player-flanks d-flex justify-content-between align-items-center">
             <div class="row flanks ms-1">
                 <button class="btn flanks-button-defense sides" data-section="left">
-                    <img src="./img/left-icon.webp" alt="L">
+                    <img src="../../../../../img_base/battle_simulator/left-icon.webp" alt="L">
                 </button>
                 <button class="btn flanks-button-defense sides active" data-section="front">
-                    <img src="./img/front-icon.webp" alt="F">
+                    <img src="../../../../../img_base/battle_simulator/front-icon.webp" alt="F">
                 </button>
                 <button class="btn flanks-button-defense sides" data-section="right">
-                    <img src="./img/right-icon.webp" alt="R">
+                    <img src="../../../../../img_base/battle_simulator/right-icon.webp" alt="R">
                 </button>
                 <button class="btn flanks-button-defense sides" data-section="cy">
-                    <img src="./img/cy-icon.webp" alt="CY">
+                    <img src="../../../../../img_base/battle_simulator/cy-icon.webp" alt="CY">
                 </button>
             </div>
         </div>
@@ -106,15 +106,15 @@ export const modalsData = [
                     <h6 class="card-title text-center">Unit distribution</h6>
                     <div class="row d-flex align-items-center justify-content-center">
                         <div class="d-flex justify-content-center mb-1 mt-2">
-                            <img src="./img/castellan-modal1.png" alt="Tools" style="width: 20px; height: 20px; vertical-align: middle;">
+                            <img src="../../../../../img_base/battle_simulator/castellan-modal1.png" alt="Tools" style="width: 20px; height: 20px; vertical-align: middle;">
                             <span id="leftPercentage" class="selector-value">0%</span>
                             <input type="range" id="defenseStrengthSlider" min="0" max="100" value="0" class="form-range" disabled />
-                            <img src="./img/castellan-modal2.png" alt="Tools" style="width: 20px; height: 20px; vertical-align: middle;">
+                            <img src="../../../../../img_base/battle_simulator/castellan-modal2.png" alt="Tools" style="width: 20px; height: 20px; vertical-align: middle;">
                             <span id="rightPercentage" class="selector-value">0%</span>
                         </div>
                         <div class="col-4 d-flex flex-column align-items-center justify-content-center text-center">
                             <div class="d-flex align-items-center justify-content-center">
-                                <img src="./img/wall-icon.png" alt="Tools" style="width: 22px; height: auto;">
+                                <img src="../../../../../img_base/battle_simulator/wall-icon.png" alt="Tools" style="width: 22px; height: auto;">
                                 <span class="unit-distributon-modal-value" id="leftFlank">X%</span>
                             </div>
                             <hr class="yellow-line">
@@ -122,7 +122,7 @@ export const modalsData = [
                         </div>
                         <div class="col-4 d-flex flex-column align-items-center justify-content-center text-center">
                             <div class="d-flex align-items-center justify-content-center">
-                                <img src="./img/gate-icon.png" alt="Tools" style="width: 22px; height: auto; vertical-align: middle;">
+                                <img src="../../../../../img_base/battle_simulator/gate-icon.png" alt="Tools" style="width: 22px; height: auto; vertical-align: middle;">
                                 <span class="unit-distributon-modal-value" id="front">X%</span>
                             </div>
                             <hr class="red-line">
@@ -130,7 +130,7 @@ export const modalsData = [
                         </div>
                         <div class="col-4 d-flex flex-column align-items-center justify-content-center text-center">
                             <div class="d-flex align-items-center justify-content-center">
-                                <img src="./img/wall-icon.png" alt="Tools" style="width: 22px; height: auto;">
+                                <img src="../../../../../img_base/battle_simulator/wall-icon.png" alt="Tools" style="width: 22px; height: auto;">
                                 <span class="unit-distributon-modal-value" id="rightFlank">X%</span>
                             </div>
                             <hr class="yellow-line">
@@ -287,57 +287,57 @@ export const modalsData = [
     title: 'Attack Basics',
     body: `
         ${generateInputCard(
-      'Waves', './img/attack-modal1.png', 'wave',
+      'Waves', '../../../../../img_base/battle_simulator/attack-modal1.png', 'wave',
       'waves-slider', 4, 23, attackBasics.maxWaves,
       'waves-value', 4, 23, attackBasics.maxWaves
     )}
         ${generateInputCard(
-      'Front unit limit', './img/attack-modal2.png', 'front-unit-limit',
+      'Front unit limit', '../../../../../img_base/battle_simulator/attack-modal2.png', 'front-unit-limit',
       'front-unit-slider', 192, 1600, attackBasics.maxUnits.front,
       'front-unit-value', 192, 1600, attackBasics.maxUnits.front
     )}
         ${generateInputCard(
-      'Flank unit limit', './img/attack-modal3.png', 'flank-unit-limit',
+      'Flank unit limit', '../../../../../img_base/battle_simulator/attack-modal3.png', 'flank-unit-limit',
       'flank-unit-slider', 64, 800, attackBasics.maxUnits.left,
       'flank-unit-value', 64, 800, attackBasics.maxUnits.left
     )}
         ${generateInputCard(
-      'Courtyard unit limit', './img/attack-modal4.png', 'courtyard-unit-limit',
+      'Courtyard unit limit', '../../../../../img_base/battle_simulator/attack-modal4.png', 'courtyard-unit-limit',
       'courtyard-unit-slider', 2089, 6000, attackBasics.maxUnitsCY,
       'courtyard-unit-value', 2089, 6000, attackBasics.maxUnitsCY
     )}
         ${generateInputCard(
-      'Flank tool limit', './img/attack-modal5.png', 'flank-tool-limit',
+      'Flank tool limit', '../../../../../img_base/battle_simulator/attack-modal5.png', 'flank-tool-limit',
       'flank-tool-slider', 40, 50, attackBasics.maxTools.left,
       'flank-tool-value', 40, 50, attackBasics.maxTools.left
     )}
         ${generateInputCard(
-      'Level of "Valkyre ranger"', './img/attack-modal6.png', 'valkyre-ranger-lv',
+      'Level of "Valkyre ranger"', '../../../../../img_base/battle_simulator/attack-modal6.png', 'valkyre-ranger-lv',
       'mead-range-level-slider', 0, 11, attackBasics.meadRangeLevel,
       'mead-range-level-value', 0, 11, attackBasics.meadRangeLevel
     )}
         ${generateInputCard(
-      'Level of "Shield-maiden"', './img/attack-modal7.png', 'shield-maiden-lv',
+      'Level of "Shield-maiden"', '../../../../../img_base/battle_simulator/attack-modal7.png', 'shield-maiden-lv',
       'mead-melee-level-slider', 0, 11, attackBasics.meadMeleeLevel,
       'mead-melee-level-value', 0, 11, attackBasics.meadMeleeLevel
     )}
         ${generateInputCard(
-      'Level of "Glasswing Archer"', './img/attack-modal8.png', 'glasswing-archer-lv',
+      'Level of "Glasswing Archer"', '../../../../../img_base/battle_simulator/attack-modal8.png', 'glasswing-archer-lv',
       'beef-range-level-slider', 0, 10, attackBasics.beefRangeLevel,
       'beef-range-level-value', 0, 10, attackBasics.beefRangeLevel
     )}
         ${generateInputCard(
-      'Level of "Flamebreath Berserker"', './img/attack-modal9.png', 'flamebreath-berserker-lv',
+      'Level of "Flamebreath Berserker"', '../../../../../img_base/battle_simulator/attack-modal9.png', 'flamebreath-berserker-lv',
       'beef-melee-level-slider', 0, 10, attackBasics.beefMeleeLevel,
       'beef-melee-level-value', 0, 10, attackBasics.beefMeleeLevel
     )}
         ${generateInputCard(
-      'Level of "Scaleshard Marksman"', './img/attack-modal10.png', 'scaleshard-marksman-lv',
+      'Level of "Scaleshard Marksman"', '../../../../../img_base/battle_simulator/attack-modal10.png', 'scaleshard-marksman-lv',
       'beef-veteran-range-level-slider', 0, 10, attackBasics.beefVeteranRangeLevel,
       'beef-veteran-range-level-value', 0, 10, attackBasics.beefVeteranRangeLevel
     )}
         ${generateInputCard(
-      'Level of "Scalesbound Guardian"', './img/attack-modal11.png', 'scalesbound-guardian-lv',
+      'Level of "Scalesbound Guardian"', '../../../../../img_base/battle_simulator/attack-modal11.png', 'scalesbound-guardian-lv',
       'beef-veteran-melee-level-slider', 0, 10, attackBasics.beefVeteranMeleeLevel,
       'beef-veteran-melee-level-value', 0, 10, attackBasics.beefVeteranMeleeLevel
     )}
@@ -354,72 +354,72 @@ export const modalsData = [
     title: 'Attack Stats',
     body: `
         ${generateInputCard(
-      'Melee strength (%)', './img/melee-icon.png', 'melee-strength',
+      'Melee strength (%)', '../../../../../img_base/battle_simulator/melee-icon.png', 'melee-strength',
       'melee-strength-slider', 0, 1500, commanderStats.meleeStrength,
       'melee-strength-value', 0, 1500, commanderStats.meleeStrength
     )}
         ${generateInputCard(
-      'Ranged strength (%)', './img/ranged-icon.png', 'ranged-strength',
+      'Ranged strength (%)', '../../../../../img_base/battle_simulator/ranged-icon.png', 'ranged-strength',
       'ranged-strength-slider', 0, 1500, commanderStats.rangedStrength,
       'ranged-strength-value', 0, 1500, commanderStats.rangedStrength
     )}
         ${generateInputCard(
-      'Combat strength (%)', './img/universal-icon.png', 'universal-strength',
+      'Combat strength (%)', '../../../../../img_base/battle_simulator/universal-icon.png', 'universal-strength',
       'universal-strength-slider', 0, 100, commanderStats.combatStrength,
       'universal-strength-value', 0, 100, commanderStats.combatStrength
     )}
         ${generateInputCard(
-      'Courtyard strength (%)', './img/cy-icon.png', 'courtyard-strength',
+      'Courtyard strength (%)', '../../../../../img_base/battle_simulator/cy-icon.png', 'courtyard-strength',
       'courtyard-strength-slider', 0, 1500, commanderStats.courtyardStrength,
       'courtyard-strength-value', 0, 1500, commanderStats.courtyardStrength
     )}
         ${generateInputCard(
-      'Wall reduction (%)', './img/commander-modal1.png', 'wall-reduction',
+      'Wall reduction (%)', '../../../../../img_base/battle_simulator/commander-modal1.png', 'wall-reduction',
       'wall-reduction-slider', 0, 410, commanderStats.wallReduction,
       'wall-reduction-value', 0, 410, commanderStats.wallReduction
     )}
         ${generateInputCard(
-      'Moat reduction (%)', './img/commander-modal2.png', 'moat-reduction',
+      'Moat reduction (%)', '../../../../../img_base/battle_simulator/commander-modal2.png', 'moat-reduction',
       'moat-reduction-slider', 0, 210, commanderStats.moatReduction,
       'moat-reduction-value', 0, 210, commanderStats.moatReduction
     )}
         ${generateInputCard(
-      'Gate reduction (%)', './img/commander-modal3.png', 'gate-reduction',
+      'Gate reduction (%)', '../../../../../img_base/battle_simulator/commander-modal3.png', 'gate-reduction',
       'gate-reduction-slider', 0, 410, commanderStats.gateReduction,
       'gate-reduction-value', 0, 410, commanderStats.gateReduction
     )}
         ${generateInputCard(
-      'Mead unit strength', './img/commander-modal4.png', 'mead-unit-strength',
+      'Mead unit strength', '../../../../../img_base/battle_simulator/commander-modal4.png', 'mead-unit-strength',
       'mead-unit-strength-slider', 0, 20, commanderStats.meadUnitStrength,
       'mead-unit-strength-value', 0, 30, commanderStats.meadUnitStrength
     )}
         ${generateInputCard(
-      'Horror unit strength', './img/commander-modal5.png', 'horror-unit-strength',
+      'Horror unit strength', '../../../../../img_base/battle_simulator/commander-modal5.png', 'horror-unit-strength',
       'horror-unit-strength-slider', 0, 40, commanderStats.horrorUnitStrength,
       'horror-unit-strength-value', 0, 40, commanderStats.horrorUnitStrength
     )}
         ${generateInputCard(
-      'HoL melee strength (%)', './img/melee-icon.png', 'hol-melee-strength',
+      'HoL melee strength (%)', '../../../../../img_base/battle_simulator/melee-icon.png', 'hol-melee-strength',
       'hol-melee-strength-slider', 0, 13, commanderStats.holMeleeStrength,
       'hol-melee-strength-value', 0, 13, commanderStats.holMeleeStrength
     )}
         ${generateInputCard(
-      'HoL ranged strength (%)', './img/ranged-icon.png', 'hol-ranged-strength',
+      'HoL ranged strength (%)', '../../../../../img_base/battle_simulator/ranged-icon.png', 'hol-ranged-strength',
       'hol-ranged-strength-slider', 0, 13, commanderStats.holRangedStrength,
       'hol-ranged-strength-value', 0, 13, commanderStats.holRangedStrength
     )}
         ${generateInputCard(
-      'HoL combat strength (%)', './img/universal-icon.png', 'hol-universal-strength',
+      'HoL combat strength (%)', '../../../../../img_base/battle_simulator/universal-icon.png', 'hol-universal-strength',
       'hol-universal-strength-slider', 0, 12, commanderStats.holCombatStrength,
       'hol-universal-strength-value', 0, 12, commanderStats.holCombatStrength
     )}
         ${generateInputCard(
-      'Strength in front (%)', './img/front-strength.png', 'front-strength',
+      'Strength in front (%)', '../../../../../img_base/battle_simulator/front-strength.png', 'front-strength',
       'front-strength-slider', 0, 200, commanderStats.strengthInFront,
       'front-strength-value', 0, 200, commanderStats.strengthInFront
     )}
         ${generateInputCard(
-      'Strength in flanks (%)', './img/flanks-strength.png', 'flanks-strength',
+      'Strength in flanks (%)', '../../../../../img_base/battle_simulator/flanks-strength.png', 'flanks-strength',
       'flanks-strength-slider', 0, 200, commanderStats.strengthInFlanks,
       'flanks-strength-value', 0, 200, commanderStats.strengthInFlanks
     )}
@@ -436,52 +436,52 @@ export const modalsData = [
     title: 'Defense Stats',
     body: `
       ${generateInputCard(
-      'Level of "Protector of the north"', './img/icon_defense_unit2.webp', 'defense-melee-lv',
+      'Level of "Protector of the north"', '../../../../../img_base/battle_simulator/icon_defense_unit2.webp', 'defense-melee-lv',
       'defense-melee-lv-slider', 0, 11, castellanStats.defenseMeleeLevel,
       'defense-melee-lv-value', 0, 11, castellanStats.defenseMeleeLevel
     )}
       ${generateInputCard(
-      'Level of "Valkyrie sniper"', './img/icon_defense_unit1.webp', 'defense-ranged-lv',
+      'Level of "Valkyrie sniper"', '../../../../../img_base/battle_simulator/icon_defense_unit1.webp', 'defense-ranged-lv',
       'defense-ranged-lv-slider', 0, 11, castellanStats.defenseRangedLevel,
       'defense-ranged-lv-value', 0, 11, castellanStats.defenseRangedLevel
     )}
       ${generateInputCard(
-      'Melee strength (%)', './img/castellan-modal1.png', 'melee-strength',
+      'Melee strength (%)', '../../../../../img_base/battle_simulator/castellan-modal1.png', 'melee-strength',
       'defense-melee-strength-slider', 0, 500, castellanStats.melee,
       'defense-melee-strength-value', 0, 500, castellanStats.melee
     )}
       ${generateInputCard(
-      'Ranged strength (%)', './img/castellan-modal2.png', 'ranged-strength',
+      'Ranged strength (%)', '../../../../../img_base/battle_simulator/castellan-modal2.png', 'ranged-strength',
       'defense-ranged-strength-slider', 0, 500, castellanStats.ranged,
       'defense-ranged-strength-value', 0, 500, castellanStats.ranged
     )}
       ${generateInputCard(
-      'Courtyard strength (%)', './img/cy-icon.png', 'courtyard-strength',
+      'Courtyard strength (%)', '../../../../../img_base/battle_simulator/cy-icon.png', 'courtyard-strength',
       'defense-courtyard-strength-slider', 0, 600, castellanStats.courtyardStrength,
       'defense-courtyard-strength-value', 0, 600, castellanStats.courtyardStrength
     )}
       ${generateInputCard(
-      'Wall unit limit', './img/castellan-modal3.png', 'wall-unit-limit',
+      'Wall unit limit', '../../../../../img_base/battle_simulator/castellan-modal3.png', 'wall-unit-limit',
       'wall-unit-limit-slider', 100, 50000, castellanStats.wallUnitLimit,
       'wall-unit-limit-value', 100, 50000, castellanStats.wallUnitLimit
     )}
       ${generateInputCard(
-      'Courtyard unit limit', './img/attack-modal4.png', 'cy-unit-limit',
+      'Courtyard unit limit', '../../../../../img_base/battle_simulator/attack-modal4.png', 'cy-unit-limit',
       'cy-unit-limit-slider', 100, 5000000, castellanStats.cyUnitLimit,
       'cy-unit-limit-value', 100, 5000000, castellanStats.cyUnitLimit
     )}
       ${generateInputCard(
-      'Wall protection (%)', './img/castellan-modal4.png', 'wall-protection',
+      'Wall protection (%)', '../../../../../img_base/battle_simulator/castellan-modal4.png', 'wall-protection',
       'defense-wall-protection-slider', 0, 500, castellanStats.wallProtection,
       'defense-wall-protection-value', 0, 500, castellanStats.wallProtection
     )}
       ${generateInputCard(
-      'Moat protection (%)', './img/castellan-modal5.png', 'moat-protection',
+      'Moat protection (%)', '../../../../../img_base/battle_simulator/castellan-modal5.png', 'moat-protection',
       'defense-moat-protection-slider', 0, 300, castellanStats.moatProtection,
       'defense-moat-protection-value', 0, 300, castellanStats.moatProtection
     )}
       ${generateInputCard(
-      'Gate protection (%)', './img/castellan-modal6.png', 'gate-protection',
+      'Gate protection (%)', '../../../../../img_base/battle_simulator/castellan-modal6.png', 'gate-protection',
       'defense-gate-protection-slider', 0, 500, castellanStats.gateProtection,
       'defense-gate-protection-value', 0, 500, castellanStats.gateProtection
     )}

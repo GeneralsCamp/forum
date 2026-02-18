@@ -41,7 +41,7 @@ export function createCourtyardAssaultCard() {
         <div class="right-content ms-auto">
           <span class="units">
             ${wave.slots.reduce((acc, s) => acc + s.count, 0)} / ${maxUnitsCY}  
-            <img src="./img/troops-icon.webp" alt="Units"/>
+            <img src="../../../../img_base/battle_simulator/troops-icon.webp" alt="Units"/>
           </span>
         </div>
       </button>
@@ -59,7 +59,7 @@ export function createCourtyardAssaultCard() {
     <div class="card-body">
       <div class="row d-flex align-items-start">
         <div class="col-8 bugfix">
-          <img src="./img/troops-icon.webp" alt="Units" style="width:20px;height:20px;vertical-align:middle;" />
+          <img src="../../../../img_base/battle_simulator/troops-icon.webp" alt="Units" style="width:20px;height:20px;vertical-align:middle;" />
           <span class="units">Units ${wave.slots.reduce((acc, s) => acc + s.count, 0)} / ${maxUnitsCY}</span>
           <div class="row ms-1 mt-1">
             ${Array.from({ length: 4 }, (_, i) => `<div class="unit-slot" id="unit-slot-CY-${i + 1}">+</div>`).join('')}
@@ -228,8 +228,8 @@ export function summarizeCourtyardUnitBonuses() {
   }
 
   const result = [];
-  if (totalStats.ranged > 0) result.push({ type: 'ranged', value: Math.round(totalStats.ranged * (1 + totalRangedBonus / 100)), icon: './img/ranged-icon.png' });
-  if (totalStats.melee > 0) result.push({ type: 'melee', value: Math.round(totalStats.melee * (1 + totalMeleeBonus / 100)), icon: './img/melee-icon.png' });
+  if (totalStats.ranged > 0) result.push({ type: 'ranged', value: Math.round(totalStats.ranged * (1 + totalRangedBonus / 100)), icon: '../../../../img_base/battle_simulator/ranged-icon.png' });
+  if (totalStats.melee > 0) result.push({ type: 'melee', value: Math.round(totalStats.melee * (1 + totalMeleeBonus / 100)), icon: '../../../../img_base/battle_simulator/melee-icon.png' });
 
   result.sort((a, b) => b.value - a.value);
 

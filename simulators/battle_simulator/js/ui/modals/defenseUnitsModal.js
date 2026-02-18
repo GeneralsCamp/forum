@@ -9,10 +9,10 @@ export function initializeDefenseUnits(defense_units) {
   defense_units.forEach((unit, index) => {
     const effects = [];
     if (unit.meleeDefenseStrength > 0) {
-      effects.push(`<img src="./img/castellan-modal1.png" alt="" class="combat-icon" /><span class="me-2">+${unit.meleeDefenseStrength}</span>`);
+      effects.push(`<img src="../../../../../img_base/battle_simulator/castellan-modal1.png" alt="" class="combat-icon" /><span class="me-2">+${unit.meleeDefenseStrength}</span>`);
     }
     if (unit.rangedDefenseStrength > 0) {
-      effects.push(`<img src="./img/castellan-modal2.png" alt="" class="combat-icon" /><span class="me-2">+${unit.rangedDefenseStrength}</span>`);
+      effects.push(`<img src="../../../../../img_base/battle_simulator/castellan-modal2.png" alt="" class="combat-icon" /><span class="me-2">+${unit.rangedDefenseStrength}</span>`);
     }
 
     let levelInfo = '';
@@ -26,7 +26,7 @@ export function initializeDefenseUnits(defense_units) {
             <h6 class="card-title text-center">${unit.name} ${levelInfo}</h6>
             <div class="d-flex align-items-center">
               <div class="me-2">
-                <img src="./img/icon_defense_unit${index + 1}.webp" alt="${unit.id}" class="unit-image" />
+                <img src="../../../../../img_base/battle_simulator/icon_defense_unit${index + 1}.webp" alt="${unit.id}" class="unit-image" />
               </div>
               <div class="flex-grow-1">
                 <div class="d-flex align-items-center">
