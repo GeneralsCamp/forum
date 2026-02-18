@@ -35,7 +35,7 @@ const STAT_ICONS = {
   might: "../../img_base/might.png",
   lootValue: "../../simulators/battle_simulator/img/loot-icon.png",
   speed: "../../simulators/battle_simulator/img/travelSpeed-icon.png",
-  recruitmentTime: "../../simulators/battle_simulator/img/travelSpeed-icon.png",
+  recruitmentTime: "../../img_base/time.png",
   costC1: "../../img_base/coin.png",
   offRangeBonus: "../../simulators/battle_simulator/img/ranged-icon.png",
   offMeleeBonus: "../../simulators/battle_simulator/img/melee-icon.png",
@@ -90,6 +90,23 @@ function applyUiLabels() {
     productionSpeed: lang["productionspeed"] || "Production speed",
     productionCost: getOwnLangValue("production_cost", lang["productioncost"] || "Production cost"),
     recruitmentCost: getOwnLangValue("recruitment_cost", "Recruitment cost"),
+    rangedAttackBonus: lang["offrangebonus"] || getOwnLangValue("ranged_attack_bonus", "Ranged attack bonus"),
+    meleeAttackBonus: lang["offmeleebonus"] || getOwnLangValue("melee_attack_bonus", "Melee attack bonus"),
+    rangedDefenseBonus: lang["defrangebonus"] || getOwnLangValue("ranged_defense_bonus", "Ranged defense bonus"),
+    meleeDefenseBonus: lang["defmeleebonus"] || getOwnLangValue("melee_defense_bonus", "Melee defense bonus"),
+    wallBonus: lang["wallprotection"] || getOwnLangValue("wall_bonus", "Wall bonus"),
+    gateBonus: lang["gateprotection"] || getOwnLangValue("gate_bonus", "Gate bonus"),
+    moatBonus: lang["moatprotection"] || getOwnLangValue("moat_bonus", "Moat bonus"),
+    fameBonus: lang["dialog_fame_fame"] || getOwnLangValue("fame_bonus", "Fame bonus"),
+    khanTabletBooster: lang["nomadebooster_name"] || getOwnLangValue("khan_tablet_booster", "Khan tablet booster"),
+    khanMedalBooster: lang["khanmedalbooster_name"] || getOwnLangValue("khan_medal_booster", "Khan medal booster"),
+    samuraiTokenBooster: lang["samuraibooster_name"] || getOwnLangValue("samurai_token_booster", "Samurai token booster"),
+    pearlBooster: lang["pearlbooster_name"] || getOwnLangValue("pearl_booster", "Pearl bonus"),
+    pointBonus: lang["gallantrybooster_name"] || getOwnLangValue("point_bonus", "Point bonus"),
+    xpBonus: lang["xpbooster_name"] || getOwnLangValue("xp_bonus", "XP bonus"),
+    c1Bonus: lang["currency_name_currency1"] || getOwnLangValue("c1_bonus", "C1 bonus"),
+    ragePointBonus: lang["ragebooster_name"] || getOwnLangValue("rage_point_bonus", "Rage point bonus"),
+    reputationBonus: getOwnLangValue("reputation_bonus", "Reputation bonus"),
     attackWaves: getOwnLangValue("attack_waves_bonus", "Increase the number of available attack waves"),
     toolLimit: lang["amountperwave"] || getOwnLangValue("tool_limit", "Tool limit"),
     sortBy: getOwnLangValue("sort_by", "Sort by"),
@@ -116,9 +133,14 @@ function formatStatValue(value) {
 function formatDurationMinSec(secondsValue) {
   const raw = String(secondsValue ?? "").trim();
   if (!raw || raw === "-") return "-";
-  const total = Number(raw);
+  const total = Number(raw.replace(/,/g, ""));
   if (Number.isNaN(total)) return raw;
-  return `${total.toLocaleString(currentLanguage)} sec`;
+  const secsTotal = Math.max(0, Math.floor(total));
+  const hours = Math.floor(secsTotal / 3600);
+  const mins = Math.floor((secsTotal % 3600) / 60);
+  const secs = secsTotal % 60;
+  const pad2 = (n) => String(n).padStart(2, "0");
+  return `${pad2(hours)}:${pad2(mins)}:${pad2(secs)}`;
 }
 
 function formatPlusPercent(value) {
@@ -185,14 +207,14 @@ function getToolBaseBonuses(unit, getStatFn) {
   };
 
   return [
-    { iconUrl: STAT_ICONS.offRangeBonus, title: "Ranged attack bonus", value: withSignPercent(getStatFn("offRangeBonus", "0"), () => "+"), hideIfZero: true },
-    { iconUrl: STAT_ICONS.offMeleeBonus, title: "Melee attack bonus", value: withSignPercent(getStatFn("offMeleeBonus", "0"), () => "+"), hideIfZero: true },
-    { iconUrl: STAT_ICONS.defRangeBonus, title: "Ranged defense bonus", value: withSignPercent(getStatFn("defRangeBonus", "0"), hostileOrFriendlySign), hideIfZero: true },
-    { iconUrl: STAT_ICONS.defMeleeBonus, title: "Melee defense bonus", value: withSignPercent(getStatFn("defMeleeBonus", "0"), hostileOrFriendlySign), hideIfZero: true },
-    { iconUrl: STAT_ICONS.wallBonus, title: "Wall bonus", value: withSignPercent(getStatFn("wallBonus", "0"), hostileOrFriendlySign), hideIfZero: true },
-    { iconUrl: STAT_ICONS.gateBonus, title: "Gate bonus", value: withSignPercent(getStatFn("gateBonus", "0"), hostileOrFriendlySign), hideIfZero: true },
-    { iconUrl: STAT_ICONS.moatBonus, title: "Moat bonus", value: withSignPercent(getStatFn("moatBonus", "0"), hostileOrFriendlySign), hideIfZero: true },
-    { iconUrl: STAT_ICONS.fameBonus, title: "Fame bonus", value: withSignPercent(getStatFn("fameBonus", "0"), () => "+"), hideIfZero: true }
+    { iconUrl: STAT_ICONS.offRangeBonus, title: UI_LABELS.rangedAttackBonus, value: withSignPercent(getStatFn("offRangeBonus", "0"), () => "+"), hideIfZero: true },
+    { iconUrl: STAT_ICONS.offMeleeBonus, title: UI_LABELS.meleeAttackBonus, value: withSignPercent(getStatFn("offMeleeBonus", "0"), () => "+"), hideIfZero: true },
+    { iconUrl: STAT_ICONS.defRangeBonus, title: UI_LABELS.rangedDefenseBonus, value: withSignPercent(getStatFn("defRangeBonus", "0"), hostileOrFriendlySign), hideIfZero: true },
+    { iconUrl: STAT_ICONS.defMeleeBonus, title: UI_LABELS.meleeDefenseBonus, value: withSignPercent(getStatFn("defMeleeBonus", "0"), hostileOrFriendlySign), hideIfZero: true },
+    { iconUrl: STAT_ICONS.wallBonus, title: UI_LABELS.wallBonus, value: withSignPercent(getStatFn("wallBonus", "0"), hostileOrFriendlySign), hideIfZero: true },
+    { iconUrl: STAT_ICONS.gateBonus, title: UI_LABELS.gateBonus, value: withSignPercent(getStatFn("gateBonus", "0"), hostileOrFriendlySign), hideIfZero: true },
+    { iconUrl: STAT_ICONS.moatBonus, title: UI_LABELS.moatBonus, value: withSignPercent(getStatFn("moatBonus", "0"), hostileOrFriendlySign), hideIfZero: true },
+    { iconUrl: STAT_ICONS.fameBonus, title: UI_LABELS.fameBonus, value: withSignPercent(getStatFn("fameBonus", "0"), () => "+"), hideIfZero: true }
   ];
 }
 
@@ -275,6 +297,7 @@ function getEffectIcon(effectName) {
     return "../../simulators/battle_simulator/img/cy-icon.png";
   }
   if (key === "bonuswallcapacity") return "../../simulators/battle_simulator/img/castellan-modal3.png";
+  if (key.includes("additionalwaves")) return STAT_ICONS.amountPerWave;
   if (key.includes("amountperwave")) return STAT_ICONS.amountPerWave;
   if (key.includes("attackunitamount")) return STAT_ICONS.amountPerWave;
   if (key.includes("killdefendingmeleetroopsyard")) return STAT_ICONS.killMeleeTroopsYard;
@@ -322,10 +345,11 @@ function buildToolDynamicEffects(unit) {
       title = UI_LABELS.toolLimit;
     }
 
+    const attackWavesLabelLc = String(UI_LABELS.attackWaves || "").toLowerCase();
     if (
       titleLc.includes("attack waves") ||
       titleLc.includes("available attack waves") ||
-      titleLc.includes("támadási hullám")
+      (attackWavesLabelLc && titleLc.includes(attackWavesLabelLc))
     ) {
       iconUrl = STAT_ICONS.amountPerWave;
     }
@@ -684,15 +708,15 @@ function createUnitCard(group, groupIndex) {
       ...toolBaseBonuses,
       ...toolEffectStats,
       { iconUrl: STAT_ICONS.unitLimit, title: UI_LABELS.toolLimit, value: getStat("amountPerWave", "0") },
-      { iconUrl: getCurrencyIcon("khantablet"), title: "Khan tablet booster", value: formatPlusPercent(getStat("khanTabletBooster", "0")) },
-      { iconUrl: getCurrencyIcon("khanmedal"), title: "Khan medal booster", value: formatPlusPercent(getStat("khanMedalBooster", "0")) },
-      { iconUrl: getCurrencyIcon("samuraitoken"), title: "Samurai token booster", value: formatPlusPercent(getStat("samuraiTokenBooster", "0")) },
-      { iconUrl: getCurrencyIcon("pearlrelic"), title: "Pearl booster", value: formatPlusPercent(getStat("pearlBooster", "0")) },
-      { iconUrl: STAT_ICONS.unknown, title: "Point bonus", value: formatPlusPercent(getStat("pointBonus", "0")) },
-      { iconUrl: STAT_ICONS.unknown, title: "XP bonus", value: formatPlusPercent(getStat("xpBonus", "0")) },
-      { iconUrl: STAT_ICONS.unknown, title: "C1 bonus", value: formatPlusPercent(getStat("c1Bonus", "0")) },
-      { iconUrl: STAT_ICONS.unknown, title: "Rage point bonus", value: formatPlusPercent(getStat("ragePointBonus", "0")) },
-      { iconUrl: STAT_ICONS.unknown, title: "Reputation bonus", value: formatPlusPercent(getStat("reputationBonus", "0")) },
+      { iconUrl: getCurrencyIcon("khantablet"), title: UI_LABELS.khanTabletBooster, value: formatPlusPercent(getStat("khanTabletBooster", "0")) },
+      { iconUrl: getCurrencyIcon("khanmedal"), title: UI_LABELS.khanMedalBooster, value: formatPlusPercent(getStat("khanMedalBooster", "0")) },
+      { iconUrl: getCurrencyIcon("samuraitoken"), title: UI_LABELS.samuraiTokenBooster, value: formatPlusPercent(getStat("samuraiTokenBooster", "0")) },
+      { iconUrl: getCurrencyIcon("pearlrelic"), title: UI_LABELS.pearlBooster, value: formatPlusPercent(getStat("pearlBooster", "0")) },
+      { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.pointBonus, value: formatPlusPercent(getStat("pointBonus", "0")) },
+      { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.xpBonus, value: formatPlusPercent(getStat("xpBonus", "0")) },
+      { iconUrl: STAT_ICONS.costC1, title: UI_LABELS.c1Bonus, value: formatPlusPercent(getStat("c1Bonus", "0")) },
+      { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.ragePointBonus, value: formatPlusPercent(getStat("ragePointBonus", "0")) },
+      { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.reputationBonus, value: formatPlusPercent(getStat("reputationBonus", "0")) },
       { iconUrl: STAT_ICONS.recruitmentTime, title: UI_LABELS.productionSpeed, value: getRecruitmentTimeStat(), modalOnly: true },
       { iconUrl: STAT_ICONS.woodCost, title: UI_LABELS.productionCost, value: getStat("costWood", "0"), modalOnly: true },
       { iconUrl: STAT_ICONS.stoneCost, title: UI_LABELS.productionCost, value: getStat("costStone", "0"), modalOnly: true },
@@ -839,15 +863,15 @@ function createUnitCard(group, groupIndex) {
               { iconUrl: STAT_ICONS.lootValue, title: UI_LABELS.loot, value: getStat("lootValue", "0") },
               ...getToolBaseBonuses(unit, getStat),
               { iconUrl: STAT_ICONS.unitLimit, title: UI_LABELS.toolLimit, value: getStat("amountPerWave", "0") },
-              { iconUrl: getCurrencyIcon("khantablet"), title: "Khan tablet booster", value: formatPlusPercent(getStat("khanTabletBooster", "0")) },
-              { iconUrl: getCurrencyIcon("khanmedal"), title: "Khan medal booster", value: formatPlusPercent(getStat("khanMedalBooster", "0")) },
-              { iconUrl: getCurrencyIcon("samuraitoken"), title: "Samurai token booster", value: formatPlusPercent(getStat("samuraiTokenBooster", "0")) },
-              { iconUrl: getCurrencyIcon("pearlrelic"), title: "Pearl booster", value: formatPlusPercent(getStat("pearlBooster", "0")) },
-              { iconUrl: STAT_ICONS.unknown, title: "Point bonus", value: formatPlusPercent(getStat("pointBonus", "0")) },
-              { iconUrl: STAT_ICONS.unknown, title: "XP bonus", value: formatPlusPercent(getStat("xpBonus", "0")) },
-              { iconUrl: STAT_ICONS.unknown, title: "C1 bonus", value: formatPlusPercent(getStat("c1Bonus", "0")) },
-              { iconUrl: STAT_ICONS.unknown, title: "Rage point bonus", value: formatPlusPercent(getStat("ragePointBonus", "0")) },
-              { iconUrl: STAT_ICONS.unknown, title: "Reputation bonus", value: formatPlusPercent(getStat("reputationBonus", "0")) },
+              { iconUrl: getCurrencyIcon("khantablet"), title: UI_LABELS.khanTabletBooster, value: formatPlusPercent(getStat("khanTabletBooster", "0")) },
+              { iconUrl: getCurrencyIcon("khanmedal"), title: UI_LABELS.khanMedalBooster, value: formatPlusPercent(getStat("khanMedalBooster", "0")) },
+              { iconUrl: getCurrencyIcon("samuraitoken"), title: UI_LABELS.samuraiTokenBooster, value: formatPlusPercent(getStat("samuraiTokenBooster", "0")) },
+              { iconUrl: getCurrencyIcon("pearlrelic"), title: UI_LABELS.pearlBooster, value: formatPlusPercent(getStat("pearlBooster", "0")) },
+              { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.pointBonus, value: formatPlusPercent(getStat("pointBonus", "0")) },
+              { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.xpBonus, value: formatPlusPercent(getStat("xpBonus", "0")) },
+              { iconUrl: STAT_ICONS.costC1, title: UI_LABELS.c1Bonus, value: formatPlusPercent(getStat("c1Bonus", "0")) },
+              { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.ragePointBonus, value: formatPlusPercent(getStat("ragePointBonus", "0")) },
+              { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.reputationBonus, value: formatPlusPercent(getStat("reputationBonus", "0")) },
               { iconUrl: STAT_ICONS.speed, title: UI_LABELS.speed, value: getStat("speed", "0") },
               { iconUrl: STAT_ICONS.recruitmentTime, title: UI_LABELS.productionSpeed, value: recruitmentTimeValue },
               { iconUrl: STAT_ICONS.woodCost, title: UI_LABELS.productionCost, value: getStat("costWood", "0") },

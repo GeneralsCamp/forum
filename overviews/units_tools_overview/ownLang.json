@@ -6,7 +6,8 @@
     "sort_default": "Default",
     "filter_type_unit": "Unit",
     "filter_type_tool": "Tool",
-    "search_placeholder": "Search by name..."
+    "search_placeholder": "Search by name...",
+    "production_cost": "Production cost"
   },
   "ar": {
     "travel_speed": "سرعة السفر",
@@ -15,7 +16,8 @@
     "sort_default": "افتراضي",
     "filter_type_unit": "وحدة",
     "filter_type_tool": "أداة",
-    "search_placeholder": "ابحث بالاسم..."
+    "search_placeholder": "ابحث بالاسم...",
+    "production_cost": "تكلفة الإنتاج"
   },
   "es": {
     "travel_speed": "Velocidad de viaje",
@@ -24,7 +26,8 @@
     "sort_default": "Predeterminado",
     "filter_type_unit": "Unidad",
     "filter_type_tool": "Herramienta",
-    "search_placeholder": "Buscar por nombre..."
+    "search_placeholder": "Buscar por nombre...",
+    "production_cost": "Coste de producción"
   },
   "bg": {
     "travel_speed": "Скорост на придвижване",
@@ -33,7 +36,8 @@
     "sort_default": "По подразбиране",
     "filter_type_unit": "Единица",
     "filter_type_tool": "Инструмент",
-    "search_placeholder": "Търсене по име..."
+    "search_placeholder": "Търсене по име...",
+    "production_cost": "Разход за производство"
   },
   "pt": {
     "travel_speed": "Velocidade de viagem",
@@ -42,7 +46,8 @@
     "sort_default": "Padrão",
     "filter_type_unit": "Unidade",
     "filter_type_tool": "Ferramenta",
-    "search_placeholder": "Pesquisar por nome..."
+    "search_placeholder": "Pesquisar por nome...",
+    "production_cost": "Custo de produção"
   },
   "cs": {
     "travel_speed": "Rychlost přesunu",
@@ -51,7 +56,8 @@
     "sort_default": "Výchozí",
     "filter_type_unit": "Jednotka",
     "filter_type_tool": "Nástroj",
-    "search_placeholder": "Hledat podle jména..."
+    "search_placeholder": "Hledat podle jména...",
+    "production_cost": "Náklady na výrobu"
   },
   "de": {
     "travel_speed": "Reisegeschwindigkeit",
@@ -60,7 +66,8 @@
     "sort_default": "Standard",
     "filter_type_unit": "Einheit",
     "filter_type_tool": "Werkzeug",
-    "search_placeholder": "Nach Namen suchen..."
+    "search_placeholder": "Nach Namen suchen...",
+    "production_cost": "Produktionskosten"
   },
   "da": {
     "travel_speed": "Rejsehastighed",
@@ -69,7 +76,8 @@
     "sort_default": "Standard",
     "filter_type_unit": "Enhed",
     "filter_type_tool": "Værktøj",
-    "search_placeholder": "Søg efter navn..."
+    "search_placeholder": "Søg efter navn...",
+    "production_cost": "Produktionsomkostning"
   },
   "fi": {
     "travel_speed": "Matkanopeus",
@@ -78,7 +86,8 @@
     "sort_default": "Oletus",
     "filter_type_unit": "Yksikkö",
     "filter_type_tool": "Työkalu",
-    "search_placeholder": "Hae nimellä..."
+    "search_placeholder": "Hae nimellä...",
+    "production_cost": "Tuotantokustannus"
   },
   "fr": {
     "travel_speed": "Vitesse de déplacement",
@@ -87,7 +96,8 @@
     "sort_default": "Par défaut",
     "filter_type_unit": "Unité",
     "filter_type_tool": "Outil",
-    "search_placeholder": "Rechercher par nom..."
+    "search_placeholder": "Rechercher par nom...",
+    "production_cost": "Coût de production"
   },
   "el": {
     "travel_speed": "Ταχύτητα μετακίνησης",
@@ -96,7 +106,8 @@
     "sort_default": "Προεπιλογή",
     "filter_type_unit": "Μονάδα",
     "filter_type_tool": "Εργαλείο",
-    "search_placeholder": "Αναζήτηση με όνομα..."
+    "search_placeholder": "Αναζήτηση με όνομα...",
+    "production_cost": "Κόστος παραγωγής"
   },
   "hu": {
     "travel_speed": "Utazási sebesség",
@@ -105,7 +116,8 @@
     "sort_default": "Alapértelmezett",
     "filter_type_unit": "Katona",
     "filter_type_tool": "Eszköz",
-    "search_placeholder": "Keresés név alapján..."
+    "search_placeholder": "Keresés név alapján...",
+    "production_cost": "Gyártási költség"
   },
   "it": {
     "travel_speed": "Velocità di viaggio",
@@ -114,7 +126,8 @@
     "sort_default": "Predefinito",
     "filter_type_unit": "Unità",
     "filter_type_tool": "Strumento",
-    "search_placeholder": "Cerca per nome..."
+    "search_placeholder": "Cerca per nome...",
+    "production_cost": "Costo di produzione"
   },
   "ja": {
     "travel_speed": "移動速度",
@@ -123,7 +136,8 @@
     "sort_default": "デフォルト",
     "filter_type_unit": "ユニット",
     "filter_type_tool": "ツール",
-    "search_placeholder": "名前で検索..."
+    "search_placeholder": "名前で検索...",
+    "production_cost": "生産コスト"
   },
   "ko": {
     "travel_speed": "이동 속도",
@@ -132,7 +146,8 @@
     "sort_default": "기본값",
     "filter_type_unit": "유닛",
     "filter_type_tool": "도구",
-    "search_placeholder": "이름으로 검색..."
+    "search_placeholder": "이름으로 검색...",
+    "production_cost": "생산 비용"
   },
   "lt": {
     "travel_speed": "Kelionės greitis",
@@ -141,7 +156,8 @@
     "sort_default": "Numatytasis",
     "filter_type_unit": "Vienetas",
     "filter_type_tool": "Įrankis",
-    "search_placeholder": "Ieškoti pagal pavadinimą..."
+    "search_placeholder": "Ieškoti pagal pavadinimą...",
+    "production_cost": "Gamybos kaina"
   },
   "nl": {
     "travel_speed": "Reissnelheid",
@@ -150,7 +166,8 @@
     "sort_default": "Standaard",
     "filter_type_unit": "Eenheid",
     "filter_type_tool": "Gereedschap",
-    "search_placeholder": "Zoeken op naam..."
+    "search_placeholder": "Zoeken op naam...",
+    "production_cost": "Productiekosten"
   },
   "no": {
     "travel_speed": "Reisehastighet",
@@ -159,7 +176,8 @@
     "sort_default": "Standard",
     "filter_type_unit": "Enhet",
     "filter_type_tool": "Verktøy",
-    "search_placeholder": "Søk etter navn..."
+    "search_placeholder": "Søk etter navn...",
+    "production_cost": "Produksjonskostnad"
   },
   "pl": {
     "travel_speed": "Prędkość podróży",
@@ -168,7 +186,8 @@
     "sort_default": "Domyślne",
     "filter_type_unit": "Jednostka",
     "filter_type_tool": "Narzędzie",
-    "search_placeholder": "Szukaj po nazwie..."
+    "search_placeholder": "Szukaj po nazwie...",
+    "production_cost": "Koszt produkcji"
   },
   "ro": {
     "travel_speed": "Viteză de deplasare",
@@ -177,7 +196,8 @@
     "sort_default": "Implicit",
     "filter_type_unit": "Unitate",
     "filter_type_tool": "Unealtă",
-    "search_placeholder": "Caută după nume..."
+    "search_placeholder": "Caută după nume...",
+    "production_cost": "Cost de producție"
   },
   "ru": {
     "travel_speed": "Скорость передвижения",
@@ -186,7 +206,8 @@
     "sort_default": "По умолчанию",
     "filter_type_unit": "Юнит",
     "filter_type_tool": "Инструмент",
-    "search_placeholder": "Поиск по названию..."
+    "search_placeholder": "Поиск по названию...",
+    "production_cost": "Стоимость производства"
   },
   "sv": {
     "travel_speed": "Resehastighet",
@@ -195,7 +216,8 @@
     "sort_default": "Standard",
     "filter_type_unit": "Enhet",
     "filter_type_tool": "Verktyg",
-    "search_placeholder": "Sök efter namn..."
+    "search_placeholder": "Sök efter namn...",
+    "production_cost": "Produktionskostnad"
   },
   "sk": {
     "travel_speed": "Rýchlosť presunu",
@@ -204,7 +226,8 @@
     "sort_default": "Predvolené",
     "filter_type_unit": "Jednotka",
     "filter_type_tool": "Nástroj",
-    "search_placeholder": "Hľadať podľa názvu..."
+    "search_placeholder": "Hľadať podľa názvu...",
+    "production_cost": "Náklady na výrobu"
   },
   "tr": {
     "travel_speed": "Seyahat hızı",
@@ -213,6 +236,7 @@
     "sort_default": "Varsayılan",
     "filter_type_unit": "Birim",
     "filter_type_tool": "Araç",
-    "search_placeholder": "Ada göre ara..."
+    "search_placeholder": "Ada göre ara...",
+    "production_cost": "Üretim maliyeti"
   }
 }
