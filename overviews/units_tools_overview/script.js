@@ -17,11 +17,17 @@ let unitImageEntries = [];
 let collectableCurrencyImageUrlMap = {};
 const composedUnitImageCache = new Map();
 let effectCtx = { effectDefinitions: {}, percentEffectIDs: new Set() };
+const FORCE_PLUS_PERCENT_EFFECT_NAMES = new Set([
+  "bonuswallcapacity",
+  "bonusdefencepower",
+  "bonusyarddefensepower",
+  "difficultyscalingdefenseboostyard"
+]);
 
 const STAT_ICONS = {
-  supplyFood: "../../img_base/food.png",
-  supplyMead: "../../img_base/mead-icon.webp",
-  supplyBeef: "../../img_base/biscuit.png",
+  supplyFood: "../../img_base/foodwastage.png",
+  supplyMead: "../../img_base/meadwastage.png",
+  supplyBeef: "../../img_base/beefwastage.png",
   rangedAttack: "../../simulators/battle_simulator/img/ranged-icon.png",
   meleeAttack: "../../simulators/battle_simulator/img/melee-icon.png",
   meleeDefence: "../../simulators/battle_simulator/img/castellan-modal1.png",
@@ -78,12 +84,14 @@ function applyUiLabels() {
     rangedDefence: lang["defensepower_range"] || "Ranged defense power",
     meleeDefence: lang["defensepower_melee"] || "Melee defense power",
     speed: getOwnLangValue("travel_speed", "Travel speed"),
-    loot: lang["dialog_battlelog_loot"] || "Loot",
+    loot: lang["lootplace"] || lang["dialog_battlelog_loot"] || "Loot",
     might: lang["playermight"] || "Might points",
     recruitmentTime: lang["recruitspeed"] || "Recruitment speed",
+    productionSpeed: lang["productionspeed"] || "Production speed",
+    productionCost: getOwnLangValue("production_cost", lang["productioncost"] || "Production cost"),
     recruitmentCost: getOwnLangValue("recruitment_cost", "Recruitment cost"),
     attackWaves: getOwnLangValue("attack_waves_bonus", "Increase the number of available attack waves"),
-    toolLimit: getOwnLangValue("tool_limit", "Tool limit"),
+    toolLimit: lang["amountperwave"] || getOwnLangValue("tool_limit", "Tool limit"),
     sortBy: getOwnLangValue("sort_by", "Sort by"),
     filterTypeUnit: lang["units"] || getOwnLangValue("filter_type_unit", "Unit"),
     filterTypeTool: lang["tools"] || getOwnLangValue("filter_type_tool", "Tool"),
@@ -110,13 +118,7 @@ function formatDurationMinSec(secondsValue) {
   if (!raw || raw === "-") return "-";
   const total = Number(raw);
   if (Number.isNaN(total)) return raw;
-
-  const mins = Math.floor(total / 60);
-  const secs = Math.floor(total % 60);
-
-  if (mins <= 0) return `${secs.toLocaleString(currentLanguage)} sec`;
-  if (secs === 0) return `${mins.toLocaleString(currentLanguage)} min`;
-  return `${mins.toLocaleString(currentLanguage)} min ${secs.toLocaleString(currentLanguage)} sec`;
+  return `${total.toLocaleString(currentLanguage)} sec`;
 }
 
 function formatPlusPercent(value) {
@@ -215,15 +217,16 @@ function getRecruitmentCostInfo(unit) {
     { key: "costDragonGlassArrows", labelKey: "currency_name_dragonglassarrows", currencyKey: "dragonglassarrows" },
     { key: "costDragonScaleArmor", labelKey: "currency_name_dragonscalearmor", currencyKey: "dragonscalearmor" },
     { key: "costDragonScaleArrows", labelKey: "currency_name_dragonscalearrows", currencyKey: "dragonscalearrows" },
-    { key: "costTwinFlameAxes", labelKey: "currency_name_twinflameaxes", currencyKey: "twinflameaxes" },
-    { key: "costC2", labelKey: "currency_name_currency2" },
-    { key: "costC3", labelKey: "currency_name_currency3" },
-    { key: "costC4", labelKey: "currency_name_currency4" }
+    { key: "costTwinFlameAxes", labelKey: "currency_name_twinflameaxes", currencyKey: "twinflameaxes" }
   ];
 
   for (const def of defs) {
     const raw = unit?.[def.key];
     if (raw === undefined || raw === null || String(raw).trim() === "" || String(raw).trim() === "0") {
+      continue;
+    }
+    const numericRaw = Number(String(raw).trim());
+    if (!Number.isNaN(numericRaw) && numericRaw === 400) {
       continue;
     }
     const currencyLabel = lang?.[def.labelKey] || def.key.replace(/^cost/, "");
@@ -246,6 +249,9 @@ function getRecruitmentCostInfo(unit) {
 function getEffectDisplayName(effectName, effectId) {
   const key = String(effectName || "").toLowerCase();
   if (!key) return `Effect ${effectId}`;
+  if (key === "difficultyscalingdefenseboostyard" || key === "bonusyarddefensepower") {
+    return lang?.["effect_name_difficultyscalingdefenseboostyard"] || "Strength in courtyard when defending";
+  }
 
   const candidates = [
     `effect_name_${key}`,
@@ -265,6 +271,10 @@ function getEffectDisplayName(effectName, effectId) {
 function getEffectIcon(effectName) {
   const key = String(effectName || "").toLowerCase();
   if (key === "attackboostyard") return "../../simulators/battle_simulator/img/cy-icon.png";
+  if (key === "difficultyscalingdefenseboostyard" || key === "bonusyarddefensepower") {
+    return "../../simulators/battle_simulator/img/cy-icon.png";
+  }
+  if (key === "bonuswallcapacity") return "../../simulators/battle_simulator/img/castellan-modal3.png";
   if (key.includes("amountperwave")) return STAT_ICONS.amountPerWave;
   if (key.includes("attackunitamount")) return STAT_ICONS.amountPerWave;
   if (key.includes("killdefendingmeleetroopsyard")) return STAT_ICONS.killMeleeTroopsYard;
@@ -295,11 +305,12 @@ function buildToolDynamicEffects(unit) {
     const def = effectCtx?.effectDefinitions?.[effectId];
     const effectName = def?.name || `effect_${effectId}`;
     const isPercent = effectCtx?.percentEffectIDs?.has?.(effectId);
+    const forcePlusPercent = FORCE_PLUS_PERCENT_EFFECT_NAMES.has(String(effectName).toLowerCase());
     const rawValue = String(valueRaw || "").trim();
     let value = formatStatValue(rawValue);
 
-    if (isPercent && rawValue && rawValue !== "-" && rawValue !== "0") {
-      if (!String(value).includes("%")) value = `${value}%`;
+    if ((isPercent || forcePlusPercent) && rawValue && rawValue !== "-") {
+      value = formatPlusPercent(rawValue);
     }
 
     let title = getEffectDisplayName(effectName, effectId);
@@ -325,8 +336,9 @@ function buildToolDynamicEffects(unit) {
   return list;
 }
 
-function buildStatGrid(stats, { hideEmpty = false, hideZero = false, fixedSlots = 0 } = {}) {
+function buildStatGrid(stats, { hideEmpty = false, hideZero = false, fixedSlots = 0, gridClass = "" } = {}) {
   const visible = stats.filter((s) => {
+    if (s.modalOnly) return false;
     if (s.hideIfZero && isZeroStat(s.value)) return false;
     if (s.hideIfOne && isOneStat(s.value)) return false;
     if (hideEmpty && (s.value === "-" || s.value === "" || s.value == null)) return false;
@@ -342,7 +354,8 @@ function buildStatGrid(stats, { hideEmpty = false, hideZero = false, fixedSlots 
     }
   }
 
-  return `<div class="unit-stats-grid">${cells.join("")}</div>`;
+  const className = gridClass ? `unit-stats-grid ${gridClass}` : "unit-stats-grid";
+  return `<div class="${className}">${cells.join("")}</div>`;
 }
 
 function isZeroStat(value) {
@@ -355,20 +368,13 @@ function isOneStat(value) {
   return !Number.isNaN(n) && n === 1;
 }
 
-function openUnitStatsModal({ name, imageUrl, imageCompose, stats }) {
+function openUnitStatsModal({ name, stats }) {
   const modalEl = document.getElementById("unitStatsModal");
   if (!modalEl) return;
 
   const titleEl = modalEl.querySelector(".modal-title");
   const bodyEl = modalEl.querySelector("#unitStatsModalBody");
   titleEl.textContent = name || "Details";
-
-  const modalImage = imageUrl
-    ? (() => {
-      if (!imageCompose) return `<img src="${imageUrl}" class="modal-unit-image" alt="${name || "Unit"}">`;
-      return `<img src="${imageUrl}" class="modal-unit-image" alt="${name || "Unit"}" data-compose-asset="1" data-image-url="${imageCompose.imageUrl}" data-json-url="${imageCompose.jsonUrl}" data-js-url="${imageCompose.jsUrl}">`;
-    })()
-    : `<img src="../../img_base/placeholder.webp" class="modal-unit-image" alt="${name || "Unit"}">`;
 
   const rows = stats.map((s) => `
     <div class="unit-modal-row">
@@ -380,7 +386,6 @@ function openUnitStatsModal({ name, imageUrl, imageCompose, stats }) {
 
   bodyEl.innerHTML = `
     <div class="unit-modal-layout">
-      <div class="unit-modal-image-wrap">${modalImage}</div>
       <div class="unit-modal-list">${rows}</div>
     </div>
   `;
@@ -660,11 +665,11 @@ function createUnitCard(group, groupIndex) {
     ];
 
     const unitStatsCard = [
-      { iconUrl: STAT_ICONS.speed, title: "Speed", value: getStat("speed", "0") },
       { iconUrl: STAT_ICONS.rangedAttack, title: "Ranged attack", value: getFirstStat(["rangeAttack", "rangedAttack", "attackRange", "rangedStrength"], "0") },
       { iconUrl: STAT_ICONS.meleeAttack, title: "Melee attack", value: getStat("meleeAttack", "0") },
       { iconUrl: STAT_ICONS.rangeDefence, title: "Ranged defence", value: getStat("rangeDefence", "0") },
       { iconUrl: STAT_ICONS.meleeDefence, title: "Melee defence", value: getStat("meleeDefence", "0") },
+      { iconUrl: STAT_ICONS.speed, title: "Speed", value: getStat("speed", "0") },
       { iconUrl: STAT_ICONS.lootValue, title: "Loot", value: getStat("lootValue", "0") },
       { iconUrl: STAT_ICONS.might, title: "Might", value: getStat("mightValue", getStat("might", "0")) },
       { iconUrl: supplyIcon, title: supplyLabel, value: supplyValue }
@@ -688,20 +693,20 @@ function createUnitCard(group, groupIndex) {
       { iconUrl: STAT_ICONS.unknown, title: "C1 bonus", value: formatPlusPercent(getStat("c1Bonus", "0")) },
       { iconUrl: STAT_ICONS.unknown, title: "Rage point bonus", value: formatPlusPercent(getStat("ragePointBonus", "0")) },
       { iconUrl: STAT_ICONS.unknown, title: "Reputation bonus", value: formatPlusPercent(getStat("reputationBonus", "0")) },
-      { iconUrl: STAT_ICONS.recruitmentTime, title: UI_LABELS.recruitmentTime, value: getRecruitmentTimeStat() },
-      { iconUrl: STAT_ICONS.woodCost, title: "Wood cost", value: getStat("costWood", "0") },
-      { iconUrl: STAT_ICONS.stoneCost, title: "Stone cost", value: getStat("costStone", "0") },
-      { iconUrl: STAT_ICONS.unknown, title: "Sceat token cost", value: getStat("costSceatToken", "0"), hideIfOne: true },
-      { iconUrl: STAT_ICONS.unknown, title: "Legendary token cost", value: getStat("costLegendaryToken", "0"), hideIfOne: true },
-      { iconUrl: getCostComponentIcon(1), title: getCostComponentLabel(1), value: getStat("costComponent1", "0") },
-      { iconUrl: getCostComponentIcon(2), title: getCostComponentLabel(2), value: getStat("costComponent2", "0") },
-      { iconUrl: getCostComponentIcon(3), title: getCostComponentLabel(3), value: getStat("costComponent3", "0") },
-      { iconUrl: getCostComponentIcon(4), title: getCostComponentLabel(4), value: getStat("costComponent4", "0") },
-      { iconUrl: getCostComponentIcon(5), title: getCostComponentLabel(5), value: getStat("costComponent5", "0") },
-      { iconUrl: getCostComponentIcon(6), title: getCostComponentLabel(6), value: getStat("costComponent6", "0") },
-      { iconUrl: getCostComponentIcon(7), title: getCostComponentLabel(7), value: getStat("costComponent7", "0") },
-      { iconUrl: getCostComponentIcon(8), title: getCostComponentLabel(8), value: getStat("costComponent8", "0") },
-      { iconUrl: recruitmentCostInfo.iconUrl, title: recruitmentCostInfo.title, value: recruitmentCostInfo.value }
+      { iconUrl: STAT_ICONS.recruitmentTime, title: UI_LABELS.productionSpeed, value: getRecruitmentTimeStat(), modalOnly: true },
+      { iconUrl: STAT_ICONS.woodCost, title: UI_LABELS.productionCost, value: getStat("costWood", "0"), modalOnly: true },
+      { iconUrl: STAT_ICONS.stoneCost, title: UI_LABELS.productionCost, value: getStat("costStone", "0"), modalOnly: true },
+      { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.productionCost, value: getStat("costSceatToken", "0"), hideIfOne: true, modalOnly: true },
+      { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.productionCost, value: getStat("costLegendaryToken", "0"), hideIfOne: true, modalOnly: true },
+      { iconUrl: getCostComponentIcon(1), title: UI_LABELS.productionCost, value: getStat("costComponent1", "0"), modalOnly: true },
+      { iconUrl: getCostComponentIcon(2), title: UI_LABELS.productionCost, value: getStat("costComponent2", "0"), modalOnly: true },
+      { iconUrl: getCostComponentIcon(3), title: UI_LABELS.productionCost, value: getStat("costComponent3", "0"), modalOnly: true },
+      { iconUrl: getCostComponentIcon(4), title: UI_LABELS.productionCost, value: getStat("costComponent4", "0"), modalOnly: true },
+      { iconUrl: getCostComponentIcon(5), title: UI_LABELS.productionCost, value: getStat("costComponent5", "0"), modalOnly: true },
+      { iconUrl: getCostComponentIcon(6), title: UI_LABELS.productionCost, value: getStat("costComponent6", "0"), modalOnly: true },
+      { iconUrl: getCostComponentIcon(7), title: UI_LABELS.productionCost, value: getStat("costComponent7", "0"), modalOnly: true },
+      { iconUrl: getCostComponentIcon(8), title: UI_LABELS.productionCost, value: getStat("costComponent8", "0"), modalOnly: true },
+      { iconUrl: recruitmentCostInfo.iconUrl, title: UI_LABELS.productionCost, value: recruitmentCostInfo.value, modalOnly: true }
     ];
 
     const toolStatsCard = toolStatsAll.filter((s) =>
@@ -711,18 +716,22 @@ function createUnitCard(group, groupIndex) {
 
     const rowsForCard = category === "unit"
       ? buildStatGrid(unitStatsCard, { hideEmpty: false })
-      : buildStatGrid(toolStatsCard, { hideEmpty: true, hideZero: true, fixedSlots: 8 });
+      : buildStatGrid(toolStatsCard, { hideEmpty: true, hideZero: true, fixedSlots: 4, gridClass: "unit-stats-grid--tool" });
     const rowsForModal = category === "unit" ? unitStatsAll : toolStatsAll;
 
     return `
       <div class="level-selector d-flex justify-content-between align-items-center">
-        <button id="${containerId}-prev" ${!hasLevels || levelIndex === 0 ? "disabled" : ""}>
+        ${hasLevels ? `
+        <button id="${containerId}-prev" ${levelIndex === 0 ? "disabled" : ""}>
           <i class="bi bi-arrow-left"></i>
         </button>
+        ` : `<span class="level-arrow-spacer"></span>`}
         <div class="level-text"><strong>${name}${level !== "-" ? ` (Lvl.${level})` : ""}</strong></div>
-        <button id="${containerId}-next" ${!hasLevels || levelIndex === group.items.length - 1 ? "disabled" : ""}>
+        ${hasLevels ? `
+        <button id="${containerId}-next" ${levelIndex === group.items.length - 1 ? "disabled" : ""}>
           <i class="bi bi-arrow-right"></i>
         </button>
+        ` : `<span class="level-arrow-spacer"></span>`}
       </div>
       <div class="card-table">
       <div class="row g-0 unit-grid unit-detail-trigger" data-level-index="${levelIndex}">
@@ -779,12 +788,6 @@ function createUnitCard(group, groupIndex) {
         trigger.onclick = () => {
           const selectedLevelIndex = Number(trigger.dataset.levelIndex ?? levelIndex);
           const unit = group.items[selectedLevelIndex] || group.items[levelIndex];
-          const modalImageUrl = getUnitImageUrl(unit) || "../../img_base/placeholder.webp";
-          const modalCompose = (
-            modalImageUrl.startsWith("https://empire-html5.goodgamestudios.com/default/assets/itemassets/") &&
-            /\.(webp|png)$/i.test(modalImageUrl)
-          ) ? deriveCompanionUrls(modalImageUrl) : null;
-
           const getStat = (key, fallback = "-") => {
             const v = unit?.[key];
             return (v === undefined || v === null || String(v).trim() === "") ? fallback : formatStatValue(v);
@@ -820,7 +823,15 @@ function createUnitCard(group, groupIndex) {
                   { iconUrl: STAT_ICONS.recruitmentTime, title: UI_LABELS.recruitmentTime, value: recruitmentTimeValue }
                 ]
                 : [])
-            ]
+            ].filter((s) => {
+              const isCombatStat =
+                s.title === UI_LABELS.rangedAttack ||
+                s.title === UI_LABELS.meleeAttack ||
+                s.title === UI_LABELS.rangedDefence ||
+                s.title === UI_LABELS.meleeDefence;
+              if (isCombatStat && (s.value === "-" || s.value === "" || s.value == null)) return false;
+              return true;
+            })
             : (() => {
               const toolModalEffectStats = buildToolDynamicEffects(unit);
               const toolModalStatsRaw = [
@@ -838,20 +849,20 @@ function createUnitCard(group, groupIndex) {
               { iconUrl: STAT_ICONS.unknown, title: "Rage point bonus", value: formatPlusPercent(getStat("ragePointBonus", "0")) },
               { iconUrl: STAT_ICONS.unknown, title: "Reputation bonus", value: formatPlusPercent(getStat("reputationBonus", "0")) },
               { iconUrl: STAT_ICONS.speed, title: UI_LABELS.speed, value: getStat("speed", "0") },
-              { iconUrl: STAT_ICONS.recruitmentTime, title: UI_LABELS.recruitmentTime, value: recruitmentTimeValue },
-              { iconUrl: STAT_ICONS.woodCost, title: "Wood cost", value: getStat("costWood", "0") },
-              { iconUrl: STAT_ICONS.stoneCost, title: "Stone cost", value: getStat("costStone", "0") },
-              { iconUrl: STAT_ICONS.unknown, title: "Sceat token cost", value: getStat("costSceatToken", "0"), hideIfOne: true },
-              { iconUrl: STAT_ICONS.unknown, title: "Legendary token cost", value: getStat("costLegendaryToken", "0"), hideIfOne: true },
-              { iconUrl: getCostComponentIcon(1), title: getCostComponentLabel(1), value: getStat("costComponent1", "0") },
-              { iconUrl: getCostComponentIcon(2), title: getCostComponentLabel(2), value: getStat("costComponent2", "0") },
-              { iconUrl: getCostComponentIcon(3), title: getCostComponentLabel(3), value: getStat("costComponent3", "0") },
-              { iconUrl: getCostComponentIcon(4), title: getCostComponentLabel(4), value: getStat("costComponent4", "0") },
-              { iconUrl: getCostComponentIcon(5), title: getCostComponentLabel(5), value: getStat("costComponent5", "0") },
-              { iconUrl: getCostComponentIcon(6), title: getCostComponentLabel(6), value: getStat("costComponent6", "0") },
-              { iconUrl: getCostComponentIcon(7), title: getCostComponentLabel(7), value: getStat("costComponent7", "0") },
-              { iconUrl: getCostComponentIcon(8), title: getCostComponentLabel(8), value: getStat("costComponent8", "0") },
-              { iconUrl: recruitmentCostInfo.iconUrl, title: recruitmentCostInfo.title, value: recruitmentCostInfo.value }
+              { iconUrl: STAT_ICONS.recruitmentTime, title: UI_LABELS.productionSpeed, value: recruitmentTimeValue },
+              { iconUrl: STAT_ICONS.woodCost, title: UI_LABELS.productionCost, value: getStat("costWood", "0") },
+              { iconUrl: STAT_ICONS.stoneCost, title: UI_LABELS.productionCost, value: getStat("costStone", "0") },
+              { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.productionCost, value: getStat("costSceatToken", "0"), hideIfOne: true },
+              { iconUrl: STAT_ICONS.unknown, title: UI_LABELS.productionCost, value: getStat("costLegendaryToken", "0"), hideIfOne: true },
+              { iconUrl: getCostComponentIcon(1), title: UI_LABELS.productionCost, value: getStat("costComponent1", "0") },
+              { iconUrl: getCostComponentIcon(2), title: UI_LABELS.productionCost, value: getStat("costComponent2", "0") },
+              { iconUrl: getCostComponentIcon(3), title: UI_LABELS.productionCost, value: getStat("costComponent3", "0") },
+              { iconUrl: getCostComponentIcon(4), title: UI_LABELS.productionCost, value: getStat("costComponent4", "0") },
+              { iconUrl: getCostComponentIcon(5), title: UI_LABELS.productionCost, value: getStat("costComponent5", "0") },
+              { iconUrl: getCostComponentIcon(6), title: UI_LABELS.productionCost, value: getStat("costComponent6", "0") },
+              { iconUrl: getCostComponentIcon(7), title: UI_LABELS.productionCost, value: getStat("costComponent7", "0") },
+              { iconUrl: getCostComponentIcon(8), title: UI_LABELS.productionCost, value: getStat("costComponent8", "0") },
+              { iconUrl: recruitmentCostInfo.iconUrl, title: UI_LABELS.productionCost, value: recruitmentCostInfo.value }
             ];
 
               return toolModalStatsRaw.filter((s) => {
@@ -864,8 +875,6 @@ function createUnitCard(group, groupIndex) {
 
           openUnitStatsModal({
             name: `${getUnitName(unit)}${getUnitLevel(unit) !== "-" ? ` (Lvl.${getUnitLevel(unit)})` : ""}`,
-            imageUrl: modalImageUrl,
-            imageCompose: modalCompose,
             stats
           });
         };
