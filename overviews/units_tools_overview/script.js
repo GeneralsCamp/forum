@@ -137,7 +137,10 @@ function applyUiLabels() {
     filterTypeUnit: lang["units"] || getOwnLangValue("filter_type_unit", "Unit"),
     filterTypeTool: lang["tools"] || getOwnLangValue("filter_type_tool", "Tool"),
     searchPlaceholder: getOwnLangValue("search_placeholder", "Search by name..."),
-    sortDefault: getOwnLangValue("sort_default", "Default")
+    sortDefault: getOwnLangValue("sort_default", "Default"),
+    allTools: getOwnLangValue("all_tools", "All tools"),
+    defenseTools: lang["defencetools"] || getOwnLangValue("defense_tools", "Defense tools"),
+    attackTools: lang["attacktools"] || getOwnLangValue("attack_tools", "Siege tools")
   };
 }
 
@@ -918,6 +921,7 @@ function renderUnits(groups) {
 function applyFilters() {
   const search = normalizeName(document.getElementById("searchInput")?.value || "");
   const typeFilter = document.getElementById("typeSelect")?.value || "unit";
+  const toolTypeFilter = (document.getElementById("toolTypeSelect")?.value || "all").toLowerCase();
   const orderSelect = document.getElementById("orderSelect");
   const isToolFilter = typeFilter === "tool";
   const orderKey = isToolFilter ? "none" : (orderSelect?.value || "none");
@@ -926,6 +930,10 @@ function applyFilters() {
     if (isExcludedTestUnit(unit)) return false;
     const category = getUnitCategory(unit);
     if (category !== typeFilter) return false;
+    if (isToolFilter && toolTypeFilter !== "all") {
+      const typ = String(unit?.typ || unit?.Typ || "").toLowerCase();
+      if (typ !== toolTypeFilter) return false;
+    }
 
     if (!hasRenderableStats(unit, category)) return false;
 
@@ -942,10 +950,14 @@ function applyFilters() {
 function updateOrderAvailability() {
   const typeSelect = document.getElementById("typeSelect");
   const orderSelect = document.getElementById("orderSelect");
-  if (!typeSelect || !orderSelect) return;
+  const orderWrap = document.getElementById("orderFilterWrap");
+  const toolTypeWrap = document.getElementById("toolTypeFilterWrap");
+  if (!typeSelect || !orderSelect || !orderWrap || !toolTypeWrap) return;
 
   const isTool = typeSelect.value === "tool";
   orderSelect.disabled = isTool;
+  orderWrap.classList.toggle("d-none", isTool);
+  toolTypeWrap.classList.toggle("d-none", !isTool);
   if (isTool) {
     orderSelect.value = "none";
   }
@@ -977,10 +989,22 @@ function setupOrderOptions() {
   `;
 }
 
+function setupToolTypeOptions() {
+  const select = document.getElementById("toolTypeSelect");
+  if (!select) return;
+
+  select.innerHTML = `
+    <option value="all" selected>${UI_LABELS.allTools}</option>
+    <option value="defence">${UI_LABELS.defenseTools}</option>
+    <option value="attack">${UI_LABELS.attackTools}</option>
+  `;
+}
+
 function setupEventListeners() {
   const searchInput = document.getElementById("searchInput");
   const typeSelect = document.getElementById("typeSelect");
   const orderSelect = document.getElementById("orderSelect");
+  const toolTypeSelect = document.getElementById("toolTypeSelect");
   if (searchInput) searchInput.addEventListener("input", applyFilters);
   if (typeSelect) {
     typeSelect.addEventListener("change", () => {
@@ -989,6 +1013,7 @@ function setupEventListeners() {
     });
   }
   if (orderSelect) orderSelect.addEventListener("change", applyFilters);
+  if (toolTypeSelect) toolTypeSelect.addEventListener("change", applyFilters);
 }
 
 initAutoHeight({
@@ -1031,6 +1056,7 @@ async function init() {
 
         setupTypeOptions();
         setupOrderOptions();
+        setupToolTypeOptions();
         updateOrderAvailability();
         setupEventListeners();
         applyFilters();

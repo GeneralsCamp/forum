@@ -7,7 +7,10 @@
     "filter_type_unit": "Unit",
     "filter_type_tool": "Tool",
     "search_placeholder": "Search by name...",
-    "production_cost": "Production cost"
+    "production_cost": "Production cost",
+    "all_tools": "All tools",
+    "defense_tools": "Defense tools",
+    "attack_tools": "Siege tools"
   },
   "ar": {
     "travel_speed": "سرعة السفر",
@@ -17,7 +20,10 @@
     "filter_type_unit": "وحدة",
     "filter_type_tool": "أداة",
     "search_placeholder": "ابحث بالاسم...",
-    "production_cost": "تكلفة الإنتاج"
+    "production_cost": "تكلفة الإنتاج",
+    "all_tools": "جميع الأدوات",
+    "defense_tools": "أدوات الدفاع",
+    "attack_tools": "أدوات الحصار"
   },
   "es": {
     "travel_speed": "Velocidad de viaje",
@@ -27,7 +33,10 @@
     "filter_type_unit": "Unidad",
     "filter_type_tool": "Herramienta",
     "search_placeholder": "Buscar por nombre...",
-    "production_cost": "Coste de producción"
+    "production_cost": "Coste de producción",
+    "all_tools": "Todas las herramientas",
+    "defense_tools": "Herramientas de defensa",
+    "attack_tools": "Herramientas de asedio"
   },
   "bg": {
     "travel_speed": "Скорост на придвижване",
@@ -37,7 +46,10 @@
     "filter_type_unit": "Единица",
     "filter_type_tool": "Инструмент",
     "search_placeholder": "Търсене по име...",
-    "production_cost": "Разход за производство"
+    "production_cost": "Разход за производство",
+    "all_tools": "Всички инструменти",
+    "defense_tools": "Инструменти за защита",
+    "attack_tools": "Обсадни инструменти"
   },
   "pt": {
     "travel_speed": "Velocidade de viagem",
@@ -47,7 +59,10 @@
     "filter_type_unit": "Unidade",
     "filter_type_tool": "Ferramenta",
     "search_placeholder": "Pesquisar por nome...",
-    "production_cost": "Custo de produção"
+    "production_cost": "Custo de produção",
+    "all_tools": "Todas as ferramentas",
+    "defense_tools": "Ferramentas de defesa",
+    "attack_tools": "Ferramentas de cerco"
   },
   "cs": {
     "travel_speed": "Rychlost přesunu",
@@ -57,7 +72,10 @@
     "filter_type_unit": "Jednotka",
     "filter_type_tool": "Nástroj",
     "search_placeholder": "Hledat podle jména...",
-    "production_cost": "Náklady na výrobu"
+    "production_cost": "Náklady na výrobu",
+    "all_tools": "Všechny nástroje",
+    "defense_tools": "Obranné nástroje",
+    "attack_tools": "Obléhací nástroje"
   },
   "de": {
     "travel_speed": "Reisegeschwindigkeit",
@@ -67,7 +85,10 @@
     "filter_type_unit": "Einheit",
     "filter_type_tool": "Werkzeug",
     "search_placeholder": "Nach Namen suchen...",
-    "production_cost": "Produktionskosten"
+    "production_cost": "Produktionskosten",
+    "all_tools": "Alle Werkzeuge",
+    "defense_tools": "Verteidigungswerkzeuge",
+    "attack_tools": "Belagerungswerkzeuge"
   },
   "da": {
     "travel_speed": "Rejsehastighed",
@@ -77,7 +98,10 @@
     "filter_type_unit": "Enhed",
     "filter_type_tool": "Værktøj",
     "search_placeholder": "Søg efter navn...",
-    "production_cost": "Produktionsomkostning"
+    "production_cost": "Produktionsomkostning",
+    "all_tools": "Alle værktøjer",
+    "defense_tools": "Forsvarsværktøjer",
+    "attack_tools": "Belejringsværktøjer"
   },
   "fi": {
     "travel_speed": "Matkanopeus",
@@ -87,7 +111,10 @@
     "filter_type_unit": "Yksikkö",
     "filter_type_tool": "Työkalu",
     "search_placeholder": "Hae nimellä...",
-    "production_cost": "Tuotantokustannus"
+    "production_cost": "Tuotantokustannus",
+    "all_tools": "Kaikki työkalut",
+    "defense_tools": "Puolustustyökalut",
+    "attack_tools": "Piiritystyökalut"
   },
   "fr": {
     "travel_speed": "Vitesse de déplacement",
@@ -97,7 +124,10 @@
     "filter_type_unit": "Unité",
     "filter_type_tool": "Outil",
     "search_placeholder": "Rechercher par nom...",
-    "production_cost": "Coût de production"
+    "production_cost": "Coût de production",
+    "all_tools": "Tous les outils",
+    "defense_tools": "Outils de défense",
+    "attack_tools": "Outils de siège"
   },
   "el": {
     "travel_speed": "Ταχύτητα μετακίνησης",
@@ -107,7 +137,10 @@
     "filter_type_unit": "Μονάδα",
     "filter_type_tool": "Εργαλείο",
     "search_placeholder": "Αναζήτηση με όνομα...",
-    "production_cost": "Κόστος παραγωγής"
+    "production_cost": "Κόστος παραγωγής",
+    "all_tools": "Όλα τα εργαλεία",
+    "defense_tools": "Αμυντικά εργαλεία",
+    "attack_tools": "Πολιορκητικά εργαλεία"
   },
   "hu": {
     "travel_speed": "Utazási sebesség",
@@ -117,7 +150,10 @@
     "filter_type_unit": "Katona",
     "filter_type_tool": "Eszköz",
     "search_placeholder": "Keresés név alapján...",
-    "production_cost": "Gyártási költség"
+    "production_cost": "Termelési költség",
+    "all_tools": "Összes eszköz",
+    "defense_tools": "Védelmi eszközök",
+    "attack_tools": "Ostromeszközök"
   },
   "it": {
     "travel_speed": "Velocità di viaggio",
@@ -127,17 +163,23 @@
     "filter_type_unit": "Unità",
     "filter_type_tool": "Strumento",
     "search_placeholder": "Cerca per nome...",
-    "production_cost": "Costo di produzione"
+    "production_cost": "Costo di produzione",
+    "all_tools": "Tutti gli strumenti",
+    "defense_tools": "Strumenti di difesa",
+    "attack_tools": "Strumenti d'assedio"
   },
   "ja": {
     "travel_speed": "移動速度",
-    "recruitment_cost": "募兵コスト",
+    "recruitment_cost": "募集コスト",
     "sort_by": "並び替え",
     "sort_default": "デフォルト",
     "filter_type_unit": "ユニット",
     "filter_type_tool": "ツール",
     "search_placeholder": "名前で検索...",
-    "production_cost": "生産コスト"
+    "production_cost": "生産コスト",
+    "all_tools": "すべてのツール",
+    "defense_tools": "防衛ツール",
+    "attack_tools": "攻城ツール"
   },
   "ko": {
     "travel_speed": "이동 속도",
@@ -147,7 +189,10 @@
     "filter_type_unit": "유닛",
     "filter_type_tool": "도구",
     "search_placeholder": "이름으로 검색...",
-    "production_cost": "생산 비용"
+    "production_cost": "생산 비용",
+    "all_tools": "모든 도구",
+    "defense_tools": "방어 도구",
+    "attack_tools": "공성 도구"
   },
   "lt": {
     "travel_speed": "Kelionės greitis",
@@ -157,7 +202,10 @@
     "filter_type_unit": "Vienetas",
     "filter_type_tool": "Įrankis",
     "search_placeholder": "Ieškoti pagal pavadinimą...",
-    "production_cost": "Gamybos kaina"
+    "production_cost": "Gamybos kaina",
+    "all_tools": "Visi įrankiai",
+    "defense_tools": "Gynybos įrankiai",
+    "attack_tools": "Apgulties įrankiai"
   },
   "nl": {
     "travel_speed": "Reissnelheid",
@@ -167,7 +215,10 @@
     "filter_type_unit": "Eenheid",
     "filter_type_tool": "Gereedschap",
     "search_placeholder": "Zoeken op naam...",
-    "production_cost": "Productiekosten"
+    "production_cost": "Productiekosten",
+    "all_tools": "Alle gereedschappen",
+    "defense_tools": "Verdedigingsgereedschappen",
+    "attack_tools": "Belegeringsgereedschappen"
   },
   "no": {
     "travel_speed": "Reisehastighet",
@@ -177,7 +228,10 @@
     "filter_type_unit": "Enhet",
     "filter_type_tool": "Verktøy",
     "search_placeholder": "Søk etter navn...",
-    "production_cost": "Produksjonskostnad"
+    "production_cost": "Produksjonskostnad",
+    "all_tools": "Alle verktøy",
+    "defense_tools": "Forsvarsverktøy",
+    "attack_tools": "Beleiringsverktøy"
   },
   "pl": {
     "travel_speed": "Prędkość podróży",
@@ -187,7 +241,10 @@
     "filter_type_unit": "Jednostka",
     "filter_type_tool": "Narzędzie",
     "search_placeholder": "Szukaj po nazwie...",
-    "production_cost": "Koszt produkcji"
+    "production_cost": "Koszt produkcji",
+    "all_tools": "Wszystkie narzędzia",
+    "defense_tools": "Narzędzia obronne",
+    "attack_tools": "Narzędzia oblężnicze"
   },
   "ro": {
     "travel_speed": "Viteză de deplasare",
@@ -197,7 +254,10 @@
     "filter_type_unit": "Unitate",
     "filter_type_tool": "Unealtă",
     "search_placeholder": "Caută după nume...",
-    "production_cost": "Cost de producție"
+    "production_cost": "Cost de producție",
+    "all_tools": "Toate uneltele",
+    "defense_tools": "Unelte de apărare",
+    "attack_tools": "Unelte de asediu"
   },
   "ru": {
     "travel_speed": "Скорость передвижения",
@@ -207,7 +267,10 @@
     "filter_type_unit": "Юнит",
     "filter_type_tool": "Инструмент",
     "search_placeholder": "Поиск по названию...",
-    "production_cost": "Стоимость производства"
+    "production_cost": "Стоимость производства",
+    "all_tools": "Все инструменты",
+    "defense_tools": "Оборонительные инструменты",
+    "attack_tools": "Осадные инструменты"
   },
   "sv": {
     "travel_speed": "Resehastighet",
@@ -217,7 +280,10 @@
     "filter_type_unit": "Enhet",
     "filter_type_tool": "Verktyg",
     "search_placeholder": "Sök efter namn...",
-    "production_cost": "Produktionskostnad"
+    "production_cost": "Produktionskostnad",
+    "all_tools": "Alla verktyg",
+    "defense_tools": "Försvarsverktyg",
+    "attack_tools": "Belägringsverktyg"
   },
   "sk": {
     "travel_speed": "Rýchlosť presunu",
@@ -227,7 +293,10 @@
     "filter_type_unit": "Jednotka",
     "filter_type_tool": "Nástroj",
     "search_placeholder": "Hľadať podľa názvu...",
-    "production_cost": "Náklady na výrobu"
+    "production_cost": "Náklady na výrobu",
+    "all_tools": "Všetky nástroje",
+    "defense_tools": "Obranné nástroje",
+    "attack_tools": "Obliehacie nástroje"
   },
   "tr": {
     "travel_speed": "Seyahat hızı",
@@ -237,6 +306,9 @@
     "filter_type_unit": "Birim",
     "filter_type_tool": "Araç",
     "search_placeholder": "Ada göre ara...",
-    "production_cost": "Üretim maliyeti"
+    "production_cost": "Üretim maliyeti",
+    "all_tools": "Tüm araçlar",
+    "defense_tools": "Savunma araçları",
+    "attack_tools": "Kuşatma araçları"
   }
 }
