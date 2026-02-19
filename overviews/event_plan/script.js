@@ -1,4 +1,4 @@
-﻿const eventSources = {
+const eventSources = {
     empire: {
         label: "Empire (Computer)",
         url: "https://communityhub.goodgamestudios.com/empire/event-plan/"
@@ -103,7 +103,7 @@ function normalizeText(text) {
 
 function extractDateTokens(text) {
     const tokens = [];
-    const regex = /(\d{1,2}[./-]\d{1,2}(?:[./-]\d{2,4})?)(?:\s*[-â€“]\s*(\d{1,2}[./-]\d{1,2}(?:[./-]\d{2,4})?))?/g;
+    const regex = /(\d{1,2}[./-]\d{1,2}(?:[./-]\d{2,4})?)(?:\s*[-\u2013]\s*(\d{1,2}[./-]\d{1,2}(?:[./-]\d{2,4})?))?/g;
     let match = null;
 
     while ((match = regex.exec(text)) !== null) {
