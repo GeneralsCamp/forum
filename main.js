@@ -66,7 +66,7 @@ function renderCategory(list, targetId) {
 
         box.innerHTML = `
             <div class="category-icon">
-                <img src="./img_base/${item.icon}">
+                <img src="./img_base/${item.icon}" alt="${item.name}" loading="lazy">
             </div>
             <div class="category-content">
                 <h3>${item.name}</h3>
