@@ -12,6 +12,10 @@
     rel="stylesheet">
   <link rel="stylesheet" href="../shared/shared.css">
   <link rel="stylesheet" href="./loot_box.css">
+  <link rel="stylesheet" href="../shared/consent.css">
+  <meta property="og:title" content="Offerings Overview | Generals Forum">
+  <meta property="og:description" content="This page loads in-game offerings and their linked reward pools!">
+  <meta property="og:image" content="https://generalscamp.github.io/forum/img_base/main_page/offerings-icon.webp">
 </head>
 
 <body>
@@ -96,6 +100,14 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
   <script type="module" src="script.js"></script>
+  <script type="module">
+    import { initConsentManager } from "../shared/ConsentManager.mjs";
+    initConsentManager({
+      measurementId: "G-8TGZRNFGRR",
+      storageKey: "gf_analytics_state_v1",
+      defaultState: "enabled"
+    });
+  </script>
 </body>
 
 </html>

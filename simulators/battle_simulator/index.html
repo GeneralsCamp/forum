@@ -8,6 +8,10 @@
       <link rel="icon" type="image/webp" href="/img_base/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="../../overviews/shared/consent.css">
+  <meta property="og:title" content="Battle Simulator">
+  <meta property="og:description" content="Tools, calculators and simulators.">
+  <meta property="og:image" content="https://generalscamp.github.io/forum/img_base/share-banner.webp">
 </head>
 
 <body>
@@ -157,6 +161,14 @@
     <script type="module" src="./js/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+  <script type="module">
+    import { initConsentManager } from "../../overviews/shared/ConsentManager.mjs";
+    initConsentManager({
+      measurementId: "G-8TGZRNFGRR",
+      storageKey: "gf_analytics_state_v1",
+      defaultState: "enabled"
+    });
+  </script>
 </body>
 
 </html>

@@ -10,6 +10,10 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css"
     rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="../../overviews/shared/consent.css">
+  <meta property="og:title" content="Rift Raid Point Calculator | Generals Forum">
+  <meta property="og:description" content="Calculate Activity Points based on defeated/faced troops, area, and boss level.">
+  <meta property="og:image" content="https://generalscamp.github.io/forum/img_base/main_page/rift-raid-points-icon.webp">
 </head>
 
 <body>
@@ -91,6 +95,14 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
   <script src="script.js"></script>
+  <script type="module">
+    import { initConsentManager } from "../../overviews/shared/ConsentManager.mjs";
+    initConsentManager({
+      measurementId: "G-8TGZRNFGRR",
+      storageKey: "gf_analytics_state_v1",
+      defaultState: "enabled"
+    });
+  </script>
 </body>
 
 </html>

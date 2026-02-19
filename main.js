@@ -1,3 +1,5 @@
+import { initConsentManager } from "./overviews/shared/ConsentManager.mjs";
+
 const categories = {
     overviews: [
         { name: "Decorations Overview", desc: "This page loads the in-game decorations automatically!", icon: "main_page/decorations.webp", link: "./overviews/decorations/index.html", disabled: false },
@@ -230,6 +232,11 @@ async function renderLatestVideos() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+    initConsentManager({
+        measurementId: "G-8TGZRNFGRR",
+        storageKey: "gf_analytics_state_v1",
+        defaultState: "enabled"
+    });
     renderCategory(categories.overviews, "overviews");
     renderCategory(categories.calculators, "calculators");
     renderCategory(categories.simulators, "simulators");

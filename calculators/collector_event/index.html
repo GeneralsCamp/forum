@@ -11,6 +11,10 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css"
         rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="../../overviews/shared/consent.css">
+  <meta property="og:title" content="Collector Event Calculator | Generals Forum">
+  <meta property="og:description" content="Calculate that how many points you need to reach your goal.">
+  <meta property="og:image" content="https://generalscamp.github.io/forum/img_base/main_page/collector-icon.webp">
 </head>
 
 <body>
@@ -66,6 +70,14 @@
         integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
         crossorigin="anonymous"></script>
     <script src="script.js"></script>
+  <script type="module">
+    import { initConsentManager } from "../../overviews/shared/ConsentManager.mjs";
+    initConsentManager({
+      measurementId: "G-8TGZRNFGRR",
+      storageKey: "gf_analytics_state_v1",
+      defaultState: "enabled"
+    });
+  </script>
 </body>
 
 </html>
