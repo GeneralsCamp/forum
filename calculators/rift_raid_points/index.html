@@ -9,6 +9,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css"
     rel="stylesheet">
+  <link rel="stylesheet" href="../../overviews/shared/shared.css">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="../../overviews/shared/consent.css">
   <meta property="og:title" content="Rift Raid Point Calculator | Generals Forum">
@@ -30,58 +31,54 @@
       </a>
 
       <!-- INPUTS -->
-      <div class="col-12 collapse-area mb-2">
+      <div id="inputsSection" class="col-12 collapse-area mb-2" style="display:none;">
         <h2 class="collapse-header">
           <span class="header-title">INPUTS</span>
         </h2>
         <div class="collapse show">
           <form class="calculator-bonuses-form row" onsubmit="return false;">
 
-            <div class="col-12 col-md-6 col-lg-3 form-group">
+            <div class="col-12 col-md-6 col-lg-4 form-group">
+              <label for="raidBoss">Raid boss</label>
+              <select id="raidBoss" class="form-select"></select>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-4 form-group">
+              <label for="level">Boss level</label>
+              <select id="level" class="form-select"></select>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-4 form-group">
               <label for="area">Area</label>
               <select id="area" class="form-select">
-                <option value="courtyard">Courtyard (1000)</option>
-                <option value="walls">Walls (100)</option>
+                <option value="courtyard">Courtyard</option>
+                <option value="walls">Walls</option>
               </select>
             </div>
 
-            <div class="col-12 col-md-6 col-lg-3 form-group">
-              <label for="level">Boss level</label>
-              <select id="level" class="form-select">
-                <option value="1">Level 1 (x1)</option>
-                <option value="2">Level 2 (x3)</option>
-                <option value="3">Level 3 (x8)</option>
-                <option value="4">Level 4 (x12)</option>
-                <option value="5">Level 5 (x20)</option>
-                <option value="6">Level 6 (x25)</option>
-                <option value="7">Level 7 (x30)</option>
-                <option value="8">Level 8 (x35)</option>
-                <option value="9">Level 9 (x40)</option>
-                <option value="10">Level 10 (x50)</option>
-              </select>
-            </div>
-
-            <div class="col-12 col-md-6 col-lg-3 form-group disabled-input" id="courtyardBox">
+            <div class="col-12 col-md-6 col-lg-4 form-group disabled-input" id="courtyardBox">
               <label for="courtyardTroops">Courtyard troops</label>
               <input type="number" id="courtyardTroops" class="form-control" readonly>
             </div>
 
-            <div class="col-12 col-md-6 col-lg-3 form-group disabled-input" id="wallBox">
+            <div class="col-12 col-md-6 col-lg-4 form-group disabled-input" id="wallBox">
               <label for="wallTroops">Wall troops</label>
               <input type="number" id="wallTroops" class="form-control" readonly>
             </div>
 
-            <div class="col-12 col-md-6 col-lg-3 form-group">
+            <div class="col-12 col-md-6 col-lg-4 form-group">
               <label for="defeated">Defeated troops</label>
               <input type="number" id="defeated" class="form-control" min="0" value="20000">
             </div>
+
+            <div class="d-none d-lg-block col-lg-4 form-group"></div>
           </form>
         </div>
 
       </div>
 
       <!-- RESULTS -->
-      <div class="col-12 collapse-area result">
+      <div id="resultsSection" class="col-12 collapse-area result" style="display:none;">
         <h2 class="collapse-header">
           <span class="header-title">RESULTS</span>
         </h2>
@@ -90,11 +87,19 @@
         </div>
       </div>
 
+      <div id="loadingBox" class="col-12 loading-message">
+        <h3 id="loadingStatus">Initializing...</h3>
+        <div class="progress">
+          <div id="loadingProgress" class="progress-bar"></div>
+          <span id="loadingPercentText" class="progress-text">0%</span>
+        </div>
+      </div>
+
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="script.js"></script>
+  <script type="module" src="script.js"></script>
   <script type="module">
     import { initConsentManager } from "../../overviews/shared/ConsentManager.mjs";
     initConsentManager({

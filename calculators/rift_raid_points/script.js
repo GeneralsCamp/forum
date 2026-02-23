@@ -1,64 +1,116 @@
-/*** MAIN CALCULATION DATA ***/
-const raidBossLevels = {
-  1: { courtyardTroops: 50000, wallTroops: 3800, multiplier: 1 },
-  2: { courtyardTroops: 75000, wallTroops: 5000, multiplier: 3 },
-  3: { courtyardTroops: 150000, wallTroops: 14200, multiplier: 8 },
-  4: { courtyardTroops: 300000, wallTroops: 36500, multiplier: 12 },
-  5: { courtyardTroops: 350000, wallTroops: 43000, multiplier: 20 },
-  6: { courtyardTroops: 400000, wallTroops: 49000, multiplier: 25 },
-  7: { courtyardTroops: 450000, wallTroops: 54600, multiplier: 30 },
-  8: { courtyardTroops: 500000, wallTroops: 57300, multiplier: 35 },
-  9: { courtyardTroops: 600000, wallTroops: 65900, multiplier: 40 },
-  10: { courtyardTroops: 700000, wallTroops: 90000, multiplier: 50 }
-};
+import { getItemVersion, loadItems } from "../../overviews/shared/DataService.mjs";
+import { createLoader } from "../../overviews/shared/LoadingService.mjs";
 
-function getTroopsForSelectedArea(levelData, area) {
-  if (area === "walls") return levelData.wallTroops;
-  return levelData.courtyardTroops;
+let raidBossData = {};
+const loader = createLoader();
+
+function parseWallUnits(rawValue) {
+  if (!rawValue) return 0;
+  return String(rawValue)
+    .split("#")
+    .reduce((sum, token) => {
+      const [, countRaw] = token.split("+");
+      const count = Number(countRaw) || 0;
+      return sum + count;
+    }, 0);
 }
 
-function calculateActivityPoints() {
-  const defeated = Number(document.getElementById("defeated").value) || 0;
-  const area = document.getElementById("area").value;
-  const level = Number(document.getElementById("level").value) || 1;
+function normalizeBossName(rawName, bossId) {
+  const name = String(rawName || "").trim();
+  return name || `Raid Boss ${bossId}`;
+}
 
-  const areaMultipliers = {
-    courtyard: 1000,
-    walls: 100
-  };
+function buildRaidBossData(items) {
+  const bosses = Array.isArray(items?.raidBosses) ? items.raidBosses : [];
+  const levels = Array.isArray(items?.raidBossLevels) ? items.raidBossLevels : [];
+  const stages = Array.isArray(items?.raidBossStages) ? items.raidBossStages : [];
 
-  const levelData = raidBossLevels[level];
+  const stageByLevelId = new Map();
+  for (const stage of stages) {
+    const levelId = String(stage.raidBossLevelID || "");
+    const health = Number(stage.health);
+    if (!levelId || health !== 100 || stageByLevelId.has(levelId)) continue;
+    stageByLevelId.set(levelId, stage);
+  }
+
+  const result = {};
+  for (const boss of bosses) {
+    const bossId = String(boss.raidBossID || "");
+    if (!bossId) continue;
+    result[bossId] = {
+      name: normalizeBossName(boss.name, bossId),
+      levels: {}
+    };
+  }
+
+  for (const levelEntry of levels) {
+    const bossId = String(levelEntry.raidBossID || "");
+    const levelId = String(levelEntry.raidBossLevelID || "");
+    const level = Number(levelEntry.level);
+    if (!bossId || !levelId || !Number.isFinite(level)) continue;
+
+    const stage = stageByLevelId.get(levelId);
+    if (!stage) continue;
+
+    if (!result[bossId]) {
+      result[bossId] = {
+        name: `Raid Boss ${bossId}`,
+        levels: {}
+      };
+    }
+
+    const wallTroops =
+      parseWallUnits(stage.leftWallUnits) +
+      parseWallUnits(stage.frontWallUnits) +
+      parseWallUnits(stage.rightWallUnits);
+
+    result[bossId].levels[level] = {
+      courtyardTroops: Number(levelEntry.courtyardSize) || 0,
+      wallTroops,
+      courtyardPointFactor: Number(stage.courtyardPointFactor) || 0,
+      wallPointFactor: Number(stage.wallPointFactor) || 0
+    };
+  }
+
+  return result;
+}
+
+function getSelectedBossId() {
+  return document.getElementById("raidBoss").value;
+}
+
+function getSelectedLevel() {
+  return Number(document.getElementById("level").value) || 1;
+}
+
+function getSelectedArea() {
+  return document.getElementById("area").value;
+}
+
+function getLevelData() {
+  const bossId = getSelectedBossId();
+  const level = getSelectedLevel();
+  return raidBossData?.[bossId]?.levels?.[level] || null;
+}
+
+function refreshAreaLabels(levelData) {
+  const areaSelect = document.getElementById("area");
+  const courtyardOption = Array.from(areaSelect.options).find(opt => opt.value === "courtyard");
+  const wallsOption = Array.from(areaSelect.options).find(opt => opt.value === "walls");
+
   if (!levelData) {
-    document.getElementById("points").innerHTML = "0";
+    if (courtyardOption) courtyardOption.textContent = "Courtyard";
+    if (wallsOption) wallsOption.textContent = "Walls";
     return;
   }
 
-  document.getElementById("courtyardTroops").value = levelData.courtyardTroops;
-  document.getElementById("wallTroops").value = levelData.wallTroops;
-
-  updateTroopsVisibility(area);
-
-  const troopsForArea =
-    area === "walls"
-      ? levelData.wallTroops
-      : levelData.courtyardTroops;
-
-  const levelMultiplier = levelData.multiplier;
-
-  if (troopsForArea <= 0 || defeated <= 0) {
-    document.getElementById("points").innerHTML = "0";
-    return;
+  if (courtyardOption) {
+    courtyardOption.textContent = `Courtyard (${levelData.courtyardPointFactor})`;
   }
-
-  const ratio = Math.min(defeated / troopsForArea, 1);
-
-  const points = Math.ceil(
-    ratio * areaMultipliers[area] * levelMultiplier + Number.EPSILON
-  );
-
-  document.getElementById("points").innerHTML = points;
+  if (wallsOption) {
+    wallsOption.textContent = `Walls (${levelData.wallPointFactor})`;
+  }
 }
-
 
 function updateTroopsVisibility(area) {
   const courtyardBox = document.getElementById("courtyardBox");
@@ -73,28 +125,181 @@ function updateTroopsVisibility(area) {
   }
 }
 
-/*** SAVE TO LOCAL STORAGE ***/
+function calculateActivityPoints() {
+  const defeated = Number(document.getElementById("defeated").value) || 0;
+  const area = getSelectedArea();
+  const levelData = getLevelData();
+
+  if (!levelData) {
+    document.getElementById("courtyardTroops").value = "";
+    document.getElementById("wallTroops").value = "";
+    document.getElementById("points").innerHTML = "0";
+    refreshAreaLabels(null);
+    return;
+  }
+
+  document.getElementById("courtyardTroops").value = levelData.courtyardTroops;
+  document.getElementById("wallTroops").value = levelData.wallTroops;
+  refreshAreaLabels(levelData);
+  updateTroopsVisibility(area);
+
+  const troopsForArea = area === "walls" ? levelData.wallTroops : levelData.courtyardTroops;
+  const pointFactor = area === "walls" ? levelData.wallPointFactor : levelData.courtyardPointFactor;
+
+  if (troopsForArea <= 0 || defeated <= 0 || pointFactor <= 0) {
+    document.getElementById("points").innerHTML = "0";
+    return;
+  }
+
+  const ratio = Math.min(defeated / troopsForArea, 1);
+  const points = Math.ceil(ratio * pointFactor + Number.EPSILON);
+  document.getElementById("points").innerHTML = points;
+}
+
+function setSectionsVisible(visible) {
+  const inputsSection = document.getElementById("inputsSection");
+  const resultsSection = document.getElementById("resultsSection");
+  if (inputsSection) inputsSection.style.display = visible ? "" : "none";
+  if (resultsSection) resultsSection.style.display = visible ? "" : "none";
+}
+
+function populateRaidBossSelect() {
+  const raidBossSelect = document.getElementById("raidBoss");
+  const sortedBossEntries = Object.entries(raidBossData).sort((a, b) =>
+    Number(a[0]) - Number(b[0])
+  );
+
+  raidBossSelect.innerHTML = "";
+  sortedBossEntries.forEach(([bossId, bossData]) => {
+    const option = document.createElement("option");
+    option.value = bossId;
+    option.textContent = bossData.name;
+    raidBossSelect.appendChild(option);
+  });
+}
+
+function populateLevelSelectForBoss() {
+  const bossId = getSelectedBossId();
+  const levelSelect = document.getElementById("level");
+  const levels = Object.keys(raidBossData?.[bossId]?.levels || {})
+    .map(Number)
+    .filter(Number.isFinite)
+    .sort((a, b) => a - b);
+
+  const previousLevel = levelSelect.value;
+  levelSelect.innerHTML = "";
+  levels.forEach(level => {
+    const levelData = raidBossData[bossId].levels[level];
+    const wallFactor = Number(levelData.wallPointFactor) || 0;
+    const multiplierText = wallFactor ? `x${Math.round(wallFactor / 100)}` : "-";
+    const option = document.createElement("option");
+    option.value = String(level);
+    option.textContent = `Level ${level} (${multiplierText})`;
+    levelSelect.appendChild(option);
+  });
+
+  if (levels.length === 0) {
+    const option = document.createElement("option");
+    option.value = "";
+    option.textContent = "No levels";
+    levelSelect.appendChild(option);
+    levelSelect.disabled = true;
+    return;
+  }
+
+  levelSelect.disabled = false;
+  if (levels.includes(Number(previousLevel))) {
+    levelSelect.value = previousLevel;
+  } else {
+    levelSelect.value = String(levels[0]);
+  }
+}
+
 function saveToLocalStorage() {
-  ["defeated", "area", "level"].forEach(id => {
+  ["defeated", "area", "level", "raidBoss"].forEach(id => {
     localStorage.setItem(id, document.getElementById(id).value);
   });
 }
 
-function loadFromLocalStorage() {
-  ["defeated", "area", "level"].forEach(id => {
-    if (localStorage.getItem(id) !== null) {
-      document.getElementById(id).value = localStorage.getItem(id);
-    }
-  });
+function restoreFromLocalStorage() {
+  const raidBoss = localStorage.getItem("raidBoss");
+  if (raidBoss && raidBossData[raidBoss]) {
+    document.getElementById("raidBoss").value = raidBoss;
+  }
 
-  calculateActivityPoints();
+  populateLevelSelectForBoss();
+
+  const level = localStorage.getItem("level");
+  if (level && raidBossData[getSelectedBossId()]?.levels?.[Number(level)]) {
+    document.getElementById("level").value = level;
+  }
+
+  const area = localStorage.getItem("area");
+  if (area === "courtyard" || area === "walls") {
+    document.getElementById("area").value = area;
+  }
+
+  const defeated = localStorage.getItem("defeated");
+  if (defeated !== null) {
+    document.getElementById("defeated").value = defeated;
+  }
 }
 
-window.onload = loadFromLocalStorage;
+function bindUI() {
+  const raidBossSelect = document.getElementById("raidBoss");
 
-document.querySelectorAll('input, select').forEach(el => {
-  el.addEventListener('change', () => {
+  raidBossSelect.addEventListener("change", () => {
+    populateLevelSelectForBoss();
     saveToLocalStorage();
     calculateActivityPoints();
   });
-});
+
+  document.querySelectorAll("input, select").forEach(el => {
+    if (el.id === "raidBoss") return;
+    el.addEventListener("change", () => {
+      saveToLocalStorage();
+      calculateActivityPoints();
+    });
+  });
+}
+
+async function loadLiveData() {
+  const itemVersion = await getItemVersion();
+  const items = await loadItems(itemVersion);
+  const builtData = buildRaidBossData(items);
+  if (Object.keys(builtData).length === 0) {
+    throw new Error("No raid boss data in items.");
+  }
+  raidBossData = builtData;
+}
+
+async function init() {
+  const MIN_LOADING_MS = 1000;
+  const loadingStart = Date.now();
+
+  setSectionsVisible(false);
+  loader.set(1, 3, "Loading item version...");
+
+  try {
+    loader.set(2, 3, "Loading items...");
+    await loadLiveData();
+
+    loader.set(3, 3, "Building raid boss data...");
+    populateRaidBossSelect();
+    restoreFromLocalStorage();
+    bindUI();
+    calculateActivityPoints();
+    const elapsed = Date.now() - loadingStart;
+    const waitMs = Math.max(0, MIN_LOADING_MS - elapsed);
+    if (waitMs > 0) {
+      await new Promise(resolve => setTimeout(resolve, waitMs));
+    }
+    loader.hide();
+    setSectionsVisible(true);
+  } catch (err) {
+    console.error("Rift raid live data load failed:", err);
+    loader.error("Data load failed", 30);
+  }
+}
+
+init();
