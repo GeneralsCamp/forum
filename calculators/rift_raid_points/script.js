@@ -1,7 +1,13 @@
-import { getItemVersion, loadItems } from "../../overviews/shared/DataService.mjs";
+import {
+  getItemVersion,
+  loadItems,
+  getLangVersion,
+  loadLanguage
+} from "../../overviews/shared/DataService.mjs";
 import { createLoader } from "../../overviews/shared/LoadingService.mjs";
 
 let raidBossData = {};
+let langData = {};
 const loader = createLoader();
 
 function parseWallUnits(rawValue) {
@@ -15,8 +21,15 @@ function parseWallUnits(rawValue) {
     }, 0);
 }
 
+function getLangValue(key) {
+  if (!key) return null;
+  return langData[key] || langData[String(key).toLowerCase()] || null;
+}
+
 function normalizeBossName(rawName, bossId) {
   const name = String(rawName || "").trim();
+  const langName = getLangValue(`are_boss_name_${name}`);
+  if (langName) return String(langName).trim();
   return name || `Raid Boss ${bossId}`;
 }
 
@@ -264,8 +277,17 @@ function bindUI() {
 }
 
 async function loadLiveData() {
-  const itemVersion = await getItemVersion();
-  const items = await loadItems(itemVersion);
+  const [itemVersion, langVersion] = await Promise.all([
+    getItemVersion(),
+    getLangVersion()
+  ]);
+
+  const [items, lang] = await Promise.all([
+    loadItems(itemVersion),
+    loadLanguage("en", langVersion)
+  ]);
+
+  langData = lang || {};
   const builtData = buildRaidBossData(items);
   if (Object.keys(builtData).length === 0) {
     throw new Error("No raid boss data in items.");
@@ -278,17 +300,18 @@ async function init() {
   const loadingStart = Date.now();
 
   setSectionsVisible(false);
-  loader.set(1, 3, "Loading item version...");
+  loader.set(1, 4, "Loading versions...");
 
   try {
-    loader.set(2, 3, "Loading items...");
+    loader.set(2, 4, "Loading items and language...");
     await loadLiveData();
 
-    loader.set(3, 3, "Building raid boss data...");
+    loader.set(3, 4, "Building raid boss data...");
     populateRaidBossSelect();
     restoreFromLocalStorage();
     bindUI();
     calculateActivityPoints();
+    loader.set(4, 4, "Finalizing...");
     const elapsed = Date.now() - loadingStart;
     const waitMs = Math.max(0, MIN_LOADING_MS - elapsed);
     if (waitMs > 0) {
