@@ -20,9 +20,9 @@
 <body>
   <div class="container">
     <div class="row">
-      <div class="col-12 mb-2">
+      <div class="col-12">
         <div class="col-12 page-title">
-          <h1>RIFT EVENT</h1>
+          <h1>RIFT EVENT OVERVIEW</h1>
         </div>
 
         <div id="topButtonsContainer">
@@ -40,14 +40,24 @@
         </div>
 
         <div id="contentSection" class="row note gx-1 gy-1 align-items-end pb-2 mb-2">
-          <div class="col-12 col-md-6 form-group">
+          <div id="riftFilterWrap" class="col-12 col-md-6 col-lg-6 form-group">
             <select id="riftSelect" class="form-select custom-select text-center" aria-label="Rift" disabled>
               <option value="" selected>Loading rift events...</option>
             </select>
           </div>
-          <div class="col-12 col-md-6 form-group">
+          <div id="typeFilterWrap" class="col-12 col-md-6 col-lg-6 form-group">
             <select id="typeSelect" class="form-select custom-select text-center" aria-label="Type" disabled>
               <option value="" selected>Loading reward types...</option>
+            </select>
+          </div>
+          <div id="bossLevelFilterWrap" class="col-12 col-md-6 col-lg-6 form-group" style="display:none;">
+            <select id="bossLevelSelect" class="form-select custom-select text-center" aria-label="Boss level" disabled>
+              <option value="" selected>Boss level</option>
+            </select>
+          </div>
+          <div id="bossStageFilterWrap" class="col-12 col-md-6 col-lg-6 form-group" style="display:none;">
+            <select id="bossStageSelect" class="form-select custom-select text-center" aria-label="Boss stage" disabled>
+              <option value="" selected>Boss stage</option>
             </select>
           </div>
         </div>
@@ -61,6 +71,10 @@
 
           <div id="bossSection" class="collapse-area p-2" style="display:none;">
             <div id="bossRows" class="row gx-1"></div>
+          </div>
+
+          <div id="bossOverviewSection" class="collapse-area p-2" style="display:none;">
+            <div id="bossOverviewRows"></div>
           </div>
         </div>
 

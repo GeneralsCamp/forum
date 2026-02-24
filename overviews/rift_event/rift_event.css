@@ -109,6 +109,119 @@ label {
   gap: 8px;
 }
 
+#bossOverviewRows {
+  overflow: visible;
+}
+
+.boss-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.boss-overview-card {
+  background: #7c5537;
+  border: 2px solid #f0dcc0;
+  border-radius: 8px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.boss-overview-heading {
+  margin: 0;
+  background: #e4cfb2;
+  color: #3f2f23;
+  font-size: 0.85rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  padding: 7px 10px;
+  border-bottom: 1px solid rgba(62, 42, 22, 0.5);
+}
+
+.boss-overview-stats {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 6px;
+  padding: 8px;
+}
+
+@media (min-width: 576px) {
+  .boss-overview-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.boss-overview-stat {
+  background: #f3e0c2;
+  border: 1px solid #c9ab7a;
+  border-radius: 6px;
+  padding: 6px 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.boss-overview-stat-key {
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: #5c3f29;
+}
+
+.boss-overview-stat-value {
+  font-size: 0.86rem;
+  font-weight: 900;
+  color: #2f2116;
+}
+
+.boss-overview-effects {
+  padding: 8px;
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.boss-overview-empty {
+  color: #f3e0c2;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 8px;
+}
+
+.boss-overview-effect-stat {
+  min-height: 44px;
+}
+
+.boss-effect-name {
+  flex: 1 1 auto;
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: #5c3f29;
+  line-height: 1.15;
+}
+
+.boss-effect-icon-wrap {
+  width: 34px;
+  min-width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.boss-effect-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.boss-overview-item-grid {
+  padding: 8px;
+  height: 90px;
+  background: #6b4a30;
+  justify-content: center;
+}
+
 .reward-title {
   font-size: 0.86rem;
   font-weight: 900;
@@ -148,6 +261,10 @@ label {
   height: 86px;
   overflow-x: auto;
   overflow-y: hidden;
+}
+
+#individualSection .item-grid {
+  justify-content: center;
 }
 
 .item-grid::-webkit-scrollbar {
@@ -274,11 +391,43 @@ label {
 }
 
 @media (min-width: 768px) {
+  .boss-overview-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .boss-overview-effects {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .boss-overview-meta,
+  .boss-overview-effects-card {
+    grid-column: span 2;
+  }
+
   #bossRows {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   #individualRows {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .boss-overview-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .boss-overview-meta,
+  .boss-overview-effects-card {
+    grid-column: span 4;
+  }
+
+  .boss-overview-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .boss-overview-effects {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }

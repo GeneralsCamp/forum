@@ -15,6 +15,7 @@ import {
 const loader = createLoader();
 let currentLanguage = getInitialLanguage();
 const composedRewardImageCache = new Map();
+let ownLang = {};
 
 initAutoHeight({
   contentSelector: "#content",
@@ -28,8 +29,10 @@ const state = {
   raidEvents: [],
   raidBosses: [],
   raidBossLevels: [],
+  raidBossStages: [],
   leaguetypeEvents: [],
   rewardsById: {},
+  effectsById: {},
   unitsById: {},
   lootBoxesById: {},
   constructionById: {},
@@ -77,9 +80,40 @@ function langValue(key) {
   return state.lang[key] || state.lang[String(key).toLowerCase()] || null;
 }
 
+function uiText(key, fallback) {
+  const value = langValue(key);
+  return value ? String(value) : fallback;
+}
+
+async function loadOwnLang() {
+  try {
+    const res = await fetch("./ownLang.json");
+    ownLang = await res.json();
+  } catch {
+    ownLang = {};
+  }
+}
+
+function ownText(key, fallback) {
+  const lc = String(currentLanguage || "en").toLowerCase();
+  const short = lc.split(/[-_]/)[0];
+  return ownLang?.[lc]?.ui?.[key]
+    || ownLang?.[short]?.ui?.[key]
+    || ownLang?.en?.ui?.[key]
+    || fallback;
+}
+
 function formatNumber(value) {
   const n = Number(value);
   return Number.isFinite(n) ? n.toLocaleString() : String(value ?? "-");
+}
+
+function formatMinSec(value) {
+  const totalSeconds = Number(value);
+  if (!Number.isFinite(totalSeconds) || totalSeconds < 0) return String(value ?? "-");
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = Math.floor(totalSeconds % 60);
+  return `${minutes}:${String(seconds).padStart(2, "0")}`;
 }
 
 function formatLangTemplate(template, value) {
@@ -94,8 +128,47 @@ function resolveUnitName(id) {
   return langValue(key) || unit.type || unit.name || `Unit ${id}`;
 }
 
+function parseWallUnitsList(value) {
+  return parseIdAmountList(value).map(entry => ({
+    ...entry,
+    name: resolveUnitName(entry.id)
+  }));
+}
+
+function buildOverviewUnitItem(unit) {
+  return {
+    type: "unit",
+    id: unit.id,
+    name: unit.name,
+    amount: unit.amount
+  };
+}
+
+function unitCardsHtml(units) {
+  if (!units || units.length === 0) {
+    return `<div class="boss-overview-empty">${ownText("no_units", "No units")}</div>`;
+  }
+
+  return units.map(unit => {
+    const item = buildOverviewUnitItem(unit);
+    const imageUrl = imageUrlFor(item);
+    const tooltipName = resolveUnitTooltipName(item);
+    const imageHtml = imageUrl
+      ? `<img class="item-image" loading="lazy" alt="${item.name || ownText("unit", "Unit")}" src="${imageUrl}">`
+      : `<div class="item-fallback">${ownText("unit", "Unit").toLowerCase()}</div>`;
+    return `
+      <div class="item-card" data-name="${tooltipName}" title="${tooltipName}">
+        <div class="item-image-wrap">
+          ${imageHtml}
+        </div>
+        <div class="item-amount">${formatNumber(unit.amount)}</div>
+      </div>
+    `;
+  }).join("");
+}
+
 function resolveUnitTooltipName(entry) {
-  const baseName = String(entry?.name || "Unit").trim();
+  const baseName = String(entry?.name || ownText("unit", "Unit")).trim();
   if (/\((lvl|level)\.?/i.test(baseName)) return baseName;
 
   const unit = state.unitsById[String(entry?.id ?? "")];
@@ -111,10 +184,122 @@ function isMeadLikeName(value) {
   return String(value || "").trim().toLowerCase() === "mead";
 }
 
+function prettifyEffectName(rawName) {
+  const map = {
+    raidBossWallBonus: "Wall Bonus",
+    raidBossGateBonus: "Gate Bonus",
+    DefenseBoostFront: "Front Defense Boost",
+    DefenseBoostFlank: "Flank Defense Boost",
+    defenseBoostYard: "Courtyard Defense Boost"
+  };
+  if (map[rawName]) return map[rawName];
+  return String(rawName || "Effect")
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/_/g, " ")
+    .trim();
+}
+
+function resolveEffectName(effectId) {
+  const effect = state.effectsById[String(effectId)];
+  const rawName = String(effect?.name || "").trim();
+  if (!rawName) return `Effect ${effectId}`;
+
+  const key = rawName.toLowerCase();
+  const candidates = [
+    `effect_name_${key}`,
+    `effect_name_${rawName}`,
+    `ci_effect_${key}`,
+    `ci_effect_${rawName}`,
+    `equip_effect_description_${rawName}`,
+    `equip_effect_description_${key}`,
+    `effect_description_${key}`,
+    rawName,
+    key
+  ];
+
+  for (const langKey of candidates) {
+    const label = langValue(langKey);
+    if (!label) continue;
+    const cleaned = String(label)
+      .replace(/\{[^}]+\}/g, "")
+      .replace(/[+%]/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+    if (cleaned) {
+      return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+    }
+  }
+
+  return prettifyEffectName(rawName);
+}
+
+function parseBattleEffects(value) {
+  if (!value) return [];
+  return String(value)
+    .split(",")
+    .map(token => token.trim())
+    .filter(Boolean)
+    .map(token => {
+      const [idRaw, amountRaw] = token.split("&");
+      const id = String(idRaw || "").trim();
+      const amount = Number(amountRaw);
+      return {
+        id,
+        amount: Number.isFinite(amount) ? amount : 0
+      };
+    })
+    .filter(x => x.id)
+    .map(effect => {
+      const label = resolveEffectName(effect.id);
+      return {
+        ...effect,
+        label
+      };
+    });
+}
+
+function parseSimpleIdList(value) {
+  if (!value) return [];
+  return String(value)
+    .split(",")
+    .map(token => String(token || "").trim())
+    .filter(Boolean);
+}
+
+function getBossEffectSummary(stage) {
+  const summary = {
+    wallProtection: 0,
+    gateProtection: 0,
+    frontDefense: 0,
+    flankDefense: 0,
+    courtyardDefense: 0,
+    isWallRegen: false
+  };
+
+  const effects = parseBattleEffects(stage?.defenderBattleEffects);
+  effects.forEach(effect => {
+    const effectName = String(state.effectsById[String(effect.id)]?.name || "").trim();
+    const value = Number(effect.amount) || 0;
+    if (effectName === "raidBossWallBonus") summary.wallProtection = value;
+    if (effectName === "raidBossGateBonus") summary.gateProtection = value;
+    if (effectName === "DefenseBoostFront") summary.frontDefense = value;
+    if (effectName === "DefenseBoostFlank") summary.flankDefense = value;
+    if (effectName === "defenseBoostYard") summary.courtyardDefense = value;
+  });
+
+  const highlightIds = parseSimpleIdList(stage?.HighlightEffectIcon);
+  summary.isWallRegen = highlightIds.some(id => {
+    const effectName = String(state.effectsById[String(id)]?.name || "").trim();
+    return String(id) === "444" || effectName === "raidBossWallRegeneration";
+  });
+
+  return summary;
+}
+
 // --- REWARD MAPPING ---
 function mapRewardToEntries(reward) {
   if (!reward) {
-    return [{ name: "Unknown reward", amount: 1, type: null, id: null, addKeyName: null }];
+    return [{ name: ownText("unknown_reward", "Unknown reward"), amount: 1, type: null, id: null, addKeyName: null }];
   }
 
   const entries = [];
@@ -127,7 +312,7 @@ function mapRewardToEntries(reward) {
       if (isMeadLikeName(name) || isMeadLikeName(addKeyName)) return;
 
       entries.push({
-        name: name || `Reward ${reward.rewardID || "?"}`,
+        name: name || `${ownText("reward", "Reward")} ${reward.rewardID || "?"}`,
         amount: Number(item?.amount) || 1,
         type: item?.type || null,
         id: item?.id ?? null,
@@ -158,7 +343,7 @@ function mapRewardToEntries(reward) {
   }
 
   if (state.rewardResolver) {
-    const fallbackName = state.rewardResolver.resolveRewardName(reward) || `Reward ${reward.rewardID || "?"}`;
+    const fallbackName = state.rewardResolver.resolveRewardName(reward) || `${ownText("reward", "Reward")} ${reward.rewardID || "?"}`;
     const fallbackAddKey = state.rewardResolver.getAddKeyName(reward) || null;
     if (!isMeadLikeName(fallbackName) && !isMeadLikeName(fallbackAddKey)) {
       return [{
@@ -268,11 +453,198 @@ function buildBossRows(boss) {
     rows.push({
       title: `${levelLabel} ${level.level} (${formatNumber(level.minPointsForBossRewards)})`,
       meta: "",
-      items: items.length > 0 ? items : [{ name: "No rewards", amount: 1, type: null, id: null, addKeyName: null }]
+      items: items.length > 0 ? items : [{ name: ownText("no_rewards", "No rewards"), amount: 1, type: null, id: null, addKeyName: null }]
     });
   }
 
   return rows;
+}
+
+function getLevelEntriesForBoss(boss) {
+  return state.raidBossLevels
+    .filter(row => String(row.raidBossID) === String(boss?.raidBossID || ""))
+    .sort((a, b) => Number(a.level) - Number(b.level));
+}
+
+function getStagesForLevel(levelId) {
+  return state.raidBossStages
+    .filter(row => String(row.raidBossLevelID) === String(levelId || ""))
+    .sort((a, b) => Number(a.raidBossStageID) - Number(b.raidBossStageID));
+}
+
+function updateBossOverviewFilters() {
+  const boss = selectedRift();
+  const levelSelect = document.getElementById("bossLevelSelect");
+  const stageSelect = document.getElementById("bossStageSelect");
+  if (!levelSelect || !stageSelect) return;
+
+  const levels = getLevelEntriesForBoss(boss);
+  const savedLevelId = localStorage.getItem("rift_rewards_overview_level_id");
+  const savedStageIndex = localStorage.getItem("rift_rewards_overview_stage_id");
+  const levelLabel = uiText("level", "Level");
+
+  levelSelect.innerHTML = "";
+  levels.forEach(level => {
+    const option = document.createElement("option");
+    option.value = String(level.raidBossLevelID);
+    option.textContent = `${levelLabel} ${level.level}`;
+    levelSelect.appendChild(option);
+  });
+
+  if (levels.length === 0) {
+    levelSelect.disabled = true;
+    stageSelect.innerHTML = `<option value="">${ownText("boss_stage", "Boss stage")}</option>`;
+    stageSelect.disabled = true;
+    return;
+  }
+
+  levelSelect.disabled = false;
+  if (savedLevelId && levels.some(x => String(x.raidBossLevelID) === String(savedLevelId))) {
+    levelSelect.value = String(savedLevelId);
+  } else {
+    levelSelect.value = String(levels[0].raidBossLevelID);
+  }
+
+  const selectedLevelId = levelSelect.value;
+  const stages = getStagesForLevel(selectedLevelId).slice(0, 6);
+  const bossStageLabel = ownText("boss_stage", "Boss stage");
+
+  stageSelect.innerHTML = "";
+  stages.forEach((_, index) => {
+    const option = document.createElement("option");
+    option.value = String(index);
+    option.textContent = `${bossStageLabel} ${index}`;
+    stageSelect.appendChild(option);
+  });
+
+  if (stages.length === 0) {
+    stageSelect.disabled = true;
+  } else {
+    stageSelect.disabled = false;
+    const parsed = Number(savedStageIndex);
+    if (Number.isFinite(parsed) && parsed >= 0 && parsed < stages.length) {
+      stageSelect.value = String(parsed);
+    } else {
+      stageSelect.value = "0";
+    }
+  }
+}
+
+function renderBossOverview() {
+  const root = document.getElementById("bossOverviewRows");
+  if (!root) return;
+
+  const boss = selectedRift();
+  const levelId = document.getElementById("bossLevelSelect")?.value || "";
+  const stageIndex = Number(document.getElementById("bossStageSelect")?.value || "0");
+
+  if (!boss || !levelId) {
+    root.innerHTML = `<div class="reward-card"><div class="reward-title">${ownText("no_boss_overview_data", "No boss overview data found")}</div></div>`;
+    return;
+  }
+
+  const level = state.raidBossLevels.find(x => String(x.raidBossLevelID) === String(levelId));
+  const stageRows = getStagesForLevel(levelId).slice(0, 6);
+  const stage = stageRows[stageIndex];
+
+  if (!level || !stage) {
+    root.innerHTML = `<div class="reward-card"><div class="reward-title">${ownText("no_boss_overview_data", "No boss overview data found")}</div></div>`;
+    return;
+  }
+
+  const valueTrue = ownText("true", "True");
+  const valueFalse = ownText("false", "False");
+  const effectSummary = getBossEffectSummary(stage);
+
+  const leftUnits = parseWallUnitsList(stage.leftWallUnits);
+  const frontUnits = parseWallUnitsList(stage.frontWallUnits);
+  const rightUnits = parseWallUnitsList(stage.rightWallUnits);
+  const courtyardUnits = parseWallUnitsList(level.courtyardReserveUnits);
+  const unitsLabel = uiText("units", "Units");
+  const leftFlankLabel = uiText("dialog_defence_leftFlank", "Left flank");
+  const frontLabel = uiText("dialog_defence_middleFlank", "Front");
+  const rightFlankLabel = uiText("dialog_defence_rightFlank", "Right flank");
+  const courtyardLabel = uiText("dialog_defence_courtyard", "Courtyard");
+  const bossEffectsTitle = ownText("boss_effects", uiText("dialog_are_boss_effect_title", "Boss effects"));
+  const wallRegenLabel = uiText(
+    "dialog_are_highlightedeffect_name_raidBossWallRegeneration",
+    ownText("wall_regeneration", "Wall regeneration")
+  );
+  const courtyardSizeLabel = uiText(
+    "unitsInCourtyard_limit_player",
+    ownText("courtyard_unit_size", "Courtyard unit size")
+  );
+  const bossStatsLabel = ownText("boss_stats", "Boss Stats");
+  const healthLabel = ownText("health", "Health");
+  const courtyardMeleeRatioLabel = ownText("courtyard_melee_ratio", "Courtyard Melee Ratio");
+
+  root.innerHTML = `
+    <div class="boss-overview-grid">
+      <article class="boss-overview-card boss-overview-meta">
+        <h3 class="boss-overview-heading">${bossStatsLabel}</h3>
+        <div class="boss-overview-stats">
+          <div class="boss-overview-stat">
+            <span class="boss-overview-stat-key">${healthLabel}</span>
+            <span class="boss-overview-stat-value">${formatNumber(stage.health)}%</span>
+          </div>
+          <div class="boss-overview-stat">
+            <span class="boss-overview-stat-key">${wallRegenLabel}</span>
+            <span class="boss-overview-stat-value">${formatMinSec(level.wallRegenerationTime)}</span>
+          </div>
+          <div class="boss-overview-stat">
+            <span class="boss-overview-stat-key">${courtyardSizeLabel}</span>
+            <span class="boss-overview-stat-value">${formatNumber(level.courtyardSize)}</span>
+          </div>
+          <div class="boss-overview-stat">
+            <span class="boss-overview-stat-key">${courtyardMeleeRatioLabel}</span>
+            <span class="boss-overview-stat-value">${formatNumber(level.courtyardMeleePercent)}%</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="boss-overview-card boss-overview-effects-card">
+        <h3 class="boss-overview-heading">${bossEffectsTitle}</h3>
+        <div class="boss-overview-effects">
+          ${[
+            { title: ownText("wall_protection", "Wall protection"), icon: "../../img_base/battle_simulator/wall-icon.png", value: `${formatNumber(effectSummary.wallProtection)}%` },
+            { title: ownText("gate_protection", "Gate protection"), icon: "../../img_base/battle_simulator/gate-icon.png", value: `${formatNumber(effectSummary.gateProtection)}%` },
+            { title: ownText("courtyard_defense", "Courtyard defense"), icon: "../../img_base/battle_simulator/cy-icon.png", value: `${formatNumber(effectSummary.courtyardDefense)}%` },
+            { title: ownText("flank_defense", "Flank defense"), icon: "../../img_base/battle_simulator/flanks-strength.png", value: `${formatNumber(effectSummary.flankDefense)}%` },
+            { title: ownText("front_defense", "Front defense"), icon: "../../img_base/battle_simulator/front-strength.png", value: `${formatNumber(effectSummary.frontDefense)}%` },
+            { title: ownText("wall_regeneration", "Wall regeneration"), icon: "../../img_base/time.png", value: effectSummary.isWallRegen ? valueTrue : valueFalse }
+          ].map(effect => `
+            <div class="boss-overview-stat boss-overview-effect-stat">
+              <span class="boss-effect-icon-wrap">
+                <img src="${effect.icon}" alt="${effect.title}" class="boss-effect-icon" loading="lazy">
+              </span>
+              <span class="boss-effect-name">${effect.title}</span>
+              <span class="boss-overview-stat-value">${effect.value}</span>
+            </div>
+          `).join("")}
+        </div>
+      </article>
+
+      <article class="boss-overview-card">
+        <h3 class="boss-overview-heading">${leftFlankLabel} ${unitsLabel}</h3>
+        <div class="item-grid boss-overview-item-grid">${unitCardsHtml(leftUnits)}</div>
+      </article>
+
+      <article class="boss-overview-card">
+        <h3 class="boss-overview-heading">${frontLabel} ${unitsLabel}</h3>
+        <div class="item-grid boss-overview-item-grid">${unitCardsHtml(frontUnits)}</div>
+      </article>
+
+      <article class="boss-overview-card">
+        <h3 class="boss-overview-heading">${rightFlankLabel} ${unitsLabel}</h3>
+        <div class="item-grid boss-overview-item-grid">${unitCardsHtml(rightUnits)}</div>
+      </article>
+
+      <article class="boss-overview-card">
+        <h3 class="boss-overview-heading">${courtyardLabel} ${unitsLabel}</h3>
+        <div class="item-grid boss-overview-item-grid">${unitCardsHtml(courtyardUnits)}</div>
+      </article>
+    </div>
+  `;
 }
 
 // --- UI RENDERING ---
@@ -386,26 +758,48 @@ function renderCardRows(containerId, rows, emptyText) {
 
 function renderAll() {
   const boss = selectedRift();
+  const noIndividualRewards = ownText("no_individual_rewards", "No individual rewards found");
+  const noBossRewards = ownText("no_boss_rewards", "No boss rewards found");
   if (!boss) {
-    renderCardRows("individualRows", [], "No individual rewards found");
-    renderCardRows("bossRows", [], "No boss rewards found");
+    renderCardRows("individualRows", [], noIndividualRewards);
+    renderCardRows("bossRows", [], noBossRewards);
+    renderBossOverview();
     return;
   }
 
   const individualRows = buildIndividualRows(boss);
   const bossRows = buildBossRows(boss);
-  renderCardRows("individualRows", individualRows, "No individual rewards found");
-  renderCardRows("bossRows", bossRows, "No boss rewards found");
+  renderCardRows("individualRows", individualRows, noIndividualRewards);
+  renderCardRows("bossRows", bossRows, noBossRewards);
+  renderBossOverview();
 }
 
 // --- SELECTORS ---
 function applyTypeSelection(type) {
   const individualSection = document.getElementById("individualSection");
   const bossSection = document.getElementById("bossSection");
-  const mode = type === "boss" ? "boss" : "individual";
+  const bossOverviewSection = document.getElementById("bossOverviewSection");
+  const bossLevelWrap = document.getElementById("bossLevelFilterWrap");
+  const bossStageWrap = document.getElementById("bossStageFilterWrap");
+  const mode =
+    type === "boss_overview"
+      ? "boss_overview"
+      : (type === "boss" ? "boss" : "individual");
   individualSection.style.display = mode === "individual" ? "" : "none";
   bossSection.style.display = mode === "boss" ? "" : "none";
+  bossOverviewSection.style.display = mode === "boss_overview" ? "" : "none";
+  bossLevelWrap.style.display = mode === "boss_overview" ? "" : "none";
+  bossStageWrap.style.display = mode === "boss_overview" ? "" : "none";
+
   localStorage.setItem("rift_rewards_type", mode);
+  if (mode === "boss_overview") {
+    renderBossOverview();
+  }
+  handleAutoHeight({
+    contentSelector: "#content",
+    subtractSelectors: [".note", ".page-title"],
+    extraOffset: 18
+  });
 }
 
 function setupTypeSelector() {
@@ -413,33 +807,39 @@ function setupTypeSelector() {
   if (!typeSelect) return;
   ensureTypeOptions(typeSelect);
   const saved = localStorage.getItem("rift_rewards_type");
-  if (saved === "boss" || saved === "individual") {
+  if (saved === "boss" || saved === "individual" || saved === "boss_overview") {
     typeSelect.value = saved;
   }
-  if (typeSelect.value !== "boss" && typeSelect.value !== "individual") {
+  if (typeSelect.value !== "boss" && typeSelect.value !== "individual" && typeSelect.value !== "boss_overview") {
     typeSelect.value = "individual";
   }
   applyTypeSelection(typeSelect.value);
   typeSelect.disabled = false;
   typeSelect.addEventListener("change", () => {
     applyTypeSelection(typeSelect.value);
+    renderAll();
   });
 }
 
 function ensureTypeOptions(typeSelect) {
   const hasIndividual = Array.from(typeSelect.options).some(opt => opt.value === "individual");
   const hasBoss = Array.from(typeSelect.options).some(opt => opt.value === "boss");
-  if (hasIndividual && hasBoss) return;
+  const hasBossOverview = Array.from(typeSelect.options).some(opt => opt.value === "boss_overview");
+  if (hasIndividual && hasBoss && hasBossOverview) return;
 
   typeSelect.innerHTML = "";
   const individual = document.createElement("option");
   individual.value = "individual";
-  individual.textContent = "Activity rewards";
+  individual.textContent = ownText("activity_rewards", "Activity rewards");
   const boss = document.createElement("option");
   boss.value = "boss";
-  boss.textContent = "Boss defeat reward";
+  boss.textContent = ownText("boss_defeat_reward", "Boss defeat reward");
+  const bossOverview = document.createElement("option");
+  bossOverview.value = "boss_overview";
+  bossOverview.textContent = ownText("boss_overview", "Boss overview");
   typeSelect.appendChild(individual);
   typeSelect.appendChild(boss);
+  typeSelect.appendChild(bossOverview);
 }
 
 function applyTypeLabelsFromLang() {
@@ -448,9 +848,9 @@ function applyTypeLabelsFromLang() {
   ensureTypeOptions(typeSelect);
 
   const activityLabel =
-    langValue("dialog_are_activityreward_title") || "Activity rewards";
+    langValue("dialog_are_activityreward_title") || ownText("activity_rewards", "Activity rewards");
   const bossLabel =
-    langValue("dialog_are_bossdefeatreward_title") || "Boss defeat reward";
+    langValue("dialog_are_bossdefeatreward_title") || ownText("boss_defeat_reward", "Boss defeat reward");
 
   const individualOption = Array.from(typeSelect.options).find(
     opt => opt.value === "individual"
@@ -458,9 +858,47 @@ function applyTypeLabelsFromLang() {
   const bossOption = Array.from(typeSelect.options).find(
     opt => opt.value === "boss"
   );
+  const bossOverviewOption = Array.from(typeSelect.options).find(
+    opt => opt.value === "boss_overview"
+  );
 
   if (individualOption) individualOption.textContent = activityLabel;
   if (bossOption) bossOption.textContent = bossLabel;
+  if (bossOverviewOption) {
+    bossOverviewOption.textContent = ownText("boss_overview", "Boss overview");
+  }
+}
+
+function setupBossOverviewSelectors() {
+  const levelSelect = document.getElementById("bossLevelSelect");
+  const stageSelect = document.getElementById("bossStageSelect");
+  if (!levelSelect || !stageSelect) return;
+
+  updateBossOverviewFilters();
+
+  levelSelect.addEventListener("change", () => {
+    localStorage.setItem("rift_rewards_overview_level_id", levelSelect.value);
+    const stages = getStagesForLevel(levelSelect.value).slice(0, 6);
+      stageSelect.innerHTML = "";
+    const bossStageLabel = ownText("boss_stage", "Boss stage");
+    stages.forEach((_, index) => {
+      const option = document.createElement("option");
+      option.value = String(index);
+      option.textContent = `${bossStageLabel} ${index}`;
+      stageSelect.appendChild(option);
+    });
+    stageSelect.disabled = stages.length === 0;
+    if (stages.length > 0) {
+      stageSelect.value = "0";
+      localStorage.setItem("rift_rewards_overview_stage_id", stageSelect.value);
+    }
+    renderBossOverview();
+  });
+
+  stageSelect.addEventListener("change", () => {
+    localStorage.setItem("rift_rewards_overview_stage_id", stageSelect.value);
+    renderBossOverview();
+  });
 }
 
 function setupRiftSelector() {
@@ -484,6 +922,7 @@ function setupRiftSelector() {
 
   select.addEventListener("change", () => {
     localStorage.setItem("rift_rewards_boss_id", select.value);
+    updateBossOverviewFilters();
     renderAll();
   });
   select.disabled = false;
@@ -506,6 +945,7 @@ async function init() {
         lootboxes: true
       },
       onReady: async ({ lang, data, imageMaps }) => {
+        await loadOwnLang();
         state.lang = lang || {};
         state.items = data;
         state.imageMaps = imageMaps || {};
@@ -513,9 +953,11 @@ async function init() {
         state.raidEvents = (data.events || []).filter(e => String(e.eventType || "") === "AllianceRaidbossEvent");
         state.raidBosses = getArray(data, ["raidBosses", "raidbosses"]);
         state.raidBossLevels = getArray(data, ["raidBossLevels", "raidbosslevels"]);
+        state.raidBossStages = getArray(data, ["raidBossStages", "raidbossstages"]);
         state.leaguetypeEvents = getArray(data, ["leaguetypeevents", "leagueTypeEvents", "leagueTypeevents"]);
 
         state.rewardsById = buildLookup(getArray(data, ["rewards"]), "rewardID");
+        state.effectsById = buildLookup(getArray(data, ["effects"]), "effectID");
         state.unitsById = buildLookup(getArray(data, ["units"]), "wodID");
         state.lootBoxesById = buildLookup(getArray(data, ["lootBoxes", "lootboxes"]), "lootBoxID");
         state.constructionById = buildLookup(getArray(data, ["constructionItems"]), "constructionItemID");
@@ -555,6 +997,7 @@ async function init() {
         );
 
         setupRiftSelector();
+        setupBossOverviewSelectors();
         applyTypeLabelsFromLang();
         setupTypeSelector();
         initLanguageSelector({
