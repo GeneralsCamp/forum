@@ -494,7 +494,7 @@ async function init() {
   try {
     await coreInit({
       loader,
-      itemLabel: "rift event rewards",
+      itemLabel: "rift event",
       langCode: currentLanguage,
       normalizeNameFn: sharedNormalizeName,
       assets: {
