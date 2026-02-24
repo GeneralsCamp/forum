@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rift Event Rewards</title>
+  <link rel="icon" type="image/webp" href="../../img_base/favicon.ico">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../shared/shared.css">
+  <link rel="stylesheet" href="../shared/consent.css">
+  <link rel="stylesheet" href="rift_event_rewards.css">
+  <meta property="og:title" content="Rift Event Rewards | Generals Forum">
+  <meta property="og:description" content="View individual and boss defeat rewards for Rift events.">
+  <meta property="og:image" content="https://generalscamp.github.io/forum/img_base/main_page/rift-raid-points-icon.webp">
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-12 mb-2">
+        <div class="col-12 page-title">
+          <h1>RIFT EVENT REWARDS</h1>
+        </div>
+
+        <div id="topButtonsContainer">
+          <a href="#" id="languageButtonContainer" class="home-icon-link">
+            <div class="home-icon" title="Change language">
+              <i class="bi bi-globe"></i>
+            </div>
+          </a>
+
+          <a href="https://generalscamp.github.io/forum/" class="home-icon-link">
+            <div class="home-icon">
+              <i class="bi bi-house"></i>
+            </div>
+          </a>
+        </div>
+
+        <div id="contentSection" class="row note gx-1 gy-1 align-items-end pb-2 mb-2">
+          <div class="col-12 col-md-6 form-group">
+            <select id="riftSelect" class="form-select custom-select text-center" aria-label="Rift" disabled>
+              <option value="" selected>Loading rift events...</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-6 form-group">
+            <select id="typeSelect" class="form-select custom-select text-center" aria-label="Type" disabled>
+              <option value="" selected>Loading reward types...</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <main id="content" class="container-fluid">
+        <div id="rewardsViewport" hidden>
+          <div id="individualSection" class="collapse-area p-2">
+            <div id="individualRows" class="row gx-1"></div>
+          </div>
+
+          <div id="bossSection" class="collapse-area p-2" style="display:none;">
+            <div id="bossRows" class="row gx-1"></div>
+          </div>
+        </div>
+
+        <div id="loadingBox" class="loading-message">
+          <h3 id="loadingStatus">Initializing...</h3>
+          <div class="progress">
+            <div id="loadingProgress" class="progress-bar"></div>
+            <span id="loadingPercentText" class="progress-text">0%</span>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="modal fade" id="languageModal" tabindex="-1" aria-labelledby="languageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-center w-100" id="languageModalLabel"></h5>
+        </div>
+        <div class="modal-body">
+          <div id="languageList" class="row"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="script.js"></script>
+  <script type="module">
+    import { initConsentManager } from "../shared/ConsentManager.mjs";
+    initConsentManager({
+      measurementId: "G-8TGZRNFGRR",
+      storageKey: "gf_analytics_state_v1",
+      defaultState: "enabled"
+    });
+  </script>
+</body>
+
+</html>
