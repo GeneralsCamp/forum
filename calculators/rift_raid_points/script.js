@@ -9,6 +9,7 @@ import { createLoader } from "../../overviews/shared/LoadingService.mjs";
 let raidBossData = {};
 let langData = {};
 const loader = createLoader();
+const MAX_DEFEATED_RESERVE_UNITS = 10000000;
 
 function parseWallUnits(rawValue) {
   if (!rawValue) return 0;
@@ -138,8 +139,19 @@ function updateTroopsVisibility(area) {
   }
 }
 
+function sanitizeDefeatedReserveUnits(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return 0;
+  return Math.max(0, Math.min(Math.floor(n), MAX_DEFEATED_RESERVE_UNITS));
+}
+
 function calculateActivityPoints() {
   const defeated = Number(document.getElementById("defeated").value) || 0;
+  const defeatedReserveInput = document.getElementById("defeatedReserve");
+  const defeatedReserve = sanitizeDefeatedReserveUnits(defeatedReserveInput?.value);
+  if (defeatedReserveInput && Number(defeatedReserveInput.value) !== defeatedReserve) {
+    defeatedReserveInput.value = String(defeatedReserve);
+  }
   const area = getSelectedArea();
   const levelData = getLevelData();
 
@@ -158,13 +170,14 @@ function calculateActivityPoints() {
 
   const troopsForArea = area === "walls" ? levelData.wallTroops : levelData.courtyardTroops;
   const pointFactor = area === "walls" ? levelData.wallPointFactor : levelData.courtyardPointFactor;
+  const totalDefeated = defeated + defeatedReserve;
 
-  if (troopsForArea <= 0 || defeated <= 0 || pointFactor <= 0) {
+  if (troopsForArea <= 0 || totalDefeated <= 0 || pointFactor <= 0) {
     document.getElementById("points").innerHTML = "0";
     return;
   }
 
-  const ratio = Math.min(defeated / troopsForArea, 1);
+  const ratio = Math.min(totalDefeated / troopsForArea, 1);
   const points = Math.ceil(ratio * pointFactor + Number.EPSILON);
   document.getElementById("points").innerHTML = points;
 }
@@ -229,7 +242,7 @@ function populateLevelSelectForBoss() {
 }
 
 function saveToLocalStorage() {
-  ["defeated", "area", "level", "raidBoss"].forEach(id => {
+  ["defeated", "defeatedReserve", "area", "level", "raidBoss"].forEach(id => {
     localStorage.setItem(id, document.getElementById(id).value);
   });
 }
@@ -255,6 +268,11 @@ function restoreFromLocalStorage() {
   const defeated = localStorage.getItem("defeated");
   if (defeated !== null) {
     document.getElementById("defeated").value = defeated;
+  }
+
+  const defeatedReserve = localStorage.getItem("defeatedReserve");
+  if (defeatedReserve !== null) {
+    document.getElementById("defeatedReserve").value = sanitizeDefeatedReserveUnits(defeatedReserve);
   }
 }
 
