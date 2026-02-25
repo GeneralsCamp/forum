@@ -566,10 +566,7 @@ function renderBossOverview() {
   const rightFlankLabel = uiText("dialog_defence_rightFlank", "Right flank");
   const courtyardLabel = uiText("dialog_defence_courtyard", "Courtyard");
   const bossEffectsTitle = ownText("boss_effects", uiText("dialog_are_boss_effect_title", "Boss effects"));
-  const wallRegenLabel = uiText(
-    "dialog_are_highlightedeffect_name_raidBossWallRegeneration",
-    ownText("wall_regeneration", "Wall regeneration")
-  );
+  const wallRegenLabel = ownText("wall_regeneration", "Wall regeneration");
   const courtyardSizeLabel = uiText(
     "unitsInCourtyard_limit_player",
     ownText("courtyard_unit_size", "Courtyard unit size")
