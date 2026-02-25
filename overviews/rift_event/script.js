@@ -119,7 +119,6 @@ function formatMinSec(value) {
 function formatLangTemplate(template, value) {
   return String(template || "").replace("{0}", String(value ?? ""));
 }
-
 // --- NAME HELPERS ---
 function resolveUnitName(id) {
   const unit = state.unitsById[String(id)];
@@ -294,6 +293,48 @@ function getBossEffectSummary(stage) {
   });
 
   return summary;
+}
+
+function parseSpawnReserveUnits(stage) {
+  const totalsByUnitId = {};
+
+  const collect = (value) => {
+    if (!value) return;
+
+    csv(value).forEach(token => {
+      const [effectIdRaw, payloadRaw] = String(token).split("&");
+      const effectId = String(effectIdRaw || "").trim();
+      const effectName = String(state.effectsById[effectId]?.name || "").trim();
+      const isSpawnReserve =
+        effectId === "465" ||
+        effectName === "spawnReserveUnit";
+
+      if (!isSpawnReserve || !payloadRaw) return;
+
+      String(payloadRaw)
+        .split("#")
+        .map(part => String(part || "").trim())
+        .filter(Boolean)
+        .forEach(part => {
+          const [unitIdRaw, amountRaw] = part.split("+");
+          const unitId = String(unitIdRaw || "").trim();
+          const amount = Number(amountRaw);
+          if (!unitId || !Number.isFinite(amount) || amount <= 0) return;
+          totalsByUnitId[unitId] = (totalsByUnitId[unitId] || 0) + amount;
+        });
+    });
+  };
+
+  collect(stage?.defenderWallRegenerationEffects);
+  collect(stage?.defenderStageEffects);
+
+  return Object.entries(totalsByUnitId)
+    .map(([id, amount]) => ({
+      id,
+      amount,
+      name: resolveUnitName(id)
+    }))
+    .sort((a, b) => Number(b.amount) - Number(a.amount));
 }
 
 // --- REWARD MAPPING ---
@@ -560,7 +601,11 @@ function renderBossOverview() {
   const frontUnits = parseWallUnitsList(stage.frontWallUnits);
   const rightUnits = parseWallUnitsList(stage.rightWallUnits);
   const courtyardUnits = parseWallUnitsList(level.courtyardReserveUnits);
+  const spawnReserveUnits = parseSpawnReserveUnits(stage);
   const unitsLabel = uiText("units", "Units");
+  const reserveUnitsLabel =
+    langValue("dialog_are_highlightedeffect_name_spawnReserveUnit")
+    || "Reserve Units Added";
   const leftFlankLabel = uiText("dialog_defence_leftFlank", "Left flank");
   const frontLabel = uiText("dialog_defence_middleFlank", "Front");
   const rightFlankLabel = uiText("dialog_defence_rightFlank", "Right flank");
@@ -640,6 +685,13 @@ function renderBossOverview() {
         <h3 class="boss-overview-heading">${courtyardLabel} ${unitsLabel}</h3>
         <div class="item-grid boss-overview-item-grid">${unitCardsHtml(courtyardUnits)}</div>
       </article>
+
+      ${spawnReserveUnits.length > 0 ? `
+      <article class="boss-overview-card boss-overview-reserve-card">
+        <h3 class="boss-overview-heading">${reserveUnitsLabel}</h3>
+        <div class="item-grid boss-overview-item-grid">${unitCardsHtml(spawnReserveUnits)}</div>
+      </article>
+      ` : ""}
     </div>
   `;
 }

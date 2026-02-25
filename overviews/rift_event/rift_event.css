@@ -403,6 +403,14 @@ label {
   }
 }
 
+@media (min-width: 768px) and (max-width: 1199.98px) {
+  .boss-overview-reserve-card {
+    grid-column: 1 / span 2;
+    width: calc(50% - 4px);
+    justify-self: center;
+  }
+}
+
 @media (min-width: 1200px) {
   .boss-overview-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -420,6 +428,10 @@ label {
   .boss-overview-effects {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+
+  .boss-overview-reserve-card {
+    grid-column: 2 / span 2;
+  }
 }
 
 @media (min-width: 576px) and (max-width: 767.98px) {
@@ -433,4 +445,5 @@ label {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+
 
