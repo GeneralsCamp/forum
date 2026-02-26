@@ -15,7 +15,7 @@ export function initializeDefenseTools(defense_tools, slotType) {
                   <h6 class="card-title text-center">${tool.name}</h6>
                   <div class="d-flex align-items-center">
                       <div class="me-2">
-                          <img src="../../../../../img_base/battle_simulator/${tool.image}" alt="${tool.name}" class="tool-image" />
+                          <img src="../../img_base/battle_simulator/${tool.image}" alt="${tool.name}" class="tool-image" />
                       </div>
                       <div class="flex-grow-1">
                           <div class="d-flex align-items-center">
@@ -24,12 +24,12 @@ export function initializeDefenseTools(defense_tools, slotType) {
                           </div>
                           <div class="mt-2 d-flex align-items-center">
                               <div class="me-2">
-                                  <img src="../../../../../img_base/battle_simulator/${tool.effectImage1}" alt="" class="combat-icon" />
+                                  <img src="../../img_base/battle_simulator/${tool.effectImage1}" alt="" class="combat-icon" />
                                   <span>+${tool.effect1Value}${tool.effect1Value > 149 ? '' : '%'} </span>
                               </div>
                               ${tool.effect2Value > 0 ? `
                               <div class="me-2">
-                                  <img src="../../../../../img_base/battle_simulator/${tool.effectImage2}" alt="" class="combat-icon" />
+                                  <img src="../../img_base/battle_simulator/${tool.effectImage2}" alt="" class="combat-icon" />
                                   <span class="me-2">+${tool.effect2Value}${tool.effect2Value > 149 ? '' : '%'} </span>
                               </div>` : ''}
                           </div>

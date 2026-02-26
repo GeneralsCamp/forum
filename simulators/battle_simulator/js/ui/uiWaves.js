@@ -103,7 +103,7 @@ export function generateWaves(side, numberOfWaves) {
               <div class="right-content ms-auto">
                   <span class="units" id="units-${side}-${i}">
                       ${wave.slots.reduce((acc, slot) => acc + slot.count, 0)} / ${maxUnits} 
-                      <img src="../../../../img_base/battle_simulator/troops-icon.webp" alt="Units" />
+                      <img src="../../img_base/battle_simulator/troops-icon.webp" alt="Units" />
                   </span>
               </div>
           </button>
@@ -123,7 +123,7 @@ export function generateWaves(side, numberOfWaves) {
     <div class="card-body">
         <div class="row d-flex align-items-stretch">
             <div class="col" style="border-right: 1px solid rgb(180, 140, 100);">
-                <img src="../../../../img_base/battle_simulator/troops-icon.webp" alt="Units" style="width: 20px; height: 20px; vertical-align: middle;" />
+                <img src="../../img_base/battle_simulator/troops-icon.webp" alt="Units" style="width: 20px; height: 20px; vertical-align: middle;" />
                 <span class="units" id="units-${side}-${i}">Units ${wave.slots.reduce((acc, slot) => acc + slot.count, 0)} / ${maxUnits}</span>
                 <div class="d-flex mt-1">
                     ${wave.slots.map(slot => `<div class="unit-slot" id="${slot.id}">${slot.count > 0 ? createUnitIcon(slot) : '+'}</div>`).join('')}
@@ -133,7 +133,7 @@ export function generateWaves(side, numberOfWaves) {
                 </div>
             </div>
             <div class="col">
-                <img src="../../../../img_base/battle_simulator/tools-icon.webp" alt="Tools" style="width: 20px; height: 20px; vertical-align: middle;" />
+                <img src="../../img_base/battle_simulator/tools-icon.webp" alt="Tools" style="width: 20px; height: 20px; vertical-align: middle;" />
                 <span class="tools" id="tools-${side}-${i}">Tools ${wave.tools.reduce((acc, tool) => acc + tool.count, 0)} / ${maxTools}</span>
                 <div class="d-flex mt-1">
                     ${wave.tools.map(tool => `<div class="tool-slot" id="${tool.id}">${tool.count > 0 ? createToolIcon(tool) : '+'}</div>`).join('')}

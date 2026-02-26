@@ -12,28 +12,28 @@ export function initializeTools(tools = variables.tools) {
 
     if (tool.travelSpeed > 0) {
       effects.push(`
-        <img src="../../../../img_base/battle_simulator/travelSpeed-icon.png" alt="" class="combat-icon" />
+        <img src="../../img_base/battle_simulator/travelSpeed-icon.png" alt="" class="combat-icon" />
         <span class="me-2">+${tool.travelSpeed}</span>
       `);
     }
 
     if (tool.effect1Type && tool.effect1Value !== 0) {
       effects.push(`
-        <img src="../../../../img_base/battle_simulator/${tool.effectImage1}" alt="${tool.effect1Type}" class="combat-icon" />
+        <img src="../../img_base/battle_simulator/${tool.effectImage1}" alt="${tool.effect1Type}" class="combat-icon" />
         <span class="me-2">${tool.effect1Value}%</span>
       `);
     }
 
     if (tool.effect2Type && tool.effect2Value !== 0) {
       effects.push(`
-        <img src="../../../../img_base/battle_simulator/${tool.effectImage2}" alt="${tool.effect2Type}" class="combat-icon" />
+        <img src="../../img_base/battle_simulator/${tool.effectImage2}" alt="${tool.effect2Type}" class="combat-icon" />
         <span class="me-2">+${tool.effect2Value}%</span>
       `);
     }
 
     if (tool.toolLimit && tool.toolLimit !== 0) {
       effects.push(`
-        <img src="../../../../img_base/battle_simulator/unitLimit-icon.png" alt="tool-limit" class="combat-icon" />
+        <img src="../../img_base/battle_simulator/unitLimit-icon.png" alt="tool-limit" class="combat-icon" />
         <span class="me-2">${tool.toolLimit}</span>
       `);
     }
@@ -45,7 +45,7 @@ export function initializeTools(tools = variables.tools) {
             <h6 class="card-title text-center">${tool.name}</h6>
             <div class="d-flex align-items-center">
               <div class="me-2">
-                <img src="../../../../img_base/battle_simulator/${tool.image}" alt="${tool.name}" class="tool-image" />
+                <img src="../../img_base/battle_simulator/${tool.image}" alt="${tool.name}" class="tool-image" />
               </div>
               <div class="flex-grow-1">
                 <div class="d-flex align-items-center">
@@ -79,7 +79,7 @@ export function createToolIcon(slot) {
 
   const toolIcon = document.createElement('img');
   const imgName = (variables.toolImages && variables.toolImages[slot.type]) ? variables.toolImages[slot.type] : null;
-  toolIcon.src = imgName ? `../../../../img_base/battle_simulator/${imgName}` : '../../../../img_base/battle_simulator/icon_tool0.png';
+  toolIcon.src = imgName ? `../../img_base/battle_simulator/${imgName}` : '../../img_base/battle_simulator/icon_tool1.png';
   toolIcon.classList.add('tool-icon');
   toolIcon.alt = slot.type || '';
 
@@ -242,7 +242,7 @@ export function summarizeToolBonuses(tools) {
   let result = effectsArray
     .map(({ name, total, icon }) => {
       const sign = total >= 0 ? '+' : '';
-      return `<div class="col-6 effect-slot"><img src="../../../../img_base/battle_simulator/${icon}" alt="${name}" /> ${sign}${total}%</div>`;
+      return `<div class="col-6 effect-slot"><img src="../../img_base/battle_simulator/${icon}" alt="${name}" /> ${sign}${total}%</div>`;
     })
     .join('');
 

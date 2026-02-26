@@ -92,19 +92,19 @@ export function initializeSupportTools(supportTools = variables.supportTools) {
 
     if (tool.travelSpeed > 0) {
       effects.push(`
-        <img src="../../../../img_base/battle_simulator/travelSpeed-icon.png" alt="" class="combat-icon" />
+        <img src="../../img_base/battle_simulator/travelSpeed-icon.png" alt="" class="combat-icon" />
         <span class="me-2">+${tool.travelSpeed}</span>
       `);
     }
     if (tool.effect1Type && tool.effect1Value !== 0) {
       effects.push(`
-        <img src="../../../../img_base/battle_simulator/${tool.effectImage1}" alt="${tool.effect1Type}" class="combat-icon" />
+        <img src="../../img_base/battle_simulator/${tool.effectImage1}" alt="${tool.effect1Type}" class="combat-icon" />
         <span class="me-2">${tool.effect1Value}</span>
       `);
     }
     if (tool.effect2Type && tool.effect2Value !== 0) {
       effects.push(`
-        <img src="../../../../img_base/battle_simulator/${tool.effectImage2}" alt="${tool.effect2Type}" class="combat-icon" />
+        <img src="../../img_base/battle_simulator/${tool.effectImage2}" alt="${tool.effect2Type}" class="combat-icon" />
         <span class="me-2">+${tool.effect2Value}%</span>
       `);
     }
@@ -116,7 +116,7 @@ export function initializeSupportTools(supportTools = variables.supportTools) {
             <h6 class="card-title text-center">${tool.name}</h6>
             <div class="d-flex align-items-center">
               <div class="me-2">
-                <img src="../../../../img_base/battle_simulator/${tool.image}" alt="${tool.name}" class="tool-image" />
+                <img src="../../img_base/battle_simulator/${tool.image}" alt="${tool.name}" class="tool-image" />
               </div>
               <div class="flex-grow-1">
                 <div class="d-flex align-items-center">
@@ -145,7 +145,7 @@ export function createSupportToolIcon(slot) {
   container.classList.add('tool-icon-container');
 
   const icon = document.createElement('img');
-  icon.src = `../../../../img_base/battle_simulator/${variables.supportToolImages[slot.type]}` || '../../../../img_base/battle_simulator/icon_tool0.png';
+  icon.src = `../../img_base/battle_simulator/${variables.supportToolImages[slot.type]}` || '../../img_base/battle_simulator/icon_tool1.png';
   icon.classList.add('tool-icon');
   icon.alt = slot.type;
 
@@ -180,8 +180,8 @@ export function summarizeSupportToolBonuses(supportTools) {
 
   let result = '';
   effectsArray.forEach(({ name, totalEffect1, totalEffect2, icon }) => {
-    if (totalEffect1 !== 0) result += `<div class="col-6 effect-slot"><img src="../../../../img_base/battle_simulator/${icon}" alt="${name}" /> ${totalEffect1}</div>`;
-    if (totalEffect2 !== 0) result += `<div class="col-6 effect-slot"><img src="../../../../img_base/battle_simulator/${icon}" alt="${name}" /> +${totalEffect2}%</div>`;
+    if (totalEffect1 !== 0) result += `<div class="col-6 effect-slot"><img src="../../img_base/battle_simulator/${icon}" alt="${name}" /> ${totalEffect1}</div>`;
+    if (totalEffect2 !== 0) result += `<div class="col-6 effect-slot"><img src="../../img_base/battle_simulator/${icon}" alt="${name}" /> +${totalEffect2}%</div>`;
   });
 
   return result ? `<div class="row">${result}</div>` : '';
@@ -219,7 +219,7 @@ export function createSupportWaveCard() {
       <div class="row d-flex align-items-start">
         <div class="col-6 bugfix">
           <span class="tools">
-            <img src="../../../../img_base/battle_simulator/tools-icon.webp" alt="Tools" style="width:20px;height:20px;vertical-align:middle;" />
+            <img src="../../img_base/battle_simulator/tools-icon.webp" alt="Tools" style="width:20px;height:20px;vertical-align:middle;" />
             Tools ${supportWave.tools.reduce((acc, t) => acc + t.count, 0)} / 3
           </span>
           <div class="row ms-1 mt-1">

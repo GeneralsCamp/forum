@@ -12,28 +12,28 @@ export function initializeUnits(units = variables.units) {
 
     if (unit.travelSpeed > 0) {
       effects.push(`
-        <img src="../../../../img_base/battle_simulator/travelSpeed-icon.png" alt="" class="combat-icon" />
+        <img src="../../img_base/battle_simulator/travelSpeed-icon.png" alt="" class="combat-icon" />
         <span class="me-2">+${unit.travelSpeed}</span>
       `);
     }
 
     if (unit.rangedCombatStrength > 0) {
       effects.push(`
-        <img src="../../../../img_base/battle_simulator/ranged-icon.png" alt="" class="combat-icon" />
+        <img src="../../img_base/battle_simulator/ranged-icon.png" alt="" class="combat-icon" />
         <span class="me-2">+${unit.rangedCombatStrength}</span>
       `);
     }
 
     if (unit.meleeCombatStrength > 0) {
       effects.push(`
-        <img src="../../../../img_base/battle_simulator/melee-icon.png" alt="" class="combat-icon" />
+        <img src="../../img_base/battle_simulator/melee-icon.png" alt="" class="combat-icon" />
         <span class="me-2">+${unit.meleeCombatStrength}</span>
       `);
     }
 
     if (unit.LootingCapacity > 0) {
       effects.push(`
-        <img src="../../../../img_base/battle_simulator/loot-icon.png" alt="" class="combat-icon" />
+        <img src="../../img_base/battle_simulator/loot-icon.png" alt="" class="combat-icon" />
         <span class="me-2">+${unit.LootingCapacity}</span>
       `);
     }
@@ -54,7 +54,7 @@ export function initializeUnits(units = variables.units) {
             <h6 class="card-title text-center">${unit.name} ${levelInfo}</h6>
             <div class="d-flex align-items-center">
               <div class="me-2">
-                <img src="../../../../img_base/battle_simulator/icon_unit${index + 1}.webp" alt="${unit.id}" class="unit-image" />
+                <img src="../../img_base/battle_simulator/icon_unit${index + 1}.webp" alt="${unit.id}" class="unit-image" />
               </div>
               <div class="flex-grow-1">
                 <div class="d-flex align-items-center">
@@ -89,7 +89,7 @@ export function createUnitIcon(slot) {
 
   const unitIcon = document.createElement('img');
   const imgName = (variables.unitImages && variables.unitImages[slot.type]) ? variables.unitImages[slot.type] : null;
-  unitIcon.src = imgName ? `../../../../img_base/battle_simulator/${imgName}` : '../../../../img_base/battle_simulator/icon_unit0.png';
+  unitIcon.src = imgName ? `../../img_base/battle_simulator/${imgName}` : '../../img_base/battle_simulator/unknown.png';
   unitIcon.classList.add('unit-icon');
   unitIcon.alt = slot.type || '';
 
@@ -267,7 +267,7 @@ export function summarizeUnitBonuses(slots) {
   result.sort((a, b) => b.value - a.value);
 
   const rows = result.map(stat => {
-    const icon = stat.type === 'ranged' ? '../../../../img_base/battle_simulator/ranged-icon.png' : '../../../../img_base/battle_simulator/melee-icon.png';
+    const icon = stat.type === 'ranged' ? '../../img_base/battle_simulator/ranged-icon.png' : '../../img_base/battle_simulator/melee-icon.png';
     const formattedValue = new Intl.NumberFormat().format(stat.value);
     return `<div class="col-6 effect-slot"><img src="${icon}" alt="${stat.type.charAt(0).toUpperCase() + stat.type.slice(1)}" /> +${formattedValue}</div>`;
   }).join('');
