@@ -42,6 +42,10 @@ const gameIcons = {
     empire: "../../img_base/event_icons/logo-em.webp",
     e4k: "../../img_base/event_icons/logo-e4k.webp"
 };
+const scheduleFooterLines = [
+    "Dates are shown in day/month/year format.",
+    "The schedule is subject to change."
+];
 
 function lightenColor(hexColor, amount) {
     const hex = String(hexColor || "").replace("#", "").trim();
@@ -935,14 +939,19 @@ function renderCalendar(events) {
 }
 
 function ensureDateFormatNote(container) {
-    const note = document.createElement("div");
-    note.className = "date-format-note";
-    note.textContent = "Note: Dates are shown in day/month/year format.";
-    container.appendChild(note);
+    const footer = document.createElement("div");
+    footer.className = "schedule-footer-bar";
+    scheduleFooterLines.forEach(lineText => {
+        const line = document.createElement("div");
+        line.className = "schedule-footer-line";
+        line.textContent = lineText;
+        footer.appendChild(line);
+    });
+    container.appendChild(footer);
 }
 
 function removeDateFormatNote() {
-    const existing = document.querySelector(".date-format-note");
+    const existing = document.querySelector(".schedule-footer-bar");
     if (existing) existing.remove();
 }
 
@@ -1097,10 +1106,15 @@ function buildExportDom(events, gameKey) {
 
     root.appendChild(grid);
 
-    const note = document.createElement("div");
-    note.className = "export-note";
-    note.textContent = "Note: Dates are shown in day/month/year format.";
-    root.appendChild(note);
+    const footer = document.createElement("div");
+    footer.className = "export-footer";
+    scheduleFooterLines.forEach(lineText => {
+        const line = document.createElement("span");
+        line.className = "export-footer-line";
+        line.textContent = lineText;
+        footer.appendChild(line);
+    });
+    root.appendChild(footer);
 
     return root;
 }
