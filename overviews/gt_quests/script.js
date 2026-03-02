@@ -15,6 +15,7 @@ let questsById = {};
 let currenciesById = {};
 let unitsById = {};
 let newQuestIDsSet = new Set();
+let totalQuestChance = 0;
 
 const loader = createLoader();
 
@@ -40,15 +41,22 @@ async function loadOwnLang() {
 function applyOwnLang() {
     const L = ownLang[currentLanguage?.toLowerCase()]?.ui || ownLang.en?.ui || {};
     UI_LANG = {
-        no_quests: L.no_quests || "No quests for this filter.",
-        search_placeholder: L.search_placeholder || "Search by description, requirement...",
+        no_quests: L.no_quests || "No quests match the current filters.",
+        search_placeholder: L.search_placeholder || "Search by title or requirement...",
         show_all: L.show_all || "Show all quests",
-        show_new: L.show_new || "Show only new quests"
+        show_new: L.show_new || "Show only new quests",
+        chance: L.chance || "Chance",
+        type_all: L.type_all || "All quest types",
+        type_defeat_target: L.type_defeat_target || "Defeat Target",
+        type_obtain_currencies_or_resources: L.type_obtain_currencies_or_resources || "Obtain Currencies Or Resources",
+        type_obtain_units: L.type_obtain_units || "Obtain Units",
+        type_spend_currencies_or_resources: L.type_spend_currencies_or_resources || "Spend Currencies Or Resources"
     };
 }
 
 function capitalizeWords(str) {
     return String(str || "")
+        .replace(/([a-z])([A-Z])/g, "$1 $2")
         .replace(/[_-]+/g, " ")
         .replace(/\s+/g, " ")
         .trim()
@@ -96,12 +104,28 @@ function getRewardPointsLabel() {
     return getLangValue(["points_noValue", "popup_ame_quest_reward"], "Points");
 }
 
+function getChanceLabel() {
+    return UI_LANG.chance || "Chance";
+}
+
 function formatDurationClock(totalSeconds) {
     const safe = Math.max(0, Number(totalSeconds) || 0);
     const hours = Math.floor(safe / 3600);
     const minutes = Math.floor((safe % 3600) / 60);
     const seconds = safe % 60;
     return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+}
+
+function parseChanceValue(value) {
+    const parsed = Number(value);
+    if (!Number.isFinite(parsed) || parsed < 0) return 0;
+    return parsed;
+}
+
+function formatQuestChancePercent(chanceValue) {
+    if (!totalQuestChance || totalQuestChance <= 0) return "-";
+    const percent = (chanceValue / totalQuestChance) * 100;
+    return `${percent.toFixed(2)}%`;
 }
 
 function createInfoCell(label, value, extraClass = "") {
@@ -147,21 +171,25 @@ function buildQuestData() {
     unitsById = Object.fromEntries((itemsData.units || []).map(u => [String(u.wodid), u]));
 
     quests = allianceQuests
-        .filter(q => String(q.comment1 || "").toLowerCase() === "ame")
         .map(q => {
             const qId = String(q.questid || "");
             const baseQuest = questsById[qId] || {};
             const condition = String(q.comment4 || baseQuest.conditions || "");
+            const chanceValue = parseChanceValue(q.chance);
             return {
                 allianceQuestId: String(q.alliancequestid || ""),
                 questId: qId,
                 tier: String(q.comment2 || "").trim(),
+                questType: String(q.questtype || ""),
                 condition,
                 parsed: parseCondition(condition),
                 rewardPoints: Number(q.rewardpoints || 0),
-                duration: Number(q.duration || 0)
+                duration: Number(q.duration || 0),
+                chanceValue
             };
         });
+
+    totalQuestChance = quests.reduce((sum, q) => sum + q.chanceValue, 0);
 }
 
 async function compareWithOldVersion() {
@@ -170,7 +198,6 @@ async function compareWithOldVersion() {
             currentItems: quests,
             extractItemsFn: json =>
                 (json.allianceQuests || [])
-                    .filter(q => String(q.comment1 || "").toLowerCase() === "ame")
                     .map(q => ({ allianceQuestId: String(q.allianceQuestID || "") })),
             idField: "allianceQuestId"
         });
@@ -192,12 +219,59 @@ function getShowFilterMode() {
     return el?.value === "new" ? "new" : "all";
 }
 
+function getTypeFilterValue() {
+    const el = document.getElementById("typeFilter");
+    return String(el?.value || "all");
+}
+
+function getQuestTypeLabel(typeRaw) {
+    const key = String(typeRaw || "").toLowerCase();
+    const labels = {
+        defeattarget: UI_LANG.type_defeat_target,
+        obtaincurrenciesorresources: UI_LANG.type_obtain_currencies_or_resources,
+        obtainunits: UI_LANG.type_obtain_units,
+        spendcurrenciesorresources: UI_LANG.type_spend_currencies_or_resources
+    };
+    return labels[key] || capitalizeWords(typeRaw);
+}
+
+function populateTypeFilterOptions() {
+    const typeFilter = document.getElementById("typeFilter");
+    if (!typeFilter) return;
+
+    const selected = String(typeFilter.value || "all");
+    const types = [...new Set(
+        quests
+            .map(q => String(q.questType || "").trim())
+            .filter(Boolean)
+    )].sort((a, b) => a.localeCompare(b));
+
+    typeFilter.innerHTML = "";
+
+    const allOption = document.createElement("option");
+    allOption.value = "all";
+    allOption.textContent = UI_LANG.type_all;
+    typeFilter.appendChild(allOption);
+
+    types.forEach(type => {
+        const option = document.createElement("option");
+        option.value = type;
+        option.textContent = getQuestTypeLabel(type);
+        typeFilter.appendChild(option);
+    });
+
+    const hasSelected = [...typeFilter.options].some(o => o.value === selected);
+    typeFilter.value = hasSelected ? selected : "all";
+}
+
 function getFilteredQuests() {
     const searchQuery = getSearchQuery();
     const showMode = getShowFilterMode();
+    const typeValue = getTypeFilterValue();
 
     return quests.filter(q => {
         if (showMode === "new" && !newQuestIDsSet.has(q.allianceQuestId)) return false;
+        if (typeValue !== "all" && String(q.questType || "") !== typeValue) return false;
 
         if (!searchQuery) return true;
 
@@ -250,6 +324,13 @@ function renderQuests() {
                 "quest-cell-duration"
             )
         );
+        infoGrid.appendChild(
+            createInfoCell(
+                getChanceLabel(),
+                formatQuestChancePercent(q.chanceValue),
+                "quest-span-2 quest-cell-chance"
+            )
+        );
 
         const panel = document.createElement("article");
         panel.className = "quest-panel";
@@ -261,11 +342,37 @@ function renderQuests() {
     });
 }
 
+function setFiltersLoadingState(isLoading) {
+    const searchInput = document.getElementById("searchInput");
+    const showFilter = document.getElementById("showFilter");
+    const typeFilter = document.getElementById("typeFilter");
+    if (!searchInput || !showFilter || !typeFilter) return;
+
+    if (isLoading) {
+        searchInput.disabled = true;
+        searchInput.placeholder = "Loading search filter...";
+        if (showFilter.options[0]) showFilter.options[0].textContent = "Loading quest filters...";
+        if (showFilter.options[1]) showFilter.options[1].textContent = "Loading...";
+        showFilter.value = "all";
+        showFilter.disabled = true;
+        typeFilter.innerHTML = `<option value="all" selected>Loading quest types...</option>`;
+        typeFilter.disabled = true;
+        return;
+    }
+
+    searchInput.disabled = false;
+    showFilter.disabled = false;
+    typeFilter.disabled = false;
+}
+
 function setupFilters() {
     const searchInput = document.getElementById("searchInput");
     const showFilter = document.getElementById("showFilter");
-    if (!searchInput || !showFilter) return;
+    const typeFilter = document.getElementById("typeFilter");
+    if (!searchInput || !showFilter || !typeFilter) return;
 
+    setFiltersLoadingState(false);
+    populateTypeFilterOptions();
     searchInput.placeholder = UI_LANG.search_placeholder;
     if (showFilter.options[0]) showFilter.options[0].textContent = UI_LANG.show_all;
     if (showFilter.options[1]) showFilter.options[1].textContent = UI_LANG.show_new;
@@ -284,6 +391,11 @@ function setupFilters() {
         });
         showFilter.dataset.bound = "1";
     }
+
+    if (!typeFilter.dataset.bound) {
+        typeFilter.addEventListener("change", renderQuests);
+        typeFilter.dataset.bound = "1";
+    }
 }
 
 initAutoHeight({
@@ -294,6 +406,8 @@ initAutoHeight({
 
 async function init() {
     try {
+        setFiltersLoadingState(true);
+
         await coreInit({
             loader,
             itemLabel: "gt quests",

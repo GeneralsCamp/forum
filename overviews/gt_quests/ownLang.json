@@ -4,7 +4,13 @@
       "no_quests": "No quests match the current filters.",
       "search_placeholder": "Search by title or requirement...",
       "show_all": "Show all quests",
-      "show_new": "Show only new quests"
+      "show_new": "Show only new quests",
+      "chance": "Chance",
+      "type_all": "All quest types",
+      "type_defeat_target": "Defeat Target",
+      "type_obtain_currencies_or_resources": "Obtain Currencies Or Resources",
+      "type_obtain_units": "Obtain Units",
+      "type_spend_currencies_or_resources": "Spend Currencies Or Resources"
     }
   },
   "ar": {
@@ -12,7 +18,13 @@
       "no_quests": "لا توجد مهام لهذه الفلاتر.",
       "search_placeholder": "ابحث حسب العنوان أو المتطلب...",
       "show_all": "عرض جميع المهام",
-      "show_new": "عرض المهام الجديدة فقط"
+      "show_new": "عرض المهام الجديدة فقط",
+      "chance": "الاحتمال",
+      "type_all": "جميع أنواع المهام",
+      "type_defeat_target": "اهزم الهدف",
+      "type_obtain_currencies_or_resources": "احصل على عملات أو موارد",
+      "type_obtain_units": "احصل على وحدات",
+      "type_spend_currencies_or_resources": "أنفق عملات أو موارد"
     }
   },
   "es": {
@@ -20,7 +32,13 @@
       "no_quests": "No hay misiones para estos filtros.",
       "search_placeholder": "Buscar por título o requisito...",
       "show_all": "Mostrar todas las misiones",
-      "show_new": "Mostrar solo misiones nuevas"
+      "show_new": "Mostrar solo misiones nuevas",
+      "chance": "Probabilidad",
+      "type_all": "Todos los tipos de misión",
+      "type_defeat_target": "Derrotar objetivo",
+      "type_obtain_currencies_or_resources": "Obtener monedas o recursos",
+      "type_obtain_units": "Obtener unidades",
+      "type_spend_currencies_or_resources": "Gastar monedas o recursos"
     }
   },
   "bg": {
@@ -28,7 +46,13 @@
       "no_quests": "Няма куестове за тези филтри.",
       "search_placeholder": "Търсене по заглавие или изискване...",
       "show_all": "Покажи всички куестове",
-      "show_new": "Покажи само новите куестове"
+      "show_new": "Покажи само новите куестове",
+      "chance": "Шанс",
+      "type_all": "Всички типове куестове",
+      "type_defeat_target": "Победи цел",
+      "type_obtain_currencies_or_resources": "Получи валути или ресурси",
+      "type_obtain_units": "Получи единици",
+      "type_spend_currencies_or_resources": "Изхарчи валути или ресурси"
     }
   },
   "pt": {
@@ -36,7 +60,13 @@
       "no_quests": "Sem missões para estes filtros.",
       "search_placeholder": "Pesquisar por título ou requisito...",
       "show_all": "Mostrar todas as missões",
-      "show_new": "Mostrar apenas missões novas"
+      "show_new": "Mostrar apenas missões novas",
+      "chance": "Chance",
+      "type_all": "Todos os tipos de missão",
+      "type_defeat_target": "Derrotar alvo",
+      "type_obtain_currencies_or_resources": "Obter moedas ou recursos",
+      "type_obtain_units": "Obter unidades",
+      "type_spend_currencies_or_resources": "Gastar moedas ou recursos"
     }
   },
   "cs": {
@@ -44,7 +74,13 @@
       "no_quests": "Žádné úkoly pro tyto filtry.",
       "search_placeholder": "Hledat podle názvu nebo požadavku...",
       "show_all": "Zobrazit všechny úkoly",
-      "show_new": "Zobrazit pouze nové úkoly"
+      "show_new": "Zobrazit pouze nové úkoly",
+      "chance": "Šance",
+      "type_all": "Všechny typy úkolů",
+      "type_defeat_target": "Porazit cíl",
+      "type_obtain_currencies_or_resources": "Získat měny nebo suroviny",
+      "type_obtain_units": "Získat jednotky",
+      "type_spend_currencies_or_resources": "Utratit měny nebo suroviny"
     }
   },
   "de": {
@@ -52,7 +88,13 @@
       "no_quests": "Keine Quests für diese Filter.",
       "search_placeholder": "Suche nach Titel oder Anforderung...",
       "show_all": "Alle Quests anzeigen",
-      "show_new": "Nur neue Quests anzeigen"
+      "show_new": "Nur neue Quests anzeigen",
+      "chance": "Chance",
+      "type_all": "Alle Quest-Typen",
+      "type_defeat_target": "Ziel besiegen",
+      "type_obtain_currencies_or_resources": "Währungen oder Ressourcen erhalten",
+      "type_obtain_units": "Einheiten erhalten",
+      "type_spend_currencies_or_resources": "Währungen oder Ressourcen ausgeben"
     }
   },
   "da": {
@@ -60,7 +102,13 @@
       "no_quests": "Ingen quests for disse filtre.",
       "search_placeholder": "Søg efter titel eller krav...",
       "show_all": "Vis alle quests",
-      "show_new": "Vis kun nye quests"
+      "show_new": "Vis kun nye quests",
+      "chance": "Chance",
+      "type_all": "Alle opgavetyper",
+      "type_defeat_target": "Nedkæmp mål",
+      "type_obtain_currencies_or_resources": "Få valuta eller ressourcer",
+      "type_obtain_units": "Få enheder",
+      "type_spend_currencies_or_resources": "Brug valuta eller ressourcer"
     }
   },
   "fi": {
@@ -68,7 +116,13 @@
       "no_quests": "Ei tehtäviä näillä suodattimilla.",
       "search_placeholder": "Hae otsikon tai vaatimuksen mukaan...",
       "show_all": "Näytä kaikki tehtävät",
-      "show_new": "Näytä vain uudet tehtävät"
+      "show_new": "Näytä vain uudet tehtävät",
+      "chance": "Todennäköisyys",
+      "type_all": "Kaikki tehtävätyypit",
+      "type_defeat_target": "Kukista kohde",
+      "type_obtain_currencies_or_resources": "Hanki valuuttaa tai resursseja",
+      "type_obtain_units": "Hanki yksiköitä",
+      "type_spend_currencies_or_resources": "Käytä valuuttaa tai resursseja"
     }
   },
   "fr": {
@@ -76,7 +130,13 @@
       "no_quests": "Aucune quête ne correspond aux filtres.",
       "search_placeholder": "Rechercher par titre ou condition...",
       "show_all": "Afficher toutes les quêtes",
-      "show_new": "Afficher uniquement les nouvelles quêtes"
+      "show_new": "Afficher uniquement les nouvelles quêtes",
+      "chance": "Probabilité",
+      "type_all": "Tous les types de quête",
+      "type_defeat_target": "Vaincre une cible",
+      "type_obtain_currencies_or_resources": "Obtenir des monnaies ou des ressources",
+      "type_obtain_units": "Obtenir des unités",
+      "type_spend_currencies_or_resources": "Dépenser des monnaies ou des ressources"
     }
   },
   "el": {
@@ -84,7 +144,13 @@
       "no_quests": "Δεν υπάρχουν αποστολές για αυτά τα φίλτρα.",
       "search_placeholder": "Αναζήτηση με τίτλο ή απαίτηση...",
       "show_all": "Εμφάνιση όλων των αποστολών",
-      "show_new": "Εμφάνιση μόνο νέων αποστολών"
+      "show_new": "Εμφάνιση μόνο νέων αποστολών",
+      "chance": "Πιθανότητα",
+      "type_all": "Όλοι οι τύποι αποστολών",
+      "type_defeat_target": "Νίκησε στόχο",
+      "type_obtain_currencies_or_resources": "Απόκτησε νομίσματα ή πόρους",
+      "type_obtain_units": "Απόκτησε μονάδες",
+      "type_spend_currencies_or_resources": "Ξόδεψε νομίσματα ή πόρους"
     }
   },
   "hu": {
@@ -92,7 +158,13 @@
       "no_quests": "Nincs találat a szűrésre.",
       "search_placeholder": "Keresés cím vagy feltétel alapján...",
       "show_all": "Összes küldetés",
-      "show_new": "Csak az új küldetések"
+      "show_new": "Csak az új küldetések",
+      "chance": "Esély",
+      "type_all": "Minden küldetéstípus",
+      "type_defeat_target": "Célpont legyőzése",
+      "type_obtain_currencies_or_resources": "Valuták vagy erőforrások szerzése",
+      "type_obtain_units": "Egységek szerzése",
+      "type_spend_currencies_or_resources": "Valuták vagy erőforrások elköltése"
     }
   },
   "it": {
@@ -100,7 +172,13 @@
       "no_quests": "Nessuna missione per questi filtri.",
       "search_placeholder": "Cerca per titolo o requisito...",
       "show_all": "Mostra tutte le missioni",
-      "show_new": "Mostra solo le missioni nuove"
+      "show_new": "Mostra solo le missioni nuove",
+      "chance": "Probabilità",
+      "type_all": "Tutti i tipi di missione",
+      "type_defeat_target": "Sconfiggi bersaglio",
+      "type_obtain_currencies_or_resources": "Ottieni valute o risorse",
+      "type_obtain_units": "Ottieni unità",
+      "type_spend_currencies_or_resources": "Spendi valute o risorse"
     }
   },
   "ja": {
@@ -108,7 +186,13 @@
       "no_quests": "このフィルターに一致するクエストはありません。",
       "search_placeholder": "タイトルまたは条件で検索...",
       "show_all": "すべてのクエストを表示",
-      "show_new": "新しいクエストのみ表示"
+      "show_new": "新しいクエストのみ表示",
+      "chance": "確率",
+      "type_all": "すべてのクエストタイプ",
+      "type_defeat_target": "目標を撃破",
+      "type_obtain_currencies_or_resources": "通貨または資源を獲得",
+      "type_obtain_units": "ユニットを獲得",
+      "type_spend_currencies_or_resources": "通貨または資源を消費"
     }
   },
   "ko": {
@@ -116,7 +200,13 @@
       "no_quests": "이 필터에 해당하는 퀘스트가 없습니다.",
       "search_placeholder": "제목 또는 요구 조건으로 검색...",
       "show_all": "모든 퀘스트 표시",
-      "show_new": "새 퀘스트만 표시"
+      "show_new": "새 퀘스트만 표시",
+      "chance": "확률",
+      "type_all": "모든 퀘스트 유형",
+      "type_defeat_target": "목표 처치",
+      "type_obtain_currencies_or_resources": "화폐 또는 자원 획득",
+      "type_obtain_units": "유닛 획득",
+      "type_spend_currencies_or_resources": "화폐 또는 자원 사용"
     }
   },
   "lt": {
@@ -124,7 +214,13 @@
       "no_quests": "Nėra užduočių pagal šiuos filtrus.",
       "search_placeholder": "Ieškoti pagal pavadinimą arba reikalavimą...",
       "show_all": "Rodyti visas užduotis",
-      "show_new": "Rodyti tik naujas užduotis"
+      "show_new": "Rodyti tik naujas užduotis",
+      "chance": "Tikimybė",
+      "type_all": "Visi užduočių tipai",
+      "type_defeat_target": "Nugalėk taikinį",
+      "type_obtain_currencies_or_resources": "Gauk valiutą arba išteklius",
+      "type_obtain_units": "Gauk vienetų",
+      "type_spend_currencies_or_resources": "Išleisk valiutą arba išteklius"
     }
   },
   "nl": {
@@ -132,7 +228,13 @@
       "no_quests": "Geen missies voor deze filters.",
       "search_placeholder": "Zoek op titel of vereiste...",
       "show_all": "Alle missies tonen",
-      "show_new": "Alleen nieuwe missies tonen"
+      "show_new": "Alleen nieuwe missies tonen",
+      "chance": "Kans",
+      "type_all": "Alle missietypen",
+      "type_defeat_target": "Doel verslaan",
+      "type_obtain_currencies_or_resources": "Valuta of grondstoffen verkrijgen",
+      "type_obtain_units": "Eenheden verkrijgen",
+      "type_spend_currencies_or_resources": "Valuta of grondstoffen uitgeven"
     }
   },
   "no": {
@@ -140,7 +242,13 @@
       "no_quests": "Ingen oppdrag for disse filtrene.",
       "search_placeholder": "Søk etter tittel eller krav...",
       "show_all": "Vis alle oppdrag",
-      "show_new": "Vis bare nye oppdrag"
+      "show_new": "Vis bare nye oppdrag",
+      "chance": "Sjanse",
+      "type_all": "Alle oppdragstyper",
+      "type_defeat_target": "Bekjemp mål",
+      "type_obtain_currencies_or_resources": "Skaff valuta eller ressurser",
+      "type_obtain_units": "Skaff enheter",
+      "type_spend_currencies_or_resources": "Bruk valuta eller ressurser"
     }
   },
   "pl": {
@@ -148,7 +256,13 @@
       "no_quests": "Brak zadań dla tych filtrów.",
       "search_placeholder": "Szukaj po tytule lub wymaganiu...",
       "show_all": "Pokaż wszystkie zadania",
-      "show_new": "Pokaż tylko nowe zadania"
+      "show_new": "Pokaż tylko nowe zadania",
+      "chance": "Szansa",
+      "type_all": "Wszystkie typy zadań",
+      "type_defeat_target": "Pokonaj cel",
+      "type_obtain_currencies_or_resources": "Zdobądź waluty lub surowce",
+      "type_obtain_units": "Zdobądź jednostki",
+      "type_spend_currencies_or_resources": "Wydaj waluty lub surowce"
     }
   },
   "ro": {
@@ -156,7 +270,13 @@
       "no_quests": "Nicio misiune pentru aceste filtre.",
       "search_placeholder": "Caută după titlu sau cerință...",
       "show_all": "Afișează toate misiunile",
-      "show_new": "Afișează doar misiunile noi"
+      "show_new": "Afișează doar misiunile noi",
+      "chance": "Șansă",
+      "type_all": "Toate tipurile de misiuni",
+      "type_defeat_target": "Învinge ținta",
+      "type_obtain_currencies_or_resources": "Obține valute sau resurse",
+      "type_obtain_units": "Obține unități",
+      "type_spend_currencies_or_resources": "Cheltuie valute sau resurse"
     }
   },
   "ru": {
@@ -164,7 +284,13 @@
       "no_quests": "Нет заданий по этим фильтрам.",
       "search_placeholder": "Поиск по названию или условию...",
       "show_all": "Показать все задания",
-      "show_new": "Показать только новые задания"
+      "show_new": "Показать только новые задания",
+      "chance": "Шанс",
+      "type_all": "Все типы заданий",
+      "type_defeat_target": "Победить цель",
+      "type_obtain_currencies_or_resources": "Получить валюту или ресурсы",
+      "type_obtain_units": "Получить юнитов",
+      "type_spend_currencies_or_resources": "Потратить валюту или ресурсы"
     }
   },
   "sv": {
@@ -172,7 +298,13 @@
       "no_quests": "Inga uppdrag för dessa filter.",
       "search_placeholder": "Sök efter titel eller krav...",
       "show_all": "Visa alla uppdrag",
-      "show_new": "Visa endast nya uppdrag"
+      "show_new": "Visa endast nya uppdrag",
+      "chance": "Chans",
+      "type_all": "Alla uppdragstyper",
+      "type_defeat_target": "Besegra mål",
+      "type_obtain_currencies_or_resources": "Skaffa valutor eller resurser",
+      "type_obtain_units": "Skaffa enheter",
+      "type_spend_currencies_or_resources": "Spendera valutor eller resurser"
     }
   },
   "sk": {
@@ -180,7 +312,13 @@
       "no_quests": "Žiadne úlohy pre tieto filtre.",
       "search_placeholder": "Hľadať podľa názvu alebo požiadavky...",
       "show_all": "Zobraziť všetky úlohy",
-      "show_new": "Zobraziť iba nové úlohy"
+      "show_new": "Zobraziť iba nové úlohy",
+      "chance": "Šanca",
+      "type_all": "Všetky typy úloh",
+      "type_defeat_target": "Poraziť cieľ",
+      "type_obtain_currencies_or_resources": "Získať meny alebo suroviny",
+      "type_obtain_units": "Získať jednotky",
+      "type_spend_currencies_or_resources": "Minúť meny alebo suroviny"
     }
   },
   "tr": {
@@ -188,7 +326,13 @@
       "no_quests": "Bu filtreler için görev yok.",
       "search_placeholder": "Başlığa veya gereksinime göre ara...",
       "show_all": "Tüm görevleri göster",
-      "show_new": "Yalnızca yeni görevleri göster"
+      "show_new": "Yalnızca yeni görevleri göster",
+      "chance": "Olasılık",
+      "type_all": "Tüm görev türleri",
+      "type_defeat_target": "Hedefi yen",
+      "type_obtain_currencies_or_resources": "Para birimi veya kaynak kazan",
+      "type_obtain_units": "Birim kazan",
+      "type_spend_currencies_or_resources": "Para birimi veya kaynak harca"
     }
   }
 }

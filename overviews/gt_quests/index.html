@@ -13,8 +13,8 @@
   <link rel="stylesheet" href="./gt_quests.css">
   <link rel="stylesheet" href="../shared/consent.css">
   <meta property="og:title" content="GT Quests Overview | Generals Forum">
-  <meta property="og:description" content="Alliance Mobilization (GT) quest overview with language and type filter.">
-  <meta property="og:image" content="https://generalscamp.github.io/forum/img_base/main_page/event-rewards-icon.webp">
+  <meta property="og:description" content="This page loads the in-game grand tournament quests automatically!">
+  <meta property="og:image" content="https://generalscamp.github.io/forum/img_base/event_icons/grandtournament.webp">
 </head>
 
 <body>
@@ -40,22 +40,25 @@
         </div>
 
         <div class="row note gx-1 gy-1 align-items-center pb-2">
-          <div class="col-lg-8 col-md-6">
+          <div class="col-lg-6 col-md-12">
             <input id="searchInput" class="form-control custom-input" type="search"
-              placeholder="Search by description, requirement..." aria-label="Quest search" />
+              placeholder="Loading search filter..." aria-label="Quest search" disabled />
           </div>
-          <div class="col-lg-4 col-md-6">
-            <select id="showFilter" class="form-select custom-select text-center" aria-label="Show filter">
-              <option value="all" selected>Show all quests</option>
-              <option value="new">Show only new quests</option>
+          <div class="col-lg-3 col-md-6">
+            <select id="showFilter" class="form-select custom-select text-center" aria-label="Show filter" disabled>
+              <option value="all" selected>Loading quest filters...</option>
+              <option value="new">Loading...</option>
+            </select>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <select id="typeFilter" class="form-select custom-select text-center" aria-label="Quest type filter" disabled>
+              <option value="all" selected>Loading quest types...</option>
             </select>
           </div>
         </div>
       </div>
 
       <main id="content" class="container-fluid">
-        <div id="questRows" class="row gx-1"></div>
-
         <div id="loadingBox" class="loading-message">
           <h3 id="loadingStatus">Initializing...</h3>
           <div class="progress">
@@ -63,6 +66,8 @@
             <span id="loadingPercentText" class="progress-text">0%</span>
           </div>
         </div>
+
+        <div id="questRows" class="row gx-1"></div>
       </main>
     </div>
   </div>

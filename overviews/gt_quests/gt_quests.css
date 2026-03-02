@@ -52,8 +52,8 @@
     border-right: none;
 }
 
-.quest-info-cell.quest-cell-reward,
-.quest-info-cell.quest-cell-duration {
+.quest-info-cell.quest-cell-chance {
+    border-right: none;
     border-bottom: none;
 }
 
