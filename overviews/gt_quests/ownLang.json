@@ -1,0 +1,194 @@
+{
+  "en": {
+    "ui": {
+      "no_quests": "No quests match the current filters.",
+      "search_placeholder": "Search by title or requirement...",
+      "show_all": "Show all quests",
+      "show_new": "Show only new quests"
+    }
+  },
+  "ar": {
+    "ui": {
+      "no_quests": "لا توجد مهام لهذه الفلاتر.",
+      "search_placeholder": "ابحث حسب العنوان أو المتطلب...",
+      "show_all": "عرض جميع المهام",
+      "show_new": "عرض المهام الجديدة فقط"
+    }
+  },
+  "es": {
+    "ui": {
+      "no_quests": "No hay misiones para estos filtros.",
+      "search_placeholder": "Buscar por título o requisito...",
+      "show_all": "Mostrar todas las misiones",
+      "show_new": "Mostrar solo misiones nuevas"
+    }
+  },
+  "bg": {
+    "ui": {
+      "no_quests": "Няма куестове за тези филтри.",
+      "search_placeholder": "Търсене по заглавие или изискване...",
+      "show_all": "Покажи всички куестове",
+      "show_new": "Покажи само новите куестове"
+    }
+  },
+  "pt": {
+    "ui": {
+      "no_quests": "Sem missões para estes filtros.",
+      "search_placeholder": "Pesquisar por título ou requisito...",
+      "show_all": "Mostrar todas as missões",
+      "show_new": "Mostrar apenas missões novas"
+    }
+  },
+  "cs": {
+    "ui": {
+      "no_quests": "Žádné úkoly pro tyto filtry.",
+      "search_placeholder": "Hledat podle názvu nebo požadavku...",
+      "show_all": "Zobrazit všechny úkoly",
+      "show_new": "Zobrazit pouze nové úkoly"
+    }
+  },
+  "de": {
+    "ui": {
+      "no_quests": "Keine Quests für diese Filter.",
+      "search_placeholder": "Suche nach Titel oder Anforderung...",
+      "show_all": "Alle Quests anzeigen",
+      "show_new": "Nur neue Quests anzeigen"
+    }
+  },
+  "da": {
+    "ui": {
+      "no_quests": "Ingen quests for disse filtre.",
+      "search_placeholder": "Søg efter titel eller krav...",
+      "show_all": "Vis alle quests",
+      "show_new": "Vis kun nye quests"
+    }
+  },
+  "fi": {
+    "ui": {
+      "no_quests": "Ei tehtäviä näillä suodattimilla.",
+      "search_placeholder": "Hae otsikon tai vaatimuksen mukaan...",
+      "show_all": "Näytä kaikki tehtävät",
+      "show_new": "Näytä vain uudet tehtävät"
+    }
+  },
+  "fr": {
+    "ui": {
+      "no_quests": "Aucune quête ne correspond aux filtres.",
+      "search_placeholder": "Rechercher par titre ou condition...",
+      "show_all": "Afficher toutes les quêtes",
+      "show_new": "Afficher uniquement les nouvelles quêtes"
+    }
+  },
+  "el": {
+    "ui": {
+      "no_quests": "Δεν υπάρχουν αποστολές για αυτά τα φίλτρα.",
+      "search_placeholder": "Αναζήτηση με τίτλο ή απαίτηση...",
+      "show_all": "Εμφάνιση όλων των αποστολών",
+      "show_new": "Εμφάνιση μόνο νέων αποστολών"
+    }
+  },
+  "hu": {
+    "ui": {
+      "no_quests": "Nincs találat a szűrésre.",
+      "search_placeholder": "Keresés cím vagy feltétel alapján...",
+      "show_all": "Összes küldetés",
+      "show_new": "Csak az új küldetések"
+    }
+  },
+  "it": {
+    "ui": {
+      "no_quests": "Nessuna missione per questi filtri.",
+      "search_placeholder": "Cerca per titolo o requisito...",
+      "show_all": "Mostra tutte le missioni",
+      "show_new": "Mostra solo le missioni nuove"
+    }
+  },
+  "ja": {
+    "ui": {
+      "no_quests": "このフィルターに一致するクエストはありません。",
+      "search_placeholder": "タイトルまたは条件で検索...",
+      "show_all": "すべてのクエストを表示",
+      "show_new": "新しいクエストのみ表示"
+    }
+  },
+  "ko": {
+    "ui": {
+      "no_quests": "이 필터에 해당하는 퀘스트가 없습니다.",
+      "search_placeholder": "제목 또는 요구 조건으로 검색...",
+      "show_all": "모든 퀘스트 표시",
+      "show_new": "새 퀘스트만 표시"
+    }
+  },
+  "lt": {
+    "ui": {
+      "no_quests": "Nėra užduočių pagal šiuos filtrus.",
+      "search_placeholder": "Ieškoti pagal pavadinimą arba reikalavimą...",
+      "show_all": "Rodyti visas užduotis",
+      "show_new": "Rodyti tik naujas užduotis"
+    }
+  },
+  "nl": {
+    "ui": {
+      "no_quests": "Geen missies voor deze filters.",
+      "search_placeholder": "Zoek op titel of vereiste...",
+      "show_all": "Alle missies tonen",
+      "show_new": "Alleen nieuwe missies tonen"
+    }
+  },
+  "no": {
+    "ui": {
+      "no_quests": "Ingen oppdrag for disse filtrene.",
+      "search_placeholder": "Søk etter tittel eller krav...",
+      "show_all": "Vis alle oppdrag",
+      "show_new": "Vis bare nye oppdrag"
+    }
+  },
+  "pl": {
+    "ui": {
+      "no_quests": "Brak zadań dla tych filtrów.",
+      "search_placeholder": "Szukaj po tytule lub wymaganiu...",
+      "show_all": "Pokaż wszystkie zadania",
+      "show_new": "Pokaż tylko nowe zadania"
+    }
+  },
+  "ro": {
+    "ui": {
+      "no_quests": "Nicio misiune pentru aceste filtre.",
+      "search_placeholder": "Caută după titlu sau cerință...",
+      "show_all": "Afișează toate misiunile",
+      "show_new": "Afișează doar misiunile noi"
+    }
+  },
+  "ru": {
+    "ui": {
+      "no_quests": "Нет заданий по этим фильтрам.",
+      "search_placeholder": "Поиск по названию или условию...",
+      "show_all": "Показать все задания",
+      "show_new": "Показать только новые задания"
+    }
+  },
+  "sv": {
+    "ui": {
+      "no_quests": "Inga uppdrag för dessa filter.",
+      "search_placeholder": "Sök efter titel eller krav...",
+      "show_all": "Visa alla uppdrag",
+      "show_new": "Visa endast nya uppdrag"
+    }
+  },
+  "sk": {
+    "ui": {
+      "no_quests": "Žiadne úlohy pre tieto filtre.",
+      "search_placeholder": "Hľadať podľa názvu alebo požiadavky...",
+      "show_all": "Zobraziť všetky úlohy",
+      "show_new": "Zobraziť iba nové úlohy"
+    }
+  },
+  "tr": {
+    "ui": {
+      "no_quests": "Bu filtreler için görev yok.",
+      "search_placeholder": "Başlığa veya gereksinime göre ara...",
+      "show_all": "Tüm görevleri göster",
+      "show_new": "Yalnızca yeni görevleri göster"
+    }
+  }
+}
