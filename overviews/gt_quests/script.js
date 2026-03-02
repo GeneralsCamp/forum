@@ -296,7 +296,11 @@ function renderQuests() {
         return;
     }
 
-    rows.sort((a, b) => Number(a.allianceQuestId) - Number(b.allianceQuestId));
+    rows.sort((a, b) => {
+        const pointsDiff = Number(b.rewardPoints || 0) - Number(a.rewardPoints || 0);
+        if (pointsDiff !== 0) return pointsDiff;
+        return Number(a.allianceQuestId || 0) - Number(b.allianceQuestId || 0);
+    });
 
     rows.forEach(q => {
         const col = document.createElement("div");
