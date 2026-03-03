@@ -2,6 +2,10 @@
     padding-bottom: 8px;
 }
 
+.quest-col {
+    display: flex;
+}
+
 .quest-panel {
     background: #916241;
     border: 2px solid #f2d9bb;
@@ -9,6 +13,7 @@
     color: #fff;
     margin-bottom: 8px;
     overflow: hidden;
+    width: 100%;
 }
 
 .quest-panel-title {
@@ -25,7 +30,7 @@
 
 .quest-info-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
 }
 
 .quest-info-cell {
@@ -35,11 +40,11 @@
     text-align: center;
 }
 
-.quest-info-grid > :nth-child(2n) {
+.quest-info-grid > :nth-child(3n) {
     border-right: none;
 }
 
-.quest-info-cell.quest-span-2 {
+.quest-info-cell.quest-span-3 {
     grid-column: 1 / -1;
     border-right: none;
 }
@@ -49,10 +54,14 @@
 }
 
 .quest-info-cell.quest-cell-duration {
-    border-right: none;
+    border-right: 1px solid #f2d9bb;
 }
 
 .quest-info-cell.quest-cell-chance {
+    border-right: none;
+}
+
+.quest-info-cell.quest-cell-requirement {
     border-right: none;
     border-bottom: none;
 }

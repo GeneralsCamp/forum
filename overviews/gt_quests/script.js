@@ -225,12 +225,14 @@ function getTypeFilterValue() {
 }
 
 function getQuestTypeLabel(typeRaw) {
-    const key = String(typeRaw || "").toLowerCase();
+    const key = String(typeRaw || "").toLowerCase().replace(/[^a-z0-9]/g, "");
     const labels = {
         defeattarget: UI_LANG.type_defeat_target,
         obtaincurrenciesorresources: UI_LANG.type_obtain_currencies_or_resources,
         obtainunits: UI_LANG.type_obtain_units,
-        spendcurrenciesorresources: UI_LANG.type_spend_currencies_or_resources
+        spendcurrenciesorresources: UI_LANG.type_spend_currencies_or_resources,
+        samuraiinvasion: getLangValue(["event_title_80"], "Samurai Invasion"),
+        nomadinvasion: getLangValue(["event_title_72"], "Nomad Invasion")
     };
     return labels[key] || capitalizeWords(typeRaw);
 }
@@ -299,12 +301,19 @@ function renderQuests() {
     rows.sort((a, b) => {
         const pointsDiff = Number(b.rewardPoints || 0) - Number(a.rewardPoints || 0);
         if (pointsDiff !== 0) return pointsDiff;
+
+        const chanceDiff = Number(b.chanceValue || 0) - Number(a.chanceValue || 0);
+        if (chanceDiff !== 0) return chanceDiff;
+
+        const durationDiff = Number(a.duration || 0) - Number(b.duration || 0);
+        if (durationDiff !== 0) return durationDiff;
+
         return Number(a.allianceQuestId || 0) - Number(b.allianceQuestId || 0);
     });
 
     rows.forEach(q => {
         const col = document.createElement("div");
-        col.className = "col-12 col-lg-6";
+        col.className = "col-12 col-lg-6 quest-col";
 
         const title = document.createElement("h2");
         title.className = "quest-panel-title";
@@ -313,13 +322,6 @@ function renderQuests() {
         const infoGrid = document.createElement("div");
         infoGrid.className = "quest-info-grid";
 
-        infoGrid.appendChild(
-            createInfoCell(
-                getRequirementLabel(),
-                resolveQuestDescription(q),
-                "quest-span-2"
-            )
-        );
         infoGrid.appendChild(createRewardCell(q.rewardPoints));
         infoGrid.appendChild(
             createInfoCell(
@@ -332,7 +334,14 @@ function renderQuests() {
             createInfoCell(
                 getChanceLabel(),
                 formatQuestChancePercent(q.chanceValue),
-                "quest-span-2 quest-cell-chance"
+                "quest-cell-chance"
+            )
+        );
+        infoGrid.appendChild(
+            createInfoCell(
+                getRequirementLabel(),
+                resolveQuestDescription(q),
+                "quest-span-3 quest-cell-requirement"
             )
         );
 
