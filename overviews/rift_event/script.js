@@ -611,7 +611,8 @@ function renderBossOverview() {
   const rightFlankLabel = uiText("dialog_defence_rightFlank", "Right flank");
   const courtyardLabel = uiText("dialog_defence_courtyard", "Courtyard");
   const bossEffectsTitle = ownText("boss_effects", uiText("dialog_are_boss_effect_title", "Boss effects"));
-  const wallRegenLabel = ownText("wall_regeneration", "Wall regeneration");
+  const wallRegenTimeLabel = ownText("wall_regeneration_time", "Wall regeneration time");
+  const wallRegenStageStartLabel = ownText("wall_regeneration_stage_start", "Wall reload at stage start");
   const courtyardSizeLabel = uiText(
     "unitsInCourtyard_limit_player",
     ownText("courtyard_unit_size", "Courtyard unit size")
@@ -630,7 +631,7 @@ function renderBossOverview() {
             <span class="boss-overview-stat-value">${formatNumber(stage.health)}%</span>
           </div>
           <div class="boss-overview-stat">
-            <span class="boss-overview-stat-key">${wallRegenLabel}</span>
+            <span class="boss-overview-stat-key">${wallRegenTimeLabel}</span>
             <span class="boss-overview-stat-value">${formatMinSec(level.wallRegenerationTime)}</span>
           </div>
           <div class="boss-overview-stat">
@@ -653,7 +654,7 @@ function renderBossOverview() {
             { title: ownText("courtyard_defense", "Courtyard defense"), icon: "../../img_base/battle_simulator/cy-icon.png", value: `${formatNumber(effectSummary.courtyardDefense)}%` },
             { title: ownText("flank_defense", "Flank defense"), icon: "../../img_base/battle_simulator/flanks-strength.png", value: `${formatNumber(effectSummary.flankDefense)}%` },
             { title: ownText("front_defense", "Front defense"), icon: "../../img_base/battle_simulator/front-strength.png", value: `${formatNumber(effectSummary.frontDefense)}%` },
-            { title: ownText("wall_regeneration", "Wall regeneration"), icon: "../../img_base/time.png", value: effectSummary.isWallRegen ? valueTrue : valueFalse }
+            { title: wallRegenStageStartLabel, icon: "../../img_base/time.png", value: effectSummary.isWallRegen ? valueTrue : valueFalse }
           ].map(effect => `
             <div class="boss-overview-stat boss-overview-effect-stat">
               <span class="boss-effect-icon-wrap">

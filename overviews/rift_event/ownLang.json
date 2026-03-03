@@ -21,7 +21,8 @@
       "courtyard_defense": "Courtyard defense",
       "flank_defense": "Flank defense",
       "front_defense": "Front defense",
-      "wall_regeneration": "Wall reload at stage start",
+      "wall_regeneration_time": "Wall reload time",
+      "wall_regeneration_stage_start": "Wall reload at stage start",
       "courtyard_unit_size": "Courtyard defender capacity",
       "unknown_reward": "Unknown reward",
       "no_rewards": "No rewards",
@@ -53,7 +54,8 @@
       "courtyard_defense": "Udvarvédelem",
       "flank_defense": "Szárnyvédelem",
       "front_defense": "Frontvédelem",
-      "wall_regeneration": "Fal újratöltés a stage elején",
+      "wall_regeneration_time": "Fal újratöltés idő",
+      "wall_regeneration_stage_start": "Fal újratöltés a stage elején",
       "courtyard_unit_size": "Udvar védő kapacitás",
       "unknown_reward": "Ismeretlen jutalom",
       "no_rewards": "Nincs jutalom",
@@ -85,14 +87,15 @@
       "courtyard_defense": "Hofverteidigung",
       "flank_defense": "Flankenverteidigung",
       "front_defense": "Frontverteidigung",
-      "wall_regeneration": "Maueraufladung zu Phasenbeginn",
       "courtyard_unit_size": "Hof-Verteidigerkapazität",
       "unknown_reward": "Unbekannte Belohnung",
       "no_rewards": "Keine Belohnungen",
       "reward": "Belohnung",
       "item": "Gegenstand",
       "unit": "Einheit",
-      "level": "Level"
+      "level": "Level",
+      "wall_regeneration_stage_start": "Maueraufladung zu Phasenbeginn",
+      "wall_regeneration_time": "Maueraufladezeit"
     }
   },
   "fr": {
@@ -117,14 +120,15 @@
       "courtyard_defense": "Défense de la cour",
       "flank_defense": "Défense des flancs",
       "front_defense": "Défense frontale",
-      "wall_regeneration": "Recharge du mur au début de la phase",
       "courtyard_unit_size": "Capacité des défenseurs de la cour",
       "unknown_reward": "Récompense inconnue",
       "no_rewards": "Aucune récompense",
       "reward": "Récompense",
       "item": "objet",
       "unit": "Unité",
-      "level": "Niveau"
+      "level": "Niveau",
+      "wall_regeneration_stage_start": "Recharge du mur au début de la phase",
+      "wall_regeneration_time": "Temps de rechargement du mur"
     }
   },
   "es": {
@@ -149,14 +153,15 @@
       "courtyard_defense": "Defensa del patio",
       "flank_defense": "Defensa de flancos",
       "front_defense": "Defensa frontal",
-      "wall_regeneration": "Recarga del muro al inicio de la fase",
       "courtyard_unit_size": "Capacidad de defensores del patio",
       "unknown_reward": "Recompensa desconocida",
       "no_rewards": "Sin recompensas",
       "reward": "Recompensa",
       "item": "objeto",
       "unit": "Unidad",
-      "level": "Nivel"
+      "level": "Nivel",
+      "wall_regeneration_stage_start": "Recarga del muro al inicio de la fase",
+      "wall_regeneration_time": "Tiempo de recarga del muro"
     }
   },
   "it": {
@@ -181,14 +186,15 @@
       "courtyard_defense": "Difesa cortile",
       "flank_defense": "Difesa fianchi",
       "front_defense": "Difesa fronte",
-      "wall_regeneration": "Ricarica del muro all'inizio della fase",
       "courtyard_unit_size": "Capacità difensori cortile",
       "unknown_reward": "Ricompensa sconosciuta",
       "no_rewards": "Nessuna ricompensa",
       "reward": "Ricompensa",
       "item": "oggetto",
       "unit": "Unità",
-      "level": "Livello"
+      "level": "Livello",
+      "wall_regeneration_stage_start": "Ricarica del muro all'inizio della fase",
+      "wall_regeneration_time": "Tempo di ricarica del muro"
     }
   },
   "pt": {
@@ -213,14 +219,15 @@
       "courtyard_defense": "Defesa do pátio",
       "flank_defense": "Defesa dos flancos",
       "front_defense": "Defesa frontal",
-      "wall_regeneration": "Recarga da muralha no início da fase",
       "courtyard_unit_size": "Capacidade de defensores no pátio",
       "unknown_reward": "Recompensa desconhecida",
       "no_rewards": "Sem recompensas",
       "reward": "Recompensa",
       "item": "item",
       "unit": "Unidade",
-      "level": "Nível"
+      "level": "Nível",
+      "wall_regeneration_stage_start": "Recarga da muralha no início da fase",
+      "wall_regeneration_time": "Tempo de recarga da muralha"
     }
   },
   "pl": {
@@ -245,14 +252,15 @@
       "courtyard_defense": "Obrona dziedzińca",
       "flank_defense": "Obrona flank",
       "front_defense": "Obrona frontu",
-      "wall_regeneration": "Przeładowanie muru na początku etapu",
       "courtyard_unit_size": "Pojemność obrońców dziedzińca",
       "unknown_reward": "Nieznana nagroda",
       "no_rewards": "Brak nagród",
       "reward": "Nagroda",
       "item": "przedmiot",
       "unit": "Jednostka",
-      "level": "Poziom"
+      "level": "Poziom",
+      "wall_regeneration_stage_start": "Przeładowanie muru na początku etapu",
+      "wall_regeneration_time": "Czas przeładowania muru"
     }
   },
   "ro": {
@@ -277,14 +285,15 @@
       "courtyard_defense": "Apărarea curții",
       "flank_defense": "Apărarea flancurilor",
       "front_defense": "Apărarea frontului",
-      "wall_regeneration": "Reîncărcarea zidului la începutul fazei",
       "courtyard_unit_size": "Capacitate apărători curte",
       "unknown_reward": "Recompensă necunoscută",
       "no_rewards": "Fără recompense",
       "reward": "Recompensă",
       "item": "obiect",
       "unit": "Unitate",
-      "level": "Nivel"
+      "level": "Nivel",
+      "wall_regeneration_stage_start": "Reîncărcarea zidului la începutul fazei",
+      "wall_regeneration_time": "Timp de reîncărcare a zidului"
     }
   },
   "ru": {
@@ -309,14 +318,15 @@
       "courtyard_defense": "Защита двора",
       "flank_defense": "Защита флангов",
       "front_defense": "Защита фронта",
-      "wall_regeneration": "Перезарядка стены в начале этапа",
       "courtyard_unit_size": "Вместимость защитников двора",
       "unknown_reward": "Неизвестная награда",
       "no_rewards": "Нет наград",
       "reward": "Награда",
       "item": "предмет",
       "unit": "Юнит",
-      "level": "Уровень"
+      "level": "Уровень",
+      "wall_regeneration_stage_start": "Перезарядка стены в начале этапа",
+      "wall_regeneration_time": "Время перезарядки стены"
     }
   },
   "tr": {
@@ -341,14 +351,15 @@
       "courtyard_defense": "Avlu savunması",
       "flank_defense": "Kanat savunması",
       "front_defense": "Ön hat savunması",
-      "wall_regeneration": "Aşama başında duvar yeniden yükleme",
       "courtyard_unit_size": "Avlu savunucu kapasitesi",
       "unknown_reward": "Bilinmeyen ödül",
       "no_rewards": "Ödül yok",
       "reward": "Ödül",
       "item": "öğe",
       "unit": "Birim",
-      "level": "Seviye"
+      "level": "Seviye",
+      "wall_regeneration_stage_start": "Aşama başında duvar yeniden yükleme",
+      "wall_regeneration_time": "Duvar yeniden yükleme süresi"
     }
   },
   "nl": {
@@ -373,14 +384,15 @@
       "courtyard_defense": "Binnenplaatsverdediging",
       "flank_defense": "Flankverdediging",
       "front_defense": "Frontverdediging",
-      "wall_regeneration": "Muurherladen aan het begin van de fase",
       "courtyard_unit_size": "Capaciteit binnenplaatsverdedigers",
       "unknown_reward": "Onbekende beloning",
       "no_rewards": "Geen beloningen",
       "reward": "Beloning",
       "item": "item",
       "unit": "Eenheid",
-      "level": "Niveau"
+      "level": "Niveau",
+      "wall_regeneration_stage_start": "Muurherladen aan het begin van de fase",
+      "wall_regeneration_time": "Muurherlaadtijd"
     }
   },
   "sv": {
@@ -405,14 +417,15 @@
       "courtyard_defense": "Gårdsförsvar",
       "flank_defense": "Flankförsvar",
       "front_defense": "Frontförsvar",
-      "wall_regeneration": "Muruppladdning vid fasstart",
       "courtyard_unit_size": "Kapacitet gårdsförsvarare",
       "unknown_reward": "Okänd belöning",
       "no_rewards": "Inga belöningar",
       "reward": "Belöning",
       "item": "objekt",
       "unit": "Enhet",
-      "level": "Nivå"
+      "level": "Nivå",
+      "wall_regeneration_stage_start": "Muruppladdning vid fasstart",
+      "wall_regeneration_time": "Murladdningstid"
     }
   },
   "da": {
@@ -437,14 +450,15 @@
       "courtyard_defense": "Gårdforsvar",
       "flank_defense": "Flankeforsvar",
       "front_defense": "Frontforsvar",
-      "wall_regeneration": "Muropladning ved fasens start",
       "courtyard_unit_size": "Kapacitet for gårdforsvarere",
       "unknown_reward": "Ukendt belønning",
       "no_rewards": "Ingen belønninger",
       "reward": "Belønning",
       "item": "genstand",
       "unit": "Enhed",
-      "level": "Niveau"
+      "level": "Niveau",
+      "wall_regeneration_stage_start": "Muropladning ved fasens start",
+      "wall_regeneration_time": "Muropladningstid"
     }
   },
   "fi": {
@@ -469,14 +483,15 @@
       "courtyard_defense": "Pihan puolustus",
       "flank_defense": "Sivustan puolustus",
       "front_defense": "Etulinjan puolustus",
-      "wall_regeneration": "Muurin lataus vaiheen alussa",
       "courtyard_unit_size": "Pihan puolustajakapsiteetti",
       "unknown_reward": "Tuntematon palkinto",
       "no_rewards": "Ei palkintoja",
       "reward": "Palkinto",
       "item": "esine",
       "unit": "Yksikkö",
-      "level": "Taso"
+      "level": "Taso",
+      "wall_regeneration_stage_start": "Muurin lataus vaiheen alussa",
+      "wall_regeneration_time": "Muurin latausaika"
     }
   },
   "no": {
@@ -501,14 +516,15 @@
       "courtyard_defense": "Borggårdsforsvar",
       "flank_defense": "Flankeforsvar",
       "front_defense": "Frontforsvar",
-      "wall_regeneration": "Murgjenopplading ved fasestart",
       "courtyard_unit_size": "Kapasitet borggårdsforsvarere",
       "unknown_reward": "Ukjent belønning",
       "no_rewards": "Ingen belønninger",
       "reward": "Belønning",
       "item": "gjenstand",
       "unit": "Enhet",
-      "level": "Nivå"
+      "level": "Nivå",
+      "wall_regeneration_stage_start": "Murgjenopplading ved fasestart",
+      "wall_regeneration_time": "Murgjenoppladingstid"
     }
   },
   "cs": {
@@ -533,14 +549,15 @@
       "courtyard_defense": "Obrana nádvoří",
       "flank_defense": "Obrana křídel",
       "front_defense": "Čelní obrana",
-      "wall_regeneration": "Obnovení zdi na začátku fáze",
       "courtyard_unit_size": "Kapacita obránců nádvoří",
       "unknown_reward": "Neznámá odměna",
       "no_rewards": "Žádné odměny",
       "reward": "Odměna",
       "item": "předmět",
       "unit": "Jednotka",
-      "level": "Úroveň"
+      "level": "Úroveň",
+      "wall_regeneration_stage_start": "Obnovení zdi na začátku fáze",
+      "wall_regeneration_time": "Doba nabití zdi"
     }
   },
   "sk": {
@@ -565,14 +582,15 @@
       "courtyard_defense": "Obrana nádvoria",
       "flank_defense": "Obrana krídel",
       "front_defense": "Čelná obrana",
-      "wall_regeneration": "Nabitie múru na začiatku fázy",
       "courtyard_unit_size": "Kapacita obrancov nádvoria",
       "unknown_reward": "Neznáma odmena",
       "no_rewards": "Žiadne odmeny",
       "reward": "Odmena",
       "item": "predmet",
       "unit": "Jednotka",
-      "level": "Úroveň"
+      "level": "Úroveň",
+      "wall_regeneration_stage_start": "Nabitie múru na začiatku fázy",
+      "wall_regeneration_time": "Čas nabitia múru"
     }
   },
   "bg": {
@@ -597,14 +615,15 @@
       "courtyard_defense": "Защита на двора",
       "flank_defense": "Флангова защита",
       "front_defense": "Фронтална защита",
-      "wall_regeneration": "Презареждане на стената в началото на етапа",
       "courtyard_unit_size": "Капацитет на защитници в двора",
       "unknown_reward": "Неизвестна награда",
       "no_rewards": "Няма награди",
       "reward": "Награда",
       "item": "предмет",
       "unit": "Единица",
-      "level": "Ниво"
+      "level": "Ниво",
+      "wall_regeneration_stage_start": "Презареждане на стената в началото на етапа",
+      "wall_regeneration_time": "Време за презареждане на стената"
     }
   },
   "lt": {
@@ -629,14 +648,15 @@
       "courtyard_defense": "Kiemo gynyba",
       "flank_defense": "Flangų gynyba",
       "front_defense": "Priekinė gynyba",
-      "wall_regeneration": "Sienos įkrovimas etapo pradžioje",
       "courtyard_unit_size": "Kiemo gynėjų talpa",
       "unknown_reward": "Nežinomas apdovanojimas",
       "no_rewards": "Nėra apdovanojimų",
       "reward": "Apdovanojimas",
       "item": "daiktas",
       "unit": "Vienetas",
-      "level": "Lygis"
+      "level": "Lygis",
+      "wall_regeneration_stage_start": "Sienos įkrovimas etapo pradžioje",
+      "wall_regeneration_time": "Sienos įkrovimo laikas"
     }
   },
   "el": {
@@ -661,14 +681,15 @@
       "courtyard_defense": "Άμυνα αυλής",
       "flank_defense": "Άμυνα πλευρών",
       "front_defense": "Μπροστινή άμυνα",
-      "wall_regeneration": "Επαναφόρτιση τείχους στην αρχή της φάσης",
       "courtyard_unit_size": "Χωρητικότητα αμυνόμενων αυλής",
       "unknown_reward": "Άγνωστη ανταμοιβή",
       "no_rewards": "Χωρίς ανταμοιβές",
       "reward": "Ανταμοιβή",
       "item": "αντικείμενο",
       "unit": "Μονάδα",
-      "level": "Επίπεδο"
+      "level": "Επίπεδο",
+      "wall_regeneration_stage_start": "Επαναφόρτιση τείχους στην αρχή της φάσης",
+      "wall_regeneration_time": "Χρόνος επαναφόρτισης τείχους"
     }
   },
   "ja": {
@@ -693,14 +714,15 @@
       "courtyard_defense": "中庭防御",
       "flank_defense": "側面防御",
       "front_defense": "正面防御",
-      "wall_regeneration": "ステージ開始時の壁再装填",
       "courtyard_unit_size": "中庭防衛容量",
       "unknown_reward": "不明な報酬",
       "no_rewards": "報酬なし",
       "reward": "報酬",
       "item": "アイテム",
       "unit": "ユニット",
-      "level": "レベル"
+      "level": "レベル",
+      "wall_regeneration_stage_start": "ステージ開始時の壁再装填",
+      "wall_regeneration_time": "壁再装填時間"
     }
   },
   "ko": {
@@ -725,14 +747,15 @@
       "courtyard_defense": "안뜰 방어",
       "flank_defense": "측면 방어",
       "front_defense": "전면 방어",
-      "wall_regeneration": "스테이지 시작 시 성벽 재장전",
       "courtyard_unit_size": "안뜰 방어 용량",
       "unknown_reward": "알 수 없는 보상",
       "no_rewards": "보상 없음",
       "reward": "보상",
       "item": "아이템",
       "unit": "유닛",
-      "level": "레벨"
+      "level": "레벨",
+      "wall_regeneration_stage_start": "스테이지 시작 시 성벽 재장전",
+      "wall_regeneration_time": "성벽 재장전 시간"
     }
   },
   "ar": {
@@ -757,14 +780,15 @@
       "courtyard_defense": "دفاع الساحة",
       "flank_defense": "دفاع الأجنحة",
       "front_defense": "دفاع الجبهة",
-      "wall_regeneration": "إعادة شحن الجدار في بداية المرحلة",
       "courtyard_unit_size": "سعة مدافعي الساحة",
       "unknown_reward": "مكافأة غير معروفة",
       "no_rewards": "لا مكافآت",
       "reward": "مكافأة",
       "item": "عنصر",
       "unit": "وحدة",
-      "level": "المستوى"
+      "level": "المستوى",
+      "wall_regeneration_stage_start": "إعادة شحن الجدار في بداية المرحلة",
+      "wall_regeneration_time": "وقت إعادة تحميل الجدار"
     }
   }
 }
