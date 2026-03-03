@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles2.css">
+    <link rel="stylesheet" href="./overviews/shared/consent.css">
+    <link rel="icon" href="/forum/img_base/favicon.ico" sizes="any">
+    <link rel="shortcut icon" href="/forum/img_base/favicon.ico">
+    <link rel="apple-touch-icon" href="/forum/img_base/favicon.ico">
+    <title>Generals Forum - Goodgame Empire Tools & Simulators</title>
+    <meta name="description" content="Generals Forum provides Goodgame Empire tools, calculators, simulators, event overviews, and practical guides in one place.">
+    <link rel="canonical" href="https://generalscamp.github.io/forum/">
+    <meta name="robots" content="index,follow,max-image-preview:large">
+    <meta property="og:title" content="Generals Forum">
+    <meta property="og:description" content="Goodgame Empire Tools & Simulators">
+    <meta property="og:image" content="https://generalscamp.github.io/forum/img_base/share-banner.webp">
+    <meta property="og:url" content="https://generalscamp.github.io/forum/">
+</head>
+
+<body>
+    <div class="container">
+        <nav id="mainNav" class="main-nav">
+            <div class="main-nav-left">
+                <a href="./empire_duels/index.html" class="main-nav-brand-cluster" aria-label="Empire Duels home">
+                    <span class="main-nav-brand">
+                        <img src="./img_base/favicon.ico" alt="GC logo">
+                    </span>
+                    <span class="main-nav-brand-text-wrap">
+                        <span class="main-nav-brand-text">Generals Forum</span>
+                        <span class="main-nav-brand-subtext">Tools & Simulators</span>
+                    </span>
+                </a>
+            </div>
+            <div class="nav-search-wrap">
+                <input id="globalSearchInput" type="search" placeholder="Search:" aria-label="Search pages">
+                <i class="bi bi-search nav-search-icon" aria-hidden="true"></i>
+                <div id="searchSuggestions" class="search-suggestions"></div>
+            </div>
+        </nav>
+
+        <h2 id="favoritesSection" class="collapse-header">
+            <span class="header-title">FAVORITES</span>
+            <button id="mobileReorderToggle" class="mobile-reorder-toggle" type="button">Reorder</button>
+        </h2>
+        <div id="favorites" class="category-wrapper">
+            <div class="category-grid"></div>
+        </div>
+
+        <h2 class="collapse-header"><span class="header-title">OVERVIEWS</span></h2>
+        <div id="overviews" class="category-wrapper">
+            <div class="category-grid"></div>
+        </div>
+
+        <h2 class="collapse-header"><span class="header-title">CALCULATORS</span></h2>
+        <div id="calculators" class="category-wrapper">
+            <div class="category-grid"></div>
+        </div>
+
+        <h2 class="collapse-header"><span class="header-title">SIMULATORS</span></h2>
+        <div id="simulators" class="category-wrapper">
+            <div class="category-grid"></div>
+        </div>
+
+        <h2 class="collapse-header"><span class="header-title">MY LATEST GGE VIDEOS</span></h2>
+        <div id="latestVideos" class="category-wrapper">
+            <div class="video-grid">
+                <div class="video-loading">Loading latest videos...</div>
+            </div>
+        </div>
+
+        <script type="module" src="main2.js"></script>
+    </div>
+</body>
+
+</html>
+
