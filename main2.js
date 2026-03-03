@@ -6,6 +6,8 @@ let lastAddedFavoriteLink = "";
 let mobileReorderMode = false;
 let activeMobileReorder = null;
 let mobileReorderRaf = 0;
+let mobileReorderIdleTimer = 0;
+const MOBILE_REORDER_IDLE_MS = 5000;
 const CARD_EXIT_DURATION_MS = 190;
 let lockedScrollY = 0;
 
@@ -40,6 +42,24 @@ const categories = {
         { name: "Hall of Legends Simulator", desc: "Try point allocations without spending rubies.", icon: "main_page/hall-of-legends-simulator-icon.webp", link: "./simulators/hol_simulator/index.html", disabled: false },
     ]
 };
+
+const nowWorkingOn = [
+    {
+        title: "Unique Equipment Set's Overview",
+        text: "Overview page for unique equipment sets, including set pieces, bonuses.",
+        status: "Planned"
+    },
+    {
+        title: "Battle Simulator",
+        text: "Paused until current overviews are stabilized.",
+        status: "Paused"
+    },
+    {
+        title: "Attack speed & Detection Calculator",
+        text: "Fixing the currently incorrect detection time calculation.",
+        status: "Paused"
+    }
+];
 
 
 function createCategoryCard(item, options = {}) {
@@ -347,6 +367,30 @@ function setupFavoritesDragAndDrop() {
     });
 }
 
+function renderNowPanel(list) {
+    const container = document.querySelector("#nowPanel .now-grid");
+    if (!container) return;
+
+    const getStatusClass = (status) => {
+        const v = String(status || "").toLowerCase();
+        if (v.includes("active") || v.includes("progress") || v.includes("megy")) return "status-active";
+        if (v.includes("pause") || v.includes("szunet")) return "status-paused";
+        if (v.includes("plan")) return "status-planned";
+        if (v.includes("done") || v.includes("kesz")) return "status-done";
+        return "status-default";
+    };
+
+    container.innerHTML = list.map(item => `
+        <article class="now-card">
+            <div class="now-card-head">
+                <h3>${item.title}</h3>
+                <span class="now-badge ${getStatusClass(item.status)}">${item.status}</span>
+            </div>
+            <p>${item.text}</p>
+        </article>
+    `).join("");
+}
+
 function isMobileReorderAvailable() {
     const coarse = window.matchMedia?.("(pointer:coarse)").matches ?? false;
     const smallViewport = window.matchMedia?.("(max-width: 900px)").matches ?? false;
@@ -425,12 +469,57 @@ function setupMobileFavoritesReorder() {
     const favoritesGrid = document.querySelector("#favorites .category-grid");
     if (!toggle) return;
 
-    toggle.addEventListener("click", () => {
-        mobileReorderMode = !mobileReorderMode;
-        activeMobileReorder = null;
-        if (!mobileReorderMode) {
-            setPageScrollLock(false);
+    const clearIdleTimer = () => {
+        if (!mobileReorderIdleTimer) return;
+        window.clearTimeout(mobileReorderIdleTimer);
+        mobileReorderIdleTimer = 0;
+    };
+
+    const resetActiveMobileReorder = ({ persistOrder = false, rerender = false } = {}) => {
+        clearIdleTimer();
+
+        if (mobileReorderRaf) {
+            window.cancelAnimationFrame(mobileReorderRaf);
+            mobileReorderRaf = 0;
         }
+
+        if (!activeMobileReorder) {
+            setPageScrollLock(false);
+            if (rerender) renderFavorites();
+            return;
+        }
+
+        if (activeMobileReorder.ghost?.parentNode) {
+            activeMobileReorder.ghost.parentNode.removeChild(activeMobileReorder.ghost);
+        }
+
+        if (activeMobileReorder.shell?.classList) {
+            activeMobileReorder.shell.classList.remove("is-reorder-active", "is-reorder-placeholder");
+        }
+
+        if (persistOrder) {
+            writeFavoritesFromDomOrder();
+        }
+
+        activeMobileReorder = null;
+        setPageScrollLock(false);
+        if (rerender) renderFavorites();
+    };
+
+    const armIdleTimer = () => {
+        clearIdleTimer();
+        mobileReorderIdleTimer = window.setTimeout(() => {
+            if (!mobileReorderMode) return;
+            resetActiveMobileReorder({ persistOrder: true, rerender: true });
+        }, MOBILE_REORDER_IDLE_MS);
+    };
+
+    toggle.addEventListener("click", () => {
+        const nextMode = !mobileReorderMode;
+        if (!nextMode) {
+            resetActiveMobileReorder({ persistOrder: true, rerender: false });
+        }
+        mobileReorderMode = nextMode;
         renderFavorites();
     });
 
@@ -457,6 +546,8 @@ function setupMobileFavoritesReorder() {
         const touch = event.touches?.[0];
         if (!touch) return;
 
+        resetActiveMobileReorder({ persistOrder: false, rerender: false });
+
         const shellRect = shell.getBoundingClientRect();
         const ghost = shell.cloneNode(true);
         ghost.classList.add("favorite-drag-ghost");
@@ -475,6 +566,7 @@ function setupMobileFavoritesReorder() {
         };
 
         setPageScrollLock(true);
+        armIdleTimer();
         shell.classList.add("is-reorder-active", "is-reorder-placeholder");
         event.preventDefault();
     }, { passive: false });
@@ -486,6 +578,7 @@ function setupMobileFavoritesReorder() {
         if (!touch) return;
 
         activeMobileReorder.currentY = touch.clientY;
+        armIdleTimer();
         if (!mobileReorderRaf) {
             mobileReorderRaf = window.requestAnimationFrame(processMobileReorderFrame);
         }
@@ -495,38 +588,27 @@ function setupMobileFavoritesReorder() {
 
     const finishTouchReorder = () => {
         if (!activeMobileReorder) return;
-        if (mobileReorderRaf) {
-            window.cancelAnimationFrame(mobileReorderRaf);
-            mobileReorderRaf = 0;
-        }
-
-        if (activeMobileReorder.ghost?.parentNode) {
-            activeMobileReorder.ghost.parentNode.removeChild(activeMobileReorder.ghost);
-        }
-        activeMobileReorder.shell.classList.remove("is-reorder-active", "is-reorder-placeholder");
-        writeFavoritesFromDomOrder();
-        renderFavorites();
-
-        activeMobileReorder = null;
-        setPageScrollLock(false);
+        resetActiveMobileReorder({ persistOrder: true, rerender: true });
     };
 
     document.addEventListener("touchend", finishTouchReorder);
     document.addEventListener("touchcancel", finishTouchReorder);
+    document.addEventListener("pointercancel", finishTouchReorder);
 
     window.addEventListener("resize", () => {
         if (!activeMobileReorder) return;
-        if (mobileReorderRaf) {
-            window.cancelAnimationFrame(mobileReorderRaf);
-            mobileReorderRaf = 0;
-        }
-        if (activeMobileReorder.ghost?.parentNode) {
-            activeMobileReorder.ghost.parentNode.removeChild(activeMobileReorder.ghost);
-        }
-        activeMobileReorder.shell.classList.remove("is-reorder-active", "is-reorder-placeholder");
-        activeMobileReorder = null;
-        setPageScrollLock(false);
-        renderFavorites();
+        resetActiveMobileReorder({ persistOrder: false, rerender: true });
+    });
+
+    window.addEventListener("blur", () => {
+        if (!mobileReorderMode && !activeMobileReorder) return;
+        resetActiveMobileReorder({ persistOrder: true, rerender: true });
+    });
+
+    document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) return;
+        if (!mobileReorderMode && !activeMobileReorder) return;
+        resetActiveMobileReorder({ persistOrder: true, rerender: true });
     });
 }
 
@@ -860,4 +942,5 @@ document.addEventListener("DOMContentLoaded", () => {
     setupSearch();
     setupBrandEasterEgg();
     renderLatestVideos();
+    renderNowPanel(nowWorkingOn);
 });
