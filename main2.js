@@ -381,10 +381,9 @@ function renderNowPanel(list) {
     };
 
     container.innerHTML = list.map(item => `
-        <article class="now-card">
+        <article class="now-card ${getStatusClass(item.status)}">
             <div class="now-card-head">
                 <h3>${item.title}</h3>
-                <span class="now-badge ${getStatusClass(item.status)}">${item.status}</span>
             </div>
             <p>${item.text}</p>
         </article>
@@ -699,7 +698,7 @@ async function renderLatestVideos() {
         });
 
         const ggeOnly = uniquePairs.filter((item) => /goodgame empire/i.test(item.title));
-        const latestTwenty = ggeOnly.slice(0, 20);
+        const latestTwenty = ggeOnly.slice(0, 10);
         if (!latestTwenty.length) throw new Error("No videos found");
 
         container.innerHTML = latestTwenty.map(({ id, title }) => `
