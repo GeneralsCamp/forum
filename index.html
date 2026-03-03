@@ -24,22 +24,38 @@
 
 <body>
     <div class="container">
-        <div id="topButtonsContainer">
-            <a href="./empire_duels/index.html" class="home-icon-link empire-duels-link" title="Empire Duels">
-                <div class="home-icon">
-                    <i class="bi bi-controller"></i>
+        <nav id="mainNav" class="main-nav">
+            <div class="main-nav-left">
+                <div class="main-nav-brand-cluster" id="brandEasterEgg" aria-label="Generals Forum brand">
+                    <span class="main-nav-brand">
+                        <img src="./img_base/share-banner.webp" alt="GC logo">
+                    </span>
+                    <span class="main-nav-brand-text-wrap">
+                        <span class="main-nav-brand-text">Generals Forum</span>
+                        <span class="main-nav-brand-subtext">Tools & Simulators</span>
+                    </span>
                 </div>
-            </a>
-        </div>
+            </div>
+            <button id="openSettingsBtn" class="nav-settings-btn" type="button" aria-label="Open settings">
+                <i class="bi bi-gear-fill" aria-hidden="true"></i>
+            </button>
+            <div class="nav-search-wrap">
+                <input id="globalSearchInput" type="search" placeholder="Search:" aria-label="Search pages">
+                <i class="bi bi-search nav-search-icon" aria-hidden="true"></i>
+                <div id="searchSuggestions" class="search-suggestions"></div>
+            </div>
+        </nav>
 
-        <h1>GENERALS FORUM</h1>
-        <h2 class="collapse-header"><span class="header-title">OVERVIEWS</span></h2>
-        <div id="overviews" class="category-wrapper">
+        <h2 id="favoritesSection" class="collapse-header">
+            <span class="header-title">FAVORITES</span>
+            <button id="mobileReorderToggle" class="mobile-reorder-toggle" type="button">Reorder</button>
+        </h2>
+        <div id="favorites" class="category-wrapper">
             <div class="category-grid"></div>
         </div>
 
-        <h2 class="collapse-header"><span class="header-title">SIMULATORS</span></h2>
-        <div id="simulators" class="category-wrapper">
+        <h2 class="collapse-header"><span class="header-title">OVERVIEWS</span></h2>
+        <div id="overviews" class="category-wrapper">
             <div class="category-grid"></div>
         </div>
 
@@ -48,16 +64,55 @@
             <div class="category-grid"></div>
         </div>
 
-        <h2 class="collapse-header"><span class="header-title">MY LATEST GGE VIDEOS</span></h2>
+        <h2 class="collapse-header"><span class="header-title">SIMULATORS</span></h2>
+        <div id="simulators" class="category-wrapper">
+            <div class="category-grid"></div>
+        </div>
+
+        <h2 id="latestVideosSection" class="collapse-header"><span class="header-title">MY LATEST GGE VIDEOS</span></h2>
         <div id="latestVideos" class="category-wrapper">
             <div class="video-grid">
                 <div class="video-loading">Loading latest videos...</div>
             </div>
         </div>
 
-        <h2 class="collapse-header"><span class="header-title">WHAT I'M WORKING ON</span></h2>
+        <h2 id="currentProjectsSection" class="collapse-header"><span class="header-title">CURRENT PROJECTS</span></h2>
         <div id="nowPanel" class="category-wrapper">
             <div class="now-grid"></div>
+        </div>
+
+        <div class="contact-note" role="note" aria-label="Contact">
+            <span class="contact-note-intro">Questions or suggestions?</span>
+            <a class="contact-note-email" href="mailto:generalscampofficial@gmail.com">generalscampofficial@gmail.com</a></div>
+
+        <div id="settingsModal" class="settings-modal" aria-hidden="true">
+            <div class="settings-modal-backdrop" data-close-settings="1"></div>
+            <div class="settings-modal-card" role="dialog" aria-modal="true" aria-labelledby="settingsModalTitle">
+                <div class="settings-modal-head">
+                    <h3 id="settingsModalTitle">Settings</h3>
+                    <button id="closeSettingsBtn" class="settings-close-btn" type="button" aria-label="Close settings">
+                        <i class="bi bi-x-lg" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="settings-options">
+                    <label class="settings-option">
+                        <span>Favorite Function</span>
+                        <input id="settingsFavorites" type="checkbox">
+                    </label>
+                    <label class="settings-option">
+                        <span>Descriptions</span>
+                        <input id="settingsDescriptions" type="checkbox">
+                    </label>
+                    <label class="settings-option">
+                        <span>Current Projects Section</span>
+                        <input id="settingsCurrentProjects" type="checkbox">
+                    </label>
+                    <label class="settings-option">
+                        <span>Latest Videos Section</span>
+                        <input id="settingsVideos" type="checkbox">
+                    </label>
+                </div>
+            </div>
         </div>
 
         <script type="module" src="main.js"></script>
