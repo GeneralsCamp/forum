@@ -1,11 +1,13 @@
 import { initConsentManager } from "./overviews/shared/ConsentManager.mjs";
 const FAVORITES_KEY = "gf_favorites_v1";
+const MAX_FAVORITES = 12;
 const DESKTOP_DND_ENABLED = window.matchMedia?.("(pointer:fine)").matches ?? true;
 let lastAddedFavoriteLink = "";
 let mobileReorderMode = false;
 let activeMobileReorder = null;
 let mobileReorderRaf = 0;
 const CARD_EXIT_DURATION_MS = 190;
+let lockedScrollY = 0;
 
 const categories = {
     overviews: [
@@ -41,7 +43,7 @@ const categories = {
 
 
 function createCategoryCard(item, options = {}) {
-    const { draggable = false, showReorderHandle = false } = options;
+    const { draggable = false, showReorderHandle = false, showFavoriteToggle = true } = options;
     const shell = document.createElement("div");
     shell.className = "category-card-shell";
     shell.dataset.link = item.link || "";
@@ -68,13 +70,20 @@ function createCategoryCard(item, options = {}) {
 
     if (showReorderHandle) {
         box.classList.add("has-reorder-handle");
-    } else {
+    }
+
+    if (showFavoriteToggle) {
+        const favActive = isFavorite(item.link);
+        const favDisabled = isFavoritesFull() && !favActive;
+        box.classList.add("has-favorite-toggle");
         const fav = document.createElement("button");
-        fav.className = `favorite-toggle ${isFavorite(item.link) ? "is-favorite" : ""}`;
+        fav.className = `favorite-toggle ${favActive ? "is-favorite" : ""} ${favDisabled ? "is-disabled" : ""}`.trim();
         fav.type = "button";
         fav.setAttribute("aria-label", "Toggle favorite");
         fav.dataset.link = item.link || "";
-        fav.innerHTML = `<i class="bi ${isFavorite(item.link) ? "bi-star-fill" : "bi-star"}"></i>`;
+        fav.disabled = favDisabled;
+        fav.title = favDisabled ? `Maximum ${MAX_FAVORITES} favorites reached` : "";
+        fav.innerHTML = `<i class="bi ${favActive ? "bi-star-fill" : "bi-star"}"></i>`;
         box.appendChild(fav);
     }
 
@@ -131,6 +140,10 @@ function isFavorite(link) {
     return readFavorites().includes(link);
 }
 
+function isFavoritesFull() {
+    return readFavorites().length >= MAX_FAVORITES;
+}
+
 function toggleFavorite(link) {
     if (!link) return;
     const favs = readFavorites();
@@ -140,6 +153,9 @@ function toggleFavorite(link) {
         favs.splice(idx, 1);
         lastAddedFavoriteLink = "";
     } else {
+        if (favs.length >= MAX_FAVORITES) {
+            return "limit";
+        }
         favs.unshift(link);
         added = true;
         lastAddedFavoriteLink = link;
@@ -149,10 +165,15 @@ function toggleFavorite(link) {
 }
 
 function updateAllFavoriteButtons() {
+    const full = isFavoritesFull();
     document.querySelectorAll(".favorite-toggle").forEach(btn => {
         const link = btn.dataset.link || "";
         const fav = isFavorite(link);
+        const disabled = full && !fav;
         btn.classList.toggle("is-favorite", fav);
+        btn.classList.toggle("is-disabled", disabled);
+        btn.disabled = disabled;
+        btn.title = disabled ? `Maximum ${MAX_FAVORITES} favorites reached` : "";
         const icon = btn.querySelector("i");
         if (icon) {
             icon.className = `bi ${fav ? "bi-star-fill" : "bi-star"}`;
@@ -176,7 +197,7 @@ function renderFavorites() {
     if (mobileReorderToggle) {
         const canReorder = items.length > 1;
         mobileReorderToggle.style.display = canReorder ? "inline-flex" : "none";
-        mobileReorderToggle.textContent = mobileReorderMode && canReorder ? "OK" : "Reorder";
+        mobileReorderToggle.textContent = mobileReorderMode && canReorder ? "Confirm" : "Reorder";
     }
 
     container.innerHTML = "";
@@ -186,7 +207,7 @@ function renderFavorites() {
     if (!items.length) {
         container.innerHTML = `
             <div class="favorites-empty">
-                Click the <i class="bi bi-star"></i> icon on any card to add it to Favorites.
+                Click the <i class="bi bi-star"></i> icon on any card to add it to Favorites (up to ${MAX_FAVORITES}).
             </div>
         `;
         return;
@@ -197,7 +218,8 @@ function renderFavorites() {
     items.forEach((item) => {
         const card = createCategoryCard(item, {
             draggable: enableDesktopDndReorder,
-            showReorderHandle: mobileReorderMode
+            showReorderHandle: mobileReorderMode,
+            showFavoriteToggle: mobileReorderMode
         });
         if (item.link === lastAddedFavoriteLink) {
             card.classList.add("card-enter");
@@ -209,7 +231,16 @@ function renderFavorites() {
 
 function setupFavoriteToggles() {
     const commitToggle = (link, button) => {
-        const added = toggleFavorite(link);
+        const result = toggleFavorite(link);
+        if (result === "limit") {
+            if (button) {
+                button.classList.add("is-limit-hit");
+                setTimeout(() => button.classList.remove("is-limit-hit"), 320);
+            }
+            return;
+        }
+
+        const added = result === true;
         if (added && button) {
             button.classList.add("is-popping");
             setTimeout(() => button.classList.remove("is-popping"), 260);
@@ -221,8 +252,7 @@ function setupFavoriteToggles() {
     document.addEventListener("click", (event) => {
         const button = event.target.closest(".favorite-toggle");
         if (!button) return;
-
-        if (mobileReorderMode && button.closest("#favorites")) return;
+        if (button.disabled) return;
 
         event.preventDefault();
         event.stopPropagation();
@@ -331,14 +361,45 @@ function writeFavoritesFromDomOrder() {
     writeFavorites([...new Set(links)]);
 }
 
+function setPageScrollLock(lock) {
+    const body = document.body;
+    const docEl = document.documentElement;
+    if (!body) return;
+
+    if (lock) {
+        if (body.classList.contains("scroll-locked")) return;
+        lockedScrollY = window.scrollY || window.pageYOffset || 0;
+        body.classList.add("scroll-locked");
+        body.style.top = `-${lockedScrollY}px`;
+        return;
+    }
+
+    if (!body.classList.contains("scroll-locked")) return;
+    const restoreY = lockedScrollY;
+    const prevScrollBehavior = docEl ? docEl.style.scrollBehavior : "";
+    if (docEl) docEl.style.scrollBehavior = "auto";
+
+    body.classList.remove("scroll-locked");
+    body.style.top = "";
+    window.scrollTo(0, restoreY);
+    window.requestAnimationFrame(() => {
+        window.scrollTo(0, restoreY);
+        window.requestAnimationFrame(() => {
+            window.scrollTo(0, restoreY);
+            if (docEl) docEl.style.scrollBehavior = prevScrollBehavior;
+        });
+    });
+}
+
 function processMobileReorderFrame() {
     mobileReorderRaf = 0;
     if (!activeMobileReorder || !activeMobileReorder.shell || !activeMobileReorder.grid) return;
+    if (!activeMobileReorder.shell.isConnected) return;
 
     const touchY = activeMobileReorder.currentY;
-    const dragTop = touchY - activeMobileReorder.offsetY;
-    const baseTop = activeMobileReorder.shell.offsetTop;
-    activeMobileReorder.shell.style.transform = `translateY(${dragTop - baseTop}px)`;
+    if (activeMobileReorder.ghost) {
+        activeMobileReorder.ghost.style.top = `${touchY - activeMobileReorder.offsetY}px`;
+    }
 
     const candidates = Array.from(activeMobileReorder.grid.querySelectorAll(".category-card-shell"))
         .filter((el) => el !== activeMobileReorder.shell);
@@ -367,6 +428,9 @@ function setupMobileFavoritesReorder() {
     toggle.addEventListener("click", () => {
         mobileReorderMode = !mobileReorderMode;
         activeMobileReorder = null;
+        if (!mobileReorderMode) {
+            setPageScrollLock(false);
+        }
         renderFavorites();
     });
 
@@ -375,6 +439,7 @@ function setupMobileFavoritesReorder() {
         const inFavoritesCard = event.target.closest("#favorites .category-box");
         if (!inFavoritesCard) return;
         if (event.target.closest(".favorite-reorder-handle")) return;
+        if (event.target.closest(".favorite-toggle")) return;
         event.preventDefault();
         event.stopPropagation();
     }, true);
@@ -393,15 +458,24 @@ function setupMobileFavoritesReorder() {
         if (!touch) return;
 
         const shellRect = shell.getBoundingClientRect();
+        const ghost = shell.cloneNode(true);
+        ghost.classList.add("favorite-drag-ghost");
+        ghost.style.width = `${shellRect.width}px`;
+        ghost.style.left = `${shellRect.left}px`;
+        ghost.style.top = `${shellRect.top}px`;
+        document.body.appendChild(ghost);
+
         activeMobileReorder = {
             link,
             shell,
             grid: favoritesGrid,
+            ghost,
             offsetY: touch.clientY - shellRect.top,
             currentY: touch.clientY
         };
 
-        shell.classList.add("is-reorder-active", "is-reorder-dragging");
+        setPageScrollLock(true);
+        shell.classList.add("is-reorder-active", "is-reorder-placeholder");
         event.preventDefault();
     }, { passive: false });
 
@@ -419,20 +493,26 @@ function setupMobileFavoritesReorder() {
         event.preventDefault();
     }, { passive: false });
 
-    document.addEventListener("touchend", () => {
+    const finishTouchReorder = () => {
         if (!activeMobileReorder) return;
         if (mobileReorderRaf) {
             window.cancelAnimationFrame(mobileReorderRaf);
             mobileReorderRaf = 0;
         }
 
-        activeMobileReorder.shell.style.transform = "";
-        activeMobileReorder.shell.classList.remove("is-reorder-active", "is-reorder-dragging");
+        if (activeMobileReorder.ghost?.parentNode) {
+            activeMobileReorder.ghost.parentNode.removeChild(activeMobileReorder.ghost);
+        }
+        activeMobileReorder.shell.classList.remove("is-reorder-active", "is-reorder-placeholder");
         writeFavoritesFromDomOrder();
         renderFavorites();
 
         activeMobileReorder = null;
-    });
+        setPageScrollLock(false);
+    };
+
+    document.addEventListener("touchend", finishTouchReorder);
+    document.addEventListener("touchcancel", finishTouchReorder);
 
     window.addEventListener("resize", () => {
         if (!activeMobileReorder) return;
@@ -440,9 +520,12 @@ function setupMobileFavoritesReorder() {
             window.cancelAnimationFrame(mobileReorderRaf);
             mobileReorderRaf = 0;
         }
-        activeMobileReorder.shell.style.transform = "";
-        activeMobileReorder.shell.classList.remove("is-reorder-active", "is-reorder-dragging");
+        if (activeMobileReorder.ghost?.parentNode) {
+            activeMobileReorder.ghost.parentNode.removeChild(activeMobileReorder.ghost);
+        }
+        activeMobileReorder.shell.classList.remove("is-reorder-active", "is-reorder-placeholder");
         activeMobileReorder = null;
+        setPageScrollLock(false);
         renderFavorites();
     });
 }
@@ -621,6 +704,15 @@ function setupSearch() {
         box.classList.add("open");
     });
 
+    input.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter") return;
+        const firstHit = box.querySelector(".search-suggestion-btn");
+        if (!firstHit) return;
+        event.preventDefault();
+        const link = firstHit.dataset.link;
+        if (link) window.location.href = link;
+    });
+
     box.addEventListener("click", (event) => {
         const btn = event.target.closest(".search-suggestion-btn");
         if (!btn) return;
@@ -722,6 +814,36 @@ function setupSearchPlaceholderTyping(input) {
     schedule(1200);
 }
 
+function setupBrandEasterEgg() {
+    const brand = document.getElementById("brandEasterEgg");
+    if (!brand) return;
+
+    let tapCount = 0;
+    let resetTimer = 0;
+
+    const registerTap = () => {
+        tapCount += 1;
+        if (resetTimer) {
+            window.clearTimeout(resetTimer);
+        }
+        resetTimer = window.setTimeout(() => {
+            tapCount = 0;
+            resetTimer = 0;
+        }, 2200);
+
+        if (tapCount >= 5) {
+            tapCount = 0;
+            if (resetTimer) {
+                window.clearTimeout(resetTimer);
+                resetTimer = 0;
+            }
+            window.location.href = "./empire_duels/index.html";
+        }
+    };
+
+    brand.addEventListener("pointerup", registerTap);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     initConsentManager({
         measurementId: "G-8TGZRNFGRR",
@@ -736,5 +858,6 @@ document.addEventListener("DOMContentLoaded", () => {
     setupFavoritesDragAndDrop();
     setupMobileFavoritesReorder();
     setupSearch();
+    setupBrandEasterEgg();
     renderLatestVideos();
 });
