@@ -11,8 +11,7 @@ import {
     getProp as sharedGetProp,
     buildLookup as sharedBuildLookup,
     parseCsvIds as sharedParseCsvIds,
-    parseIdAmountToken as sharedParseIdAmountToken,
-    parseUnitReward as sharedParseUnitReward
+    parseIdAmountToken as sharedParseIdAmountToken
 } from "../shared/RewardResolver.mjs";
 
 // --- GLOBAL VARIABLES ---
@@ -28,6 +27,8 @@ let unitsById = {};
 let imageUrlMap = {};
 let constructionImageUrlMap = {};
 let equipmentImageUrlMap = {};
+let equipmentUniqueImageUrlMap = {};
+let uniqueGemImageUrlMap = {};
 let lookSkinsById = {};
 let unitImageUrlMap = {};
 let collectableCurrencyImageUrlMap = {};
@@ -120,59 +121,6 @@ function parseIdAmountToken(token) {
     return sharedParseIdAmountToken(token);
 }
 
-function parseUnitReward(value) {
-    return sharedParseUnitReward(value);
-}
-
-// --- NAME HELPERS ---
-function getCIName(item) {
-    if (!item) return null;
-    const rawName = (item.name || "???").toLowerCase();
-    const prefixes = ["appearance", "primary", "secondary"];
-    const suffixes = ["", "_premium"];
-
-    for (const prefix of prefixes) {
-        for (const suffix of suffixes) {
-            const key = `ci_${prefix}_${rawName}${suffix}`.toLowerCase();
-            if (lang[key]) return lang[key];
-        }
-    }
-
-    const keysToTry = [
-        ...suffixes.map(s => `ci_${rawName}${s}`),
-        rawName
-    ];
-
-    for (const key of keysToTry) {
-        const lower = key.toLowerCase();
-        if (lang[lower]) return lang[lower];
-    }
-
-    return item.name || null;
-}
-
-function getLangByPrefixes(rawName, prefixes) {
-    if (!rawName) return null;
-    const lowerName = rawName.toLowerCase();
-    for (const prefix of prefixes) {
-        const key = `${prefix}${lowerName}`.toLowerCase();
-        if (lang[key]) return lang[key];
-    }
-    return null;
-}
-
-function getDecorationName(item) {
-    if (!item) return null;
-    const rawType = item.type || item.Type;
-    const lowerType = rawType ? rawType.toLowerCase() : "";
-    if (lowerType) {
-        const key = `deco_${lowerType}_name`;
-        if (lang[key]) return lang[key];
-    }
-    const rawName = item.name || item.Name;
-    return getLangByPrefixes(rawName, ["decoration_name_", "deco_name_", "decoration_"]) || rawName || null;
-}
-
 function resolveRewardName(reward) {
     return rewardResolver ? rewardResolver.resolveRewardName(reward) : null;
 }
@@ -235,6 +183,56 @@ function getUnitImageUrl(reward) {
 
 function getCurrencyImageUrl(reward) {
     return rewardResolver ? rewardResolver.getCurrencyImageUrl(reward) : null;
+}
+
+function getGemImageUrlByRewardValue(gemValue) {
+    const raw = String(gemValue || "").trim();
+    if (!raw) return null;
+    const match = raw.match(/\d+/);
+    if (!match) return null;
+    const gemId = String(match[0]);
+    return uniqueGemImageUrlMap[gemId] || null;
+}
+
+function explodeRewardForDisplay(reward, fallbackId = null) {
+    const baseEntries = resolveRewardEntries(reward);
+    const entries = baseEntries.map(entry => ({ ...entry }));
+
+    if (reward?.gemIDs) {
+        const rawGem = String(reward.gemIDs).trim();
+        const gemIdMatch = rawGem.match(/\d+/);
+        entries.push({
+            name: lang["gem_item"] || "Gem",
+            amount: 1,
+            id: gemIdMatch ? gemIdMatch[0] : null,
+            type: "gem",
+            gemValue: rawGem
+        });
+    }
+
+    if (reward?.enchantedEquipmentIDs) {
+        parseCsvIds(reward.enchantedEquipmentIDs).forEach(token => {
+            parseIdAmountToken(token).forEach(parsed => {
+                const key = `equipment_unique_${parsed.id}`.toLowerCase();
+                entries.push({
+                    name: lang[key] || lang["enchanted_equipment"] || "Enchanted Equipment",
+                    amount: parsed.amount,
+                    id: parsed.id,
+                    type: "equipment"
+                });
+            });
+        });
+    }
+
+    if (entries.length > 0) return entries;
+
+    return [{
+        name: resolveRewardName(reward) || "Reward",
+        amount: getRewardAmount(reward),
+        id: resolveRewardIdStrict(reward) ?? fallbackId,
+        type: resolveRewardType(reward),
+        addKeyName: getAddKeyName(reward)
+    }];
 }
 
 // --- UI RENDERING ---
@@ -460,26 +458,26 @@ function renderRewardsForSelection() {
 
     uniqueRewardIds.forEach(id => {
         const reward = rewardsById[String(id)];
-        const name = resolveRewardName(reward) || "Reward";
-        const amount = getRewardAmount(reward);
         const percent = totalShares > 0 ? (rewardShares[id] / totalShares) * 100 : 0;
-        const rewardId = resolveRewardId(reward, id);
-        const displayId = resolveRewardIdStrict(reward);
-        const addKeyName = getAddKeyName(reward);
-        const key = `${name}::${amount}::${percent}::${rewardId}`;
-        if (!seen.has(key)) {
+        const meta = rewardMeta[id] || { rarity: 0 };
+        const entries = explodeRewardForDisplay(reward, id);
+
+        entries.forEach(entry => {
+            const rewardId = entry.id ?? resolveRewardId(reward, id);
+            const key = `${entry.name}::${entry.amount}::${percent}::${rewardId}::${entry.type || ""}`;
+            if (seen.has(key)) return;
             seen.add(key);
-            const meta = rewardMeta[id] || { rarity: 0 };
             rewards.push({
-                name,
-                amount,
+                name: entry.name || "Reward",
+                amount: entry.amount ?? 1,
                 chanceText: formatPercent(percent),
                 rarity: meta.rarity,
-                id: displayId,
-                type: resolveRewardType(reward),
-                addKeyName
+                id: entry.id,
+                type: entry.type || null,
+                addKeyName: entry.addKeyName || null,
+                gemValue: entry.gemValue || null
             });
-        }
+        });
     });
 
     renderRewards(rewards, UI_LANG.chance);
@@ -529,6 +527,11 @@ function renderRewards(rewards, label) {
             imageUrl = getConstructionImageUrl(reward);
         } else if (reward.type === "equipment") {
             imageUrl = getEquipmentImageUrl(reward);
+        } else if (reward.type === "gem") {
+            imageUrl =
+                getGemImageUrlByRewardValue(reward.gemValue || reward.id) ||
+                uniqueGemImageUrlMap[String(reward.id || "")] ||
+                null;
         } else if (reward.type === "unit") {
             imageUrl = getUnitImageUrl(reward);
         }
@@ -537,7 +540,7 @@ function renderRewards(rewards, label) {
             if (imageUrl) imageClass += " card-image-currency";
         }
         const shouldCompose =
-            (reward.type === "decoration" || reward.type === "construction" || reward.type === "equipment") &&
+            (reward.type === "decoration" || reward.type === "construction" || reward.type === "equipment" || reward.type === "gem") &&
             typeof imageUrl === "string" &&
             imageUrl.startsWith("https://empire-html5.goodgamestudios.com/default/assets/itemassets/") &&
             /\.(webp|png)$/i.test(imageUrl);
@@ -621,7 +624,7 @@ function renderTopRewardsForSelection(eventId, setId) {
     tiers.forEach((tier, index) => {
         const rewardId = topRewardIds[topRewardIds.length - 1 - index];
         const reward = rewardsById[String(rewardId)];
-        const entries = resolveRewardEntries(reward);
+        const entries = explodeRewardForDisplay(reward, rewardId);
         if (entries.length === 0) {
             const name = resolveRewardName(reward) || "Reward";
             const amount = getRewardAmount(reward);
@@ -682,7 +685,9 @@ async function init() {
                 constructions: true,
                 looks: true,
                 units: true,
-                currencies: true
+                currencies: true,
+                equipmentUniques: true,
+                uniqueGems: true
             },
 
             onReady: async ({
@@ -697,6 +702,8 @@ async function init() {
                 imageUrlMap = imageMaps?.decorations ?? {};
                 constructionImageUrlMap = imageMaps?.constructions ?? {};
                 equipmentImageUrlMap = imageMaps?.looks ?? {};
+                equipmentUniqueImageUrlMap = imageMaps?.equipmentUniques ?? {};
+                uniqueGemImageUrlMap = imageMaps?.uniqueGems ?? {};
                 unitImageUrlMap = imageMaps?.units ?? {};
                 collectableCurrencyImageUrlMap = imageMaps?.currencies ?? {};
 
@@ -733,6 +740,7 @@ async function init() {
                         decorationImageUrlMap: imageUrlMap,
                         constructionImageUrlMap,
                         equipmentImageUrlMap,
+                        equipmentUniqueImageUrlMap,
                         unitImageUrlMap,
                         currencyImageUrlMap: collectableCurrencyImageUrlMap,
                         lootBoxImageUrlMap: {}
