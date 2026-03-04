@@ -324,6 +324,10 @@
   font-weight: 700;
 }
 
+.mobile-panel-control {
+  display: none;
+}
+
 @media (max-width: 1100px) {
   .set-layout {
     grid-template-columns: 1fr;
@@ -337,6 +341,30 @@
   .pieces-wrap,
   .bonus-wrap {
     min-height: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  #bonusViewCol {
+    display: none;
+  }
+
+  .mobile-panel-control {
+    display: block;
+  }
+
+  .set-layout.mobile-show-pieces .panel:nth-child(2) {
+    display: none;
+  }
+
+  .set-layout.mobile-show-set-bonuses .panel:nth-child(1),
+  .set-layout.mobile-show-effect-summary .panel:nth-child(1) {
+    display: none;
+  }
+
+  .set-layout.mobile-show-set-bonuses .panel:nth-child(2),
+  .set-layout.mobile-show-effect-summary .panel:nth-child(2) {
+    border-top: 0;
   }
 }
 

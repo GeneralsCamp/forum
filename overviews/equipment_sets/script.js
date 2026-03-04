@@ -506,6 +506,18 @@ function getSelectedBonusView() {
   return "set_bonus";
 }
 
+function isMobileLayout() {
+  return window.matchMedia("(max-width: 768px)").matches;
+}
+
+function getSelectedMobilePanel() {
+  const select = document.getElementById("mobilePanelSelect");
+  const value = String(select?.value || "set_pieces");
+  if (value === "set_bonuses") return "set_bonuses";
+  if (value === "effect_summary") return "effect_summary";
+  return "set_pieces";
+}
+
 function buildEffectSummaryHtml(setEntry) {
   const totals = new Map();
 
@@ -620,13 +632,28 @@ function renderSet(setId) {
     }).join("")
     : `<div class="empty-state">${ui("no_set_milestones", "No set milestone data.")}</div>`;
 
-  const selectedView = getSelectedBonusView();
+  const desktopSelectedView = getSelectedBonusView();
+  const mobilePanel = getSelectedMobilePanel();
+  const mobile = isMobileLayout();
+  const selectedView = mobile
+    ? (mobilePanel === "effect_summary" ? "effect_summary" : "set_bonus")
+    : desktopSelectedView;
+
   const rightPanelTitle = selectedView === "effect_summary"
     ? ui("effect_summary", "Effect summary")
     : ui("set_bonuses", "Set bonuses");
   const rightPanelContent = selectedView === "effect_summary"
     ? buildEffectSummaryHtml(setEntry)
     : bonusHtml;
+  const mobileClass = mobile
+    ? `mobile-show-${
+      mobilePanel === "set_pieces"
+        ? "pieces"
+        : mobilePanel === "effect_summary"
+          ? "effect-summary"
+          : "set-bonuses"
+    }`
+    : "";
 
   root.innerHTML = `
     <section class="set-shell">
@@ -634,7 +661,7 @@ function renderSet(setId) {
         <h2 class="set-title">${title}</h2>
       </header>
 
-      <div class="set-layout">
+      <div class="set-layout ${mobileClass}">
         <section class="panel">
           <div class="panel-head">${ui("set_pieces", "Set pieces")}</div>
           <div class="pieces-wrap">${pieceRowsHtml || `<div class="empty-state">${ui("no_pieces_found", "No pieces found.")}</div>`}</div>
@@ -710,6 +737,7 @@ function bindControls() {
   const wearerSelect = document.getElementById("wearerSelect");
   const setSelect = document.getElementById("setSelect");
   const bonusViewSelect = document.getElementById("bonusViewSelect");
+  const mobilePanelSelect = document.getElementById("mobilePanelSelect");
 
   if (wearerSelect && !wearerSelect.dataset.bound) {
     wearerSelect.addEventListener("change", () => {
@@ -732,6 +760,24 @@ function bindControls() {
       renderSet(currentSetId);
     });
     bonusViewSelect.dataset.bound = "true";
+  }
+
+  if (mobilePanelSelect && !mobilePanelSelect.dataset.bound) {
+    mobilePanelSelect.addEventListener("change", () => {
+      const currentSetId = String(document.getElementById("setSelect")?.value || "").trim();
+      if (!currentSetId) return;
+      renderSet(currentSetId);
+    });
+    mobilePanelSelect.dataset.bound = "true";
+  }
+
+  if (!window.__equipmentSetsResizeBound) {
+    window.addEventListener("resize", () => {
+      const currentSetId = String(document.getElementById("setSelect")?.value || "").trim();
+      if (!currentSetId) return;
+      renderSet(currentSetId);
+    });
+    window.__equipmentSetsResizeBound = true;
   }
 }
 
@@ -799,6 +845,16 @@ async function init() {
           const optionSummary = bonusViewSelect.querySelector('option[value="effect_summary"]');
           if (optionSetBonus) optionSetBonus.textContent = ui("set_bonus_view", "Set bonus view");
           if (optionSummary) optionSummary.textContent = ui("effect_summary_view", "Effect summary view");
+        }
+
+        const mobilePanelSelect = document.getElementById("mobilePanelSelect");
+        if (mobilePanelSelect) {
+          const optionPieces = mobilePanelSelect.querySelector('option[value="set_pieces"]');
+          const optionSetBonus = mobilePanelSelect.querySelector('option[value="set_bonuses"]');
+          const optionSummary = mobilePanelSelect.querySelector('option[value="effect_summary"]');
+          if (optionPieces) optionPieces.textContent = ui("set_pieces", "Set pieces");
+          if (optionSetBonus) optionSetBonus.textContent = ui("set_bonuses", "Set bonuses");
+          if (optionSummary) optionSummary.textContent = ui("total_bonus_overview", "Total bonus overview");
         }
 
         const wearerSelect = document.getElementById("wearerSelect");
