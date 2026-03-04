@@ -17,6 +17,7 @@ let equipmentUniqueImageUrlMap = {};
 let uniqueGemImageUrlMap = {};
 let equipmentEffectToEffectId = {};
 let ownLang = {};
+let lastMobileMode = null;
 
 const loader = createLoader();
 const composedImageCache = new Map();
@@ -725,7 +726,7 @@ function setupSetOptions(wearerFilter = "all") {
   options.forEach((entry) => {
     const opt = document.createElement("option");
     opt.value = entry.id;
-    opt.textContent = `#${entry.id} - ${entry.title}`;
+    opt.textContent = isMobileLayout() ? entry.title : `#${entry.id} - ${entry.title}`;
     select.appendChild(opt);
   });
 
@@ -773,6 +774,12 @@ function bindControls() {
 
   if (!window.__equipmentSetsResizeBound) {
     window.addEventListener("resize", () => {
+      const mobileNow = isMobileLayout();
+      if (lastMobileMode !== null && mobileNow !== lastMobileMode) {
+        const wearerValue = String(document.getElementById("wearerSelect")?.value || "all");
+        setupSetOptions(wearerValue);
+      }
+      lastMobileMode = mobileNow;
       const currentSetId = String(document.getElementById("setSelect")?.value || "").trim();
       if (!currentSetId) return;
       renderSet(currentSetId);
@@ -870,6 +877,7 @@ async function init() {
         }
 
         bindControls();
+        lastMobileMode = isMobileLayout();
         setupWearerOptions(wearers);
         setupSetOptions("all");
 

@@ -349,6 +349,10 @@
     display: none;
   }
 
+  .set-head {
+    display: none;
+  }
+
   .mobile-panel-control {
     display: block;
   }
