@@ -2,6 +2,7 @@ import { initAutoHeight } from "../shared/ResizeService.mjs";
 import { createLoader } from "../shared/LoadingService.mjs";
 import { coreInit } from "../shared/CoreInit.mjs";
 import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageService.mjs";
+import { getSharedText } from "../shared/SharedTextService.mjs";
 import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
 import { normalizeName } from "../shared/RewardResolver.mjs";
@@ -22,6 +23,7 @@ let showAllSetOptions = false;
 let compareSetSelectionA = "";
 let compareSetSelectionB = "";
 let compareSetSelectionC = "";
+let noMatchFiltersMessage = "No match to the current filters.";
 
 const loader = createLoader();
 const composedImageCache = new Map();
@@ -1056,13 +1058,19 @@ function setupSetOptions(wearerFilter = "all") {
   }
 
   if (visibleOptions.length === 0) {
+    if (!showAllSetOptions && options.length > 0) {
+      showAllSetOptions = true;
+      setupSetOptions(wearerFilter);
+      return;
+    }
+
     const noHighOption = document.createElement("option");
     noHighOption.value = "";
-    noHighOption.textContent = `No sets with ID >= ${DEFAULT_MIN_SET_ID}.`;
+    noHighOption.textContent = noMatchFiltersMessage;
     noHighOption.disabled = true;
     noHighOption.selected = true;
     select.insertBefore(noHighOption, select.firstChild);
-    renderEmpty(`No sets with ID >= ${DEFAULT_MIN_SET_ID}. Use "Load more..." to show all sets.`);
+    renderEmpty(noMatchFiltersMessage);
     return;
   }
 
@@ -1197,6 +1205,7 @@ async function init() {
         });
 
         await loadOwnLang();
+        noMatchFiltersMessage = await getSharedText("no_match_filters", currentLanguage, noMatchFiltersMessage);
         const bonusViewSelect = document.getElementById("bonusViewSelect");
         if (bonusViewSelect) {
           const optionSetBonus = bonusViewSelect.querySelector('option[value="set_bonus"]');
