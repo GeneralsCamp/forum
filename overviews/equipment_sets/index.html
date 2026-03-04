@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GGE Unique Equipment Sets</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <link rel="icon" type="image/webp" href="../../img_base/favicon.ico">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../shared/shared.css">
+  <link rel="stylesheet" href="./equipment_sets.css">
+  <link rel="stylesheet" href="../shared/consent.css">
+  <meta property="og:title" content="Unique Equipment Sets Overview | Generals Forum">
+  <meta property="og:description" content="Browse unique equipment sets: piece bonuses and full set bonus milestones.">
+  <meta property="og:image" content="https://generalscamp.github.io/forum/img_base/main_page/look-items.webp">
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-12 mb-2">
+        <div class="col-12 page-title">
+          <h1>UNIQUE EQUIPMENT SETS</h1>
+        </div>
+
+        <div id="topButtonsContainer">
+          <a href="https://generalscamp.github.io/forum/" class="home-icon-link">
+            <div class="home-icon">
+              <i class="bi bi-house"></i>
+            </div>
+          </a>
+        </div>
+
+        <div class="row note gx-1 gy-1 align-items-center pb-2">
+          <div class="col-md-3 col-sm-12">
+            <select id="wearerSelect" class="form-select custom-select text-center" aria-label="Wearer selector">
+              <option value="all" selected>All wearers</option>
+            </select>
+          </div>
+          <div class="col-md-6 col-sm-12">
+            <select id="setSelect" class="form-select custom-select text-center" aria-label="Set selector">
+              <option value="" selected>Loading sets...</option>
+            </select>
+          </div>
+          <div class="col-md-3 col-sm-12">
+            <select id="bonusViewSelect" class="form-select custom-select text-center" aria-label="Bonus view selector">
+              <option value="set_bonus" selected>Set bonus view</option>
+              <option value="effect_summary">Effect summary view</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <main id="content" class="container-fluid">
+        <section id="setOverview" class="set-overview"></section>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+  <script type="module" src="script.js"></script>
+  <script type="module" src="../shared/ConsentInit.mjs"></script>
+</body>
+
+</html>

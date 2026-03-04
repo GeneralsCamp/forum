@@ -1,0 +1,386 @@
+﻿{
+  "en": {
+    "ui": {
+      "filters": "Filters",
+      "all_wearers": "All wearers",
+      "loading_sets": "Loading sets...",
+      "set_pieces": "Set pieces",
+      "set_bonuses": "Set bonuses",
+      "effect_summary": "Effect summary",
+      "set_bonus_view": "Set bonus view",
+      "effect_summary_view": "Effect summary view",
+      "pieces_suffix": "pieces",
+      "no_sets": "No sets found for this filter.",
+      "no_set_milestones": "No set milestone data.",
+      "no_pieces_found": "No pieces found."
+    }
+  },
+  "de": {
+    "ui": {
+      "filters": "Filter",
+      "all_wearers": "Alle Träger",
+      "loading_sets": "Sets werden geladen...",
+      "set_pieces": "Set-Teile",
+      "set_bonuses": "Set-Boni",
+      "effect_summary": "Effektübersicht",
+      "set_bonus_view": "Set-Bonus-Ansicht",
+      "effect_summary_view": "Effekt-Übersichtsansicht",
+      "pieces_suffix": "Teile",
+      "no_sets": "Keine Sets für diesen Filter gefunden.",
+      "no_set_milestones": "Keine Set-Meilenstein-Daten.",
+      "no_pieces_found": "Keine Teile gefunden."
+    }
+  },
+  "fr": {
+    "ui": {
+      "filters": "Filtres",
+      "all_wearers": "Tous les porteurs",
+      "loading_sets": "Chargement des ensembles...",
+      "set_pieces": "Pièces d'ensemble",
+      "set_bonuses": "Bonus d'ensemble",
+      "effect_summary": "Résumé des effets",
+      "set_bonus_view": "Vue bonus d'ensemble",
+      "effect_summary_view": "Vue résumé des effets",
+      "pieces_suffix": "pièces",
+      "no_sets": "Aucun ensemble trouvé pour ce filtre.",
+      "no_set_milestones": "Aucune donnée de palier d'ensemble.",
+      "no_pieces_found": "Aucune pièce trouvée."
+    }
+  },
+  "pl": {
+    "ui": {
+      "filters": "Filtry",
+      "all_wearers": "Wszyscy noszący",
+      "loading_sets": "Ładowanie zestawów...",
+      "set_pieces": "Elementy zestawu",
+      "set_bonuses": "Bonusy zestawu",
+      "effect_summary": "Podsumowanie efektów",
+      "set_bonus_view": "Widok bonusów zestawu",
+      "effect_summary_view": "Widok podsumowania efektów",
+      "pieces_suffix": "elementów",
+      "no_sets": "Brak zestawów dla tego filtra.",
+      "no_set_milestones": "Brak danych progów zestawu.",
+      "no_pieces_found": "Nie znaleziono elementów."
+    }
+  },
+  "hu": {
+    "ui": {
+      "filters": "Szűrők",
+      "all_wearers": "Összes viselő",
+      "loading_sets": "Szettek betöltése...",
+      "set_pieces": "Szett elemek",
+      "set_bonuses": "Szett bónuszok",
+      "effect_summary": "Effekt összegzés",
+      "set_bonus_view": "Szett bónusz nézet",
+      "effect_summary_view": "Effekt összegző nézet",
+      "pieces_suffix": "darab",
+      "no_sets": "Nincs szett ehhez a szűrőhöz.",
+      "no_set_milestones": "Nincs szett mérföldkő adat.",
+      "no_pieces_found": "Nem található elem."
+    }
+  },
+  "ro": {
+    "ui": {
+      "filters": "Filtre",
+      "all_wearers": "Toți purtătorii",
+      "loading_sets": "Se încarcă seturile...",
+      "set_pieces": "Piese de set",
+      "set_bonuses": "Bonusuri de set",
+      "effect_summary": "Rezumat efecte",
+      "set_bonus_view": "Vizualizare bonus set",
+      "effect_summary_view": "Vizualizare rezumat efecte",
+      "pieces_suffix": "piese",
+      "no_sets": "Nu există seturi pentru acest filtru.",
+      "no_set_milestones": "Nu există date pentru pragurile setului.",
+      "no_pieces_found": "Nu s-au găsit piese."
+    }
+  },
+  "es": {
+    "ui": {
+      "filters": "Filtros",
+      "all_wearers": "Todos los portadores",
+      "loading_sets": "Cargando conjuntos...",
+      "set_pieces": "Piezas del conjunto",
+      "set_bonuses": "Bonos del conjunto",
+      "effect_summary": "Resumen de efectos",
+      "set_bonus_view": "Vista de bonos del conjunto",
+      "effect_summary_view": "Vista de resumen de efectos",
+      "pieces_suffix": "piezas",
+      "no_sets": "No se encontraron conjuntos para este filtro.",
+      "no_set_milestones": "No hay datos de hitos del conjunto.",
+      "no_pieces_found": "No se encontraron piezas."
+    }
+  },
+  "ru": {
+    "ui": {
+      "filters": "Фильтры",
+      "all_wearers": "Все носители",
+      "loading_sets": "Загрузка наборов...",
+      "set_pieces": "Предметы набора",
+      "set_bonuses": "Бонусы набора",
+      "effect_summary": "Сводка эффектов",
+      "set_bonus_view": "Вид бонусов набора",
+      "effect_summary_view": "Вид сводки эффектов",
+      "pieces_suffix": "предм.",
+      "no_sets": "Для этого фильтра наборы не найдены.",
+      "no_set_milestones": "Нет данных о порогах набора.",
+      "no_pieces_found": "Предметы не найдены."
+    }
+  },
+  "el": {
+    "ui": {
+      "filters": "Φίλτρα",
+      "all_wearers": "Όλοι οι φορείς",
+      "loading_sets": "Φόρτωση σετ...",
+      "set_pieces": "Κομμάτια σετ",
+      "set_bonuses": "Μπόνους σετ",
+      "effect_summary": "Σύνοψη εφέ",
+      "set_bonus_view": "Προβολή μπόνους σετ",
+      "effect_summary_view": "Προβολή σύνοψης εφέ",
+      "pieces_suffix": "κομμάτια",
+      "no_sets": "Δεν βρέθηκαν σετ για αυτό το φίλτρο.",
+      "no_set_milestones": "Δεν υπάρχουν δεδομένα οροσήμων σετ.",
+      "no_pieces_found": "Δεν βρέθηκαν κομμάτια."
+    }
+  },
+  "nl": {
+    "ui": {
+      "filters": "Filters",
+      "all_wearers": "Alle dragers",
+      "loading_sets": "Sets laden...",
+      "set_pieces": "Setstukken",
+      "set_bonuses": "Setbonussen",
+      "effect_summary": "Effectoverzicht",
+      "set_bonus_view": "Setbonusweergave",
+      "effect_summary_view": "Effectoverzicht-weergave",
+      "pieces_suffix": "stukken",
+      "no_sets": "Geen sets gevonden voor dit filter.",
+      "no_set_milestones": "Geen set-mijlpaalgegevens.",
+      "no_pieces_found": "Geen stukken gevonden."
+    }
+  },
+  "cs": {
+    "ui": {
+      "filters": "Filtry",
+      "all_wearers": "Všichni nositelé",
+      "loading_sets": "Načítání sad...",
+      "set_pieces": "Části sady",
+      "set_bonuses": "Bonusy sady",
+      "effect_summary": "Souhrn efektů",
+      "set_bonus_view": "Zobrazení bonusů sady",
+      "effect_summary_view": "Zobrazení souhrnu efektů",
+      "pieces_suffix": "částí",
+      "no_sets": "Pro tento filtr nebyly nalezeny žádné sady.",
+      "no_set_milestones": "Nejsou data milníků sady.",
+      "no_pieces_found": "Nebyly nalezeny žádné části."
+    }
+  },
+  "ar": {
+    "ui": {
+      "filters": "الفلاتر",
+      "all_wearers": "جميع الحاملين",
+      "loading_sets": "جارٍ تحميل الأطقم...",
+      "set_pieces": "قطع الطقم",
+      "set_bonuses": "مكافآت الطقم",
+      "effect_summary": "ملخص التأثيرات",
+      "set_bonus_view": "عرض مكافآت الطقم",
+      "effect_summary_view": "عرض ملخص التأثيرات",
+      "pieces_suffix": "قطعة",
+      "no_sets": "لا توجد أطقم لهذا الفلتر.",
+      "no_set_milestones": "لا توجد بيانات مراحل الطقم.",
+      "no_pieces_found": "لم يتم العثور على قطع."
+    }
+  },
+  "it": {
+    "ui": {
+      "filters": "Filtri",
+      "all_wearers": "Tutti i portatori",
+      "loading_sets": "Caricamento set...",
+      "set_pieces": "Pezzi set",
+      "set_bonuses": "Bonus set",
+      "effect_summary": "Riepilogo effetti",
+      "set_bonus_view": "Vista bonus set",
+      "effect_summary_view": "Vista riepilogo effetti",
+      "pieces_suffix": "pezzi",
+      "no_sets": "Nessun set trovato per questo filtro.",
+      "no_set_milestones": "Nessun dato milestone del set.",
+      "no_pieces_found": "Nessun pezzo trovato."
+    }
+  },
+  "ja": {
+    "ui": {
+      "filters": "フィルター",
+      "all_wearers": "すべての装備者",
+      "loading_sets": "セットを読み込み中...",
+      "set_pieces": "セット装備",
+      "set_bonuses": "セットボーナス",
+      "effect_summary": "効果サマリー",
+      "set_bonus_view": "セットボーナス表示",
+      "effect_summary_view": "効果サマリー表示",
+      "pieces_suffix": "個",
+      "no_sets": "このフィルターに一致するセットがありません。",
+      "no_set_milestones": "セット段階データがありません。",
+      "no_pieces_found": "装備が見つかりません。"
+    }
+  },
+  "bg": {
+    "ui": {
+      "filters": "Филтри",
+      "all_wearers": "Всички носители",
+      "loading_sets": "Зареждане на сетове...",
+      "set_pieces": "Части от сета",
+      "set_bonuses": "Бонуси от сета",
+      "effect_summary": "Обобщение на ефектите",
+      "set_bonus_view": "Изглед бонуси от сет",
+      "effect_summary_view": "Изглед обобщение на ефектите",
+      "pieces_suffix": "части",
+      "no_sets": "Няма намерени сетове за този филтър.",
+      "no_set_milestones": "Няма данни за етапите на сета.",
+      "no_pieces_found": "Няма намерени части."
+    }
+  },
+  "pt": {
+    "ui": {
+      "filters": "Filtros",
+      "all_wearers": "Todos os portadores",
+      "loading_sets": "Carregando conjuntos...",
+      "set_pieces": "Peças do conjunto",
+      "set_bonuses": "Bônus do conjunto",
+      "effect_summary": "Resumo de efeitos",
+      "set_bonus_view": "Visualização de bônus do conjunto",
+      "effect_summary_view": "Visualização de resumo de efeitos",
+      "pieces_suffix": "peças",
+      "no_sets": "Nenhum conjunto encontrado para este filtro.",
+      "no_set_milestones": "Sem dados de marcos do conjunto.",
+      "no_pieces_found": "Nenhuma peça encontrada."
+    }
+  },
+  "da": {
+    "ui": {
+      "filters": "Filtre",
+      "all_wearers": "Alle bærere",
+      "loading_sets": "Indlæser sæt...",
+      "set_pieces": "Sætdele",
+      "set_bonuses": "Sætbonusser",
+      "effect_summary": "Effektoversigt",
+      "set_bonus_view": "Sætbonus-visning",
+      "effect_summary_view": "Effektoversigt-visning",
+      "pieces_suffix": "dele",
+      "no_sets": "Ingen sæt fundet for dette filter.",
+      "no_set_milestones": "Ingen data for sæt-milepæle.",
+      "no_pieces_found": "Ingen dele fundet."
+    }
+  },
+  "fi": {
+    "ui": {
+      "filters": "Suodattimet",
+      "all_wearers": "Kaikki käyttäjät",
+      "loading_sets": "Ladataan settejä...",
+      "set_pieces": "Setin osat",
+      "set_bonuses": "Setin bonukset",
+      "effect_summary": "Efektien yhteenveto",
+      "set_bonus_view": "Settibonus-näkymä",
+      "effect_summary_view": "Efektien yhteenvetonäkymä",
+      "pieces_suffix": "osaa",
+      "no_sets": "Tälle suodattimelle ei löytynyt settejä.",
+      "no_set_milestones": "Ei setin virstanpylvästietoja.",
+      "no_pieces_found": "Osia ei löytynyt."
+    }
+  },
+  "ko": {
+    "ui": {
+      "filters": "필터",
+      "all_wearers": "모든 착용자",
+      "loading_sets": "세트 불러오는 중...",
+      "set_pieces": "세트 아이템",
+      "set_bonuses": "세트 보너스",
+      "effect_summary": "효과 요약",
+      "set_bonus_view": "세트 보너스 보기",
+      "effect_summary_view": "효과 요약 보기",
+      "pieces_suffix": "개",
+      "no_sets": "이 필터에 해당하는 세트가 없습니다.",
+      "no_set_milestones": "세트 단계 데이터가 없습니다.",
+      "no_pieces_found": "아이템을 찾을 수 없습니다."
+    }
+  },
+  "lt": {
+    "ui": {
+      "filters": "Filtrai",
+      "all_wearers": "Visi nešiotojai",
+      "loading_sets": "Įkeliami rinkiniai...",
+      "set_pieces": "Rinkinio dalys",
+      "set_bonuses": "Rinkinio premijos",
+      "effect_summary": "Efektų suvestinė",
+      "set_bonus_view": "Rinkinio premijų vaizdas",
+      "effect_summary_view": "Efektų suvestinės vaizdas",
+      "pieces_suffix": "dalys",
+      "no_sets": "Šiam filtrui rinkinių nerasta.",
+      "no_set_milestones": "Nėra rinkinio etapų duomenų.",
+      "no_pieces_found": "Dalių nerasta."
+    }
+  },
+  "no": {
+    "ui": {
+      "filters": "Filtre",
+      "all_wearers": "Alle brukere",
+      "loading_sets": "Laster inn sett...",
+      "set_pieces": "Settdeler",
+      "set_bonuses": "Settbonuser",
+      "effect_summary": "Effektoppsummering",
+      "set_bonus_view": "Settbonus-visning",
+      "effect_summary_view": "Effektoppsummering-visning",
+      "pieces_suffix": "deler",
+      "no_sets": "Ingen sett funnet for dette filteret.",
+      "no_set_milestones": "Ingen data for settmilepæler.",
+      "no_pieces_found": "Ingen deler funnet."
+    }
+  },
+  "sv": {
+    "ui": {
+      "filters": "Filter",
+      "all_wearers": "Alla bärare",
+      "loading_sets": "Laddar set...",
+      "set_pieces": "Setdelar",
+      "set_bonuses": "Setbonusar",
+      "effect_summary": "Effektsammanfattning",
+      "set_bonus_view": "Setbonus-vy",
+      "effect_summary_view": "Effektsammanfattningsvy",
+      "pieces_suffix": "delar",
+      "no_sets": "Inga set hittades för detta filter.",
+      "no_set_milestones": "Inga data för setmilstolpar.",
+      "no_pieces_found": "Inga delar hittades."
+    }
+  },
+  "sk": {
+    "ui": {
+      "filters": "Filtre",
+      "all_wearers": "Všetci nositelia",
+      "loading_sets": "Načítavajú sa sety...",
+      "set_pieces": "Časti setu",
+      "set_bonuses": "Bonusy setu",
+      "effect_summary": "Súhrn efektov",
+      "set_bonus_view": "Zobrazenie bonusov setu",
+      "effect_summary_view": "Zobrazenie súhrnu efektov",
+      "pieces_suffix": "častí",
+      "no_sets": "Pre tento filter sa nenašli žiadne sety.",
+      "no_set_milestones": "Žiadne údaje o míľnikoch setu.",
+      "no_pieces_found": "Nenašli sa žiadne časti."
+    }
+  },
+  "tr": {
+    "ui": {
+      "filters": "Filtreler",
+      "all_wearers": "Tüm taşıyıcılar",
+      "loading_sets": "Setler yükleniyor...",
+      "set_pieces": "Set parçaları",
+      "set_bonuses": "Set bonusları",
+      "effect_summary": "Efekt özeti",
+      "set_bonus_view": "Set bonus görünümü",
+      "effect_summary_view": "Efekt özet görünümü",
+      "pieces_suffix": "parça",
+      "no_sets": "Bu filtre için set bulunamadı.",
+      "no_set_milestones": "Set kilometre taşı verisi yok.",
+      "no_pieces_found": "Parça bulunamadı."
+    }
+  }
+}

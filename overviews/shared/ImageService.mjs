@@ -344,14 +344,23 @@ function parseLootBoxes(text, normalize) {
 
 function parseEquipmentUniques(text) {
 
-    const regex =
+    const equipmentRegex =
         /Equipment\/Uniques\/Item_Unique_(\d+)\/Item_Unique_\1--\d+/g;
+    const heroRegex =
+        /Equipment\/Heroes\/Hero_Unique_(\d+)\/Hero_Unique_\1--\d+/g;
 
     const map = {};
 
-    for (const m of text.matchAll(regex)) {
+    for (const m of text.matchAll(equipmentRegex)) {
         const id = String(m[1]);
         map[id] = `${BASE}${m[0]}.webp`;
+    }
+
+    for (const m of text.matchAll(heroRegex)) {
+        const id = String(m[1]);
+        if (!map[id]) {
+            map[id] = `${BASE}${m[0]}.webp`;
+        }
     }
 
     return map;
