@@ -600,13 +600,14 @@ function renderSet(setId) {
 
     return `
       <article class="piece-row">
+        <h3 class="piece-name piece-name-mobile">${displayName}</h3>
         <div class="piece-visual">
           <div class="piece-image">
             ${piece.imageUrl ? `<img src="${piece.imageUrl}" alt="" loading="lazy"${composeAttrs}>` : "<span>?</span>"}
           </div>
         </div>
-        <div>
-          <h3 class="piece-name">${displayName}</h3>
+        <div class="piece-content">
+          <h3 class="piece-name piece-name-desktop">${displayName}</h3>
           <ul class="effect-list">${itemEffects}</ul>
         </div>
       </article>

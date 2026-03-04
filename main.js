@@ -21,6 +21,7 @@ const categories = {
         { name: "Decorations Overview", desc: "This page loads the in-game decorations automatically!", icon: "main_page/decorations.webp", link: "./overviews/decorations/index.html", disabled: false },
         { name: "CI's & TCI's Overview", desc: "This page loads the in-game CI's & TCI's automatically!", icon: "main_page/ci-icon.webp", link: "./overviews/building_items/index.html", disabled: false },
         { name: "Look-items Overview", desc: "This page loads the in-game look items automatically!", icon: "main_page/look-items.webp", link: "./overviews/look_items/index.html", disabled: false },
+        { name: "Unique Set Overview", desc: "This page loads the in-game equipment sets, and set bonuses!", icon: "main_page/equipment-icon.webp", link: "./overviews/equipment_sets/index.html", disabled: false },
         { name: "Generals Overview", desc: "This page loads the in-game generals automatically!", icon: "main_page/generals-icon.webp", link: "./overviews/generals/index.html", disabled: false },
         { name: "Event Rewards Overview", desc: "This page loads in-game event rewards with a vary of filters!", icon: "main_page/event-rewards-icon.webp", link: "./overviews/event_rewards/index.html", disabled: false },
         { name: "Gacha Overview", desc: "This page loads the in-game gacha rewards automatically!", icon: "main_page/gacha-icon.webp", link: "./overviews/gacha_events/index.html", disabled: false },
