@@ -6,6 +6,7 @@ import { initImageModal } from "../shared/ModalService.mjs";
 import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageService.mjs";
 import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
+import { getSharedLanguagePack, getSharedText } from "../shared/SharedTextService.mjs";
 
 // --- GLOBAL VARIABLES ---
 let lang = {};
@@ -19,6 +20,8 @@ let effectDefinitions = {};
 let effectCapsMap = {};
 const percentEffectIDs = new Set();
 const composedConstructionImageCache = new Map();
+let noMatchMessage = "No match to the current filters.";
+let sharedLangPack = { filters: {}, ui: {} };
 const loader = createLoader();
 let currentLanguage = getInitialLanguage();
 
@@ -64,8 +67,14 @@ async function loadOwnLang() {
 async function applyOwnLang() {
 
     const L = ownLang[currentLanguage?.toLowerCase()] || {};
-    const filters = L.filters || {};
-    const ui = L.ui || {};
+    const filters = {
+        ...(sharedLangPack.filters || {}),
+        ...(L.filters || {})
+    };
+    const ui = {
+        ...(sharedLangPack.ui || {}),
+        ...(L.ui || {})
+    };
 
     const map = [
         ["filterName", "search_name", "Name"],
@@ -716,6 +725,11 @@ function renderConstructionItems(items) {
     const grouped = groupItemsByNameEffectsLegacyAppearanceAndDuration(items);
     container.innerHTML = "";
 
+    if (!items.length || Object.keys(grouped).length === 0) {
+        container.innerHTML = `<div class="col-12 filter-empty-message">${noMatchMessage}</div>`;
+        return;
+    }
+
     Object.keys(grouped).forEach((key, index) => {
         const cardHtml = createGroupedCard(grouped[key], imageUrlMap, key);
         const wrapper = document.createElement("div");
@@ -863,7 +877,10 @@ function setupEventListeners() {
     function updateSearchInputState() {
 
         const L = ownLang[currentLanguage?.toLowerCase()] || {};
-        const filters = L.filters || {};
+        const filters = {
+            ...(sharedLangPack.filters || {}),
+            ...(L.filters || {})
+        };
 
         const selected = Array.from(searchFilters).filter(cb => cb.checked);
 
@@ -981,7 +998,9 @@ async function init() {
                 });
 
                 await loadOwnLang();
+                sharedLangPack = await getSharedLanguagePack(currentLanguage);
                 applyOwnLang();
+                noMatchMessage = await getSharedText("no_match_filters", currentLanguage, noMatchMessage);
 
                 setupEventListeners();
                 applyFiltersAndSorting();

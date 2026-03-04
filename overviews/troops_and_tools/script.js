@@ -4,6 +4,7 @@ import { coreInit } from "../shared/CoreInit.mjs";
 import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageService.mjs";
 import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
+import { getSharedLanguagePack, getSharedText } from "../shared/SharedTextService.mjs";
 
 const loader = createLoader();
 let currentLanguage = getInitialLanguage();
@@ -16,7 +17,9 @@ let unitImageUrlMap = {};
 let unitImageEntries = [];
 let collectableCurrencyImageUrlMap = {};
 const composedUnitImageCache = new Map();
+let noMatchMessage = "No match to the current filters.";
 let effectCtx = { effectDefinitions: {}, percentEffectIDs: new Set() };
+let sharedLangPack = { ui: {}, filters: {} };
 const FORCE_PLUS_PERCENT_EFFECT_NAMES = new Set([
   "bonuswallcapacity",
   "bonusdefencepower",
@@ -136,7 +139,10 @@ function applyUiLabels() {
     sortBy: getOwnLangValue("sort_by", "Sort by"),
     filterTypeUnit: lang["units"] || getOwnLangValue("filter_type_unit", "Unit"),
     filterTypeTool: lang["tools"] || getOwnLangValue("filter_type_tool", "Tool"),
-    searchPlaceholder: getOwnLangValue("search_placeholder", "Search by name..."),
+    searchPlaceholder: getOwnLangValue(
+      "search_placeholder",
+      sharedLangPack?.ui?.search_placeholder_name || "Search by name..."
+    ),
     sortDefault: getOwnLangValue("sort_default", "Default"),
     allTools: getOwnLangValue("all_tools", "All tools"),
     defenseTools: lang["defencetools"] || getOwnLangValue("defense_tools", "Defense tools"),
@@ -938,7 +944,7 @@ function renderUnits(groups) {
   container.innerHTML = "";
 
   if (!groups.length) {
-    container.innerHTML = "";
+    container.innerHTML = `<div class="col-12 filter-empty-message">${noMatchMessage}</div>`;
     return;
   }
 
@@ -1091,7 +1097,9 @@ async function init() {
         lang = L || {};
         effectCtx = E || { effectDefinitions: {}, percentEffectIDs: new Set() };
         await loadOwnLang();
+        sharedLangPack = await getSharedLanguagePack(currentLanguage);
         applyUiLabels();
+        noMatchMessage = await getSharedText("no_match_filters", currentLanguage, noMatchMessage);
         allUnits = Array.isArray(data?.units) ? data.units : [];
         unitImageUrlMap = imageMaps?.units || {};
         unitImageEntries = Object.entries(unitImageUrlMap);

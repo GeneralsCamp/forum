@@ -269,7 +269,7 @@ body {
 }
 
 .dropdown-menu .form-check:hover {
-  background-color: rgba(243, 194, 74, 0.25);
+    background-color: rgba(243, 194, 74, 0.25);
 }
 
 .dropdown-menu-custom li {
@@ -608,4 +608,14 @@ button.disabled {
     .container {
         max-width: unset !important;
     }
+}
+
+.filter-empty-message {
+    background: #f3e0c2;
+    border: 2px solid #bd9a79;
+    border-radius: 10px;
+    color: #433120;
+    text-align: center;
+    font-weight: 800;
+    padding: 16px;
 }

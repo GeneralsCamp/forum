@@ -8,11 +8,13 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link rel="icon" type="image/webp" href="../../img_base/favicon.ico">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css"
+        rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="../../overviews/shared/consent.css">
     <meta property="og:title" content="Kingdom League Calculator | Generals Forum">
-    <meta property="og:description" content="Calculate your Kingdom League points, current title, and next rank requirements.">
+    <meta property="og:description"
+        content="Calculate your Kingdom League points, current title, and next rank requirements.">
     <meta property="og:image" content="https://generalscamp.github.io/forum/img_base/main_page/leauge-icon.webp">
 </head>
 
@@ -39,11 +41,13 @@
                         </div>
                         <div class="col-6 col-md-4 col-xl-3 form-group">
                             <label for="silver">Silver medal</label>
-                            <input id="silver" type="number" class="form-control medal-input" min="0" step="1" value="0">
+                            <input id="silver" type="number" class="form-control medal-input" min="0" step="1"
+                                value="0">
                         </div>
                         <div class="col-6 col-md-4 col-xl-3 form-group">
                             <label for="bronze">Bronze medal</label>
-                            <input id="bronze" type="number" class="form-control medal-input" min="0" step="1" value="0">
+                            <input id="bronze" type="number" class="form-control medal-input" min="0" step="1"
+                                value="0">
                         </div>
                         <div class="col-6 col-md-4 col-xl-3 form-group">
                             <label for="glass">Glass medal</label>
@@ -51,7 +55,8 @@
                         </div>
                         <div class="col-6 col-md-4 col-xl-3 form-group">
                             <label for="copper">Copper medal</label>
-                            <input id="copper" type="number" class="form-control medal-input" min="0" step="1" value="0">
+                            <input id="copper" type="number" class="form-control medal-input" min="0" step="1"
+                                value="0">
                         </div>
                         <div class="col-6 col-md-4 col-xl-3 form-group">
                             <label for="stone">Stone medal</label>
@@ -82,14 +87,7 @@
         integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
         crossorigin="anonymous"></script>
     <script src="script.js"></script>
-    <script type="module">
-        import { initConsentManager } from "../../overviews/shared/ConsentManager.mjs";
-        initConsentManager({
-            measurementId: "G-8TGZRNFGRR",
-            storageKey: "gf_analytics_state_v1",
-            defaultState: "enabled"
-        });
-    </script>
+    <script type="module" src="../../overviews/shared/ConsentInit.mjs"></script>
 </body>
 
 </html>

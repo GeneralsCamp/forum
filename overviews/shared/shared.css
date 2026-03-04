@@ -223,6 +223,15 @@ h1 {
     border-radius: 8px;
 }
 
+.form-select:disabled,
+.custom-select:disabled {
+    background-color: #f3e0c2;
+    color: #3e2a16;
+    border: 2px solid #bd9a79;
+    opacity: 1;
+    cursor: not-allowed;
+}
+
 #searchInput:focus,
 #sortSelect:focus,
 .btn-custom:focus {
@@ -479,4 +488,23 @@ h1 {
 #languageModal .lang-btn:disabled {
     opacity: .6;
     cursor: not-allowed;
+}
+
+.filter-empty-message {
+    background: #f3e0c2;
+    border: 2px solid #bd9a79;
+    border-radius: 10px;
+    color: #433120;
+    text-align: center;
+    font-weight: 800;
+    padding: 16px;
+    margin-bottom: 8px;
+}
+
+body.gf-loading-active .note input,
+body.gf-loading-active .note select,
+body.gf-loading-active .note button,
+body.gf-loading-active .note textarea {
+    cursor: not-allowed;
+    opacity: 1;
 }

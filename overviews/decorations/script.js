@@ -6,6 +6,7 @@ import { initImageModal } from "../shared/ModalService.mjs";
 import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageService.mjs";
 import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
+import { getSharedLanguagePack, getSharedText } from "../shared/SharedTextService.mjs";
 
 // --- GLOBAL VARIABLES ---
 const loader = createLoader();
@@ -21,7 +22,9 @@ let allDecorations = [];
 let imageUrlMap = {};
 let specialFilter = null;
 let newWodIDsSet = new Set();
+let noMatchMessage = "No match to the current filters.";
 const composedDecorationImageCache = new Map();
+let sharedLangPack = { filters: {}, ui: {} };
 
 // --- FETCH FUNCTIONS ---
 async function compareWithOldVersion() {
@@ -65,7 +68,11 @@ async function loadOwnLang() {
 }
 
 async function applyOwnLang() {
-  const filters = ownLang[currentLanguage.toLowerCase()]?.filters || {};
+  const localFilters = ownLang[currentLanguage.toLowerCase()]?.filters || {};
+  const filters = {
+    ...(sharedLangPack.filters || {}),
+    ...localFilters
+  };
 
   document.querySelector('label[for="filterName"]').textContent = filters.search_name || "Name";
   document.querySelector('label[for="filterID"]').textContent = filters.search_id || "ID";
@@ -442,6 +449,11 @@ function renderDecorations(decos) {
   const container = document.getElementById("cards");
   container.innerHTML = "";
 
+  if (!decos.length) {
+    container.innerHTML = `<div class="col-12 filter-empty-message">${noMatchMessage}</div>`;
+    return;
+  }
+
   decos.forEach((item, index) => {
     const cardHtml = createCard(item, imageUrlMap);
     const wrapper = document.createElement("div");
@@ -552,7 +564,10 @@ function applyHashSearch() {
 }
 
 function setupMaxCapClick() {
-  const langData = ownLang[currentLanguage]?.filters || {};
+  const langData = {
+    ...(sharedLangPack.filters || {}),
+    ...(ownLang[currentLanguage]?.filters || {})
+  };
   document.querySelectorAll(".max-bonus").forEach(span => {
     span.addEventListener("click", () => {
       const capID = span.dataset.capid;
@@ -604,7 +619,10 @@ function setupEventListeners() {
   function updateSearchInputState() {
 
     const searchInput = document.getElementById("searchInput");
-    const filters = ownLang[currentLanguage?.toLowerCase()]?.filters || {};
+    const filters = {
+      ...(sharedLangPack.filters || {}),
+      ...(ownLang[currentLanguage?.toLowerCase()]?.filters || {})
+    };
 
     const selected = Array
       .from(document.querySelectorAll(".search-filter:checked"))
@@ -743,7 +761,9 @@ async function init() {
         });
 
         await loadOwnLang();
+        sharedLangPack = await getSharedLanguagePack(currentLanguage);
         applyOwnLang();
+        noMatchMessage = await getSharedText("no_match_filters", currentLanguage, noMatchMessage);
 
         renderSizeFilters(allDecorations);
         setupEventListeners();

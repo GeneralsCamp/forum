@@ -1,4 +1,4 @@
-#questRows {
+#questRows:not(:empty) {
     padding-bottom: 8px;
 }
 

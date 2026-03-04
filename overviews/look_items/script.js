@@ -5,13 +5,16 @@ import { initImageModal } from "../shared/ModalService.mjs";
 import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageService.mjs";
 import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
+import { getSharedLanguagePack, getSharedText } from "../shared/SharedTextService.mjs";
 
 // --- GLOBAL VARIABLES ---
 let lang = {};
 let ownLang = {};
 let allItems = [];
 let imageUrlMap = {};
+let noMatchMessage = "No match to the current filters.";
 const composedLookImageCache = new Map();
+let sharedLangPack = { filters: {}, ui: {} };
 
 // --- FETCH FUNCTIONS ---
 const loader = createLoader();
@@ -46,13 +49,19 @@ async function loadOwnLang() {
 function applyOwnLang() {
 
     const L = ownLang[currentLanguage?.toLowerCase()] || {};
-    const filters = L.filters || {};
-    const ui = L.ui || {};
+    const filters = {
+        ...(sharedLangPack.filters || {}),
+        ...(L.filters || {})
+    };
+    const ui = {
+        ...(sharedLangPack.ui || {}),
+        ...(L.ui || {})
+    };
 
     const search = document.getElementById("searchInput");
     if (search) {
         search.placeholder =
-            filters.search_placeholder || "Search...";
+            filters.search_placeholder || ui.search_placeholder_name || "Search...";
     }
 
     const showFilter = document.getElementById("showFilter");
@@ -279,6 +288,11 @@ function applyFiltersAndSorting() {
     const container =
         document.getElementById("cards");
 
+    if (!uniqueFiltered.length) {
+        container.innerHTML = `<div class="col-12 filter-empty-message">${noMatchMessage}</div>`;
+        return;
+    }
+
     container.innerHTML =
         uniqueFiltered
             .map(item =>
@@ -350,7 +364,9 @@ async function init() {
                 });
 
                 await loadOwnLang();
+                sharedLangPack = await getSharedLanguagePack(currentLanguage);
                 applyOwnLang();
+                noMatchMessage = await getSharedText("no_match_filters", currentLanguage, noMatchMessage);
 
                 setupEventListeners();
                 applyFiltersAndSorting();

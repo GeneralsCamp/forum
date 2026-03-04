@@ -11,6 +11,31 @@ let originalLeft = 0;
 let originalTop = 0;
 let isCollisionActiveWhileMoving = true;
 const defaultBuildingNames = ["The Keep"];
+let NO_MATCH_MESSAGE = "No match to the current filters.";
+
+function getPreferredLanguageCode() {
+    const saved = localStorage.getItem("selectedLanguage");
+    if (saved) return String(saved).toLowerCase();
+    const browser = navigator.language || "en";
+    return String(browser).toLowerCase();
+}
+
+async function loadSharedUiTexts() {
+    try {
+        const res = await fetch("../../overviews/shared/sharedOwnLang.json");
+        if (!res.ok) return;
+        const dict = await res.json();
+        const language = getPreferredLanguageCode();
+        const base = language.split("-")[0];
+        NO_MATCH_MESSAGE =
+            dict?.[language]?.ui?.no_match_filters ||
+            dict?.[base]?.ui?.no_match_filters ||
+            dict?.en?.ui?.no_match_filters ||
+            NO_MATCH_MESSAGE;
+    } catch (_) {
+        // Keep fallback if shared language file is unavailable.
+    }
+}
 
 /***
 COLOR CODES:
@@ -693,6 +718,8 @@ function populateBuildingsModal() {
         .filter(checkbox => checkbox.checked)
         .map(checkbox => checkbox.value);
 
+    let matchCount = 0;
+
     predefinedBuildings.forEach((building) => {
         const size = `${building.width}x${building.height}`;
         if (
@@ -723,26 +750,21 @@ function populateBuildingsModal() {
 
             if (building.name.toLowerCase().includes(searchQuery)) {
                 buildingsGrid.appendChild(buildingCol);
+                matchCount++;
             }
         }
     });
+
+    if (matchCount === 0) {
+        const empty = document.createElement("div");
+        empty.className = "col-12 filter-empty-message";
+        empty.textContent = NO_MATCH_MESSAGE;
+        buildingsGrid.appendChild(empty);
+    }
 }
 
 function filterBuildingsBySearch() {
-    const searchQuery = document.getElementById("buildingSearch").value.toLowerCase();
-    const buildingsGrid = document.getElementById("buildingsGrid");
-
     populateBuildingsModal();
-
-    const buildings = buildingsGrid.querySelectorAll(".col-md-6, .col-lg-4");
-    buildings.forEach(building => {
-        const name = building.querySelector("h2").textContent.toLowerCase();
-        if (name.includes(searchQuery)) {
-            building.style.display = "block";
-        } else {
-            building.style.display = "none";
-        }
-    });
 }
 
 /*** FULLSCREEN FUNCTIONS ***/
@@ -804,7 +826,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     /*** INITIALIZE GRID AND BUILDINGS ***/
     initializeGrid();
-    loadPredefinedBuildings();
+    loadSharedUiTexts().finally(() => {
+        loadPredefinedBuildings();
+    });
     loadSavedSlotsUI();
 
     /*** EVENT LISTENERS ***/

@@ -13,17 +13,12 @@
     "fusion_target": "Target",
     "fusion_both": "Source & Target",
     "filters": {
-      "search_disabled": "Unavailable to search!",
-      "search_name": "Name",
-      "search_id": "ID",
-      "search_effect": "Effect",
       "sort_po": "Sort by Public Order",
       "sort_pot": "Sort by Public Order/Tile",
       "show_all": "Show all decorations",
       "show_new": "Show only new decorations",
       "show_selected_effect": "Selected effect",
       "size_filter": "Size Filter",
-      "search_placeholder_prefix": "Search by: ",
       "show_all_short": "Show all",
       "show_new_short": "Show newest"
     }
@@ -42,17 +37,12 @@
     "fusion_target": "Ziel",
     "fusion_both": "Quelle & Ziel",
     "filters": {
-      "search_disabled": "Suche nicht verfügbar!",
-      "search_name": "Name",
-      "search_id": "ID",
-      "search_effect": "Effekt",
       "sort_po": "Nach Öffentliche Ordnung sortieren",
       "sort_pot": "Nach Öffentliche Ordnung/Fliese sortieren",
       "show_all": "Alle Dekorationen anzeigen",
       "show_new": "Nur neue Dekorationen anzeigen",
       "show_selected_effect": "Ausgewählter Effekt",
       "size_filter": "Größenfilter",
-      "search_placeholder_prefix": "Suche nach: ",
       "show_all_short": "Alle anzeigen",
       "show_new_short": "Nur neue anzeigen"
     }
@@ -71,17 +61,12 @@
     "fusion_target": "Cible",
     "fusion_both": "Source & Cible",
     "filters": {
-      "search_disabled": "Recherche indisponible !",
-      "search_name": "Nom",
-      "search_id": "ID",
-      "search_effect": "Effet",
       "sort_po": "Trier par ordre public",
       "sort_pot": "Trier par ordre public/tuile",
       "show_all": "Afficher toutes les décorations",
       "show_new": "Afficher uniquement les nouvelles décorations",
       "show_selected_effect": "Effet sélectionné",
       "size_filter": "Filtre de taille",
-      "search_placeholder_prefix": "Recherche par : ",
       "show_all_short": "Afficher tout",
       "show_new_short": "Afficher les nouveautés"
     }
@@ -100,17 +85,12 @@
     "fusion_target": "Cel",
     "fusion_both": "Źródło & Cel",
     "filters": {
-      "search_disabled": "Wyszukiwanie niedostępne!",
-      "search_name": "Nazwa",
-      "search_id": "ID",
-      "search_effect": "Efekt",
       "sort_po": "Sortuj według ładu publicznego",
       "sort_pot": "Sortuj według ładu publicznego/płytka",
       "show_all": "Pokaż wszystkie dekoracje",
       "show_new": "Pokaż tylko nowe dekoracje",
       "show_selected_effect": "Wybrany efekt",
       "size_filter": "Filtr rozmiaru",
-      "search_placeholder_prefix": "Szukaj po: ",
       "show_all_short": "Pokaż wszystkie",
       "show_new_short": "Pokaż nowe"
     }
@@ -129,17 +109,12 @@
     "fusion_target": "Cél",
     "fusion_both": "Forrás & Cél",
     "filters": {
-      "search_disabled": "Keresés nem elérhető!",
-      "search_name": "Név",
-      "search_id": "Azonosító",
-      "search_effect": "Hatás",
       "sort_po": "Rendezés közrend szerint",
       "sort_pot": "Rendezés közrend/egység szerint",
       "show_all": "Összes dísz megjelenítése",
       "show_new": "Csak az új díszek",
       "show_selected_effect": "Kiválasztott hatás",
       "size_filter": "Méret szűrő",
-      "search_placeholder_prefix": "Keresés: ",
       "show_all_short": "Összes dísz",
       "show_new_short": "Csak az új díszek"
     }
@@ -158,17 +133,12 @@
     "fusion_target": "Țintă",
     "fusion_both": "Sursă & Țintă",
     "filters": {
-      "search_disabled": "Căutarea nu este disponibilă!",
-      "search_name": "Nume",
-      "search_id": "ID",
-      "search_effect": "Efect",
       "sort_po": "Sortare după Ordine publică",
       "sort_pot": "Sortare după Ordine publică/pătrat",
       "show_all": "Afișează toate decorațiunile",
       "show_new": "Afișează doar decorațiunile noi",
       "show_selected_effect": "Efect selectat",
       "size_filter": "Filtru dimensiune",
-      "search_placeholder_prefix": "Caută după: ",
       "show_all_short": "Afișează toate decorațiunile",
       "show_new_short": "Afișează doar decorațiunile noi"
     }
@@ -187,17 +157,12 @@
     "fusion_target": "Objetivo",
     "fusion_both": "Fuente & Objetivo",
     "filters": {
-      "search_disabled": "¡Búsqueda no disponible!",
-      "search_name": "Nombre",
-      "search_id": "ID",
-      "search_effect": "Efecto",
       "sort_po": "Ordenar por Orden público",
       "sort_pot": "Ordenar por Orden público/azulejo",
       "show_all": "Mostrar todas las decoraciones",
       "show_new": "Mostrar solo decoraciones nuevas",
       "show_selected_effect": "Efecto seleccionado",
       "size_filter": "Filtro de tamaño",
-      "search_placeholder_prefix": "Buscar por: ",
       "show_all_short": "Mostrar todas las decoraciones",
       "show_new_short": "Mostrar solo decoraciones nuevas"
     }
@@ -216,17 +181,12 @@
     "fusion_target": "Цель",
     "fusion_both": "Источник & Цель",
     "filters": {
-      "search_disabled": "Поиск недоступен!",
-      "search_name": "Название",
-      "search_id": "ID",
-      "search_effect": "Эффект",
       "sort_po": "Сортировать по Общественному порядку",
       "sort_pot": "Сортировать по Общественному порядку/клетка",
       "show_all": "Показать все украшения",
       "show_new": "Показать только новые украшения",
       "show_selected_effect": "Выбранный эффект",
       "size_filter": "Фильтр размера",
-      "search_placeholder_prefix": "Поиск по: ",
       "show_all_short": "Показать все украшения",
       "show_new_short": "Показать только новые"
     }
@@ -245,17 +205,12 @@
     "fusion_target": "Στόχος",
     "fusion_both": "Πηγή & Στόχος",
     "filters": {
-      "search_disabled": "Η αναζήτηση δεν είναι διαθέσιμη!",
-      "search_name": "Όνομα",
-      "search_id": "ID",
-      "search_effect": "Εφέ",
       "sort_po": "Ταξινόμηση κατά Δημόσια τάξη",
       "sort_pot": "Ταξινόμηση κατά Δημόσια τάξη/πλακάκι",
       "show_all": "Εμφάνιση όλων των διακοσμήσεων",
       "show_new": "Εμφάνιση μόνο νέων διακοσμήσεων",
       "show_selected_effect": "Επιλεγμένο εφέ",
       "size_filter": "Φίλτρο μεγέθους",
-      "search_placeholder_prefix": "Αναζήτηση με: ",
       "show_all_short": "Εμφάνιση όλων των διακοσμήσεων",
       "show_new_short": "Εμφάνιση μόνο νέων διακοσμήσεων"
     }
@@ -274,17 +229,12 @@
     "fusion_target": "Doel",
     "fusion_both": "Bron & Doel",
     "filters": {
-      "search_disabled": "Zoeken niet beschikbaar!",
-      "search_name": "Naam",
-      "search_id": "ID",
-      "search_effect": "Effect",
       "sort_po": "Sorteren op Openbare orde",
       "sort_pot": "Sorteren op Openbare orde/tegel",
       "show_all": "Alle decoraties tonen",
       "show_new": "Alleen nieuwe decoraties tonen",
       "show_selected_effect": "Geselecteerd effect",
       "size_filter": "Groottefilter",
-      "search_placeholder_prefix": "Zoeken op: ",
       "show_all_short": "Alle decoraties tonen",
       "show_new_short": "Alleen nieuwe decoraties tonen"
     }
@@ -303,17 +253,12 @@
     "fusion_target": "Cíl",
     "fusion_both": "Zdroj & Cíl",
     "filters": {
-      "search_disabled": "Vyhledávání není dostupné!",
-      "search_name": "Název",
-      "search_id": "ID",
-      "search_effect": "Efekt",
       "sort_po": "Řadit podle Veřejného pořádku",
       "sort_pot": "Řadit podle Veřejného pořádku/dlaždice",
       "show_all": "Zobrazit všechny dekorace",
       "show_new": "Zobrazit pouze nové dekorace",
       "show_selected_effect": "Vybraný efekt",
       "size_filter": "Filtr velikosti",
-      "search_placeholder_prefix": "Hledat podle: ",
       "show_all_short": "Zobrazit všechny dekorace",
       "show_new_short": "Zobrazit pouze nové dekorace"
     }
@@ -332,17 +277,12 @@
     "fusion_target": "هدف",
     "fusion_both": "مصدر & هدف",
     "filters": {
-      "search_disabled": "البحث غير متاح!",
-      "search_name": "الاسم",
-      "search_id": "المعرف",
-      "search_effect": "التأثير",
       "sort_po": "الترتيب حسب النظام العام",
       "sort_pot": "الترتيب حسب النظام العام/بلاطة",
       "show_all": "عرض جميع الزخارف",
       "show_new": "عرض الزخارف الجديدة فقط",
       "show_selected_effect": "التأثير المختار",
       "size_filter": "تصفية حسب الحجم",
-      "search_placeholder_prefix": "البحث بواسطة: ",
       "show_all_short": "عرض جميع الزخارف",
       "show_new_short": "عرض الزخارف الجديدة فقط"
     }
@@ -361,17 +301,12 @@
     "fusion_target": "Obiettivo",
     "fusion_both": "Fonte & Obiettivo",
     "filters": {
-      "search_disabled": "Ricerca non disponibile!",
-      "search_name": "Nome",
-      "search_id": "ID",
-      "search_effect": "Effetto",
       "sort_po": "Ordina per Ordine pubblico",
       "sort_pot": "Ordina per Ordine pubblico/piastrella",
       "show_all": "Mostra tutte le decorazioni",
       "show_new": "Mostra solo le nuove decorazioni",
       "show_selected_effect": "Effetto selezionato",
       "size_filter": "Filtro dimensione",
-      "search_placeholder_prefix": "Cerca per: ",
       "show_all_short": "Mostra tutte le decorazioni",
       "show_new_short": "Mostra solo le nuove decorazioni"
     }
@@ -390,17 +325,12 @@
     "fusion_target": "ターゲット",
     "fusion_both": "ソース & ターゲット",
     "filters": {
-      "search_disabled": "検索は利用できません！",
-      "search_name": "名前",
-      "search_id": "ID",
-      "search_effect": "効果",
       "sort_po": "公共秩序で並び替え",
       "sort_pot": "公共秩序/タイルで並び替え",
       "show_all": "すべての装飾を表示",
       "show_new": "新しい装飾のみ表示",
       "show_selected_effect": "選択した効果",
       "size_filter": "サイズフィルター",
-      "search_placeholder_prefix": "検索: ",
       "show_all_short": "すべての装飾を表示",
       "show_new_short": "新しい装飾のみ表示"
     }
@@ -419,17 +349,12 @@
     "fusion_target": "Hedef",
     "fusion_both": "Kaynak & Hedef",
     "filters": {
-      "search_disabled": "Arama kullanılamıyor!",
-      "search_name": "İsim",
-      "search_id": "ID",
-      "search_effect": "Etki",
       "sort_po": "Kamu düzenine göre sırala",
       "sort_pot": "Kamu düzeni/kareye göre sırala",
       "show_all": "Tüm dekorasyonları göster",
       "show_new": "Sadece yeni dekorasyonları göster",
       "show_selected_effect": "Seçilen etki",
       "size_filter": "Boyut filtresi",
-      "search_placeholder_prefix": "Ara: ",
       "show_all_short": "Tümünü göster",
       "show_new_short": "Yenileri göster"
     }
@@ -448,17 +373,12 @@
     "fusion_target": "Цел",
     "fusion_both": "Източник & Цел",
     "filters": {
-      "search_disabled": "Търсенето не е налично!",
-      "search_name": "Име",
-      "search_id": "ID",
-      "search_effect": "Ефект",
       "sort_po": "Сортиране по обществен ред",
       "sort_pot": "Сортиране по обществен ред/плочка",
       "show_all": "Покажи всички декорации",
       "show_new": "Покажи само новите декорации",
       "show_selected_effect": "Избран ефект",
       "size_filter": "Филтър по размер",
-      "search_placeholder_prefix": "Търсене по: ",
       "show_all_short": "Покажи всички",
       "show_new_short": "Само нови"
     }
@@ -477,17 +397,12 @@
     "fusion_target": "Alvo",
     "fusion_both": "Fonte & Alvo",
     "filters": {
-      "search_disabled": "Pesquisa indisponível!",
-      "search_name": "Nome",
-      "search_id": "ID",
-      "search_effect": "Efeito",
       "sort_po": "Ordenar por ordem pública",
       "sort_pot": "Ordenar por ordem pública/bloco",
       "show_all": "Mostrar todas as decorações",
       "show_new": "Mostrar apenas novas decorações",
       "show_selected_effect": "Efeito selecionado",
       "size_filter": "Filtro de tamanho",
-      "search_placeholder_prefix": "Pesquisar por: ",
       "show_all_short": "Mostrar todas",
       "show_new_short": "Mostrar novas"
     }
@@ -506,17 +421,12 @@
     "fusion_target": "Mål",
     "fusion_both": "Kilde & Mål",
     "filters": {
-      "search_disabled": "Søgning ikke tilgængelig!",
-      "search_name": "Navn",
-      "search_id": "ID",
-      "search_effect": "Effekt",
       "sort_po": "Sorter efter offentlig orden",
       "sort_pot": "Sorter efter offentlig orden/felt",
       "show_all": "Vis alle dekorationer",
       "show_new": "Vis kun nye dekorationer",
       "show_selected_effect": "Valgt effekt",
       "size_filter": "Størrelsesfilter",
-      "search_placeholder_prefix": "Søg efter: ",
       "show_all_short": "Vis alle",
       "show_new_short": "Kun nye"
     }
@@ -535,17 +445,12 @@
     "fusion_target": "Kohde",
     "fusion_both": "Lähde & Kohde",
     "filters": {
-      "search_disabled": "Haku ei ole käytettävissä!",
-      "search_name": "Nimi",
-      "search_id": "ID",
-      "search_effect": "Vaikutus",
       "sort_po": "Lajittele yleisen järjestyksen mukaan",
       "sort_pot": "Lajittele yleinen järjestys/ruutu",
       "show_all": "Näytä kaikki koristeet",
       "show_new": "Näytä vain uudet koristeet",
       "show_selected_effect": "Valittu vaikutus",
       "size_filter": "Kokosuodatin",
-      "search_placeholder_prefix": "Hae: ",
       "show_all_short": "Näytä kaikki",
       "show_new_short": "Vain uudet"
     }
@@ -564,17 +469,12 @@
     "fusion_target": "Mål",
     "fusion_both": "Källa & Mål",
     "filters": {
-      "search_disabled": "Sökning ej tillgänglig!",
-      "search_name": "Namn",
-      "search_id": "ID",
-      "search_effect": "Effekt",
       "sort_po": "Sortera efter allmän ordning",
       "sort_pot": "Sortera efter allmän ordning/ruta",
       "show_all": "Visa alla dekorationer",
       "show_new": "Visa endast nya dekorationer",
       "show_selected_effect": "Vald effekt",
       "size_filter": "Storleksfilter",
-      "search_placeholder_prefix": "Sök efter: ",
       "show_all_short": "Visa alla",
       "show_new_short": "Endast nya"
     }
@@ -593,17 +493,12 @@
     "fusion_target": "Mål",
     "fusion_both": "Kilde & Mål",
     "filters": {
-      "search_disabled": "Søk ikke tilgjengelig!",
-      "search_name": "Navn",
-      "search_id": "ID",
-      "search_effect": "Effekt",
       "sort_po": "Sorter etter offentlig orden",
       "sort_pot": "Sorter etter offentlig orden/rute",
       "show_all": "Vis alle dekorasjoner",
       "show_new": "Vis kun nye dekorasjoner",
       "show_selected_effect": "Valgt effekt",
       "size_filter": "Størrelsesfilter",
-      "search_placeholder_prefix": "Søk etter: ",
       "show_all_short": "Vis alle",
       "show_new_short": "Kun nye"
     }
@@ -622,17 +517,12 @@
     "fusion_target": "Cieľ",
     "fusion_both": "Zdroj & Cieľ",
     "filters": {
-      "search_disabled": "Vyhľadávanie nie je dostupné!",
-      "search_name": "Názov",
-      "search_id": "ID",
-      "search_effect": "Efekt",
       "sort_po": "Triediť podľa verejného poriadku",
       "sort_pot": "Triediť podľa verejného poriadku/dlaždica",
       "show_all": "Zobraziť všetky dekorácie",
       "show_new": "Zobraziť iba nové dekorácie",
       "show_selected_effect": "Vybraný efekt",
       "size_filter": "Filter veľkosti",
-      "search_placeholder_prefix": "Hľadať podľa: ",
       "show_all_short": "Zobraziť všetky",
       "show_new_short": "Iba nové"
     }
@@ -651,17 +541,12 @@
     "fusion_target": "대상",
     "fusion_both": "출처 & 대상",
     "filters": {
-      "search_disabled": "검색할 수 없습니다!",
-      "search_name": "이름",
-      "search_id": "ID",
-      "search_effect": "효과",
       "sort_po": "공공 질서 기준 정렬",
       "sort_pot": "공공 질서/타일 기준 정렬",
       "show_all": "모든 장식 표시",
       "show_new": "새 장식만 표시",
       "show_selected_effect": "선택된 효과",
       "size_filter": "크기 필터",
-      "search_placeholder_prefix": "검색: ",
       "show_all_short": "모두 표시",
       "show_new_short": "신규만"
     }
@@ -680,17 +565,12 @@
     "fusion_target": "Tikslas",
     "fusion_both": "Šaltinis & Tikslas",
     "filters": {
-      "search_disabled": "Paieška negalima!",
-      "search_name": "Pavadinimas",
-      "search_id": "ID",
-      "search_effect": "Efektas",
       "sort_po": "Rikiuoti pagal viešąją tvarką",
       "sort_pot": "Rikiuoti pagal viešąją tvarką/langelis",
       "show_all": "Rodyti visas dekoracijas",
       "show_new": "Rodyti tik naujas dekoracijas",
       "show_selected_effect": "Pasirinktas efektas",
       "size_filter": "Dydžio filtras",
-      "search_placeholder_prefix": "Ieškoti pagal: ",
       "show_all_short": "Rodyti visas",
       "show_new_short": "Tik naujas"
     }

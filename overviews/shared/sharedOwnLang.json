@@ -1,0 +1,338 @@
+﻿{
+  "en": {
+    "filters": {
+      "search_name": "Name",
+      "search_id": "ID",
+      "search_effect": "Effect",
+      "search_placeholder_prefix": "Search by: ",
+      "search_disabled": "Unavailable to search!"
+    },
+    "ui": {
+      "search_placeholder_name": "Search by name...",
+      "no_image": "No image",
+      "no_match_filters": "No match to the current filters."
+    }
+  },
+  "ar": {
+    "filters": {
+      "search_name": "الاسم",
+      "search_id": "المعرّف",
+      "search_effect": "التأثير",
+      "search_placeholder_prefix": "ابحث حسب: ",
+      "search_disabled": "البحث غير متاح!"
+    },
+    "ui": {
+      "search_placeholder_name": "ابحث بالاسم...",
+      "no_image": "لا توجد صورة",
+      "no_match_filters": "لا توجد نتائج تطابق عوامل التصفية الحالية."
+    }
+  },
+  "es": {
+    "filters": {
+      "search_name": "Nombre",
+      "search_id": "ID",
+      "search_effect": "Efecto",
+      "search_placeholder_prefix": "Buscar por: ",
+      "search_disabled": "¡Búsqueda no disponible!"
+    },
+    "ui": {
+      "search_placeholder_name": "Buscar por nombre...",
+      "no_image": "Sin imagen",
+      "no_match_filters": "No hay coincidencias con los filtros actuales."
+    }
+  },
+  "bg": {
+    "filters": {
+      "search_name": "Име",
+      "search_id": "ID",
+      "search_effect": "Ефект",
+      "search_placeholder_prefix": "Търсене по: ",
+      "search_disabled": "Търсенето не е налично!"
+    },
+    "ui": {
+      "search_placeholder_name": "Търси по име...",
+      "no_image": "Няма изображение",
+      "no_match_filters": "Няма съвпадения с текущите филтри."
+    }
+  },
+  "pt": {
+    "filters": {
+      "search_name": "Nome",
+      "search_id": "ID",
+      "search_effect": "Efeito",
+      "search_placeholder_prefix": "Pesquisar por: ",
+      "search_disabled": "Pesquisa indisponível!"
+    },
+    "ui": {
+      "search_placeholder_name": "Pesquisar por nome...",
+      "no_image": "Sem imagem",
+      "no_match_filters": "Nenhum resultado corresponde aos filtros atuais."
+    }
+  },
+  "cs": {
+    "filters": {
+      "search_name": "Název",
+      "search_id": "ID",
+      "search_effect": "Efekt",
+      "search_placeholder_prefix": "Hledat podle: ",
+      "search_disabled": "Vyhledávání není dostupné!"
+    },
+    "ui": {
+      "search_placeholder_name": "Hledat podle názvu...",
+      "no_image": "Bez obrázku",
+      "no_match_filters": "Žádná shoda pro aktuální filtry."
+    }
+  },
+  "de": {
+    "filters": {
+      "search_name": "Name",
+      "search_id": "ID",
+      "search_effect": "Effekt",
+      "search_placeholder_prefix": "Suche nach: ",
+      "search_disabled": "Suche nicht verfügbar!"
+    },
+    "ui": {
+      "search_placeholder_name": "Nach Namen suchen...",
+      "no_image": "Kein Bild",
+      "no_match_filters": "Keine Treffer für die aktuellen Filter."
+    }
+  },
+  "da": {
+    "filters": {
+      "search_name": "Navn",
+      "search_id": "ID",
+      "search_effect": "Effekt",
+      "search_placeholder_prefix": "Søg efter: ",
+      "search_disabled": "Søgning er ikke tilgængelig!"
+    },
+    "ui": {
+      "search_placeholder_name": "Søg efter navn...",
+      "no_image": "Intet billede",
+      "no_match_filters": "Ingen resultater matcher de nuværende filtre."
+    }
+  },
+  "fi": {
+    "filters": {
+      "search_name": "Nimi",
+      "search_id": "ID",
+      "search_effect": "Tehoste",
+      "search_placeholder_prefix": "Hae: ",
+      "search_disabled": "Haku ei ole käytettävissä!"
+    },
+    "ui": {
+      "search_placeholder_name": "Hae nimellä...",
+      "no_image": "Ei kuvaa",
+      "no_match_filters": "Nykyisillä suodattimilla ei löytynyt osumia."
+    }
+  },
+  "fr": {
+    "filters": {
+      "search_name": "Nom",
+      "search_id": "ID",
+      "search_effect": "Effet",
+      "search_placeholder_prefix": "Rechercher par : ",
+      "search_disabled": "Recherche indisponible !"
+    },
+    "ui": {
+      "search_placeholder_name": "Rechercher par nom...",
+      "no_image": "Pas d'image",
+      "no_match_filters": "Aucun résultat ne correspond aux filtres actuels."
+    }
+  },
+  "el": {
+    "filters": {
+      "search_name": "Όνομα",
+      "search_id": "ID",
+      "search_effect": "Εφέ",
+      "search_placeholder_prefix": "Αναζήτηση κατά: ",
+      "search_disabled": "Η αναζήτηση δεν είναι διαθέσιμη!"
+    },
+    "ui": {
+      "search_placeholder_name": "Αναζήτηση με όνομα...",
+      "no_image": "Χωρίς εικόνα",
+      "no_match_filters": "Δεν υπάρχουν αποτελέσματα για τα τρέχοντα φίλτρα."
+    }
+  },
+  "hu": {
+    "filters": {
+      "search_name": "Név",
+      "search_id": "Azonosító",
+      "search_effect": "Hatás",
+      "search_placeholder_prefix": "Keresés: ",
+      "search_disabled": "Keresés nem elérhető!"
+    },
+    "ui": {
+      "search_placeholder_name": "Keresés név alapján...",
+      "no_image": "Nincs kép",
+      "no_match_filters": "Nincs találat a jelenlegi szűrőkre."
+    }
+  },
+  "it": {
+    "filters": {
+      "search_name": "Nome",
+      "search_id": "ID",
+      "search_effect": "Effetto",
+      "search_placeholder_prefix": "Cerca per: ",
+      "search_disabled": "Ricerca non disponibile!"
+    },
+    "ui": {
+      "search_placeholder_name": "Cerca per nome...",
+      "no_image": "Nessuna immagine",
+      "no_match_filters": "Nessun risultato corrisponde ai filtri attuali."
+    }
+  },
+  "ja": {
+    "filters": {
+      "search_name": "名前",
+      "search_id": "ID",
+      "search_effect": "効果",
+      "search_placeholder_prefix": "検索条件: ",
+      "search_disabled": "検索は利用できません！"
+    },
+    "ui": {
+      "search_placeholder_name": "名前で検索...",
+      "no_image": "画像なし",
+      "no_match_filters": "現在のフィルターに一致する結果がありません。"
+    }
+  },
+  "ko": {
+    "filters": {
+      "search_name": "이름",
+      "search_id": "ID",
+      "search_effect": "효과",
+      "search_placeholder_prefix": "다음으로 검색: ",
+      "search_disabled": "검색을 사용할 수 없습니다!"
+    },
+    "ui": {
+      "search_placeholder_name": "이름으로 검색...",
+      "no_image": "이미지 없음",
+      "no_match_filters": "현재 필터와 일치하는 결과가 없습니다."
+    }
+  },
+  "lt": {
+    "filters": {
+      "search_name": "Pavadinimas",
+      "search_id": "ID",
+      "search_effect": "Efektas",
+      "search_placeholder_prefix": "Ieškoti pagal: ",
+      "search_disabled": "Paieška nepasiekiama!"
+    },
+    "ui": {
+      "search_placeholder_name": "Ieškoti pagal pavadinimą...",
+      "no_image": "Nėra vaizdo",
+      "no_match_filters": "Pagal dabartinius filtrus atitikmenų nerasta."
+    }
+  },
+  "nl": {
+    "filters": {
+      "search_name": "Naam",
+      "search_id": "ID",
+      "search_effect": "Effect",
+      "search_placeholder_prefix": "Zoeken op: ",
+      "search_disabled": "Zoeken is niet beschikbaar!"
+    },
+    "ui": {
+      "search_placeholder_name": "Zoeken op naam...",
+      "no_image": "Geen afbeelding",
+      "no_match_filters": "Geen resultaten voor de huidige filters."
+    }
+  },
+  "no": {
+    "filters": {
+      "search_name": "Navn",
+      "search_id": "ID",
+      "search_effect": "Effekt",
+      "search_placeholder_prefix": "Søk etter: ",
+      "search_disabled": "Søk er ikke tilgjengelig!"
+    },
+    "ui": {
+      "search_placeholder_name": "Søk etter navn...",
+      "no_image": "Ingen bilde",
+      "no_match_filters": "Ingen treff for gjeldende filtre."
+    }
+  },
+  "pl": {
+    "filters": {
+      "search_name": "Nazwa",
+      "search_id": "ID",
+      "search_effect": "Efekt",
+      "search_placeholder_prefix": "Szukaj po: ",
+      "search_disabled": "Wyszukiwanie niedostępne!"
+    },
+    "ui": {
+      "search_placeholder_name": "Szukaj po nazwie...",
+      "no_image": "Brak obrazu",
+      "no_match_filters": "Brak dopasowań do bieżących filtrów."
+    }
+  },
+  "ro": {
+    "filters": {
+      "search_name": "Nume",
+      "search_id": "ID",
+      "search_effect": "Efect",
+      "search_placeholder_prefix": "Caută după: ",
+      "search_disabled": "Căutarea nu este disponibilă!"
+    },
+    "ui": {
+      "search_placeholder_name": "Caută după nume...",
+      "no_image": "Fără imagine",
+      "no_match_filters": "Nicio potrivire pentru filtrele curente."
+    }
+  },
+  "ru": {
+    "filters": {
+      "search_name": "Название",
+      "search_id": "ID",
+      "search_effect": "Эффект",
+      "search_placeholder_prefix": "Поиск по: ",
+      "search_disabled": "Поиск недоступен!"
+    },
+    "ui": {
+      "search_placeholder_name": "Поиск по названию...",
+      "no_image": "Нет изображения",
+      "no_match_filters": "Нет совпадений с текущими фильтрами."
+    }
+  },
+  "sv": {
+    "filters": {
+      "search_name": "Namn",
+      "search_id": "ID",
+      "search_effect": "Effekt",
+      "search_placeholder_prefix": "Sök efter: ",
+      "search_disabled": "Sökning är inte tillgänglig!"
+    },
+    "ui": {
+      "search_placeholder_name": "Sök efter namn...",
+      "no_image": "Ingen bild",
+      "no_match_filters": "Inga träffar för de aktuella filtren."
+    }
+  },
+  "sk": {
+    "filters": {
+      "search_name": "Názov",
+      "search_id": "ID",
+      "search_effect": "Efekt",
+      "search_placeholder_prefix": "Hľadať podľa: ",
+      "search_disabled": "Vyhľadávanie nie je dostupné!"
+    },
+    "ui": {
+      "search_placeholder_name": "Hľadať podľa názvu...",
+      "no_image": "Žiadny obrázok",
+      "no_match_filters": "Žiadna zhoda pre aktuálne filtre."
+    }
+  },
+  "tr": {
+    "filters": {
+      "search_name": "Ad",
+      "search_id": "ID",
+      "search_effect": "Etki",
+      "search_placeholder_prefix": "Şuna göre ara: ",
+      "search_disabled": "Arama kullanılamıyor!"
+    },
+    "ui": {
+      "search_placeholder_name": "Ada göre ara...",
+      "no_image": "Görsel yok",
+      "no_match_filters": "Mevcut filtrelerle eşleşme yok."
+    }
+  }
+}

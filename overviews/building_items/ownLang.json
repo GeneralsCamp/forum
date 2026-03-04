@@ -1,10 +1,6 @@
 {
   "en": {
     "filters": {
-      "search_name": "Name",
-      "search_id": "ID",
-      "search_effect": "Effect",
-      "search_placeholder_prefix": "Search by: ",
       "show_all": "Show all items",
       "show_new": "Show only new items",
       "type_filter": "Type Filter",
@@ -12,9 +8,7 @@
       "type_temporary": "Temporary",
       "type_appearance": "Appearance",
       "type_primary": "Primary",
-      "type_relic": "Relic",
-      "search_disabled": "Unavailable to search!"
-    },
+      "type_relic": "Relic"},
     "ui": {
       "public_order": "Public order",
       "effects": "Effects",
@@ -44,10 +38,6 @@
   },
   "de": {
     "filters": {
-      "search_name": "Name",
-      "search_id": "ID",
-      "search_effect": "Effekt",
-      "search_placeholder_prefix": "Suche: ",
       "show_all": "Alle anzeigen",
       "show_new": "Nur neue",
       "type_filter": "Typfilter",
@@ -55,9 +45,7 @@
       "type_temporary": "Temporär",
       "type_appearance": "Aussehen",
       "type_primary": "Primär",
-      "type_relic": "Relikt",
-      "search_disabled": "Suche nicht verfügbar!"
-    },
+      "type_relic": "Relikt"},
     "ui": {
       "public_order": "Öffentliche Ordnung",
       "effects": "Effekte",
@@ -87,10 +75,6 @@
   },
   "fr": {
     "filters": {
-      "search_name": "Nom",
-      "search_id": "ID",
-      "search_effect": "Effet",
-      "search_placeholder_prefix": "Recherche : ",
       "show_all": "Tout afficher",
       "show_new": "Nouveaux seulement",
       "type_filter": "Filtre de type",
@@ -98,9 +82,7 @@
       "type_temporary": "Temporaire",
       "type_appearance": "Apparence",
       "type_primary": "Primaire",
-      "type_relic": "Relique",
-      "search_disabled": "Recherche indisponible !"
-    },
+      "type_relic": "Relique"},
     "ui": {
       "public_order": "Ordre public",
       "effects": "Effets",
@@ -130,10 +112,6 @@
   },
   "hu": {
     "filters": {
-      "search_name": "Név",
-      "search_id": "Azonosító",
-      "search_effect": "Hatás",
-      "search_placeholder_prefix": "Keresés: ",
       "show_all": "Összes tárgy",
       "show_new": "Csak új tárgyak",
       "type_filter": "Típus szűrő",
@@ -141,9 +119,7 @@
       "type_temporary": "Ideiglenes",
       "type_appearance": "Kinézet",
       "type_primary": "Elsődleges",
-      "type_relic": "Relikvia",
-      "search_disabled": "Keresés nem elérhető!"
-    },
+      "type_relic": "Relikvia"},
     "ui": {
       "public_order": "Közrend",
       "effects": "Hatások",
@@ -173,10 +149,6 @@
   },
   "es": {
     "filters": {
-      "search_name": "Nombre",
-      "search_id": "ID",
-      "search_effect": "Efecto",
-      "search_placeholder_prefix": "Buscar: ",
       "show_all": "Mostrar todo",
       "show_new": "Solo nuevos",
       "type_filter": "Filtro de tipo",
@@ -184,9 +156,7 @@
       "type_temporary": "Temporal",
       "type_appearance": "Apariencia",
       "type_primary": "Primario",
-      "type_relic": "Reliquia",
-      "search_disabled": "¡Búsqueda no disponible!"
-    },
+      "type_relic": "Reliquia"},
     "ui": {
       "public_order": "Orden público",
       "effects": "Efectos",
@@ -216,10 +186,6 @@
   },
   "ru": {
     "filters": {
-      "search_name": "Название",
-      "search_id": "ID",
-      "search_effect": "Эффект",
-      "search_placeholder_prefix": "Поиск: ",
       "show_all": "Показать все",
       "show_new": "Только новые",
       "type_filter": "Фильтр типа",
@@ -227,9 +193,7 @@
       "type_temporary": "Временный",
       "type_appearance": "Внешний вид",
       "type_primary": "Основной",
-      "type_relic": "Реликвия",
-      "search_disabled": "Поиск недоступен!"
-    },
+      "type_relic": "Реликвия"},
     "ui": {
       "public_order": "Общественный порядок",
       "effects": "Эффекты",
@@ -259,10 +223,6 @@
   },
   "ja": {
     "filters": {
-      "search_name": "名前",
-      "search_id": "ID",
-      "search_effect": "効果",
-      "search_placeholder_prefix": "検索: ",
       "show_all": "すべて表示",
       "show_new": "新規のみ",
       "type_filter": "タイプフィルター",
@@ -270,9 +230,7 @@
       "type_temporary": "一時",
       "type_appearance": "外観",
       "type_primary": "メイン",
-      "type_relic": "遺物",
-      "search_disabled": "検索できません！"
-    },
+      "type_relic": "遺物"},
     "ui": {
       "public_order": "公共秩序",
       "effects": "効果",
@@ -302,10 +260,6 @@
   },
   "pl": {
     "filters": {
-      "search_name": "Nazwa",
-      "search_id": "ID",
-      "search_effect": "Efekt",
-      "search_placeholder_prefix": "Szukaj: ",
       "show_all": "Pokaż wszystko",
       "show_new": "Tylko nowe",
       "type_filter": "Filtr typu",
@@ -313,9 +267,7 @@
       "type_temporary": "Tymczasowy",
       "type_appearance": "Wygląd",
       "type_primary": "Główny",
-      "type_relic": "Relikt",
-      "search_disabled": "Wyszukiwanie niedostępne!"
-    },
+      "type_relic": "Relikt"},
     "ui": {
       "public_order": "Ład publiczny",
       "effects": "Efekty",
@@ -345,10 +297,6 @@
   },
   "ro": {
     "filters": {
-      "search_name": "Nume",
-      "search_id": "ID",
-      "search_effect": "Efect",
-      "search_placeholder_prefix": "Caută: ",
       "show_all": "Arată tot",
       "show_new": "Doar noi",
       "type_filter": "Filtru tip",
@@ -356,9 +304,7 @@
       "type_temporary": "Temporar",
       "type_appearance": "Aspect",
       "type_primary": "Principal",
-      "type_relic": "Relicvă",
-      "search_disabled": "Căutare indisponibilă!"
-    },
+      "type_relic": "Relicvă"},
     "ui": {
       "public_order": "Ordine publică",
       "effects": "Efecte",
@@ -388,10 +334,6 @@
   },
   "el": {
     "filters": {
-      "search_name": "Όνομα",
-      "search_id": "ID",
-      "search_effect": "Εφέ",
-      "search_placeholder_prefix": "Αναζήτηση: ",
       "show_all": "Εμφάνιση όλων",
       "show_new": "Μόνο νέα",
       "type_filter": "Φίλτρο τύπου",
@@ -399,9 +341,7 @@
       "type_temporary": "Προσωρινό",
       "type_appearance": "Εμφάνιση",
       "type_primary": "Κύριο",
-      "type_relic": "Κειμήλιο",
-      "search_disabled": "Η αναζήτηση δεν είναι διαθέσιμη!"
-    },
+      "type_relic": "Κειμήλιο"},
     "ui": {
       "public_order": "Δημόσια τάξη",
       "effects": "Επιδράσεις",
@@ -431,10 +371,6 @@
   },
   "nl": {
     "filters": {
-      "search_name": "Naam",
-      "search_id": "ID",
-      "search_effect": "Effect",
-      "search_placeholder_prefix": "Zoeken: ",
       "show_all": "Alles tonen",
       "show_new": "Alleen nieuw",
       "type_filter": "Typefilter",
@@ -442,9 +378,7 @@
       "type_temporary": "Tijdelijk",
       "type_appearance": "Uiterlijk",
       "type_primary": "Primair",
-      "type_relic": "Reliek",
-      "search_disabled": "Zoeken niet beschikbaar!"
-    },
+      "type_relic": "Reliek"},
     "ui": {
       "public_order": "Openbare orde",
       "effects": "Effecten",
@@ -474,10 +408,6 @@
   },
   "cs": {
     "filters": {
-      "search_name": "Název",
-      "search_id": "ID",
-      "search_effect": "Efekt",
-      "search_placeholder_prefix": "Hledat: ",
       "show_all": "Zobrazit vše",
       "show_new": "Pouze nové",
       "type_filter": "Filtr typu",
@@ -485,9 +415,7 @@
       "type_temporary": "Dočasný",
       "type_appearance": "Vzhled",
       "type_primary": "Hlavní",
-      "type_relic": "Relikvie",
-      "search_disabled": "Vyhledávání není dostupné!"
-    },
+      "type_relic": "Relikvie"},
     "ui": {
       "public_order": "Veřejný pořádek",
       "effects": "Efekty",
@@ -517,10 +445,6 @@
   },
   "ar": {
     "filters": {
-      "search_name": "الاسم",
-      "search_id": "المعرف",
-      "search_effect": "التأثير",
-      "search_placeholder_prefix": "بحث: ",
       "show_all": "عرض الكل",
       "show_new": "الجديد فقط",
       "type_filter": "تصفية النوع",
@@ -528,9 +452,7 @@
       "type_temporary": "مؤقت",
       "type_appearance": "المظهر",
       "type_primary": "أساسي",
-      "type_relic": "أثر",
-      "search_disabled": "البحث غير متاح!"
-    },
+      "type_relic": "أثر"},
     "ui": {
       "public_order": "النظام العام",
       "effects": "التأثيرات",
@@ -560,10 +482,6 @@
   },
   "it": {
     "filters": {
-      "search_name": "Nome",
-      "search_id": "ID",
-      "search_effect": "Effetto",
-      "search_placeholder_prefix": "Cerca: ",
       "show_all": "Mostra tutto",
       "show_new": "Solo nuovi",
       "type_filter": "Filtro tipo",
@@ -571,9 +489,7 @@
       "type_temporary": "Temporaneo",
       "type_appearance": "Aspetto",
       "type_primary": "Primario",
-      "type_relic": "Reliquia",
-      "search_disabled": "Ricerca non disponibile!"
-    },
+      "type_relic": "Reliquia"},
     "ui": {
       "public_order": "Ordine pubblico",
       "effects": "Effetti",
@@ -603,10 +519,6 @@
   },
   "bg": {
     "filters": {
-      "search_name": "Име",
-      "search_id": "ID",
-      "search_effect": "Ефект",
-      "search_placeholder_prefix": "Търсене: ",
       "show_all": "Покажи всички",
       "show_new": "Само нови",
       "type_filter": "Филтър по тип",
@@ -614,9 +526,7 @@
       "type_temporary": "Временен",
       "type_appearance": "Външен вид",
       "type_primary": "Основен",
-      "type_relic": "Реликва",
-      "search_disabled": "Търсенето не е налично!"
-    },
+      "type_relic": "Реликва"},
     "ui": {
       "public_order": "Обществен ред",
       "effects": "Ефекти",
@@ -646,10 +556,6 @@
   },
   "pt": {
     "filters": {
-      "search_name": "Nome",
-      "search_id": "ID",
-      "search_effect": "Efeito",
-      "search_placeholder_prefix": "Pesquisar: ",
       "show_all": "Mostrar tudo",
       "show_new": "Apenas novos",
       "type_filter": "Filtro de tipo",
@@ -657,9 +563,7 @@
       "type_temporary": "Temporário",
       "type_appearance": "Aparência",
       "type_primary": "Primário",
-      "type_relic": "Relíquia",
-      "search_disabled": "Pesquisa indisponível!"
-    },
+      "type_relic": "Relíquia"},
     "ui": {
       "public_order": "Ordem pública",
       "effects": "Efeitos",
@@ -689,10 +593,6 @@
   },
   "da": {
     "filters": {
-      "search_name": "Navn",
-      "search_id": "ID",
-      "search_effect": "Effekt",
-      "search_placeholder_prefix": "Søg: ",
       "show_all": "Vis alle",
       "show_new": "Kun nye",
       "type_filter": "Typefilter",
@@ -700,9 +600,7 @@
       "type_temporary": "Midlertidig",
       "type_appearance": "Udseende",
       "type_primary": "Primær",
-      "type_relic": "Relikvie",
-      "search_disabled": "Søgning ikke tilgængelig!"
-    },
+      "type_relic": "Relikvie"},
     "ui": {
       "public_order": "Offentlig orden",
       "effects": "Effekter",
@@ -732,10 +630,6 @@
   },
   "fi": {
     "filters": {
-      "search_name": "Nimi",
-      "search_id": "ID",
-      "search_effect": "Vaikutus",
-      "search_placeholder_prefix": "Haku: ",
       "show_all": "Näytä kaikki",
       "show_new": "Vain uudet",
       "type_filter": "Tyyppisuodatin",
@@ -743,9 +637,7 @@
       "type_temporary": "Väliaikainen",
       "type_appearance": "Ulkoasu",
       "type_primary": "Ensisijainen",
-      "type_relic": "Reliikki",
-      "search_disabled": "Haku ei ole käytettävissä!"
-    },
+      "type_relic": "Reliikki"},
     "ui": {
       "public_order": "Yleinen järjestys",
       "effects": "Vaikutukset",
@@ -775,10 +667,6 @@
   },
   "sv": {
     "filters": {
-      "search_name": "Namn",
-      "search_id": "ID",
-      "search_effect": "Effekt",
-      "search_placeholder_prefix": "Sök: ",
       "show_all": "Visa alla",
       "show_new": "Endast nya",
       "type_filter": "Typfilter",
@@ -786,9 +674,7 @@
       "type_temporary": "Tillfällig",
       "type_appearance": "Utseende",
       "type_primary": "Primär",
-      "type_relic": "Relik",
-      "search_disabled": "Sökning ej tillgänglig!"
-    },
+      "type_relic": "Relik"},
     "ui": {
       "public_order": "Allmän ordning",
       "effects": "Effekter",
@@ -818,10 +704,6 @@
   },
   "no": {
     "filters": {
-      "search_name": "Navn",
-      "search_id": "ID",
-      "search_effect": "Effekt",
-      "search_placeholder_prefix": "Søk: ",
       "show_all": "Vis alle",
       "show_new": "Kun nye",
       "type_filter": "Typefilter",
@@ -829,9 +711,7 @@
       "type_temporary": "Midlertidig",
       "type_appearance": "Utseende",
       "type_primary": "Primær",
-      "type_relic": "Relikvie",
-      "search_disabled": "Søk ikke tilgjengelig!"
-    },
+      "type_relic": "Relikvie"},
     "ui": {
       "public_order": "Offentlig orden",
       "effects": "Effekter",
@@ -861,10 +741,6 @@
   },
   "sk": {
     "filters": {
-      "search_name": "Názov",
-      "search_id": "ID",
-      "search_effect": "Efekt",
-      "search_placeholder_prefix": "Hľadať: ",
       "show_all": "Zobraziť všetko",
       "show_new": "Iba nové",
       "type_filter": "Filter typu",
@@ -872,9 +748,7 @@
       "type_temporary": "Dočasný",
       "type_appearance": "Vzhľad",
       "type_primary": "Hlavný",
-      "type_relic": "Relikvia",
-      "search_disabled": "Vyhľadávanie nie je dostupné!"
-    },
+      "type_relic": "Relikvia"},
     "ui": {
       "public_order": "Verejný poriadok",
       "effects": "Efekty",
@@ -904,10 +778,6 @@
   },
   "tr": {
     "filters": {
-      "search_name": "Ad",
-      "search_id": "ID",
-      "search_effect": "Etki",
-      "search_placeholder_prefix": "Ara: ",
       "show_all": "Tümünü göster",
       "show_new": "Sadece yeni",
       "type_filter": "Tür filtresi",
@@ -915,9 +785,7 @@
       "type_temporary": "Geçici",
       "type_appearance": "Görünüm",
       "type_primary": "Birincil",
-      "type_relic": "Relik",
-      "search_disabled": "Arama kullanılamıyor!"
-    },
+      "type_relic": "Relik"},
     "ui": {
       "public_order": "Kamu düzeni",
       "effects": "Etkiler",
@@ -947,10 +815,6 @@
   },
   "ko": {
     "filters": {
-      "search_name": "이름",
-      "search_id": "ID",
-      "search_effect": "효과",
-      "search_placeholder_prefix": "검색: ",
       "show_all": "모두 표시",
       "show_new": "신규만",
       "type_filter": "유형 필터",
@@ -958,9 +822,7 @@
       "type_temporary": "임시",
       "type_appearance": "외형",
       "type_primary": "주요",
-      "type_relic": "유물",
-      "search_disabled": "검색할 수 없습니다!"
-    },
+      "type_relic": "유물"},
     "ui": {
       "public_order": "공공 질서",
       "effects": "효과",
@@ -990,10 +852,6 @@
   },
   "lt": {
     "filters": {
-      "search_name": "Pavadinimas",
-      "search_id": "ID",
-      "search_effect": "Efektas",
-      "search_placeholder_prefix": "Ieškoti: ",
       "show_all": "Rodyti viską",
       "show_new": "Tik nauji",
       "type_filter": "Tipo filtras",
@@ -1001,9 +859,7 @@
       "type_temporary": "Laikinas",
       "type_appearance": "Išvaizda",
       "type_primary": "Pagrindinis",
-      "type_relic": "Relikvija",
-      "search_disabled": "Paieška negalima!"
-    },
+      "type_relic": "Relikvija"},
     "ui": {
       "public_order": "Viešoji tvarka",
       "effects": "Efektai",
