@@ -1,4 +1,4 @@
-/* Body & Global Styles */
+/* Shared base for all calculators */
 body {
   background-color: #bd9a79;
   color: #433120;
@@ -18,10 +18,9 @@ hr {
   color: white;
 }
 
-/* Headings */
 h1 {
   background-color: rgb(119, 80, 54);
-  color: #F3C24A;
+  color: #f3c24a;
   padding: 4px;
   border-radius: 10px;
   font-weight: bolder;
@@ -32,9 +31,20 @@ h2 {
   font-size: 1.4rem;
 }
 
-/* Collapse Sections */
+.container {
+  background-color: rgb(67, 51, 38);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin-top: 0 !important;
+}
+
+.row {
+  --bs-gutter-x: 0rem;
+}
+
 .collapse-header {
-  color: #F3C24A;
+  color: #f3c24a;
   font-weight: bolder;
   background-color: rgb(119, 80, 54);
   border-radius: 10px 10px 0 0;
@@ -64,27 +74,12 @@ h2 {
   padding-bottom: 0;
 }
 
-/* Results */
 .results {
   color: white;
   font-weight: bolder;
   font-size: large;
 }
 
-/* Containers & Layout */
-.container {
-  background-color: rgb(67, 51, 38);
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  margin-top: 0 !important;
-}
-
-.row {
-  --bs-gutter-x: 0rem;
-}
-
-/* Forms */
 .form-control,
 .form-select,
 .form-select option {
@@ -122,7 +117,6 @@ label {
   padding-right: 5px;
 }
 
-/* Scrollbar */
 ::-webkit-scrollbar {
   width: 10px;
   background-color: #f2d9bb;
@@ -137,14 +131,6 @@ label {
   background-color: #f2d9bb;
 }
 
-/* Media Queries */
-@media only screen and (max-width: 1024px) {
-  .container {
-    min-width: fit-content;
-  }
-}
-
-/* Home Button */
 .home-icon-link {
   position: fixed;
   right: 10px;
@@ -173,4 +159,17 @@ label {
 .home-icon i {
   color: #f8bc00;
   font-size: 18px;
+}
+
+@media only screen and (max-width: 1399.98px) {
+  .container,
+  .container-sm,
+  .container-md,
+  .container-lg,
+  .container-xl,
+  .container-xxl {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+  }
 }

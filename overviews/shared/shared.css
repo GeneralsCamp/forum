@@ -57,6 +57,18 @@ h1 {
     }
 }
 
+@media (max-width:1399.98px) {
+    .container,
+    .container-sm,
+    .container-md,
+    .container-lg,
+    .container-xl,
+    .container-xxl {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+}
+
 .box {
     display: flex;
     border-radius: 10px;

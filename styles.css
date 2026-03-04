@@ -36,6 +36,18 @@ textarea {
     }
 }
 
+@media only screen and (max-width: 1399.98px) {
+    .container,
+    .container-sm,
+    .container-md,
+    .container-lg,
+    .container-xl,
+    .container-xxl {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+}
+
 .main-nav {
     position: sticky;
     top: 0;
