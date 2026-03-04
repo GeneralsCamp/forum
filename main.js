@@ -2,6 +2,9 @@ import { initConsentManager } from "./overviews/shared/ConsentManager.mjs";
 const FAVORITES_KEY = "gf_favorites_v1";
 const MAX_FAVORITES = 12;
 const HOME_SETTINGS_KEY = "gf_home_settings_v1";
+const KOFI_PROMPT_SEEN_KEY = "gf_kofi_prompt_seen_v1";
+const KOFI_PROMPT_OPTOUT_KEY = "gf_kofi_prompt_optout_v1";
+const KOFI_URL = "https://ko-fi.com/Y8Y11VBX5C";
 const DESKTOP_DND_ENABLED = window.matchMedia?.("(pointer:fine)").matches ?? true;
 let lastAddedFavoriteLink = "";
 let mobileReorderMode = false;
@@ -1089,6 +1092,55 @@ function setupBrandEasterEgg() {
     brand.addEventListener("pointerup", registerTap);
 }
 
+function setupKofiPrompt() {
+    const modal = document.getElementById("kofiPromptModal");
+    const poorBtn = document.getElementById("kofiPoorBtn");
+    const letsGoBtn = document.getElementById("kofiLetsGoBtn");
+    if (!modal || !poorBtn || !letsGoBtn) return;
+
+    const hasSeen = localStorage.getItem(KOFI_PROMPT_SEEN_KEY) === "1";
+    const optedOut = localStorage.getItem(KOFI_PROMPT_OPTOUT_KEY) === "1";
+    if (hasSeen || optedOut) return;
+
+    const closePrompt = () => {
+        modal.classList.remove("open");
+        modal.setAttribute("aria-hidden", "true");
+    };
+
+    const markSeen = () => localStorage.setItem(KOFI_PROMPT_SEEN_KEY, "1");
+
+    window.setTimeout(() => {
+        modal.classList.add("open");
+        modal.setAttribute("aria-hidden", "false");
+    }, 1300);
+
+    poorBtn.addEventListener("click", () => {
+        localStorage.setItem(KOFI_PROMPT_OPTOUT_KEY, "1");
+        markSeen();
+        closePrompt();
+    });
+
+    letsGoBtn.addEventListener("click", () => {
+        markSeen();
+        closePrompt();
+        window.open(KOFI_URL, "_blank", "noopener");
+    });
+
+    modal.addEventListener("click", (event) => {
+        if (!event.target.closest(".kofi-prompt-card") || event.target.closest("[data-kofi-close]")) {
+            markSeen();
+            closePrompt();
+        }
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        if (!modal.classList.contains("open")) return;
+        markSeen();
+        closePrompt();
+    });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     initConsentManager({
         measurementId: "G-8TGZRNFGRR",
@@ -1103,4 +1155,5 @@ document.addEventListener("DOMContentLoaded", () => {
     setupSearch();
     setupBrandEasterEgg();
     renderLatestVideos();
+    setupKofiPrompt();
 });
