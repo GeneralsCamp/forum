@@ -1044,14 +1044,14 @@ function setupSetOptions(wearerFilter = "all") {
   if (hasHidden) {
     const loadMoreOpt = document.createElement("option");
     loadMoreOpt.value = "__load_more__";
-    loadMoreOpt.textContent = "Load more... (show all sets)";
+    loadMoreOpt.textContent = ui("load_more_sets", "Load more... (show all sets)");
     select.appendChild(loadMoreOpt);
   }
 
   if (canShowLess) {
     const showLessOpt = document.createElement("option");
     showLessOpt.value = "__show_less__";
-    showLessOpt.textContent = `Show less...`;
+    showLessOpt.textContent = ui("show_less_sets", "Show less...");
     select.appendChild(showLessOpt);
   }
 

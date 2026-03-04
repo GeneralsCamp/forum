@@ -18,7 +18,9 @@
             "effect_label": "Effect",
             "no_sets_for_compare": "No sets available for comparison in this filter.",
             "select_2_sets_to_compare": "Select 2 sets to compare.",
-            "no_comparable_effects": "No comparable effects."
+            "no_comparable_effects": "No comparable effects.",
+            "load_more_sets": "Load more... (show all sets)",
+            "show_less_sets": "Show less..."
         }
     },
     "de": {
@@ -40,7 +42,9 @@
             "effect_label": "Effekt",
             "no_sets_for_compare": "Keine Sets für den Vergleich in diesem Filter.",
             "select_2_sets_to_compare": "Wähle 2 Sets zum Vergleichen.",
-            "no_comparable_effects": "Keine vergleichbaren Effekte."
+            "no_comparable_effects": "Keine vergleichbaren Effekte.",
+            "load_more_sets": "Mehr laden... (alle Sets anzeigen)",
+            "show_less_sets": "Weniger..."
         }
     },
     "fr": {
@@ -48,21 +52,23 @@
             "filters": "Filtres",
             "all_wearers": "Tous les porteurs",
             "loading_sets": "Chargement des ensembles...",
-            "set_pieces": "Pièces d\u0027ensemble",
-            "set_bonuses": "Bonus d\u0027ensemble",
+            "set_pieces": "Pièces d'ensemble",
+            "set_bonuses": "Bonus d'ensemble",
             "effect_summary": "Résumé des effets",
-            "set_bonus_view": "Vue bonus d\u0027ensemble",
+            "set_bonus_view": "Vue bonus d'ensemble",
             "effect_summary_view": "Vue résumé des effets",
             "pieces_suffix": "pièces",
             "no_sets": "Aucun ensemble trouvé pour ce filtre.",
-            "no_set_milestones": "Aucune donnée de palier d\u0027ensemble.",
+            "no_set_milestones": "Aucune donnée de palier d'ensemble.",
             "no_pieces_found": "Aucune pièce trouvée.",
             "compare_sets_view": "Vue de comparaison des ensembles",
-            "set_comparison_view": "Vue de comparaison d\u0027ensembles",
+            "set_comparison_view": "Vue de comparaison d'ensembles",
             "effect_label": "Effet",
             "no_sets_for_compare": "Aucun ensemble disponible pour la comparaison avec ce filtre.",
             "select_2_sets_to_compare": "Sélectionnez 2 ensembles à comparer.",
-            "no_comparable_effects": "Aucun effet comparable."
+            "no_comparable_effects": "Aucun effet comparable.",
+            "load_more_sets": "Charger plus... (afficher tous les ensembles)",
+            "show_less_sets": "Afficher moins..."
         }
     },
     "pl": {
@@ -84,7 +90,9 @@
             "effect_label": "Efekt",
             "no_sets_for_compare": "Brak zestawów do porównania dla tego filtra.",
             "select_2_sets_to_compare": "Wybierz 2 zestawy do porównania.",
-            "no_comparable_effects": "Brak porównywalnych efektów."
+            "no_comparable_effects": "Brak porównywalnych efektów.",
+            "load_more_sets": "Załaduj więcej... (pokaż wszystkie zestawy)",
+            "show_less_sets": "Pokaż mniej..."
         }
     },
     "hu": {
@@ -106,7 +114,9 @@
             "effect_label": "Hatás",
             "no_sets_for_compare": "Ehhez a szűrőhöz nincs összehasonlítható szett.",
             "select_2_sets_to_compare": "Válassz 2 szettet az összehasonlításhoz.",
-            "no_comparable_effects": "Nincs összehasonlítható hatás."
+            "no_comparable_effects": "Nincs összehasonlítható hatás.",
+            "load_more_sets": "Továbbiak betöltése... (az összes szett megjelenítése)",
+            "show_less_sets": "Kevesebb megjelenítése"
         }
     },
     "ro": {
@@ -128,7 +138,9 @@
             "effect_label": "Efect",
             "no_sets_for_compare": "Nu există seturi disponibile pentru comparație în acest filtru.",
             "select_2_sets_to_compare": "Selectează 2 seturi pentru comparație.",
-            "no_comparable_effects": "Nu există efecte comparabile."
+            "no_comparable_effects": "Nu există efecte comparabile.",
+            "load_more_sets": "Încărcați mai multe... (afișați toate seturile)",
+            "show_less_sets": "Afișează mai puțin"
         }
     },
     "es": {
@@ -150,7 +162,9 @@
             "effect_label": "Efecto",
             "no_sets_for_compare": "No hay conjuntos disponibles para comparar con este filtro.",
             "select_2_sets_to_compare": "Selecciona 2 conjuntos para comparar.",
-            "no_comparable_effects": "No hay efectos comparables."
+            "no_comparable_effects": "No hay efectos comparables.",
+            "load_more_sets": "Cargar más... (mostrar todos los conjuntos)",
+            "show_less_sets": "Mostrar menos..."
         }
     },
     "ru": {
@@ -172,7 +186,9 @@
             "effect_label": "Эффект",
             "no_sets_for_compare": "Для этого фильтра нет наборов для сравнения.",
             "select_2_sets_to_compare": "Выберите 2 набора для сравнения.",
-            "no_comparable_effects": "Нет сравнимых эффектов."
+            "no_comparable_effects": "Нет сравнимых эффектов.",
+            "load_more_sets": "Загрузить еще... (показать все наборы)",
+            "show_less_sets": "Показать меньше"
         }
     },
     "el": {
@@ -194,7 +210,9 @@
             "effect_label": "Εφέ",
             "no_sets_for_compare": "Δεν υπάρχουν διαθέσιμα σετ για σύγκριση σε αυτό το φίλτρο.",
             "select_2_sets_to_compare": "Επιλέξτε 2 σετ για σύγκριση.",
-            "no_comparable_effects": "Δεν υπάρχουν συγκρίσιμα εφέ."
+            "no_comparable_effects": "Δεν υπάρχουν συγκρίσιμα εφέ.",
+            "load_more_sets": "Φόρτωση περισσότερων... (εμφάνιση όλων των σετ)",
+            "show_less_sets": "Δείτε λιγότερα"
         }
     },
     "nl": {
@@ -216,7 +234,9 @@
             "effect_label": "Effect",
             "no_sets_for_compare": "Geen sets beschikbaar om te vergelijken in dit filter.",
             "select_2_sets_to_compare": "Selecteer 2 sets om te vergelijken.",
-            "no_comparable_effects": "Geen vergelijkbare effecten."
+            "no_comparable_effects": "Geen vergelijkbare effecten.",
+            "load_more_sets": "Meer laden... (alle sets weergeven)",
+            "show_less_sets": "Toon minder"
         }
     },
     "cs": {
@@ -238,7 +258,9 @@
             "effect_label": "Efekt",
             "no_sets_for_compare": "Pro tento filtr nejsou k dispozici žádné sady k porovnání.",
             "select_2_sets_to_compare": "Vyberte 2 sady k porovnání.",
-            "no_comparable_effects": "Žádné porovnatelné efekty."
+            "no_comparable_effects": "Žádné porovnatelné efekty.",
+            "load_more_sets": "Načíst další... (zobrazit všechny sady)",
+            "show_less_sets": "Zobrazit méně"
         }
     },
     "ar": {
@@ -260,7 +282,9 @@
             "effect_label": "التأثير",
             "no_sets_for_compare": "لا توجد أطقم متاحة للمقارنة في هذا الفلتر.",
             "select_2_sets_to_compare": "اختر طقمين للمقارنة.",
-            "no_comparable_effects": "لا توجد تأثيرات قابلة للمقارنة."
+            "no_comparable_effects": "لا توجد تأثيرات قابلة للمقارنة.",
+            "load_more_sets": "تحميل المزيد... (عرض جميع المجموعات)",
+            "show_less_sets": "عرض أقل"
         }
     },
     "it": {
@@ -282,7 +306,9 @@
             "effect_label": "Effetto",
             "no_sets_for_compare": "Nessun set disponibile per il confronto con questo filtro.",
             "select_2_sets_to_compare": "Seleziona 2 set da confrontare.",
-            "no_comparable_effects": "Nessun effetto comparabile."
+            "no_comparable_effects": "Nessun effetto comparabile.",
+            "load_more_sets": "Carica altro... (mostra tutti i set)",
+            "show_less_sets": "Mostra meno..."
         }
     },
     "ja": {
@@ -304,7 +330,9 @@
             "effect_label": "効果",
             "no_sets_for_compare": "このフィルターで比較できるセットはありません。",
             "select_2_sets_to_compare": "比較するセットを2つ選択してください。",
-            "no_comparable_effects": "比較可能な効果がありません。"
+            "no_comparable_effects": "比較可能な効果がありません。",
+            "load_more_sets": "さらに読み込む... （すべてのセットを表示）",
+            "show_less_sets": "簡易表示"
         }
     },
     "bg": {
@@ -326,7 +354,9 @@
             "effect_label": "Ефект",
             "no_sets_for_compare": "Няма налични сетове за сравнение за този филтър.",
             "select_2_sets_to_compare": "Изберете 2 сета за сравнение.",
-            "no_comparable_effects": "Няма сравними ефекти."
+            "no_comparable_effects": "Няма сравними ефекти.",
+            "load_more_sets": "Зареждане на още... (показване на всички комплекти)",
+            "show_less_sets": "Показване на по-малко"
         }
     },
     "pt": {
@@ -348,7 +378,9 @@
             "effect_label": "Efeito",
             "no_sets_for_compare": "Não há conjuntos disponíveis para comparação neste filtro.",
             "select_2_sets_to_compare": "Selecione 2 conjuntos para comparar.",
-            "no_comparable_effects": "Não há efeitos comparáveis."
+            "no_comparable_effects": "Não há efeitos comparáveis.",
+            "load_more_sets": "Carregar mais... (mostrar todos os conjuntos)",
+            "show_less_sets": "Mostrar menos"
         }
     },
     "da": {
@@ -370,7 +402,9 @@
             "effect_label": "Effekt",
             "no_sets_for_compare": "Ingen sæt er tilgængelige til sammenligning i dette filter.",
             "select_2_sets_to_compare": "Vælg 2 sæt til sammenligning.",
-            "no_comparable_effects": "Ingen sammenlignelige effekter."
+            "no_comparable_effects": "Ingen sammenlignelige effekter.",
+            "load_more_sets": "Indlæs mere... (vis alle sæt)",
+            "show_less_sets": "Vis mindre"
         }
     },
     "fi": {
@@ -392,7 +426,9 @@
             "effect_label": "Vaikutus",
             "no_sets_for_compare": "Tässä suodattimessa ei ole vertailtavia settejä.",
             "select_2_sets_to_compare": "Valitse 2 settiä vertailuun.",
-            "no_comparable_effects": "Vertailukelpoisia vaikutuksia ei ole."
+            "no_comparable_effects": "Vertailukelpoisia vaikutuksia ei ole.",
+            "load_more_sets": "Lataa lisää... (näytä kaikki sarjat)",
+            "show_less_sets": "Näytä vähemmän..."
         }
     },
     "ko": {
@@ -414,7 +450,9 @@
             "effect_label": "효과",
             "no_sets_for_compare": "이 필터에서 비교할 수 있는 세트가 없습니다.",
             "select_2_sets_to_compare": "비교할 세트 2개를 선택하세요.",
-            "no_comparable_effects": "비교 가능한 효과가 없습니다."
+            "no_comparable_effects": "비교 가능한 효과가 없습니다.",
+            "load_more_sets": "더 로드... (모든 세트 표시)",
+            "show_less_sets": "적게 보기"
         }
     },
     "lt": {
@@ -436,7 +474,9 @@
             "effect_label": "Efektas",
             "no_sets_for_compare": "Šiame filtre nėra rinkinių palyginimui.",
             "select_2_sets_to_compare": "Pasirinkite 2 rinkinius palyginimui.",
-            "no_comparable_effects": "Nėra palyginamų efektų."
+            "no_comparable_effects": "Nėra palyginamų efektų.",
+            "load_more_sets": "Įkelti daugiau... (rodyti visus rinkinius)",
+            "show_less_sets": "Rodyti mažiau"
         }
     },
     "no": {
@@ -458,7 +498,9 @@
             "effect_label": "Effekt",
             "no_sets_for_compare": "Ingen sett er tilgjengelige for sammenligning i dette filteret.",
             "select_2_sets_to_compare": "Velg 2 sett for sammenligning.",
-            "no_comparable_effects": "Ingen sammenlignbare effekter."
+            "no_comparable_effects": "Ingen sammenlignbare effekter.",
+            "load_more_sets": "Last inn mer... (vis alle sett)",
+            "show_less_sets": "Vis mindre"
         }
     },
     "sv": {
@@ -480,7 +522,9 @@
             "effect_label": "Effekt",
             "no_sets_for_compare": "Inga set är tillgängliga för jämförelse i detta filter.",
             "select_2_sets_to_compare": "Välj 2 set att jämföra.",
-            "no_comparable_effects": "Inga jämförbara effekter."
+            "no_comparable_effects": "Inga jämförbara effekter.",
+            "load_more_sets": "Ladda mer... (visa alla uppsättningar)",
+            "show_less_sets": "Visa mindre"
         }
     },
     "sk": {
@@ -502,7 +546,9 @@
             "effect_label": "Efekt",
             "no_sets_for_compare": "Pre tento filter nie sú dostupné žiadne sety na porovnanie.",
             "select_2_sets_to_compare": "Vyberte 2 sety na porovnanie.",
-            "no_comparable_effects": "Žiadne porovnateľné efekty."
+            "no_comparable_effects": "Žiadne porovnateľné efekty.",
+            "load_more_sets": "Načítať viac... (zobraziť všetky sady)",
+            "show_less_sets": "Zobraziť menej"
         }
     },
     "tr": {
@@ -524,7 +570,9 @@
             "effect_label": "Etki",
             "no_sets_for_compare": "Bu filtrede karşılaştırma için kullanılabilir set yok.",
             "select_2_sets_to_compare": "Karşılaştırmak için 2 set seçin.",
-            "no_comparable_effects": "Karşılaştırılabilir etki yok."
+            "no_comparable_effects": "Karşılaştırılabilir etki yok.",
+            "load_more_sets": "Daha fazla yükle... (tüm setleri göster)",
+            "show_less_sets": "Daha az..."
         }
     }
 }
