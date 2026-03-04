@@ -3,7 +3,8 @@ body {
     color: #433120;
 }
 
-body, body * {
+body,
+body * {
     -webkit-user-select: none;
     user-select: none;
 }
@@ -16,7 +17,8 @@ body.scroll-locked {
     overflow: hidden;
 }
 
-input, textarea {
+input,
+textarea {
     -webkit-user-select: text;
     user-select: text;
 }
@@ -330,7 +332,8 @@ p {
     transform: none;
 }
 
-@media (hover: none), (pointer: coarse) {
+@media (hover: none),
+(pointer: coarse) {
     .category-card-shell:hover .category-box {
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.35);
         border-color: rgba(255, 255, 255, 0.9);
@@ -570,17 +573,39 @@ body.favorites-reorder-mode #favorites .category-card-shell.is-reorder-active .f
 }
 
 @keyframes fav-pop {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.12); }
-    100% { transform: scale(1); }
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.12);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }
 
 @keyframes fav-limit-hit {
-    0% { transform: translateX(0); }
-    25% { transform: translateX(-2px); }
-    50% { transform: translateX(2px); }
-    75% { transform: translateX(-1px); }
-    100% { transform: translateX(0); }
+    0% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-2px);
+    }
+
+    50% {
+        transform: translateX(2px);
+    }
+
+    75% {
+        transform: translateX(-1px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
 }
 
 @keyframes card-enter {
@@ -588,6 +613,7 @@ body.favorites-reorder-mode #favorites .category-card-shell.is-reorder-active .f
         opacity: 0;
         transform: translateY(8px) scale(0.98);
     }
+
     100% {
         opacity: 1;
         transform: translateY(0) scale(1);
@@ -599,6 +625,7 @@ body.favorites-reorder-mode #favorites .category-card-shell.is-reorder-active .f
         opacity: 1;
         transform: translateY(0) scale(1);
     }
+
     100% {
         opacity: 0;
         transform: translateY(-6px) scale(0.97);
@@ -656,6 +683,7 @@ body.favorites-reorder-mode #favorites .category-card-shell.is-reorder-active .f
 }
 
 @media only screen and (max-width: 700px) {
+
     .video-grid::-webkit-scrollbar,
     .now-grid::-webkit-scrollbar {
         height: 4px;
@@ -855,85 +883,63 @@ body.favorites-reorder-mode #favorites .category-card-shell.is-reorder-active .f
     border-bottom-color: rgba(243, 194, 74, 1);
 }
 
-.kofi-prompt-modal {
-    position: fixed;
-    inset: 0;
-    z-index: 1100;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s ease;
+.kofi-inline-bar {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    gap: 10px;
+    margin: 4px 0 10px;
+    padding: 10px 12px;
+    border: 1px solid rgba(243, 194, 74, 0.55);
+    border-radius: 12px;
+    background: linear-gradient(180deg, rgba(150, 103, 68, 0.95), rgba(126, 87, 58, 0.95));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 2px 8px rgba(0, 0, 0, 0.18);
 }
 
-.kofi-prompt-modal.open {
-    opacity: 1;
-    pointer-events: auto;
+.kofi-inline-bar.open {
+    display: flex;
 }
 
-.kofi-prompt-backdrop {
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.48);
-}
-
-.kofi-prompt-card {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%) scale(0.97);
-    width: min(420px, calc(100% - 22px));
-    background: linear-gradient(180deg, rgb(150, 103, 68), rgb(126, 87, 58));
-    border: 2px solid rgba(243, 194, 74, 0.7);
-    border-radius: 14px;
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
-    padding: 12px;
-    opacity: 0;
-    transition: transform 0.2s ease, opacity 0.2s ease;
-}
-
-.kofi-prompt-modal.open .kofi-prompt-card {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 1;
-}
-
-.kofi-prompt-card h3 {
-    margin: 0;
-    color: #f3c24a;
-    font-size: 21px;
-    font-weight: 900;
-}
-
-.kofi-prompt-card p {
-    margin: 8px 0 0;
+.kofi-inline-text {
     color: #f2d9bb;
     font-size: 14px;
-    line-height: 1.35;
+    line-height: 1.3;
     font-weight: 700;
 }
 
-.kofi-prompt-actions {
-    margin-top: 12px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+.kofi-inline-text strong {
+    color: #f3c24a;
+}
+
+.kofi-click-hint {
+    color: #ffe08a;
+    text-decoration: underline;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.kofi-inline-actions {
+    display: inline-flex;
+    align-items: center;
     gap: 8px;
+    flex-shrink: 0;
 }
 
-.kofi-prompt-actions button {
+.kofi-inline-close-btn {
+    width: 34px;
+    height: 34px;
     border-radius: 10px;
-    padding: 8px 10px;
-    font-size: 13px;
-    font-weight: 800;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    background: rgba(67, 51, 38, 0.6);
+    color: #f2d9bb;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.kofi-poor-btn {
-    border: 1px solid rgba(224, 105, 105, 0.82);
-    background: linear-gradient(180deg, rgba(184, 74, 74, 0.72), rgba(150, 56, 56, 0.72));
-    color: #ffe9e9;
-}
-
-.kofi-go-btn {
-    border: 1px solid rgba(123, 216, 148, 0.95);
-    background: linear-gradient(180deg, #95e6ae, #66c787);
-    color: #12301d;
+.kofi-inline-close-btn:hover {
+    background: rgba(67, 51, 38, 0.82);
 }
 
 .settings-modal {
@@ -1112,15 +1118,17 @@ body.favorites-reorder-mode #favorites .category-card-shell.is-reorder-active .f
         font-size: 11px;
     }
 
-    .kofi-prompt-card h3 {
-        font-size: 19px;
+    .kofi-inline-bar {
+        gap: 8px;
+        padding: 9px 10px;
     }
 
-    .kofi-prompt-card p {
+    .kofi-inline-text {
         font-size: 13px;
     }
 
-    .kofi-prompt-actions {
-        grid-template-columns: 1fr;
+    .kofi-inline-actions {
+        margin-left: auto;
+        align-self: flex-start;
     }
 }

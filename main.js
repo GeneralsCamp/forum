@@ -52,11 +52,6 @@ const categories = {
 
 const nowWorkingOn = [
     {
-        title: "Unique Equipment Set's Overview",
-        text: "Overview page for unique equipment sets, including set pieces, bonuses.",
-        status: "Planned"
-    },
-    {
         title: "Battle Simulator",
         text: "Paused until current overviews are stabilized.",
         status: "Paused"
@@ -158,7 +153,7 @@ function getDefaultHomeSettings() {
     return {
         descriptionsEnabled: true,
         currentProjectsEnabled: false,
-        favoritesEnabled: false,
+        favoritesEnabled: true,
         videosEnabled: true
     };
 }
@@ -1095,51 +1090,29 @@ function setupBrandEasterEgg() {
 }
 
 function setupKofiPrompt() {
-    const modal = document.getElementById("kofiPromptModal");
-    const poorBtn = document.getElementById("kofiPoorBtn");
-    const letsGoBtn = document.getElementById("kofiLetsGoBtn");
-    if (!modal || !poorBtn || !letsGoBtn) return;
+    const bar = document.getElementById("kofiInlineBar");
+    const closeBtn = document.getElementById("kofiInlineCloseBtn");
+    if (!bar || !closeBtn) return;
 
     const hasSeen = localStorage.getItem(KOFI_PROMPT_SEEN_KEY) === "1";
     const optedOut = localStorage.getItem(KOFI_PROMPT_OPTOUT_KEY) === "1";
     if (hasSeen || optedOut) return;
 
-    const closePrompt = () => {
-        modal.classList.remove("open");
-        modal.setAttribute("aria-hidden", "true");
-    };
-
     const markSeen = () => localStorage.setItem(KOFI_PROMPT_SEEN_KEY, "1");
 
-    window.setTimeout(() => {
-        modal.classList.add("open");
-        modal.setAttribute("aria-hidden", "false");
-    }, 1300);
+    bar.classList.add("open");
 
-    poorBtn.addEventListener("click", () => {
-        localStorage.setItem(KOFI_PROMPT_OPTOUT_KEY, "1");
+    bar.addEventListener("click", (event) => {
+        if (event.target.closest("#kofiInlineCloseBtn")) return;
         markSeen();
-        closePrompt();
-    });
-
-    letsGoBtn.addEventListener("click", () => {
-        markSeen();
-        closePrompt();
         window.open(KOFI_URL, "_blank", "noopener");
     });
 
-    modal.addEventListener("click", (event) => {
-        if (!event.target.closest(".kofi-prompt-card") || event.target.closest("[data-kofi-close]")) {
-            markSeen();
-            closePrompt();
-        }
-    });
-
-    document.addEventListener("keydown", (event) => {
-        if (event.key !== "Escape") return;
-        if (!modal.classList.contains("open")) return;
+    closeBtn.addEventListener("click", (event) => {
+        event.stopPropagation();
+        localStorage.setItem(KOFI_PROMPT_OPTOUT_KEY, "1");
         markSeen();
-        closePrompt();
+        bar.classList.remove("open");
     });
 }
 
