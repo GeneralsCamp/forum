@@ -18,10 +18,12 @@ let uniqueGemImageUrlMap = {};
 let equipmentEffectToEffectId = {};
 let ownLang = {};
 let lastMobileMode = null;
+let showAllSetOptions = false;
 
 const loader = createLoader();
 const composedImageCache = new Map();
 let currentLanguage = getInitialLanguage();
+const DEFAULT_MIN_SET_ID = 1084;
 
 const SLOT_ORDER = {
   "1": 1,
@@ -79,6 +81,11 @@ function normalizeSetId(value) {
   const s = String(value || "").trim();
   if (!s || s === "0") return null;
   return s;
+}
+
+function isDefaultSetId(setId) {
+  const parsed = Number(String(setId || "").trim());
+  return Number.isFinite(parsed) && parsed >= DEFAULT_MIN_SET_ID;
 }
 
 function cleanTemplateText(text) {
@@ -710,8 +717,12 @@ function setupSetOptions(wearerFilter = "all") {
   const select = document.getElementById("setSelect");
   if (!select) return;
 
-  const previous = select.value || "";
+  const previous = String(select.dataset.lastSetValue || select.value || "").trim();
   const options = getSetOptions(wearerFilter);
+  const defaultOptions = options.filter((entry) => isDefaultSetId(entry.id));
+  const visibleOptions = showAllSetOptions ? options : defaultOptions;
+  const hasHidden = !showAllSetOptions && options.length > defaultOptions.length;
+  const canShowLess = showAllSetOptions && options.length > defaultOptions.length;
 
   select.innerHTML = "";
 
@@ -724,14 +735,40 @@ function setupSetOptions(wearerFilter = "all") {
     return;
   }
 
-  options.forEach((entry) => {
+  visibleOptions.forEach((entry) => {
     const opt = document.createElement("option");
     opt.value = entry.id;
     opt.textContent = isMobileLayout() ? entry.title : `#${entry.id} - ${entry.title}`;
     select.appendChild(opt);
   });
 
-  select.value = options.some((x) => x.id === previous) ? previous : options[0].id;
+  if (hasHidden) {
+    const loadMoreOpt = document.createElement("option");
+    loadMoreOpt.value = "__load_more__";
+    loadMoreOpt.textContent = "Load more... (show all sets)";
+    select.appendChild(loadMoreOpt);
+  }
+
+  if (canShowLess) {
+    const showLessOpt = document.createElement("option");
+    showLessOpt.value = "__show_less__";
+    showLessOpt.textContent = `Show less...`;
+    select.appendChild(showLessOpt);
+  }
+
+  if (visibleOptions.length === 0) {
+    const noHighOption = document.createElement("option");
+    noHighOption.value = "";
+    noHighOption.textContent = `No sets with ID >= ${DEFAULT_MIN_SET_ID}.`;
+    noHighOption.disabled = true;
+    noHighOption.selected = true;
+    select.insertBefore(noHighOption, select.firstChild);
+    renderEmpty(`No sets with ID >= ${DEFAULT_MIN_SET_ID}. Use "Load more..." to show all sets.`);
+    return;
+  }
+
+  select.value = visibleOptions.some((x) => x.id === previous) ? previous : visibleOptions[0].id;
+  select.dataset.lastSetValue = select.value;
   renderSet(select.value);
 }
 
@@ -750,7 +787,21 @@ function bindControls() {
 
   if (setSelect && !setSelect.dataset.bound) {
     setSelect.addEventListener("change", () => {
-      renderSet(setSelect.value);
+      const selected = String(setSelect.value || "").trim();
+      if (selected === "__load_more__") {
+        showAllSetOptions = true;
+        const wearerValue = String(document.getElementById("wearerSelect")?.value || "all");
+        setupSetOptions(wearerValue);
+        return;
+      }
+      if (selected === "__show_less__") {
+        showAllSetOptions = false;
+        const wearerValue = String(document.getElementById("wearerSelect")?.value || "all");
+        setupSetOptions(wearerValue);
+        return;
+      }
+      setSelect.dataset.lastSetValue = selected;
+      renderSet(selected);
     });
     setSelect.dataset.bound = "true";
   }
