@@ -19,6 +19,9 @@ let equipmentEffectToEffectId = {};
 let ownLang = {};
 let lastMobileMode = null;
 let showAllSetOptions = false;
+let compareSetSelectionA = "";
+let compareSetSelectionB = "";
+let compareSetSelectionC = "";
 
 const loader = createLoader();
 const composedImageCache = new Map();
@@ -77,6 +80,15 @@ function buildLookup(array, idKey) {
   return map;
 }
 
+function escapeHtml(text) {
+  return String(text ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function normalizeSetId(value) {
   const s = String(value || "").trim();
   if (!s || s === "0") return null;
@@ -125,18 +137,25 @@ function resolveEffectId(effectId) {
   return raw;
 }
 
+function formatLocalizedNumber(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return "0";
+  const locale = String(currentLanguage || "en").toLowerCase();
+  return Math.abs(number).toLocaleString(locale);
+}
+
 function formatEffectValue(effectId, value) {
   const resolvedEffectId = resolveEffectId(effectId);
   const isPercent = Boolean(effectCtx?.percentEffectIDs?.has?.(String(resolvedEffectId)));
   const sign = value > 0 ? "+" : value < 0 ? "-" : "";
-  const numberText = Math.abs(Number(value)).toLocaleString();
+  const numberText = formatLocalizedNumber(value);
   return `${sign}${numberText}${isPercent ? "%" : ""}`;
 }
 
 function formatTemplateValue(template, effectId, value) {
   const resolvedEffectId = resolveEffectId(effectId);
   const isPercent = Boolean(effectCtx?.percentEffectIDs?.has?.(String(resolvedEffectId)));
-  const absText = Math.abs(Number(value)).toLocaleString();
+  const absText = formatLocalizedNumber(value);
   const signedText = value > 0 ? `+${absText}` : value < 0 ? `-${absText}` : "0";
 
   const hasSignAroundPlaceholder =
@@ -330,6 +349,20 @@ function getLocalizedSlotName(slotId) {
   return raw;
 }
 
+function getUnitNameById(unitId) {
+  if (!unitId) return "";
+  const unit = unitsById[String(unitId)];
+  if (!unit) return unitId;
+
+  const typeKey = String(unit.type || "").trim();
+  if (typeKey) {
+    const langKey = `${typeKey}_name`.toLowerCase();
+    if (lang[langKey]) return lang[langKey];
+  }
+
+  return unit.comment2 || unit.name || unit.type || unitId;
+}
+
 function getEquipmentName(item) {
   if (!item) return "Equipment";
   const id = String(item.equipmentID || "");
@@ -470,6 +503,45 @@ function buildSetIndex({ equipments, gems, setBonuses }) {
   return byId;
 }
 
+function getCompareStatLabel(entry) {
+  const rawBase = cleanTemplateText(getEffectLabel(entry.id));
+  let base = rawBase
+    .replace(/^[+\-\s%]+/, "")
+    .replace(/\s*[.,:;]+\s*$/, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+  if (/^[+\-\s%]*of\s+/i.test(rawBase)) {
+    base = base.replace(/^of\s+/i, "");
+  }
+  const normalizedBase = base ? `${base.charAt(0).toUpperCase()}${base.slice(1)}` : base;
+  const unitLabel = entry.argId ? getUnitNameById(entry.argId) : "";
+  return unitLabel ? `${normalizedBase} (${unitLabel})` : normalizedBase;
+}
+
+function buildCompareStatMap(rawEffects) {
+  const map = new Map();
+
+  parseEffectTokens(rawEffects).forEach((token) => {
+    const resolvedId = String(resolveEffectId(token.id) || token.id || "");
+    const argId = String(token.argId || "").trim();
+    const key = `${resolvedId}::${argId}`;
+    const previous = map.get(key);
+    if (!previous) {
+      map.set(key, {
+        key,
+        id: resolvedId,
+        argId: argId || null,
+        value: Number(token.value || 0),
+        label: getCompareStatLabel({ id: resolvedId, argId: argId || null })
+      });
+      return;
+    }
+    previous.value += Number(token.value || 0);
+  });
+
+  return map;
+}
+
 function getSetOptions(wearerFilter = "all") {
   const options = [];
 
@@ -510,6 +582,7 @@ function renderEmpty(message) {
 function getSelectedBonusView() {
   const select = document.getElementById("bonusViewSelect");
   const value = String(select?.value || "set_bonus");
+  if (value === "compare_sets") return "compare_sets";
   if (value === "effect_summary") return "effect_summary";
   return "set_bonus";
 }
@@ -521,9 +594,21 @@ function isMobileLayout() {
 function getSelectedMobilePanel() {
   const select = document.getElementById("mobilePanelSelect");
   const value = String(select?.value || "set_pieces");
+  if (value === "compare_sets") return "set_pieces";
   if (value === "set_bonuses") return "set_bonuses";
   if (value === "effect_summary") return "effect_summary";
   return "set_pieces";
+}
+
+function enforceMobileViewOptions() {
+  const mobilePanelSelect = document.getElementById("mobilePanelSelect");
+  if (!mobilePanelSelect) return;
+
+  const compareOpt = mobilePanelSelect.querySelector('option[value="compare_sets"]');
+  if (compareOpt) compareOpt.remove();
+  if (String(mobilePanelSelect.value || "") === "compare_sets") {
+    mobilePanelSelect.value = "set_pieces";
+  }
 }
 
 function buildEffectSummaryHtml(setEntry) {
@@ -573,6 +658,215 @@ function buildEffectSummaryHtml(setEntry) {
       </div>
     </section>
   `;
+}
+
+function getCurrentWearerFilter() {
+  return String(document.getElementById("wearerSelect")?.value || "all");
+}
+
+function getVisibleSetOptionsForCompare(wearerFilter = "all") {
+  const allOptions = getSetOptions(wearerFilter);
+  const filtered = showAllSetOptions
+    ? allOptions
+    : allOptions.filter((entry) => isDefaultSetId(entry.id));
+  return { allOptions, filtered };
+}
+
+function buildSetAggregateStatMap(setEntry) {
+  const map = new Map();
+
+  const addRaw = (rawEffects) => {
+    parseEffectTokens(rawEffects).forEach((token) => {
+      const resolvedId = String(resolveEffectId(token.id) || token.id || "");
+      const argId = String(token.argId || "").trim();
+      const key = `${resolvedId}::${argId}`;
+      const prev = map.get(key);
+      if (!prev) {
+        map.set(key, {
+          key,
+          id: resolvedId,
+          argId: argId || null,
+          value: Number(token.value || 0),
+          label: getCompareStatLabel({ id: resolvedId, argId: argId || null })
+        });
+        return;
+      }
+      prev.value += Number(token.value || 0);
+    });
+  };
+
+  (setEntry?.equipments || []).forEach((item) => addRaw(item.effects));
+  (setEntry?.gems || []).forEach((item) => addRaw(item.effects));
+  (setEntry?.bonuses || []).forEach((item) => addRaw(item.effects));
+
+  return map;
+}
+
+function renderSetCompareView() {
+  const root = document.getElementById("setOverview");
+  if (!root) return;
+
+  const wearerFilter = getCurrentWearerFilter();
+  const { filtered } = getVisibleSetOptionsForCompare(wearerFilter);
+
+  if (filtered.length === 0) {
+    root.innerHTML = `<div class="empty-state">${ui("no_sets_for_compare", "No sets available for comparison in this filter.")}</div>`;
+    return;
+  }
+
+  if (!filtered.some((x) => x.id === compareSetSelectionA)) compareSetSelectionA = filtered[0].id;
+  if (!filtered.some((x) => x.id === compareSetSelectionB)) compareSetSelectionB = filtered[1]?.id || filtered[0].id;
+  if (compareSetSelectionA === compareSetSelectionB && filtered.length > 1) {
+    compareSetSelectionB = filtered.find((x) => x.id !== compareSetSelectionA)?.id || compareSetSelectionB;
+  }
+  if (!filtered.some((x) => x.id === compareSetSelectionC)) compareSetSelectionC = "";
+  if (compareSetSelectionC === compareSetSelectionA || compareSetSelectionC === compareSetSelectionB) {
+    compareSetSelectionC = "";
+  }
+
+  const isMobile = isMobileLayout();
+  const optionsHtml = filtered.map((entry) => {
+    const label = isMobile
+      ? `${escapeHtml(entry.title)}`
+      : `#${entry.id} - ${escapeHtml(entry.title)}`;
+    return `<option value="${entry.id}">${label}</option>`;
+  }).join("");
+  const optionsHtmlC = `
+    <option value="">${escapeHtml(ui("compare_optional_none", "None (2-set compare)"))}</option>
+    ${optionsHtml}
+  `;
+
+  const setA = setIndexById[String(compareSetSelectionA)] || null;
+  const setB = setIndexById[String(compareSetSelectionB)] || null;
+  const setC = compareSetSelectionC ? (setIndexById[String(compareSetSelectionC)] || null) : null;
+
+  let tableHtml = `<p class="compare-empty">${ui("select_2_sets_to_compare", "Select 2 sets to compare.")}</p>`;
+  if (setA && setB) {
+    const comparedSets = [setA, setB, setC].filter(Boolean);
+    const statMaps = comparedSets.map((setEntry) => buildSetAggregateStatMap(setEntry));
+    const rowMap = new Map();
+    statMaps.forEach((map) => {
+      map.forEach((entry, key) => {
+        if (!rowMap.has(key)) rowMap.set(key, entry);
+      });
+    });
+
+    const rows = Array.from(rowMap.values()).sort((a, b) => {
+      const diff = String(a.label || "").localeCompare(String(b.label || ""));
+      if (diff !== 0) return diff;
+      return Number(a.id || 0) - Number(b.id || 0);
+    });
+
+    const rowHtml = rows.map((row) => {
+      const values = statMaps.map((map) => map.get(row.key)?.value);
+      const finite = values
+        .map((value, index) => ({ value, index }))
+        .filter((x) => Number.isFinite(x.value));
+      const finiteNums = finite.map((x) => Number(x.value));
+      const maxVal = finiteNums.length ? Math.max(...finiteNums) : null;
+      const minVal = finiteNums.length ? Math.min(...finiteNums) : null;
+      const isEqual = finiteNums.length > 1 && maxVal === minVal;
+
+      const valueCells = values.map((value) => {
+        const num = Number(value);
+        const isFiniteValue = Number.isFinite(value);
+        let cssClass = "";
+        if (isFiniteValue) {
+          if (isEqual) {
+            cssClass = "compare-value-equal";
+          } else if (num === maxVal) {
+            cssClass = "compare-value-win";
+          } else if (num === minVal) {
+            cssClass = "compare-value-lose";
+          }
+        }
+        const text = isFiniteValue ? formatEffectValue(row.id, value) : "-";
+        const emptyClass = isFiniteValue ? "" : " compare-value-empty";
+        return `<td class="compare-value-col${emptyClass} ${cssClass}">${escapeHtml(text)}</td>`;
+      }).join("");
+
+      return `
+        <tr>
+          <td class="compare-stat-col">${escapeHtml(row.label)}</td>
+          ${valueCells}
+        </tr>
+      `;
+    }).join("");
+
+    const effectColumnLabel =
+      lang["relicequip_dialog_effect_name"] ||
+      ui("effect_label", "Effect");
+
+    tableHtml = `
+      <table class="compare-table compare-cols-${comparedSets.length}">
+        <thead>
+          <tr>
+            <th class="compare-stat-col">${escapeHtml(effectColumnLabel)}</th>
+            ${comparedSets.map((setEntry) => `<th class="compare-value-col">${escapeHtml(getSetTitle(setEntry))}</th>`).join("")}
+          </tr>
+        </thead>
+        <tbody>
+          ${rowHtml || `<tr><td colspan="${1 + comparedSets.length}" class="compare-empty">${ui("no_comparable_effects", "No comparable effects.")}</td></tr>`}
+        </tbody>
+      </table>
+    `;
+  }
+
+  root.innerHTML = `
+    <section class="set-shell compare-view-shell">
+      <header class="set-head">
+        <h2 class="set-title">${ui("set_comparison_view", "Set comparison view")}</h2>
+      </header>
+      <div class="compare-view-toolbar">
+        <select id="compareSetSelectA" class="form-select custom-select text-center" aria-label="Compare set A">
+          ${optionsHtml}
+        </select>
+        <select id="compareSetSelectB" class="form-select custom-select text-center" aria-label="Compare set B">
+          ${optionsHtml}
+        </select>
+        <select id="compareSetSelectC" class="form-select custom-select text-center" aria-label="Compare set C">
+          ${optionsHtmlC}
+        </select>
+      </div>
+      <div class="compare-table-wrap">${tableHtml}</div>
+    </section>
+  `;
+
+  const selectA = document.getElementById("compareSetSelectA");
+  const selectB = document.getElementById("compareSetSelectB");
+  const selectC = document.getElementById("compareSetSelectC");
+  if (selectA) {
+    selectA.value = compareSetSelectionA;
+    selectA.addEventListener("change", () => {
+      compareSetSelectionA = String(selectA.value || "");
+      if (compareSetSelectionA === compareSetSelectionB && filtered.length > 1) {
+        compareSetSelectionB = filtered.find((x) => x.id !== compareSetSelectionA)?.id || compareSetSelectionB;
+      }
+      if (compareSetSelectionC === compareSetSelectionA) compareSetSelectionC = "";
+      renderSetCompareView();
+    });
+  }
+  if (selectB) {
+    selectB.value = compareSetSelectionB;
+    selectB.addEventListener("change", () => {
+      compareSetSelectionB = String(selectB.value || "");
+      if (compareSetSelectionB === compareSetSelectionA && filtered.length > 1) {
+        compareSetSelectionA = filtered.find((x) => x.id !== compareSetSelectionB)?.id || compareSetSelectionA;
+      }
+      if (compareSetSelectionC === compareSetSelectionB) compareSetSelectionC = "";
+      renderSetCompareView();
+    });
+  }
+  if (selectC) {
+    selectC.value = compareSetSelectionC;
+    selectC.addEventListener("change", () => {
+      compareSetSelectionC = String(selectC.value || "");
+      if (compareSetSelectionC && (compareSetSelectionC === compareSetSelectionA || compareSetSelectionC === compareSetSelectionB)) {
+        compareSetSelectionC = filtered.find((x) => x.id !== compareSetSelectionA && x.id !== compareSetSelectionB)?.id || "";
+      }
+      renderSetCompareView();
+    });
+  }
 }
 
 function renderSet(setId) {
@@ -645,8 +939,13 @@ function renderSet(setId) {
   const mobilePanel = getSelectedMobilePanel();
   const mobile = isMobileLayout();
   const selectedView = mobile
-    ? (mobilePanel === "effect_summary" ? "effect_summary" : "set_bonus")
+    ? (mobilePanel === "effect_summary" ? "effect_summary" : mobilePanel === "compare_sets" ? "compare_sets" : "set_bonus")
     : desktopSelectedView;
+
+  if (selectedView === "compare_sets") {
+    renderSetCompareView();
+    return;
+  }
 
   const rightPanelTitle = selectedView === "effect_summary"
     ? ui("effect_summary", "Effect summary")
@@ -902,8 +1201,10 @@ async function init() {
         if (bonusViewSelect) {
           const optionSetBonus = bonusViewSelect.querySelector('option[value="set_bonus"]');
           const optionSummary = bonusViewSelect.querySelector('option[value="effect_summary"]');
+          const optionCompare = bonusViewSelect.querySelector('option[value="compare_sets"]');
           if (optionSetBonus) optionSetBonus.textContent = ui("set_bonus_view", "Set bonus view");
           if (optionSummary) optionSummary.textContent = ui("effect_summary_view", "Effect summary view");
+          if (optionCompare) optionCompare.textContent = ui("compare_sets_view", "Compare sets view");
         }
 
         const mobilePanelSelect = document.getElementById("mobilePanelSelect");
@@ -915,6 +1216,8 @@ async function init() {
           if (optionSetBonus) optionSetBonus.textContent = ui("set_bonuses", "Set bonuses");
           if (optionSummary) optionSummary.textContent = ui("total_bonus_overview", "Total bonus overview");
         }
+
+        enforceMobileViewOptions();
 
         const wearerSelect = document.getElementById("wearerSelect");
         if (wearerSelect) {

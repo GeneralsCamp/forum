@@ -332,6 +332,109 @@
   display: none;
 }
 
+.compare-view-shell {
+  border: 2px solid #fff;
+}
+
+.compare-view-toolbar {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line-1);
+  background: linear-gradient(180deg, rgba(67, 51, 38, 0.55), rgba(67, 51, 38, 0.28));
+}
+
+.compare-table-wrap {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0 0 10px 10px;
+  overflow: auto;
+}
+
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 760px;
+  table-layout: fixed;
+}
+
+.compare-table th,
+.compare-table td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 8px 10px;
+  font-size: 12px;
+}
+
+.compare-table th:not(:last-child),
+.compare-table td:not(:last-child) {
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.compare-table th {
+  background: rgba(67, 51, 38, 0.95);
+  color: var(--gold-1);
+  font-weight: 800;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.compare-stat-col {
+  width: auto;
+  color: #f7edd7;
+  font-weight: 700;
+}
+
+.compare-value-col {
+  width: auto;
+  font-weight: 700;
+  text-align: center;
+  color: #f7edd7;
+}
+
+.compare-table.compare-cols-2 .compare-stat-col {
+  width: 46%;
+}
+
+.compare-table.compare-cols-2 .compare-value-col {
+  width: 27%;
+}
+
+.compare-table.compare-cols-3 .compare-stat-col {
+  width: 40%;
+}
+
+.compare-table.compare-cols-3 .compare-value-col {
+  width: 20%;
+}
+
+.compare-value-empty {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.compare-value-win {
+  color: #9cffac;
+  background: rgba(18, 108, 45, 0.28);
+}
+
+.compare-value-equal {
+  color: #9cffac;
+  background: rgba(18, 108, 45, 0.22);
+}
+
+.compare-value-lose {
+  color: #ffb2b2;
+  background: rgba(129, 33, 33, 0.28);
+}
+
+.compare-empty {
+  margin: 0;
+  padding: 12px;
+  color: #f7edd7;
+  font-weight: 700;
+  text-align: center;
+}
+
 @media (max-width: 768px) {
   .set-layout {
     grid-template-columns: 1fr;
@@ -363,6 +466,11 @@
 
   .mobile-panel-control {
     display: block;
+  }
+
+  .compare-view-toolbar {
+    grid-template-columns: 1fr;
+    padding: 8px;
   }
 
   .set-layout.mobile-show-pieces .panel:nth-child(2) {
