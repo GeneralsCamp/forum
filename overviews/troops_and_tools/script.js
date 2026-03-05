@@ -436,6 +436,7 @@ function getEffectDisplayName(effectName, effectId) {
   }
 
   const candidates = [
+    `equip_effect_description_${key}`,
     `effect_name_${key}`,
     key,
     `ci_effect_${key}`,
@@ -444,10 +445,28 @@ function getEffectDisplayName(effectName, effectId) {
 
   for (const langKey of candidates) {
     const label = lang?.[langKey];
-    if (label) return String(label).replace(/\{0\}/g, "").trim();
+    if (label) return cleanupEffectTitle(String(label));
   }
 
   return key.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/_/g, " ");
+}
+
+function cleanupEffectTitle(text) {
+  const raw = String(text || "");
+  if (!raw) return "";
+
+  let out = raw
+    .replace(/\{\d+\}/g, "")
+    .replace(/\s*[+\-]\s*(?=[a-zA-Z])/g, " ")
+    .replace(/\s*%\s*/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  out = out.replace(/[.!,;:\-]+$/g, "").trim();
+
+  if (out) out = out.charAt(0).toUpperCase() + out.slice(1);
+
+  return out;
 }
 
 function getEffectIcon(effectName, effectTitle = "") {
@@ -472,6 +491,50 @@ function resolveEffectMeta(effectName, effectId) {
   };
 }
 
+function splitToolEffectChunk(chunk) {
+  const [effectIdRaw, payloadRaw = "0"] = String(chunk || "").split("&");
+  const effectId = String(effectIdRaw || "").trim();
+  if (!effectId) return null;
+
+  const payload = String(payloadRaw || "").trim();
+  let valueRaw = payload;
+
+  let argId = null;
+  const match = payload.match(/^(\d+)\+(-?\d+(?:\.\d+)?)$/);
+  if (match) {
+    argId = match[1];
+    valueRaw = match[2];
+  }
+
+  return { effectId, valueRaw, argId };
+}
+
+function resolveEffectArgName(argId) {
+  const id = String(argId || "").trim();
+  if (!id) return "";
+
+  const unit = allUnits.find((u) => String(u?.wodID ?? "").trim() === id);
+  if (!unit) return id;
+
+  const typeKey = String(unit?.type || "").trim();
+  if (typeKey) {
+    const langKey = `${typeKey}_name`.toLowerCase();
+    if (lang?.[langKey]) return String(lang[langKey]).trim();
+  }
+
+  return String(unit?.comment2 || unit?.name || unit?.type || id).trim();
+}
+
+function getEffectTemplate(effectName) {
+  const key = String(effectName || "").toLowerCase();
+  if (!key) return "";
+  return String(
+    lang?.[`equip_effect_description_${key}`] ||
+    lang?.[`effect_description_${key}`] ||
+    ""
+  ).trim();
+}
+
 function buildToolDynamicEffects(unit) {
   const rawEffects = String(unit?.effects || "").trim();
   if (!rawEffects) return [];
@@ -480,9 +543,9 @@ function buildToolDynamicEffects(unit) {
   const chunks = rawEffects.split(",").map((x) => x.trim()).filter(Boolean);
 
   chunks.forEach((chunk) => {
-    const [effectIdRaw, valueRaw = "0"] = chunk.split("&");
-    const effectId = String(effectIdRaw || "").trim();
-    if (!effectId) return;
+    const token = splitToolEffectChunk(chunk);
+    if (!token) return;
+    const { effectId, valueRaw, argId } = token;
 
     const def = effectCtx?.effectDefinitions?.[effectId];
     const effectName = def?.name || `effect_${effectId}`;
@@ -500,8 +563,18 @@ function buildToolDynamicEffects(unit) {
     }
 
     const meta = resolveEffectMeta(effectName, effectId);
-    const title = meta.title;
+    let title = meta.title;
     const iconUrl = meta.iconUrl;
+
+    const template = getEffectTemplate(effectName);
+    if (template && template.includes("{1}")) {
+      const argName = resolveEffectArgName(argId);
+      title = template
+        .replace(/\{1\}/g, argName || String(argId || "").trim())
+        .replace(/\{0\}/g, "");
+      title = cleanupEffectTitle(title);
+    }
+
     const titleLc = String(title).toLowerCase();
 
     const attackWavesLabelLc = String(UI_LABELS.attackWaves || "").toLowerCase();
