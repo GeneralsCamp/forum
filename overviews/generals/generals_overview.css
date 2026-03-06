@@ -43,13 +43,6 @@
     overflow: hidden;
 }
 
-.note .general-icon img {
-    width: 140%;
-    height: 140%;
-    object-fit: cover;
-    transform: translateY(12px);
-}
-
 .general-icon.rarity-common {
     border: 3px solid var(--rarity-common);
     background-color: rgb(93, 93, 93);

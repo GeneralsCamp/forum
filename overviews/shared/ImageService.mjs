@@ -292,8 +292,17 @@ function parseGenerals(text) {
 
     const portraitRegex =
         /itemassets\/General\/Portrait\/GeneralPortrait_(\d+)\/GeneralPortrait_\1--\d+/g;
+    const generalIconRegex =
+        /itemassets\/Dialogs\/Generals\/GeneralIcons\/GeneralIcon_(\d+)\/GeneralIcon_\1--\d+/g;
 
     for (const m of text.matchAll(portraitRegex)) {
+
+        const id = m[1];
+        portraits[id] =
+            `${base}${m[0]}.webp`;
+    }
+
+    for (const m of text.matchAll(generalIconRegex)) {
 
         const id = m[1];
         portraits[id] =
