@@ -130,12 +130,26 @@ function splitEffectToken(token) {
   };
 }
 
-function resolveEffectId(effectId) {
+function resolveEffectId(effectId, sourceType = "auto") {
   const raw = String(effectId || "").trim();
   if (!raw) return raw;
   const mapped = equipmentEffectToEffectId[raw];
+  const hasDirect = Boolean(effectCtx?.effectDefinitions?.[raw]);
+
+  if (sourceType === "equipment" || sourceType === "set_bonus") {
+    if (mapped) return String(mapped);
+    if (hasDirect) return raw;
+    return raw;
+  }
+
+  if (sourceType === "gem") {
+    if (hasDirect) return raw;
+    if (mapped) return String(mapped);
+    return raw;
+  }
+
+  if (hasDirect) return raw;
   if (mapped) return String(mapped);
-  if (effectCtx?.effectDefinitions?.[raw]) return raw;
   return raw;
 }
 
@@ -146,16 +160,16 @@ function formatLocalizedNumber(value) {
   return Math.abs(number).toLocaleString(locale);
 }
 
-function formatEffectValue(effectId, value) {
-  const resolvedEffectId = resolveEffectId(effectId);
+function formatEffectValue(effectId, value, sourceType = "auto") {
+  const resolvedEffectId = resolveEffectId(effectId, sourceType);
   const isPercent = Boolean(effectCtx?.percentEffectIDs?.has?.(String(resolvedEffectId)));
   const sign = value > 0 ? "+" : value < 0 ? "-" : "";
   const numberText = formatLocalizedNumber(value);
   return `${sign}${numberText}${isPercent ? "%" : ""}`;
 }
 
-function formatTemplateValue(template, effectId, value) {
-  const resolvedEffectId = resolveEffectId(effectId);
+function formatTemplateValue(template, effectId, value, sourceType = "auto") {
+  const resolvedEffectId = resolveEffectId(effectId, sourceType);
   const isPercent = Boolean(effectCtx?.percentEffectIDs?.has?.(String(resolvedEffectId)));
   const absText = formatLocalizedNumber(value);
   const signedText = value > 0 ? `+${absText}` : value < 0 ? `-${absText}` : "0";
@@ -177,8 +191,8 @@ function formatTemplateValue(template, effectId, value) {
   return token;
 }
 
-function getEffectLabel(effectId) {
-  const resolvedEffectId = resolveEffectId(effectId);
+function getEffectLabel(effectId, sourceType = "auto") {
+  const resolvedEffectId = resolveEffectId(effectId, sourceType);
   const effectDef = effectCtx?.effectDefinitions?.[String(resolvedEffectId)] || null;
   const rawName = String(effectDef?.name || "").trim();
 
@@ -195,22 +209,22 @@ function getEffectLabel(effectId) {
     : null;
 
   const candidates = [
-    strippedShapeKey ? `equip_effect_description_short_${strippedShapeKey}` : null,
     strippedShapeKey ? `equip_effect_description_${strippedShapeKey}` : null,
     strippedShapeKey ? `ci_effect_${strippedShapeKey}` : null,
     strippedShapeKey ? `effect_name_${strippedShapeKey}` : null,
+    strippedShapeKey ? `equip_effect_description_short_${strippedShapeKey}` : null,
     strippedShapeKey,
-    `equip_effect_description_short_${normalizedKey}`,
     `equip_effect_description_${normalizedKey}`,
     `ci_effect_${normalizedKey}`,
     `effect_name_${normalizedKey}`,
     `effect_desc_${normalizedKey}`,
+    `equip_effect_description_short_${normalizedKey}`,
     normalizedKey,
-    `equip_effect_description_short_${key}`,
     `equip_effect_description_${key}`,
     `ci_effect_${key}`,
     `effect_name_${key}`,
     `effect_desc_${key}`,
+    `equip_effect_description_short_${key}`,
     key
   ].filter(Boolean);
 
@@ -231,7 +245,8 @@ function getEffectLabel(effectId) {
 }
 
 function renderEffectLine(effectId, value) {
-  const template = getEffectLabel(effectId);
+  const sourceType = arguments.length > 3 ? String(arguments[3] || "auto").trim() : "auto";
+  const template = getEffectLabel(effectId, sourceType);
   const entryArgId = arguments.length > 2 ? String(arguments[2] || "").trim() : "";
 
   const resolveUnitName = (unitId) => {
@@ -249,23 +264,24 @@ function renderEffectLine(effectId, value) {
   };
 
   if (template.includes("{0}")) {
-    const token = formatTemplateValue(template, effectId, value);
+    const token = formatTemplateValue(template, effectId, value, sourceType);
     let text = template
       .replace(/\{0\}/g, token)
       .replace(/\{1\}/g, entryArgId ? resolveUnitName(entryArgId) : "")
       .replace(/\{2\}/g, "")
       .replace(/\{\d+\}/g, "")
+      .replace(/\s*\.$/, "")
       .replace(/\s+/g, " ")
       .trim();
     return text;
   }
 
-  const valueText = formatEffectValue(effectId, value);
+  const valueText = formatEffectValue(effectId, value, sourceType);
   const cleaned = cleanTemplateText(template);
   return `${cleaned}${cleaned.endsWith(":") ? "" : ":"} ${valueText}`;
 }
 
-function parseEffects(raw) {
+function parseEffects(raw, sourceType = "auto") {
   if (!raw) return [];
   return String(raw)
     .split(",")
@@ -273,7 +289,7 @@ function parseEffects(raw) {
     .filter(Boolean)
     .map(splitEffectToken)
     .filter(Boolean)
-    .map((entry) => renderEffectLine(entry.id, entry.value, entry.argId));
+    .map((entry) => renderEffectLine(entry.id, entry.value, entry.argId, sourceType));
 }
 
 function parseEffectTokens(raw) {
@@ -432,7 +448,7 @@ function toPieceRows(setEntry) {
       slotLabel: getLocalizedSlotName(item.slotID),
       wearerLabel: getLocalizedWearerName(item.wearerID),
       name: getEquipmentName(item),
-      effects: parseEffects(item.effects),
+      effects: parseEffects(item.effects, "equipment"),
       imageUrl: getEquipmentImageUrl(item)
     });
   });
@@ -451,7 +467,7 @@ function toPieceRows(setEntry) {
       slotLabel: gemSlotLabel,
       wearerLabel: getLocalizedWearerName(item.wearerID),
       name: getGemName(item),
-      effects: parseEffects(item.effects),
+      effects: parseEffects(item.effects, "gem"),
       imageUrl: gemImage
     });
   });
@@ -520,11 +536,11 @@ function getCompareStatLabel(entry) {
   return unitLabel ? `${normalizedBase} (${unitLabel})` : normalizedBase;
 }
 
-function buildCompareStatMap(rawEffects) {
+function buildCompareStatMap(rawEffects, sourceType = "auto") {
   const map = new Map();
 
   parseEffectTokens(rawEffects).forEach((token) => {
-    const resolvedId = String(resolveEffectId(token.id) || token.id || "");
+    const resolvedId = String(resolveEffectId(token.id, sourceType) || token.id || "");
     const argId = String(token.argId || "").trim();
     const key = `${resolvedId}::${argId}`;
     const previous = map.get(key);
@@ -616,21 +632,36 @@ function enforceMobileViewOptions() {
 function buildEffectSummaryHtml(setEntry) {
   const totals = new Map();
 
-  const addTokens = (raw) => {
+  const getSummaryMergeKey = (effectId, argId, sourceType) => {
+    const template = String(getEffectLabel(effectId, sourceType) || "").trim();
+    const argName = argId ? getUnitNameById(argId) : "";
+    return template
+      .replace(/\{1\}/g, argName)
+      .replace(/\{2\}/g, "")
+      .replace(/\{0\}/g, "{0}")
+      .replace(/\s+/g, " ")
+      .trim()
+      .toLowerCase();
+  };
+
+  const addTokens = (raw, sourceType) => {
     parseEffectTokens(raw).forEach((entry) => {
-      const key = `${String(entry.id || "")}::${String(entry.argId || "")}`;
+      const resolvedId = String(resolveEffectId(entry.id, sourceType) || entry.id || "");
+      const argId = String(entry.argId || "").trim();
+      const mergeKey = getSummaryMergeKey(resolvedId, argId, "auto");
+      const key = `${mergeKey}::${argId}`;
       const prev = totals.get(key);
       if (!prev) {
-        totals.set(key, { id: entry.id, argId: entry.argId || null, value: Number(entry.value || 0) });
+        totals.set(key, { id: resolvedId, argId: argId || null, value: Number(entry.value || 0), sourceType: "auto" });
         return;
       }
       prev.value += Number(entry.value || 0);
     });
   };
 
-  setEntry.equipments.forEach((item) => addTokens(item.effects));
-  setEntry.gems.forEach((item) => addTokens(item.effects));
-  setEntry.bonuses.forEach((item) => addTokens(item.effects));
+  setEntry.equipments.forEach((item) => addTokens(item.effects, "equipment"));
+  setEntry.gems.forEach((item) => addTokens(item.effects, "gem"));
+  setEntry.bonuses.forEach((item) => addTokens(item.effects, "set_bonus"));
 
   const rows = Array.from(totals.values())
     .sort((a, b) => {
@@ -644,7 +675,7 @@ function buildEffectSummaryHtml(setEntry) {
         <article class="summary-row ${polarityClass}">
           <div class="summary-rank">${idx + 1}</div>
           <div class="summary-main">
-            <p class="summary-text">${renderEffectLine(entry.id, entry.value, entry.argId)}</p>
+            <p class="summary-text">${renderEffectLine(entry.id, entry.value, entry.argId, entry.sourceType || "auto")}</p>
           </div>
         </article>
       `;
@@ -677,9 +708,9 @@ function getVisibleSetOptionsForCompare(wearerFilter = "all") {
 function buildSetAggregateStatMap(setEntry) {
   const map = new Map();
 
-  const addRaw = (rawEffects) => {
+  const addRaw = (rawEffects, sourceType) => {
     parseEffectTokens(rawEffects).forEach((token) => {
-      const resolvedId = String(resolveEffectId(token.id) || token.id || "");
+      const resolvedId = String(resolveEffectId(token.id, sourceType) || token.id || "");
       const argId = String(token.argId || "").trim();
       const key = `${resolvedId}::${argId}`;
       const prev = map.get(key);
@@ -697,9 +728,9 @@ function buildSetAggregateStatMap(setEntry) {
     });
   };
 
-  (setEntry?.equipments || []).forEach((item) => addRaw(item.effects));
-  (setEntry?.gems || []).forEach((item) => addRaw(item.effects));
-  (setEntry?.bonuses || []).forEach((item) => addRaw(item.effects));
+  (setEntry?.equipments || []).forEach((item) => addRaw(item.effects, "equipment"));
+  (setEntry?.gems || []).forEach((item) => addRaw(item.effects, "gem"));
+  (setEntry?.bonuses || []).forEach((item) => addRaw(item.effects, "set_bonus"));
 
   return map;
 }
@@ -920,7 +951,7 @@ function renderSet(setId) {
   const bonusHtml = setEntry.bonuses.length > 0
     ? setEntry.bonuses.map((bonus) => {
       const effects = sortEffectTokensByValueDesc(parseEffectTokens(bonus.effects))
-        .map((entry) => renderEffectLine(entry.id, entry.value, entry.argId));
+        .map((entry) => renderEffectLine(entry.id, entry.value, entry.argId, "set_bonus"));
       const effectText = effects.length > 0
         ? effects.map((x) => `<div>${x}</div>`).join("")
         : "<div>No effect data</div>";
