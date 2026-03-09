@@ -225,8 +225,34 @@ function parseDateToken(token) {
 function parseDateRange(text) {
     const tokens = String(text || "").match(/(\d{1,2}[./-]\d{1,2}(?:[./-]\d{2,4})?)/g) || [];
     if (tokens.length === 0) return null;
-    const start = parseDateToken(tokens[0]);
-    const end = parseDateToken(tokens[1] || tokens[0]);
+    const readYear = token => {
+        const m = String(token || "").match(/\d{1,2}[./-]\d{1,2}[./-](\d{2,4})/);
+        if (!m) return null;
+        let y = Number(m[1]);
+        if (!y) return null;
+        if (y < 100) y += 2000;
+        return y;
+    };
+
+    const parseWithFallbackYear = (token, fallbackYear) => {
+        const m = String(token || "").match(/(\d{1,2})[./-](\d{1,2})(?:[./-](\d{2,4}))?/);
+        if (!m) return null;
+        const day = Number(m[1]);
+        const month = Number(m[2]);
+        let year = m[3] ? Number(m[3]) : fallbackYear;
+        if (!year || !day || !month) return null;
+        if (year < 100) year += 2000;
+        return new Date(Date.UTC(year, month - 1, day));
+    };
+
+    const secondToken = tokens[1] || tokens[0];
+    const fallbackYear =
+        readYear(secondToken) ||
+        readYear(tokens[0]) ||
+        null;
+
+    const start = parseWithFallbackYear(tokens[0], fallbackYear);
+    const end = parseWithFallbackYear(secondToken, fallbackYear);
     if (!start || !end) return null;
     return { start, end };
 }
@@ -436,8 +462,69 @@ function extractEventsFromGroups(root, baseUrl) {
     return events;
 }
 
+function extractEventsFromCardGrid(root, baseUrl) {
+    const cards = Array.from(root.querySelectorAll(".grid .card, .card"));
+    if (cards.length === 0) return [];
+
+    const events = [];
+
+    cards.forEach(card => {
+        const titleNode = card.querySelector(".card-title");
+        const img = card.querySelector("img.event-icon, img");
+        const title =
+            normalizeText(titleNode ? titleNode.textContent : "") ||
+            normalizeText(img ? img.alt : "");
+
+        const imageUrl = resolveImageUrl(img ? img.getAttribute("src") : "", baseUrl);
+        const dateGroups = [];
+
+        let activeLabel = "";
+        const children = Array.from(card.children);
+        children.forEach(node => {
+            if (node.classList?.contains("sub-label")) {
+                activeLabel = normalizeText(node.textContent || "");
+                return;
+            }
+            if (node.matches?.("ul.dates")) {
+                const dates = Array.from(node.querySelectorAll("li"))
+                    .map(li => normalizeText(li.textContent || ""))
+                    .filter(Boolean);
+                if (dates.length > 0) {
+                    dateGroups.push({ label: activeLabel, dates });
+                }
+                activeLabel = "";
+            }
+        });
+
+        const dates = dateGroups.flatMap(group => group.dates);
+        if (!title && dates.length === 0) return;
+
+        events.push({
+            title: title || "Ismeretlen esemény",
+            dates,
+            dateGroups: dateGroups.length > 0 ? dateGroups : null,
+            imageUrl
+        });
+    });
+
+    const seen = new Set();
+    return events.filter(event => {
+        const groupsKey = (event.dateGroups || [])
+            .map(group => `${group.label || ""}:${(group.dates || []).join("|")}`)
+            .join("||");
+        const key = `${event.title}::${groupsKey || event.dates.join(",")}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+    });
+}
+
 function extractEvents(doc, baseUrl) {
     const root = getContentRoot(doc);
+    const cardGridEvents = extractEventsFromCardGrid(root, baseUrl);
+    if (cardGridEvents.length > 0) {
+        return cardGridEvents;
+    }
     const groupEvents = extractEventsFromGroups(root, baseUrl);
     if (groupEvents.length > 0) {
         return groupEvents;
@@ -703,22 +790,34 @@ function renderCalendar(events) {
     const minNonLtpeDate = nonLtpeRanges.length > 0
         ? new Date(Math.min(...nonLtpeRanges.map(range => normalizeUtcDate(range.start).getTime())))
         : null;
+    const maxNonLtpeDate = nonLtpeRanges.length > 0
+        ? new Date(Math.max(...nonLtpeRanges.map(range => normalizeUtcDate(range.end).getTime())))
+        : null;
 
-    if (minNonLtpeDate) {
+    if (minNonLtpeDate || maxNonLtpeDate) {
         rangesByEvent.forEach(entry => {
             if (entry.title.toLowerCase() !== "ltpe") return;
             entry.ranges = entry.ranges
                 .map(range => {
-                    if (normalizeUtcDate(range.start).getTime() < minNonLtpeDate.getTime()) {
-                        const adjusted = { ...range };
+                    const adjusted = { ...range };
+                    if (
+                        minNonLtpeDate &&
+                        normalizeUtcDate(adjusted.start).getTime() < minNonLtpeDate.getTime()
+                    ) {
                         adjusted.start = new Date(minNonLtpeDate.getTime());
                         adjusted.trimmedStart = true;
-                        if (normalizeUtcDate(adjusted.start).getTime() > normalizeUtcDate(adjusted.end).getTime()) {
-                            return null;
-                        }
-                        return adjusted;
                     }
-                    return range;
+                    if (
+                        maxNonLtpeDate &&
+                        normalizeUtcDate(adjusted.end).getTime() > maxNonLtpeDate.getTime()
+                    ) {
+                        adjusted.end = new Date(maxNonLtpeDate.getTime());
+                        adjusted.trimmedEnd = true;
+                    }
+                    if (normalizeUtcDate(adjusted.start).getTime() > normalizeUtcDate(adjusted.end).getTime()) {
+                        return null;
+                    }
+                    return adjusted;
                 })
                 .filter(Boolean);
         });
@@ -882,7 +981,8 @@ function renderCalendar(events) {
                     const isStart = dateTime === startTime;
                     const isEnd = dateTime === endTime;
                     const trimmedStart = range.trimmedStart === true;
-                    if ((isStart && !trimmedStart) || isEnd) {
+                    const trimmedEnd = range.trimmedEnd === true;
+                    if ((isStart && !trimmedStart) || (isEnd && !trimmedEnd)) {
                         edge = true;
                     }
                 }
@@ -1137,7 +1237,6 @@ function setupDownloadButton() {
                 alert("Download is only available in Normal view.");
                 return;
             }
-
             const gameKey = getSelectedGameKey();
             const events = eventCache[gameKey];
 

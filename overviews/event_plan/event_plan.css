@@ -59,17 +59,27 @@
 .event-date-groups {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 0;
 }
 
 .event-subtitle {
     font-weight: 700;
     color: #4d3520;
     margin-top: 2px;
+    margin-bottom: 0;
+}
+
+.event-dates {
+    margin: 0;
+    line-height: 1.25;
 }
 
 .event-dates-group span {
     display: block;
+}
+
+.event-dates-group {
+    margin: 0;
 }
 
 .event-dates-group span:not(:last-child)::after {
@@ -247,14 +257,14 @@
 .schedule-footer-bar {
     grid-column: 1 / -1;
     margin-top: 8px;
-    padding: 8px 10px;
+    padding: 4px 5px;
     background: #ead6b3;
     border-top: 1px solid #c7b08f;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 2px;
+    gap: 0;
 }
 
 .schedule-footer-line {
@@ -270,7 +280,7 @@
     align-items: center;
     justify-content: center;
     gap: 12px;
-    padding: 3px 5px;
+    padding: 1px 3px;
     background-color: #ead6b3;
     border-bottom: 1px solid #c7b08f;
 }
@@ -297,11 +307,12 @@
 }
 
 .export-header {
-    height: 60px;
+    height: 56px;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
+    padding: 1px 3px;
     background: #ead6b3;
     border: 1px solid #c7b08f;
     margin-bottom: 12px;
@@ -321,7 +332,7 @@
 
 .export-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
 }
 
 .export-card {
@@ -388,12 +399,13 @@
 }
 
 .export-footer {
-    height: 50px;
+    height: auto;
+    padding: 4px 5px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 0;
     background: #ead6b3;
     border: 1px solid #c7b08f;
 }
