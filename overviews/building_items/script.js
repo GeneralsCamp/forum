@@ -24,6 +24,18 @@ let noMatchMessage = "No match to the current filters.";
 let sharedLangPack = { filters: {}, ui: {} };
 const loader = createLoader();
 let currentLanguage = getInitialLanguage();
+const HOME_SETTINGS_KEY = "gf_home_settings_v1";
+const devCommentsEnabled = readHomeSetting("devCommentsEnabled", true);
+
+function readHomeSetting(key, fallback) {
+    try {
+        const raw = localStorage.getItem(HOME_SETTINGS_KEY);
+        const parsed = JSON.parse(raw || "{}");
+        return parsed?.[key] ?? fallback;
+    } catch {
+        return fallback;
+    }
+}
 
 // --- FETCH FUNCTIONS ---
 async function compareWithOldVersion() {
@@ -582,7 +594,7 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
         }
 
         let commentsHTML = "";
-        if (comments.length > 0) {
+        if (devCommentsEnabled && comments.length > 0) {
             commentsHTML = `
         <div class="card-section card-sources border-top">
           <h4 class="card-section-title">${UI_LANG.dev_comments}:</h4>

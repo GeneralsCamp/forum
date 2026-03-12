@@ -25,6 +25,18 @@ let newWodIDsSet = new Set();
 let noMatchMessage = "No match to the current filters.";
 const composedDecorationImageCache = new Map();
 let sharedLangPack = { filters: {}, ui: {} };
+const HOME_SETTINGS_KEY = "gf_home_settings_v1";
+const devCommentsEnabled = readHomeSetting("devCommentsEnabled", true);
+
+function readHomeSetting(key, fallback) {
+  try {
+    const raw = localStorage.getItem(HOME_SETTINGS_KEY);
+    const parsed = JSON.parse(raw || "{}");
+    return parsed?.[key] ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
 
 // --- FETCH FUNCTIONS ---
 async function compareWithOldVersion() {
@@ -368,7 +380,7 @@ function createCard(item, imageUrlMap = {}) {
   }
 
   let sourceHTML = "";
-  if (sources.length > 0) {
+  if (devCommentsEnabled && sources.length > 0) {
     sourceHTML = `
       <hr>
       <div class="card-section card-sources">

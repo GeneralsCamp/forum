@@ -154,7 +154,8 @@ function getDefaultHomeSettings() {
         descriptionsEnabled: true,
         currentProjectsEnabled: false,
         favoritesEnabled: true,
-        videosEnabled: true
+        videosEnabled: true,
+        devCommentsEnabled: true
     };
 }
 
@@ -167,7 +168,8 @@ function readHomeSettings() {
             descriptionsEnabled: parsed.descriptionsEnabled ?? defaults.descriptionsEnabled,
             currentProjectsEnabled: parsed.currentProjectsEnabled ?? defaults.currentProjectsEnabled,
             favoritesEnabled: parsed.favoritesEnabled ?? defaults.favoritesEnabled,
-            videosEnabled: parsed.videosEnabled ?? defaults.videosEnabled
+            videosEnabled: parsed.videosEnabled ?? defaults.videosEnabled,
+            devCommentsEnabled: parsed.devCommentsEnabled ?? defaults.devCommentsEnabled
         };
     } catch {
         return defaults;
@@ -698,7 +700,8 @@ function setupSettingsModal() {
     const currentProjectsInput = document.getElementById("settingsCurrentProjects");
     const favoritesInput = document.getElementById("settingsFavorites");
     const videosInput = document.getElementById("settingsVideos");
-    if (!openBtn || !closeBtn || !modal || !descriptionsInput || !currentProjectsInput || !favoritesInput || !videosInput) return;
+    const devCommentsInput = document.getElementById("settingsDevComments");
+    if (!openBtn || !closeBtn || !modal || !descriptionsInput || !currentProjectsInput || !favoritesInput || !videosInput || !devCommentsInput) return;
     const MODAL_CLOSE_ANIM_MS = 190;
     let closeTimer = 0;
 
@@ -707,6 +710,7 @@ function setupSettingsModal() {
         currentProjectsInput.checked = Boolean(uiSettings.currentProjectsEnabled);
         favoritesInput.checked = Boolean(uiSettings.favoritesEnabled);
         videosInput.checked = Boolean(uiSettings.videosEnabled);
+        devCommentsInput.checked = Boolean(uiSettings.devCommentsEnabled);
     };
 
     const closeModal = () => {
@@ -739,7 +743,8 @@ function setupSettingsModal() {
             descriptionsEnabled: descriptionsInput.checked,
             currentProjectsEnabled: currentProjectsInput.checked,
             favoritesEnabled: favoritesInput.checked,
-            videosEnabled: videosInput.checked
+            videosEnabled: videosInput.checked,
+            devCommentsEnabled: devCommentsInput.checked
         };
         writeHomeSettings(uiSettings);
         rerenderMainSections();
@@ -760,6 +765,7 @@ function setupSettingsModal() {
     currentProjectsInput.addEventListener("change", handleChange);
     favoritesInput.addEventListener("change", handleChange);
     videosInput.addEventListener("change", handleChange);
+    devCommentsInput.addEventListener("change", handleChange);
 
     document.addEventListener("keydown", (event) => {
         if (event.key === "Escape" && modal.classList.contains("open")) {
