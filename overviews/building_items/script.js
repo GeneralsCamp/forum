@@ -7,6 +7,7 @@ import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageServ
 import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
 import { getSharedLanguagePack, getSharedText } from "../shared/SharedTextService.mjs";
+import { createLazyList } from "../shared/LazyList.mjs";
 
 // --- GLOBAL VARIABLES ---
 let lang = {};
@@ -26,6 +27,19 @@ const loader = createLoader();
 let currentLanguage = getInitialLanguage();
 const HOME_SETTINGS_KEY = "gf_home_settings_v1";
 const devCommentsEnabled = readHomeSetting("devCommentsEnabled", true);
+const INITIAL_BATCH_SIZE = 40;
+const BATCH_SIZE = 30;
+const SEARCH_REVEAL_BUFFER = 12;
+let appliedSearchText = "";
+const lazyList = createLazyList({
+    containerSelector: "#cards",
+    contentSelector: "#content",
+    initialBatchSize: INITIAL_BATCH_SIZE,
+    batchSize: BATCH_SIZE,
+    revealBuffer: SEARCH_REVEAL_BUFFER,
+    emptyHtml: () => `<div class="col-12 filter-empty-message">${noMatchMessage}</div>`,
+    onRenderBatch: (groups, ctx) => appendGroups(groups, ctx)
+});
 
 function readHomeSetting(key, fallback) {
     try {
@@ -732,18 +746,19 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
     return cardHtml;
 }
 
-function renderConstructionItems(items) {
-    const container = document.getElementById("cards");
+function buildGroupedList(items) {
     const grouped = groupItemsByNameEffectsLegacyAppearanceAndDuration(items);
-    container.innerHTML = "";
+    return Object.keys(grouped).map(key => ({
+        key,
+        items: grouped[key]
+    }));
+}
 
-    if (!items.length || Object.keys(grouped).length === 0) {
-        container.innerHTML = `<div class="col-12 filter-empty-message">${noMatchMessage}</div>`;
-        return;
-    }
+function appendGroups(groups, { container, sentinel }) {
+    const fragment = document.createDocumentFragment();
 
-    Object.keys(grouped).forEach((key, index) => {
-        const cardHtml = createGroupedCard(grouped[key], imageUrlMap, key);
+    groups.forEach(group => {
+        const cardHtml = createGroupedCard(group.items, imageUrlMap, group.key);
         const wrapper = document.createElement("div");
         wrapper.innerHTML = cardHtml;
         const card = wrapper.firstElementChild;
@@ -754,8 +769,10 @@ function renderConstructionItems(items) {
             card.classList.add("card-visible");
         }, 50);
 
-        container.appendChild(card);
+        fragment.appendChild(card);
     });
+
+    container.insertBefore(fragment, sentinel);
 
     void hydrateComposedImages({
         root: container,
@@ -766,9 +783,37 @@ function renderConstructionItems(items) {
     });
 }
 
+function resetRenderState(groups, { revealIndex = null } = {}) {
+    lazyList.reset(groups, {
+        revealIndex,
+        emptyHtml: () => `<div class="col-12 filter-empty-message">${noMatchMessage}</div>`
+    });
+}
+
 // --- FILTERING, SEARCH, SORTING ---
-function applyFiltersAndSorting() {
-    const search = document.getElementById("searchInput").value.toLowerCase().trim();
+function findRevealIndex(groups, search, selectedFilters) {
+    if (!search) return null;
+
+    if (selectedFilters.includes("id")) {
+        const exactId = groups.findIndex(group =>
+            group.items.some(item => String(item.constructionItemID || "") === search)
+        );
+        if (exactId !== -1) return exactId;
+    }
+
+    if (selectedFilters.includes("name")) {
+        const normalizedSearch = normalizeName(search);
+        const exactName = groups.findIndex(group =>
+            group.items.some(item => normalizeName(getCIName(item)) === normalizedSearch)
+        );
+        if (exactName !== -1) return exactName;
+    }
+
+    return null;
+}
+
+function applyFiltersAndSorting({ revealId = null } = {}) {
+    const search = appliedSearchText.toLowerCase().trim();
     const selectedTypes = Array.from(typeFilterCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
 
     const selectedFilters = Array.from(document.querySelectorAll(".search-filter:checked")).map(cb => cb.value);
@@ -828,7 +873,18 @@ function applyFiltersAndSorting() {
         Number(b.constructionItemID) - Number(a.constructionItemID)
     );
 
-    renderConstructionItems(filtered);
+    const groupedList = buildGroupedList(filtered);
+
+    let revealIndex = null;
+    if (revealId) {
+        revealIndex = groupedList.findIndex(group =>
+            group.items.some(item => String(item.constructionItemID || "") === String(revealId))
+        );
+    } else {
+        revealIndex = findRevealIndex(groupedList, search, selectedFilters);
+    }
+
+    resetRenderState(groupedList, { revealIndex });
 }
 
 function escapeRegExp(string) {
@@ -855,8 +911,9 @@ function applyHashSearch() {
 
     searchInput.disabled = false;
     searchInput.value = id;
+    appliedSearchText = id;
 
-    searchInput.dispatchEvent(new Event("input"));
+    applyFiltersAndSorting({ revealId: id });
 }
 
 function formatNumber(num) {
@@ -865,6 +922,7 @@ function formatNumber(num) {
 
 function setupEventListeners() {
     const searchInput = document.getElementById("searchInput");
+    const searchButton = document.getElementById("searchButton");
     typeFilterCheckboxes = document.querySelectorAll(".type-filter");
     const searchFilters = document.querySelectorAll(".search-filter");
     const showFilter = document.getElementById("showFilter");
@@ -880,7 +938,19 @@ function setupEventListeners() {
         }
     });
 
-    searchInput.addEventListener("input", applyFiltersAndSorting);
+    function runSearch() {
+        if (searchInput.disabled) return;
+        appliedSearchText = searchInput.value || "";
+        applyFiltersAndSorting();
+    }
+
+    searchButton?.addEventListener("click", runSearch);
+    searchInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            runSearch();
+        }
+    });
 
     typeFilterCheckboxes.forEach(cb => {
         cb.addEventListener("change", applyFiltersAndSorting);
@@ -898,13 +968,16 @@ function setupEventListeners() {
 
         if (selected.length === 0) {
             searchInput.disabled = true;
+            if (searchButton) searchButton.disabled = true;
             searchInput.placeholder =
                 filters.search_disabled || "Unavailable to search!";
             searchInput.value = "";
+            appliedSearchText = "";
             return;
         }
 
         searchInput.disabled = false;
+        if (searchButton) searchButton.disabled = false;
 
         const selectedLabels = selected.map(cb => {
             if (cb.value === "name")

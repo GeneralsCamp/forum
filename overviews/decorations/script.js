@@ -7,6 +7,7 @@ import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageServ
 import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
 import { getSharedLanguagePack, getSharedText } from "../shared/SharedTextService.mjs";
+import { createLazyList } from "../shared/LazyList.mjs";
 
 // --- GLOBAL VARIABLES ---
 const loader = createLoader();
@@ -27,6 +28,20 @@ const composedDecorationImageCache = new Map();
 let sharedLangPack = { filters: {}, ui: {} };
 const HOME_SETTINGS_KEY = "gf_home_settings_v1";
 const devCommentsEnabled = readHomeSetting("devCommentsEnabled", true);
+const INITIAL_BATCH_SIZE = 40;
+const BATCH_SIZE = 30;
+const SEARCH_REVEAL_BUFFER = 12;
+let appliedSearchText = "";
+const lazyList = createLazyList({
+  containerSelector: "#cards",
+  contentSelector: "#content",
+  initialBatchSize: INITIAL_BATCH_SIZE,
+  batchSize: BATCH_SIZE,
+  revealBuffer: SEARCH_REVEAL_BUFFER,
+  emptyHtml: () => `<div class="col-12 filter-empty-message">${noMatchMessage}</div>`,
+  onRenderBatch: (items, ctx) => appendCards(items, ctx),
+  onAfterBatch: (ctx) => setupMaxCapClick(ctx.container)
+});
 
 function readHomeSetting(key, fallback) {
   try {
@@ -405,7 +420,7 @@ function createCard(item, imageUrlMap = {}) {
   const safeName = name.replace(/'/g, "\\'");
 
   return `
-  <div class="col-md-6 col-sm-12 d-flex flex-column">
+  <div class="col-md-6 col-sm-12 d-flex flex-column" data-wod-id="${id}">
     <div class="box flex-fill">
       <div class="box-content">
         <h2 class="deco-title">${name}</h2>
@@ -457,16 +472,10 @@ function createCard(item, imageUrlMap = {}) {
   </div>`;
 }
 
-function renderDecorations(decos) {
-  const container = document.getElementById("cards");
-  container.innerHTML = "";
+function appendCards(items, { container, sentinel }) {
+  const fragment = document.createDocumentFragment();
 
-  if (!decos.length) {
-    container.innerHTML = `<div class="col-12 filter-empty-message">${noMatchMessage}</div>`;
-    return;
-  }
-
-  decos.forEach((item, index) => {
+  items.forEach(item => {
     const cardHtml = createCard(item, imageUrlMap);
     const wrapper = document.createElement("div");
     wrapper.innerHTML = cardHtml;
@@ -478,8 +487,10 @@ function renderDecorations(decos) {
       card.classList.add("card-visible");
     }, 50);
 
-    container.appendChild(card);
+    fragment.appendChild(card);
   });
+
+  container.insertBefore(fragment, sentinel);
 
   void hydrateComposedImages({
     root: container,
@@ -488,11 +499,36 @@ function renderDecorations(decos) {
       img.dataset.modalSrc = dataUrl;
     }
   });
+
+}
+
+function resetRenderState(decos, { revealIndex = null } = {}) {
+  lazyList.reset(decos, {
+    revealIndex,
+    emptyHtml: () => `<div class="col-12 filter-empty-message">${noMatchMessage}</div>`
+  });
 }
 
 // --- FILTERING, SEARCH, SORTING ---
-function applyFiltersAndSorting() {
-  const search = document.getElementById("searchInput").value.toLowerCase().trim();
+function findRevealIndex(items, search, selectedFilters) {
+  if (!search) return null;
+
+  if (selectedFilters.includes("id")) {
+    const exactId = items.findIndex(item => String(item.wodID || "") === search);
+    if (exactId !== -1) return exactId;
+  }
+
+  if (selectedFilters.includes("name")) {
+    const normalizedSearch = normalizeName(search);
+    const exactName = items.findIndex(item => normalizeName(getName(item)) === normalizedSearch);
+    if (exactName !== -1) return exactName;
+  }
+
+  return null;
+}
+
+function applyFiltersAndSorting({ revealId = null } = {}) {
+  const search = appliedSearchText.toLowerCase().trim();
 
   const selectedFilters = Array.from(document.querySelectorAll(".search-filter:checked")).map(cb => cb.value);
   const hasSearchText = search.length > 0;
@@ -549,8 +585,14 @@ function applyFiltersAndSorting() {
     return vb - va;
   });
 
-  renderDecorations(filtered);
-  setupMaxCapClick();
+  let revealIndex = null;
+  if (revealId) {
+    revealIndex = filtered.findIndex(item => String(item.wodID || "") === String(revealId));
+  } else {
+    revealIndex = findRevealIndex(filtered, search, selectedFilters);
+  }
+
+  resetRenderState(filtered, { revealIndex });
 }
 
 function applyHashSearch() {
@@ -571,16 +613,19 @@ function applyHashSearch() {
   if (!searchInput) return;
 
   searchInput.value = id;
+  appliedSearchText = id;
 
-  applyFiltersAndSorting();
+  applyFiltersAndSorting({ revealId: id });
 }
 
-function setupMaxCapClick() {
+function setupMaxCapClick(root = document) {
   const langData = {
     ...(sharedLangPack.filters || {}),
     ...(ownLang[currentLanguage]?.filters || {})
   };
-  document.querySelectorAll(".max-bonus").forEach(span => {
+  root.querySelectorAll(".max-bonus").forEach(span => {
+    if (span.dataset.capBound === "1") return;
+    span.dataset.capBound = "1";
     span.addEventListener("click", () => {
       const capID = span.dataset.capid;
       if (!capID) return;
@@ -622,15 +667,29 @@ function formatNumber(num) {
 
 function setupEventListeners() {
   const searchInput = document.getElementById("searchInput");
+  const searchButton = document.getElementById("searchButton");
   const sortSelect = document.getElementById("sortSelect");
   const searchFilters = document.querySelectorAll(".search-filter");
   const showFilter = document.getElementById("showFilter");
 
-  searchInput.addEventListener("input", applyFiltersAndSorting);
+  function runSearch() {
+    if (searchInput.disabled) return;
+    appliedSearchText = searchInput.value || "";
+    applyFiltersAndSorting();
+  }
+
+  searchButton?.addEventListener("click", runSearch);
+  searchInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      runSearch();
+    }
+  });
 
   function updateSearchInputState() {
 
     const searchInput = document.getElementById("searchInput");
+    const searchButton = document.getElementById("searchButton");
     const filters = {
       ...(sharedLangPack.filters || {}),
       ...(ownLang[currentLanguage?.toLowerCase()]?.filters || {})
@@ -642,13 +701,16 @@ function setupEventListeners() {
 
     if (selected.length === 0) {
       searchInput.disabled = true;
+      if (searchButton) searchButton.disabled = true;
       searchInput.placeholder =
         filters.search_disabled || "Unavailable to search!";
       searchInput.value = "";
+      appliedSearchText = "";
       return;
     }
 
     searchInput.disabled = false;
+    if (searchButton) searchButton.disabled = false;
 
     const selectedLabels = selected.map(f => {
       if (f === "name") return filters.search_name || "Name";
