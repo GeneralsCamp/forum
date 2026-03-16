@@ -33,6 +33,7 @@ const state = {
   leaguetypeEvents: [],
   rewardsById: {},
   effectsById: {},
+  effectTypesById: {},
   unitsById: {},
   lootBoxesById: {},
   constructionById: {},
@@ -272,7 +273,17 @@ function getBossEffectSummary(stage) {
     frontDefense: 0,
     flankDefense: 0,
     courtyardDefense: 0,
-    isWallRegen: false
+    isWallRegen: false,
+    infectionBase: 0,
+    infectionMelee: 0,
+    infectionRange: 0,
+    infectionWall: 0,
+    infectionCourtyard: 0,
+    infectionBaseId: null,
+    infectionMeleeId: null,
+    infectionRangeId: null,
+    infectionWallId: null,
+    infectionCourtyardId: null
   };
 
   const effects = parseBattleEffects(stage?.defenderBattleEffects);
@@ -286,6 +297,32 @@ function getBossEffectSummary(stage) {
     if (effectName === "defenseBoostYard") summary.courtyardDefense = value;
   });
 
+  const postEffects = parseBattleEffects(stage?.attackerPostBattleEffects);
+  postEffects.forEach(effect => {
+    const effectName = String(state.effectsById[String(effect.id)]?.name || "").trim();
+    const value = Number(effect.amount) || 0;
+    if (effectName === "infectionRateBaseBonus") {
+      summary.infectionBase = value;
+      summary.infectionBaseId = effect.id;
+    }
+    if (effectName === "infectionRateMeleeBonus") {
+      summary.infectionMelee = value;
+      summary.infectionMeleeId = effect.id;
+    }
+    if (effectName === "infectionRateRangeBonus") {
+      summary.infectionRange = value;
+      summary.infectionRangeId = effect.id;
+    }
+    if (effectName === "infectionRateWallBonus") {
+      summary.infectionWall = value;
+      summary.infectionWallId = effect.id;
+    }
+    if (effectName === "infectionRateCourtyardBonus") {
+      summary.infectionCourtyard = value;
+      summary.infectionCourtyardId = effect.id;
+    }
+  });
+
   const highlightIds = parseSimpleIdList(stage?.HighlightEffectIcon);
   summary.isWallRegen = highlightIds.some(id => {
     const effectName = String(state.effectsById[String(id)]?.name || "").trim();
@@ -293,6 +330,24 @@ function getBossEffectSummary(stage) {
   });
 
   return summary;
+}
+
+function effectGroupLabel(effectId, fallback) {
+  if (!effectId) return fallback;
+  const effect = state.effectsById[String(effectId)];
+  let sortCategory = effect?.sortCategory ?? effect?.sortcategory;
+  let sortGroup = effect?.sortGroup ?? effect?.sortgroup;
+  if (sortCategory === undefined || sortGroup === undefined) {
+    const typeId = effect?.effectTypeID ?? effect?.effecttypeid;
+    const effectType = typeId !== undefined && typeId !== null
+      ? state.effectTypesById[String(typeId)]
+      : null;
+    sortCategory = effectType?.sortCategory ?? effectType?.sortcategory;
+    sortGroup = effectType?.sortGroup ?? effectType?.sortgroup;
+  }
+  if (sortCategory === undefined || sortGroup === undefined) return fallback;
+  const key = `effect_group_${sortCategory}_${sortGroup}_passive`;
+  return langValue(key) || fallback;
 }
 
 function parseSpawnReserveUnits(stage) {
@@ -620,6 +675,11 @@ function renderBossOverview() {
   const bossStatsLabel = ownText("boss_stats", "Boss Stats");
   const healthLabel = ownText("health", "Health");
   const courtyardMeleeRatioLabel = ownText("courtyard_melee_ratio", "Courtyard Melee Ratio");
+  const infectionBaseLabel = effectGroupLabel(effectSummary.infectionBaseId, "Infection rate (base)");
+  const infectionMeleeLabel = effectGroupLabel(effectSummary.infectionMeleeId, "Infection rate (melee)");
+  const infectionRangeLabel = effectGroupLabel(effectSummary.infectionRangeId, "Infection rate (range)");
+  const infectionWallLabel = effectGroupLabel(effectSummary.infectionWallId, "Infection rate (wall)");
+  const infectionCourtyardLabel = effectGroupLabel(effectSummary.infectionCourtyardId, "Infection rate (courtyard)");
 
   root.innerHTML = `
     <div class="boss-overview-grid">
@@ -649,13 +709,75 @@ function renderBossOverview() {
         <h3 class="boss-overview-heading">${bossEffectsTitle}</h3>
         <div class="boss-overview-effects">
           ${[
-            { title: ownText("wall_protection", "Wall protection"), icon: "../../img_base/battle_simulator/wall-icon.png", value: `${formatNumber(effectSummary.wallProtection)}%` },
-            { title: ownText("gate_protection", "Gate protection"), icon: "../../img_base/battle_simulator/gate-icon.png", value: `${formatNumber(effectSummary.gateProtection)}%` },
-            { title: ownText("courtyard_defense", "Courtyard defense"), icon: "../../img_base/battle_simulator/cy-icon.png", value: `${formatNumber(effectSummary.courtyardDefense)}%` },
-            { title: ownText("flank_defense", "Flank defense"), icon: "../../img_base/battle_simulator/flanks-strength.png", value: `${formatNumber(effectSummary.flankDefense)}%` },
-            { title: ownText("front_defense", "Front defense"), icon: "../../img_base/battle_simulator/front-strength.png", value: `${formatNumber(effectSummary.frontDefense)}%` },
-            { title: wallRegenStageStartLabel, icon: "../../img_base/time.png", value: effectSummary.isWallRegen ? valueTrue : valueFalse }
-          ].map(effect => `
+      {
+        title: ownText("wall_protection", "Wall protection"),
+        icon: "../../img_base/battle_simulator/wall-icon.png",
+        value: `${formatNumber(effectSummary.wallProtection)}%`,
+        valueNum: Number(effectSummary.wallProtection) || 0
+      },
+      {
+        title: ownText("gate_protection", "Gate protection"),
+        icon: "../../img_base/battle_simulator/gate-icon.png",
+        value: `${formatNumber(effectSummary.gateProtection)}%`,
+        valueNum: Number(effectSummary.gateProtection) || 0
+      },
+      {
+        title: ownText("courtyard_defense", "Courtyard defense"),
+        icon: "../../img_base/battle_simulator/cy-icon.png",
+        value: `${formatNumber(effectSummary.courtyardDefense)}%`,
+        valueNum: Number(effectSummary.courtyardDefense) || 0
+      },
+      {
+        title: ownText("flank_defense", "Flank defense"),
+        icon: "../../img_base/battle_simulator/flanks-strength.png",
+        value: `${formatNumber(effectSummary.flankDefense)}%`,
+        valueNum: Number(effectSummary.flankDefense) || 0
+      },
+      {
+        title: ownText("front_defense", "Front defense"),
+        icon: "../../img_base/battle_simulator/front-strength.png",
+        value: `${formatNumber(effectSummary.frontDefense)}%`,
+        valueNum: Number(effectSummary.frontDefense) || 0
+      },
+      {
+        title: wallRegenStageStartLabel,
+        icon: "../../img_base/time.png",
+        value: effectSummary.isWallRegen ? valueTrue : valueFalse,
+        hideIfZero: false
+      },
+      {
+        title: infectionBaseLabel,
+        icon: "../../img_base/placeholder.webp",
+        value: `${formatNumber(effectSummary.infectionBase)}%`,
+        valueNum: Number(effectSummary.infectionBase) || 0
+      },
+      {
+        title: infectionMeleeLabel,
+        icon: "../../img_base/placeholder.webp",
+        value: `${formatNumber(effectSummary.infectionMelee)}%`,
+        valueNum: Number(effectSummary.infectionMelee) || 0
+      },
+      {
+        title: infectionRangeLabel,
+        icon: "../../img_base/placeholder.webp",
+        value: `${formatNumber(effectSummary.infectionRange)}%`,
+        valueNum: Number(effectSummary.infectionRange) || 0
+      },
+      {
+        title: infectionWallLabel,
+        icon: "../../img_base/placeholder.webp",
+        value: `${formatNumber(effectSummary.infectionWall)}%`,
+        valueNum: Number(effectSummary.infectionWall) || 0
+      },
+      {
+        title: infectionCourtyardLabel,
+        icon: "../../img_base/placeholder.webp",
+        value: `${formatNumber(effectSummary.infectionCourtyard)}%`,
+        valueNum: Number(effectSummary.infectionCourtyard) || 0
+      }
+    ]
+      .filter(effect => effect.hideIfZero === false || (effect.valueNum ?? 0) !== 0)
+      .map(effect => `
             <div class="boss-overview-stat boss-overview-effect-stat">
               <span class="boss-effect-icon-wrap">
                 <img src="${effect.icon}" alt="${effect.title}" class="boss-effect-icon" loading="lazy">
@@ -929,7 +1051,7 @@ function setupBossOverviewSelectors() {
   levelSelect.addEventListener("change", () => {
     localStorage.setItem("rift_rewards_overview_level_id", levelSelect.value);
     const stages = getStagesForLevel(levelSelect.value).slice(0, 6);
-      stageSelect.innerHTML = "";
+    stageSelect.innerHTML = "";
     const bossStageLabel = ownText("boss_stage", "Boss stage");
     stages.forEach((_, index) => {
       const option = document.createElement("option");
@@ -1008,6 +1130,7 @@ async function init() {
 
         state.rewardsById = buildLookup(getArray(data, ["rewards"]), "rewardID");
         state.effectsById = buildLookup(getArray(data, ["effects"]), "effectID");
+        state.effectTypesById = buildLookup(getArray(data, ["effecttypes", "effectTypes"]), "effectTypeID");
         state.unitsById = buildLookup(getArray(data, ["units"]), "wodID");
         state.lootBoxesById = buildLookup(getArray(data, ["lootBoxes", "lootboxes"]), "lootBoxID");
         state.constructionById = buildLookup(getArray(data, ["constructionItems"]), "constructionItemID");
