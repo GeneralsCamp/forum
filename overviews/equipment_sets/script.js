@@ -221,6 +221,28 @@ function formatTemplateValue(template, effectId, value, sourceType = "auto") {
   return token;
 }
 
+function normalizeEffectSemanticValue(effectId, value, sourceType = "auto") {
+  const numericValue = Number(value);
+  if (!Number.isFinite(numericValue)) return 0;
+
+  const template = String(getEffectLabel(effectId, sourceType) || "");
+  const hasMinusAroundPlaceholder =
+    /-\s*\{0\}/.test(template) ||
+    /\{0\}\s*-/.test(template);
+  const hasPlusAroundPlaceholder =
+    /\+\s*\{0\}/.test(template) ||
+    /\{0\}\s*\+/.test(template);
+
+  if (hasMinusAroundPlaceholder) return -Math.abs(numericValue);
+  if (hasPlusAroundPlaceholder) return Math.abs(numericValue);
+  return numericValue;
+}
+
+function isLowerValueBetter(effectId, sourceType = "auto") {
+  const template = String(getEffectLabel(effectId, sourceType) || "");
+  return /-\s*\{0\}/.test(template) || /\{0\}\s*-/.test(template);
+}
+
 function getEffectLabel(effectId, sourceType = "auto") {
   const resolvedEffectId = resolveEffectId(effectId, sourceType);
   const effectDef = effectCtx?.effectDefinitions?.[String(resolvedEffectId)] || null;
@@ -319,17 +341,25 @@ function parseEffects(raw, sourceType = "auto") {
     .filter(Boolean)
     .map(splitEffectToken)
     .flat()
+    .map((entry) => ({
+      ...entry,
+      value: normalizeEffectSemanticValue(entry.id, entry.value, sourceType)
+    }))
     .map((entry) => renderEffectLine(entry.id, entry.value, entry.argId, sourceType));
 }
 
-function parseEffectTokens(raw) {
+function parseEffectTokens(raw, sourceType = "auto") {
   if (!raw) return [];
   return String(raw)
     .split(",")
     .map((x) => x.trim())
     .filter(Boolean)
     .map(splitEffectToken)
-    .flat();
+    .flat()
+    .map((entry) => ({
+      ...entry,
+      value: normalizeEffectSemanticValue(entry.id, entry.value, sourceType)
+    }));
 }
 
 function sortEffectTokensByValueDesc(tokens) {
@@ -552,7 +582,8 @@ function buildSetIndex({ equipments, gems, setBonuses }) {
 }
 
 function getCompareStatLabel(entry) {
-  const rawBase = cleanTemplateText(getEffectLabel(entry.id));
+  const template = String(getEffectLabel(entry.id) || "");
+  const rawBase = cleanTemplateText(template);
   let base = rawBase
     .replace(/^[+\-\s%]+/, "")
     .replace(/\s*[.,:;]+\s*$/, "")
@@ -562,6 +593,9 @@ function getCompareStatLabel(entry) {
     base = base.replace(/^of\s+/i, "");
   }
   const normalizedBase = base ? `${base.charAt(0).toUpperCase()}${base.slice(1)}` : base;
+  if (!template.includes("{1}") && !template.includes("{2}")) {
+    return normalizedBase;
+  }
   const unitLabel = entry.argId ? getUnitNameById(entry.argId) : "";
   return unitLabel ? `${normalizedBase} (${unitLabel})` : normalizedBase;
 }
@@ -569,7 +603,7 @@ function getCompareStatLabel(entry) {
 function buildCompareStatMap(rawEffects, sourceType = "auto") {
   const map = new Map();
 
-  parseEffectTokens(rawEffects).forEach((token) => {
+  parseEffectTokens(rawEffects, sourceType).forEach((token) => {
     const resolvedId = String(resolveEffectId(token.id, sourceType) || token.id || "");
     const argId = String(token.argId || "").trim();
     const key = `${resolvedId}::${argId}`;
@@ -675,7 +709,7 @@ function buildEffectSummaryHtml(setEntry) {
   };
 
   const addTokens = (raw, sourceType) => {
-    parseEffectTokens(raw).forEach((entry) => {
+    parseEffectTokens(raw, sourceType).forEach((entry) => {
       const resolvedId = String(resolveEffectId(entry.id, sourceType) || entry.id || "");
       const argId = String(entry.argId || "").trim();
       const mergeKey = getSummaryMergeKey(resolvedId, argId, "auto");
@@ -739,7 +773,7 @@ function buildSetAggregateStatMap(setEntry) {
   const map = new Map();
 
   const addRaw = (rawEffects, sourceType) => {
-    parseEffectTokens(rawEffects).forEach((token) => {
+    parseEffectTokens(rawEffects, sourceType).forEach((token) => {
       const resolvedId = String(resolveEffectId(token.id, sourceType) || token.id || "");
       const argId = String(token.argId || "").trim();
       const key = `${resolvedId}::${argId}`;
@@ -829,6 +863,9 @@ function renderSetCompareView() {
       const maxVal = finiteNums.length ? Math.max(...finiteNums) : null;
       const minVal = finiteNums.length ? Math.min(...finiteNums) : null;
       const isEqual = finiteNums.length > 1 && maxVal === minVal;
+      const lowerIsBetter = isLowerValueBetter(row.id);
+      const bestVal = lowerIsBetter ? minVal : maxVal;
+      const worstVal = lowerIsBetter ? maxVal : minVal;
 
       const valueCells = values.map((value) => {
         const num = Number(value);
@@ -837,9 +874,9 @@ function renderSetCompareView() {
         if (isFiniteValue) {
           if (isEqual) {
             cssClass = "compare-value-equal";
-          } else if (num === maxVal) {
+          } else if (num === bestVal) {
             cssClass = "compare-value-win";
-          } else if (num === minVal) {
+          } else if (num === worstVal) {
             cssClass = "compare-value-lose";
           }
         }
@@ -980,7 +1017,7 @@ function renderSet(setId) {
 
   const bonusHtml = setEntry.bonuses.length > 0
     ? setEntry.bonuses.map((bonus) => {
-      const effects = sortEffectTokensByValueDesc(parseEffectTokens(bonus.effects))
+      const effects = sortEffectTokensByValueDesc(parseEffectTokens(bonus.effects, "set_bonus"))
         .map((entry) => renderEffectLine(entry.id, entry.value, entry.argId, "set_bonus"));
       const effectText = effects.length > 0
         ? effects.map((x) => `<div>${x}</div>`).join("")
