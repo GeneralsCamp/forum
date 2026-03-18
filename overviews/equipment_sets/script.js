@@ -112,22 +112,52 @@ function cleanTemplateText(text) {
 function splitEffectToken(token) {
   const [idRaw, valueRaw = "0"] = String(token || "").split("&");
   const id = String(idRaw || "").trim();
-  if (!id) return null;
+  if (!id) return [];
 
-  let valuePart = String(valueRaw || "").trim();
-  let argId = null;
-  if (valuePart.includes("+")) {
-    const [argPart, actual] = valuePart.split("+");
-    argId = String(argPart || "").trim() || null;
-    valuePart = actual ?? valuePart;
+  const valuePart = String(valueRaw || "").trim();
+  
+  if (valuePart.includes("#")) {
+    const nestedEntries = valuePart
+      .split("#")
+      .map((part) => String(part || "").trim())
+      .filter((part) => part.includes("+"))
+      .map((part) => {
+        const [argPartRaw, nestedValueRaw] = part.split("+");
+        const argId = String(argPartRaw || "").trim();
+        const parsed = Number(nestedValueRaw);
+        if (!argId || !Number.isFinite(parsed)) return null;
+        return {
+          id,
+          value: parsed,
+          argId
+        };
+      })
+      .filter(Boolean);
+
+    if (nestedEntries.length === 0) return [];
+
+    const template = String(getEffectLabel(id) || "");
+    if (!template.includes("{1}") && !template.includes("{2}")) {
+      return [nestedEntries[0]];
+    }
+
+    return nestedEntries;
   }
 
-  const parsed = Number(valuePart);
-  return {
+  let numericPart = valuePart;
+  let argId = null;
+  if (numericPart.includes("+")) {
+    const [argPart, actual] = numericPart.split("+");
+    argId = String(argPart || "").trim() || null;
+    numericPart = actual ?? numericPart;
+  }
+
+  const parsed = Number(numericPart);
+  return [{
     id,
     value: Number.isFinite(parsed) ? parsed : 0,
     argId
-  };
+  }];
 }
 
 function resolveEffectId(effectId, sourceType = "auto") {
@@ -288,7 +318,7 @@ function parseEffects(raw, sourceType = "auto") {
     .map((x) => x.trim())
     .filter(Boolean)
     .map(splitEffectToken)
-    .filter(Boolean)
+    .flat()
     .map((entry) => renderEffectLine(entry.id, entry.value, entry.argId, sourceType));
 }
 
@@ -299,7 +329,7 @@ function parseEffectTokens(raw) {
     .map((x) => x.trim())
     .filter(Boolean)
     .map(splitEffectToken)
-    .filter(Boolean);
+    .flat();
 }
 
 function sortEffectTokensByValueDesc(tokens) {
