@@ -39,7 +39,8 @@
 .set-head {
   border-bottom: 1px solid var(--line-1);
   padding: 10px 12px;
-  background: linear-gradient(90deg, rgba(67, 51, 38, 0.95), rgba(119, 80, 54, 0.94));
+  background: rgba(67, 51, 38, 0.88);
+  backdrop-filter: blur(2px);
 }
 
 .set-title {
