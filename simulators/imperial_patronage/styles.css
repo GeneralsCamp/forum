@@ -545,6 +545,20 @@
 }
 
 @media (max-width: 991px) {
+  .reward-card {
+    position: relative;
+  }
+
+  .reward-level {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    z-index: 2;
+    width: calc(100% - 16px);
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
   .simulator-frame {
     grid-template-columns: 1fr;
     height: 100%;
@@ -564,6 +578,7 @@
     overflow: visible;
     height: auto;
     min-height: 0;
+    padding-bottom: 5px;
   }
 
   .reward-mobile-sticky {
@@ -622,13 +637,11 @@
     align-items: stretch;
     gap: 8px;
     flex: 0 0 auto;
-    min-height: 180px;
   }
 
   .reward-cards-stack .reward-card {
     width: 100%;
     max-width: none;
-    min-height: 180px;
   }
 
   .reward-cards-stack.single-card {
@@ -639,7 +652,6 @@
   .reward-cards-stack.single-card .reward-card {
     width: min(220px, 100%);
     max-width: min(220px, 100%);
-    min-height: 180px;
     margin-inline: auto;
   }
 
@@ -755,7 +767,6 @@
   .reward-mobile-sticky {
     order: 3;
     display: block;
-    padding: 0 0 4px;
   }
 
   .reward-mobile-stats {
@@ -809,7 +820,6 @@
     align-items: stretch;
     gap: 8px;
     flex: 0 0 auto;
-    min-height: 180px;
   }
 
   .reward-card.current {
@@ -823,7 +833,6 @@
   .reward-cards-stack .reward-card {
     width: 100%;
     max-width: none;
-    min-height: 180px;
   }
 
   .reward-cards-stack.single-card {
@@ -834,7 +843,6 @@
   .reward-cards-stack.single-card .reward-card {
     width: min(220px, 100%);
     max-width: min(220px, 100%);
-    min-height: 180px;
     margin-inline: auto;
   }
 
