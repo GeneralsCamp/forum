@@ -45,6 +45,7 @@ const categories = {
     ],
 
     simulators: [
+        { name: "Imperial Patronage Simulator", desc: "Simulate donations, thresholds, and rewards for Imperial Patronage.", icon: "patronage-icon.webp", link: "./simulators/imperial_patronage/index.html", disabled: false },
         { name: "Castle Layout Simulator", desc: "Design and manage your castle layouts.", icon: "main_page/layout-icon.webp", link: "./simulators/layout_editor/index.html", disabled: false },
         { name: "Hall of Legends Simulator", desc: "Try point allocations without spending rubies.", icon: "main_page/hall-of-legends-simulator-icon.webp", link: "./simulators/hol_simulator/index.html", disabled: false },
     ]
