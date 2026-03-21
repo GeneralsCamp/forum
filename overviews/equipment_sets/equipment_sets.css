@@ -288,6 +288,10 @@
   box-shadow: inset 3px 0 0 rgba(243, 194, 74, 0.95);
 }
 
+.summary-row.is-neutral {
+  box-shadow: inset 3px 0 0 rgba(243, 194, 74, 0.95);
+}
+
 .summary-row.is-negative {
   box-shadow: inset 3px 0 0 rgba(220, 93, 93, 0.9);
 }

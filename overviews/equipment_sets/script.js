@@ -729,14 +729,13 @@ function buildEffectSummaryHtml(setEntry) {
 
   const rows = Array.from(totals.values())
     .sort((a, b) => {
-      const valueDiff = Number(b.value || 0) - Number(a.value || 0);
+      const valueDiff = Math.abs(Number(b.value || 0)) - Math.abs(Number(a.value || 0));
       if (valueDiff !== 0) return valueDiff;
       return Number(a.id || 0) - Number(b.id || 0);
     })
     .map((entry, idx) => {
-      const polarityClass = entry.value < 0 ? "is-negative" : "is-positive";
       return `
-        <article class="summary-row ${polarityClass}">
+        <article class="summary-row is-neutral">
           <div class="summary-rank">${idx + 1}</div>
           <div class="summary-main">
             <p class="summary-text">${renderEffectLine(entry.id, entry.value, entry.argId, entry.sourceType || "auto")}</p>
