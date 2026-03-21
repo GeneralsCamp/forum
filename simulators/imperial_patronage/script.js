@@ -11,6 +11,7 @@ import { initLanguageSelector, getInitialLanguage } from "../../overviews/shared
 import {
   createRewardResolver,
   buildLookup,
+  getArray,
   normalizeName
 } from "../../overviews/shared/RewardResolver.mjs";
 
@@ -303,8 +304,12 @@ function getRewardImage(reward) {
   const primary = reward.entries[0];
   return (
     rewardResolver.getDecorationImageUrl(primary) ||
+    rewardResolver.getConstructionImageUrl(primary) ||
+    rewardResolver.getEquipmentImageUrl(primary) ||
+    rewardResolver.getUnitImageUrl(primary) ||
     rewardResolver.getCurrencyImageUrl(primary) ||
     rewardResolver.getLootBoxImageUrl(primary) ||
+    rewardResolver.getAllianceLayoutImageUrl(primary) ||
     FALLBACK_IMAGE
   );
 }
@@ -314,6 +319,47 @@ function getRewardLabel(reward) {
   const main = reward.entries?.[0];
   if (!main) return reward.commentLabel || "Reward";
   return `${main.name}${main.amount > 1 ? ` x${formatNumber(main.amount)}` : ""}`;
+}
+
+function getRewardNavigationUrl(reward) {
+  const primary = reward?.entries?.[0];
+  if (!primary?.id || !primary?.type) return null;
+
+  if (primary.type === "decoration") {
+    return `../../overviews/decorations/index.html#${primary.id}`;
+  }
+
+  if (primary.type === "construction") {
+    return `../../overviews/building_items/index.html#${primary.id}`;
+  }
+
+  if (primary.type === "equipment") {
+    return `../../overviews/look_items/index.html#${primary.id}`;
+  }
+
+  return null;
+}
+
+function applyRewardNavigation(card, reward) {
+  if (!card) return;
+  const url = getRewardNavigationUrl(reward);
+
+  if (url) {
+    card.dataset.rewardUrl = url;
+    card.style.cursor = "pointer";
+    card.setAttribute("role", "link");
+    card.setAttribute("tabindex", "0");
+  } else {
+    delete card.dataset.rewardUrl;
+    card.style.cursor = "";
+    card.removeAttribute("role");
+    card.removeAttribute("tabindex");
+  }
+}
+
+function openRewardNavigation(url) {
+  if (!url) return;
+  window.open(url, "_blank", "noopener,noreferrer");
 }
 
 function updateAmount(typeModel, optionId, rawValue) {
@@ -548,10 +594,12 @@ function renderRewardPanel(typeModel) {
 
   if (els.currentRewardCard) {
     els.currentRewardCard.style.display = currentReward ? "" : "none";
+    applyRewardNavigation(els.currentRewardCard, currentReward);
   }
 
   if (els.nextRewardCard) {
     els.nextRewardCard.style.display = nextReward ? "" : "none";
+    applyRewardNavigation(els.nextRewardCard, nextReward);
   }
 
   if (els.rewardCardsStack) {
@@ -617,6 +665,20 @@ function bindEvents() {
     updateAmount(getCurrentTypeModel(), input.dataset.optionId, input.value);
   });
 
+  els.rewardCardsStack.addEventListener("click", (event) => {
+    const card = event.target.closest("[data-reward-url]");
+    if (!card?.dataset.rewardUrl) return;
+    openRewardNavigation(card.dataset.rewardUrl);
+  });
+
+  els.rewardCardsStack.addEventListener("keydown", (event) => {
+    const card = event.target.closest("[data-reward-url]");
+    if (!card?.dataset.rewardUrl) return;
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    openRewardNavigation(card.dataset.rewardUrl);
+  });
+
   els.resetSlidersBtn.addEventListener("click", resetCurrentTypeStaged);
   els.resetStagedBtn.addEventListener("click", resetCurrentTypeProgress);
   els.donateBtn.addEventListener("click", commitStaged);
@@ -627,13 +689,29 @@ function buildDonationModel(data, lang, imageMaps) {
   const currenciesById = buildLookup(data.currencies || [], "currencyID");
   const rewardsById = buildLookup(data.rewards || [], "rewardID");
   const decorationsById = buildLookup(extractDecorations(data.buildings || []), "wodID");
+  const constructionById = buildLookup(getArray(data, ["constructionItems"]), "constructionItemID");
+  const equipmentById = buildLookup(getArray(data, ["equipments"]), "equipmentID");
+  const unitsById = buildLookup(getArray(data, ["units"]), "wodID");
+  const lootBoxesById = buildLookup(getArray(data, ["lootBoxes", "lootboxes"]), "lootBoxID");
+  const allianceCoatLayoutsById = buildLookup(getArray(data, ["allianceCoatLayouts"]), "allianceCoatLayoutID");
 
   rewardResolver = createRewardResolver(() => ({
     lang,
     currenciesById,
     decorationsById,
+    constructionById,
+    equipmentById,
+    unitsById,
+    lootBoxesById,
+    allianceCoatLayoutsById,
     currencyImageUrlMap: imageMaps.currencies || {},
-    decorationImageUrlMap: imageMaps.decorations || {}
+    decorationImageUrlMap: imageMaps.decorations || {},
+    constructionImageUrlMap: imageMaps.constructions || {},
+    equipmentImageUrlMap: imageMaps.looks || {},
+    equipmentUniqueImageUrlMap: imageMaps.equipmentUniques || {},
+    unitImageUrlMap: imageMaps.units || {},
+    lootBoxImageUrlMap: imageMaps.lootboxes || {},
+    allianceLayoutImageUrlMap: imageMaps.allianceLayouts || {}
   }));
 
   const itemsBySetAndType = {};
@@ -748,7 +826,13 @@ async function init() {
     loader.set(3, 5, "Loading images...");
     const imageMaps = await loadImageMaps({
       decorations: true,
+      constructions: true,
+      units: true,
       currencies: true,
+      looks: true,
+      equipmentUniques: true,
+      lootboxes: true,
+      allianceLayouts: true,
       normalizeNameFn: normalizeName
     });
 
