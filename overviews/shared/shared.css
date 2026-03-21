@@ -235,6 +235,11 @@ h1 {
     border-radius: 8px;
 }
 
+.form-select,
+.custom-select {
+    cursor: pointer;
+}
+
 .form-select:disabled,
 .custom-select:disabled {
     background-color: #f3e0c2;
