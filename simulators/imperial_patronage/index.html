@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GGE Imperial Patronage Simulator</title>
+  <link rel="icon" type="image/webp" href="../../img_base/favicon.ico">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../../overviews/shared/shared.css">
+  <link rel="stylesheet" href="../../overviews/shared/consent.css">
+  <link rel="stylesheet" href="styles.css">
+  <meta property="og:title" content="Imperial Patronage Simulator | Generals Forum">
+  <meta property="og:description"
+    content="Simulate Imperial Patronage donations, thresholds, and rewards with live in-game data.">
+  <meta property="og:image" content="https://generalscamp.github.io/forum/img_base/patronage-icon.webp">
+</head>
+
+<body>
+  <div class="container patronage-container">
+    <div class="row">
+      <div class="col-12">
+        <div class="page-title">
+          <h1>IMPERIAL PATRONAGE SIMULATOR</h1>
+        </div>
+
+        <div id="topButtonsContainer">
+          <a href="https://generalscamp.github.io/forum/" class="home-icon-link" aria-label="Back to homepage">
+            <div class="home-icon">
+              <i class="bi bi-house"></i>
+            </div>
+          </a>
+        </div>
+
+        <div class="row gx-1 gy-1 align-items-center patronage-toolbar">
+          <div class="col-6">
+            <select id="typeSelect" class="form-select custom-select text-center"
+              aria-label="Donation category selector"></select>
+          </div>
+          <div class="col-6">
+            <select id="setSelect" class="form-select custom-select text-center"
+              aria-label="Reward set selector"></select>
+          </div>
+        </div>
+
+        <section id="content" class="event-layout" style="display:none;">
+          <div class="simulator-frame">
+            <section class="donation-panel" aria-labelledby="donationPanelTitle">
+              <div id="donationRows" class="donation-rows"></div>
+
+              <div class="panel-footer row g-2">
+                <div class="col-12 col-md-4">
+                  <button id="resetSlidersBtn" class="action-button secondary w-100" type="button">Reset
+                    Sliders</button>
+                </div>
+                <div class="col-12 col-md-4">
+                  <button id="resetStagedBtn" class="action-button secondary w-100" type="button">Reset All</button>
+                </div>
+                <div class="col-12 col-md-4">
+                  <button id="donateBtn" class="action-button primary w-100" type="button">Donate</button>
+                </div>
+              </div>
+            </section>
+
+            <aside class="reward-panel" aria-labelledby="rewardPanelTitle">
+              <div class="reward-layout">
+                <div class="reward-mobile-sticky">
+                  <div class="reward-mobile-stats">
+                    <strong id="mobileCurrentPointsValue">0</strong>
+                    <strong id="mobilePointsToNextValue">0</strong>
+                  </div>
+
+                  <div class="reward-meter">
+                    <div class="reward-meter-rail">
+                      <div id="rewardMeterFill" class="reward-meter-fill"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="reward-cards">
+                  <div class="reward-points-box d-flex align-items-baseline gap-2">
+                    <span class="reward-points-title">Points for next level:</span>
+                    <strong id="pointsToNextValue">0</strong>
+                  </div>
+
+                  <div id="rewardCardsStack" class="reward-cards-stack">
+                    <article id="nextRewardCard" class="reward-card next">
+                      <div id="nextRewardName" class="reward-name"></div>
+                      <div id="nextRewardLevelLabel" class="reward-level">Next Level</div>
+                      <div class="reward-art-shell">
+                        <img id="nextRewardImage" class="reward-art" src="../../img_base/placeholder.webp" alt="">
+                      </div>
+                    </article>
+
+                    <article id="currentRewardCard" class="reward-card current">
+                      <div id="currentRewardName" class="reward-name"></div>
+                      <div id="currentRewardLevelLabel" class="reward-level">Current Level</div>
+                      <div class="reward-art-shell">
+                        <img id="currentRewardImage" class="reward-art" src="../../img_base/placeholder.webp" alt="">
+                      </div>
+                    </article>
+                  </div>
+
+                  <div class="reward-progress-box d-flex align-items-baseline gap-2">
+                    <span class="reward-points-title">Current points:</span>
+                    <strong id="rewardPreviewTotal">0</strong>
+                    <span id="rewardWarning" class="reward-warning"></span>
+                  </div>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <div id="loadingBox" class="loading-message">
+          <h3 id="loadingStatus">Initializing...</h3>
+          <div class="progress">
+            <div id="loadingProgress" class="progress-bar"></div>
+            <span id="loadingPercentText" class="progress-text">0%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="script.js"></script>
+  <script type="module" src="../../overviews/shared/ConsentInit.mjs"></script>
+</body>
+
+</html>
