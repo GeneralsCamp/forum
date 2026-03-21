@@ -258,7 +258,6 @@
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   border-left-width: 1px;
-  padding-bottom: 1px;
 }
 
 .max-button {
@@ -426,7 +425,7 @@
   inset: auto 0 0;
   height: 0%;
   background: #67d61f;
-  transition: height 180ms ease, width 180ms ease;
+  transition: height 60ms linear, width 60ms linear;
 }
 
 .reward-cards {
@@ -461,13 +460,13 @@
 }
 
 .reward-card.current {
+  border-width: 2px;
   border-color: rgba(243, 194, 74, 0.7);
-  box-shadow: inset 3px 0 0 rgba(243, 194, 74, 0.95);
 }
 
 .reward-card.next {
+  border-width: 2px;
   border-color: rgba(255, 255, 255, 0.28);
-  box-shadow: inset 3px 0 0 rgba(255, 255, 255, 0.22);
 }
 
 .reward-name {
@@ -551,8 +550,120 @@
     height: 100%;
   }
 
+  .reward-panel {
+    order: 1;
+  }
+
+  .donation-panel {
+    order: 2;
+  }
+
+  .reward-layout {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    overflow: visible;
+    height: auto;
+    min-height: 0;
+  }
+
+  .reward-mobile-sticky {
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .reward-mobile-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #fff;
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1;
+    padding-bottom: 2px;
+  }
+
+  .reward-meter {
+    flex-direction: row;
+    margin: 0;
+    padding-bottom: 2px;
+  }
+
   .reward-meter-rail {
+    width: 100%;
     min-height: 340px;
+    height: 22px;
+    min-height: 22px;
+  }
+
+  .reward-meter-fill {
+    inset: 0 auto 0 0;
+    width: 0%;
+    height: 100%;
+  }
+
+  .reward-cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding-right: 0;
+    height: auto;
+    min-height: 0;
+  }
+
+  .reward-points-box {
+    order: 1;
+    display: none !important;
+  }
+
+  .reward-cards-stack {
+    order: 4;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 8px;
+    flex: 0 0 auto;
+    min-height: 180px;
+  }
+
+  .reward-cards-stack .reward-card {
+    width: 100%;
+    max-width: none;
+    min-height: 180px;
+  }
+
+  .reward-cards-stack.single-card {
+    grid-template-columns: 1fr;
+    justify-content: stretch;
+  }
+
+  .reward-cards-stack.single-card .reward-card {
+    width: min(220px, 100%);
+    max-width: min(220px, 100%);
+    min-height: 180px;
+    margin-inline: auto;
+  }
+
+  .reward-progress-box {
+    order: 5;
+    margin-top: 0;
+    display: none !important;
+  }
+
+  .reward-card {
+    padding: 8px;
+  }
+
+  .reward-name {
+    display: none;
+  }
+
+  .reward-level {
+    font-size: 11px;
+  }
+
+  .reward-art-shell {
+    width: min(100%, 150px);
+    margin: 4px auto 2px;
   }
 
   .donation-panel,
@@ -564,10 +675,44 @@
   }
 }
 
+@media (min-width: 701px) and (max-width: 991px) {
+  .reward-cards {
+    order: 1;
+  }
+
+  .reward-mobile-sticky {
+    order: 2;
+    margin-top: 8px;
+    margin-bottom: 0;
+  }
+}
+
 @media (max-width: 700px) {
   #content.event-layout {
-    overflow: auto;
+    overflow: hidden;
     overscroll-behavior: contain;
+    padding-bottom: 0;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(243, 224, 194, 0.72) rgba(67, 51, 38, 0.28);
+  }
+
+  #content.event-layout::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  #content.event-layout::-webkit-scrollbar-track {
+    background: rgba(67, 51, 38, 0.22);
+    border-radius: 999px;
+  }
+
+  #content.event-layout::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(243, 224, 194, 0.92), rgba(214, 178, 123, 0.9));
+    border-radius: 999px;
+    border: 1px solid rgba(123, 83, 54, 0.35);
+  }
+
+  #content.event-layout::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, rgba(247, 237, 215, 0.96), rgba(226, 179, 61, 0.94));
   }
 
   .page-title h1 {
@@ -579,9 +724,9 @@
     flex-direction: column;
     align-items: stretch;
     gap: 8px;
-    height: auto;
+    height: 100%;
     min-height: 0;
-    overflow: visible;
+    overflow: hidden;
   }
 
   .reward-panel {
@@ -593,9 +738,10 @@
 
   .donation-panel {
     order: 2;
+    flex: 1 1 auto;
     height: auto;
-    min-height: auto;
-    overflow: visible;
+    min-height: 0;
+    overflow: hidden;
   }
 
   .reward-layout {
@@ -609,7 +755,6 @@
   .reward-mobile-sticky {
     order: 3;
     display: block;
-    position: static;
     padding: 0 0 4px;
   }
 
@@ -664,7 +809,7 @@
     align-items: stretch;
     gap: 8px;
     flex: 0 0 auto;
-    min-height: auto;
+    min-height: 180px;
   }
 
   .reward-card.current {
@@ -678,6 +823,7 @@
   .reward-cards-stack .reward-card {
     width: 100%;
     max-width: none;
+    min-height: 180px;
   }
 
   .reward-cards-stack.single-card {
@@ -688,6 +834,7 @@
   .reward-cards-stack.single-card .reward-card {
     width: min(220px, 100%);
     max-width: min(220px, 100%);
+    min-height: 180px;
     margin-inline: auto;
   }
 
@@ -710,7 +857,7 @@
   }
 
   .reward-art-shell {
-    width: min(100%, 150px);
+    width: min(100%, 120px);
     margin: 4px auto 2px;
   }
 
@@ -721,8 +868,11 @@
   }
 
   .donation-rows {
-    overflow: visible;
-    flex: 0 0 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1 1 auto;
+    min-height: 0;
+    padding-bottom: 118px;
   }
 
   .donation-row::after {
@@ -754,10 +904,15 @@
     align-items: center;
     column-gap: 0;
     row-gap: 8px;
+    padding-right: 4px;
   }
 
   .amount-display {
     min-width: 0;
+  }
+
+  .amount-display-current {
+    font-size: 15px;
   }
 
   .amount-button[data-action="increase"] {
@@ -773,19 +928,22 @@
 
   .max-button {
     margin-left: 8px;
+    margin-right: 0;
     width: 42px;
     min-width: 42px;
     min-height: 38px;
   }
 
   .panel-footer {
-    position: -webkit-sticky;
-    position: sticky;
+    position: fixed;
     bottom: 0;
+    left: 0;
+    right: 0;
     z-index: 3;
     background: rgba(67, 51, 38, 0.94);
     backdrop-filter: blur(2px);
-    padding-right: 14px;
+    padding: 8px 14px calc(8px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid var(--line-1);
   }
 
   .panel-footer > [class*="col-"] {
@@ -803,5 +961,9 @@
 
   .panel-footer > [class*="col-"] .action-button {
     height: 100%;
+  }
+
+  .donation-panel {
+    padding-bottom: 0;
   }
 }

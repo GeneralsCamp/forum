@@ -112,7 +112,13 @@ function ui(key, fallback) {
 
 function initTooltips(root = document) {
   if (!window.bootstrap?.Tooltip) return;
+  const isMobile = window.matchMedia("(max-width: 700px)").matches;
   root.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((element) => {
+    const instance = window.bootstrap.Tooltip.getInstance(element);
+    if (isMobile) {
+      instance?.dispose();
+      return;
+    }
     window.bootstrap.Tooltip.getOrCreateInstance(element);
   });
 }
@@ -514,7 +520,7 @@ function renderRewardPanel(typeModel) {
     : formatNumber(status.committedPoints);
   els.rewardWarning.textContent = "";
 
-  if (window.matchMedia("(max-width: 760px)").matches) {
+  if (window.matchMedia("(max-width: 991px)").matches) {
     els.rewardMeterFill.style.width = `${status.percent}%`;
     els.rewardMeterFill.style.height = "100%";
   } else {
