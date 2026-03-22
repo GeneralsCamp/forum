@@ -1,5 +1,6 @@
 // --- Proxy and global variables ---
 const myProxy = "https://my-proxy-8u49.onrender.com/";
+const corsProxy = "https://corsproxy.io/?";
 
 let folderHandle;
 let stopDownload = false;
@@ -28,6 +29,14 @@ async function proxyFetch(url, options = {}) {
     return fetch(myProxy + url, options);
 }
 
+async function directFetch(url, options = {}) {
+    return fetch(url, options);
+}
+
+async function corsProxyFetch(url, options = {}) {
+    return fetch(corsProxy + encodeURIComponent(url), options);
+}
+
 // --- Update start button text ---
 function updateStartButtonText() {
     const startBtn = document.getElementById("startDownload");
@@ -41,6 +50,16 @@ async function saveFileInSubfolder(subfolder, fileName, blob) {
     const writable = await fileHandle.createWritable();
     await writable.write(blob);
     await writable.close();
+}
+
+async function fileExistsInSubfolder(subfolder, fileName) {
+    try {
+        const dirHandle = await folderHandle.getDirectoryHandle(subfolder, { create: true });
+        await dirHandle.getFileHandle(fileName);
+        return true;
+    } catch {
+        return false;
+    }
 }
 
 // --- Get special files ---
@@ -115,6 +134,49 @@ async function getDllFile() {
     const blob = await fetchWithRetry(dllUrl);
     await saveFileInSubfolder("dll", fileName, blob);
     log(`The latest DLL file has been downloaded, with version: ${hash}`);
+}
+
+async function getE4kExtraFiles() {
+    const appVersion = await getE4kAppVersion();
+    const versionsUrl = `https://media.goodgamestudios.com/loader/empirefourkingdoms/${appVersion}/versions.json`;
+    const versionsJson = await fetchJsonWithRetry(versionsUrl, {
+        retries: 2,
+        order: ["direct", "proxy", "cors"]
+    });
+    const itemVersion = String(versionsJson?.CastleItemXMLVersion || "").trim();
+
+    if (!itemVersion) {
+        throw new Error("E4K CastleItemXMLVersion was not found.");
+    }
+
+    const normalizedVersion = itemVersion.replace(/\./g, "_");
+    const archiveUrl = `https://media.goodgamestudios.com/loader/empirefourkingdoms/${appVersion}/itemsXML/items_${normalizedVersion}.ggs`;
+    const xmlFileName = `items_${normalizedVersion}.xml`;
+
+    if (await fileExistsInSubfolder("e4k", xmlFileName)) {
+        log(`Skipped (already exists): ${xmlFileName}`);
+        return;
+    }
+
+    const archiveBlob =
+        await fetchBlobWithRetry(archiveUrl, 2, ["proxy", "direct", "cors"]);
+
+    if (!window.JSZip) {
+        throw new Error("JSZip is required to extract E4K XML.");
+    }
+
+    const zipBuffer = await archiveBlob.arrayBuffer();
+    const zip = await window.JSZip.loadAsync(zipBuffer);
+    const firstFile = Object.values(zip.files).find(file => !file.dir);
+
+    if (!firstFile) {
+        throw new Error("The E4K archive did not contain any files.");
+    }
+
+    const xmlText = await firstFile.async("text");
+    const xmlBlob = new Blob([xmlText], { type: "application/xml;charset=utf-8" });
+    await saveFileInSubfolder("e4k", xmlFileName, xmlBlob);
+    log(`Downloaded E4K XML: ${xmlFileName}`);
 }
 
 // --- Get all asset URLs ---
@@ -212,15 +274,61 @@ async function downloadAssets(assets, usePng) {
 
 // --- Fetch with retry ---
 async function fetchWithRetry(url, retries = 2) {
+    return fetchBlobWithRetry(url, retries, ["proxy"]);
+}
+
+async function fetchBlobWithRetry(url, retries = 2, order = ["proxy"]) {
     for (let attempt = 0; attempt <= retries; attempt++) {
         try {
-            const res = await proxyFetch(url);
-            if (!res.ok) throw `HTTP ${res.status}`;
+            const res = await fetchResponseWithOrder(url, order);
             return await res.blob();
         } catch (err) {
             if (attempt === retries) throw err;
         }
     }
+}
+
+async function fetchJsonWithRetry(url, { retries = 2, order = ["proxy"] } = {}) {
+    for (let attempt = 0; attempt <= retries; attempt++) {
+        try {
+            const res = await fetchResponseWithOrder(url, order);
+            return await res.json();
+        } catch (err) {
+            if (attempt === retries) throw err;
+        }
+    }
+}
+
+async function fetchResponseWithRetry(url, { retries = 2, order = ["proxy"] } = {}) {
+    for (let attempt = 0; attempt <= retries; attempt++) {
+        try {
+            return await fetchResponseWithOrder(url, order);
+        } catch (err) {
+            if (attempt === retries) throw err;
+        }
+    }
+}
+
+async function fetchResponseWithOrder(url, order = ["proxy"]) {
+    let lastError = null;
+
+    for (const mode of order) {
+        try {
+            const res = await fetchByMode(url, mode);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res;
+        } catch (err) {
+            lastError = err;
+        }
+    }
+
+    throw lastError || new Error("Fetch failed");
+}
+
+async function fetchByMode(url, mode) {
+    if (mode === "direct") return directFetch(url);
+    if (mode === "cors") return corsProxyFetch(url);
+    return proxyFetch(url);
 }
 
 // --- Get item/lang version helpers ---
@@ -238,6 +346,29 @@ async function getLangVersion() {
     return json["@metadata"].versionNo;
 }
 
+async function getE4kAppVersion() {
+    const url = "https://itunes.apple.com/lookup?id=585661281&country=de";
+    const json = await fetchJsonWithRetry(url, {
+        retries: 2,
+        order: ["direct", "cors"]
+    });
+    const version = json?.results?.[0]?.version;
+
+    if (!version) {
+        throw new Error("E4K app version lookup failed.");
+    }
+
+    const parts = String(version).split(".");
+    if (parts.length < 2) {
+        throw new Error(`Unexpected E4K version format: ${version}`);
+    }
+
+    const major = parts[0];
+    const minor = parts[1];
+    const patch = (parts[2] || "0").padStart(3, "0");
+    return `${major}${minor}${patch}`;
+}
+
 // --- Start / Continue download ---
 document.getElementById("startDownload").addEventListener("click", async () => {
     if (!folderHandle) return;
@@ -248,7 +379,7 @@ document.getElementById("startDownload").addEventListener("click", async () => {
     document.getElementById("selectFolder").disabled = true;
     document.getElementById("startDownload").disabled = true;
 
-    const selects = document.querySelectorAll("#optAssets, #optItems, #optLang, #optDll");
+    const selects = document.querySelectorAll("#optAssets, #optItems, #optLang, #optDll, #optE4k");
     selects.forEach(sel => sel.disabled = true);
 
     if (currentIndex === 0) log("=== Download process started ===");
@@ -258,6 +389,7 @@ document.getElementById("startDownload").addEventListener("click", async () => {
     const optItems = document.getElementById("optItems").value;
     const optLang = document.getElementById("optLang").value;
     const optDll = document.getElementById("optDll").value;
+    const optE4k = document.getElementById("optE4k").value;
 
     if (optItems === "items") {
         await getItemFile();
@@ -269,6 +401,10 @@ document.getElementById("startDownload").addEventListener("click", async () => {
 
     if (optDll === "dll") {
         await getDllFile();
+    }
+
+    if (optE4k === "e4k-extra") {
+        await getE4kExtraFiles();
     }
 
     if (optAssets === "png" || optAssets === "webp") {
