@@ -4,12 +4,6 @@ import { getCurrentVersionInfo as getSharedCurrentVersionInfo, getGameSource }
     from "./DataService.mjs";
 
 export async function getCurrentVersionInfo() {
-    if (getGameSource() === "e4k") {
-        return {
-            version: "unknown",
-            date: "unknown"
-        };
-    }
     return getSharedCurrentVersionInfo();
 }
 

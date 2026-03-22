@@ -8,6 +8,7 @@ import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
 import { getSharedLanguagePack, getSharedText } from "../shared/SharedTextService.mjs";
 import { createLazyList } from "../shared/LazyList.mjs";
+import { getSelectedGameSource } from "../shared/GameSettings.mjs";
 
 // --- GLOBAL VARIABLES ---
 const loader = createLoader();
@@ -28,6 +29,7 @@ const composedDecorationImageCache = new Map();
 let sharedLangPack = { filters: {}, ui: {} };
 const HOME_SETTINGS_KEY = "gf_home_settings_v1";
 const devCommentsEnabled = readHomeSetting("devCommentsEnabled", true);
+const activeGameSource = getSelectedGameSource();
 const INITIAL_BATCH_SIZE = 40;
 const BATCH_SIZE = 30;
 const SEARCH_REVEAL_BUFFER = 12;
@@ -240,6 +242,22 @@ function normalizeName(str) {
 
 // --- GET VALUES & CALCULATIONS ---
 function extractDecorations(items) {
+  if (activeGameSource === "e4k") {
+    const e4kExcludedTypes = new Set([
+      "TradingDistrictDeco"
+    ]);
+
+    return items.filter((b) =>
+      b.name === "Deco" &&
+      !e4kExcludedTypes.has(b.type) &&
+      getPO(b) > 0 &&
+      !(
+        b.comment1?.toLowerCase().includes("test") ||
+        b.comment2?.toLowerCase().includes("test")
+      )
+    );
+  }
+
   return items.filter(b =>
     b.name?.toLowerCase() === "deco" &&
     getPO(b) > 0 &&
