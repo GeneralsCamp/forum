@@ -1,4 +1,5 @@
 import { initConsentManager } from "./overviews/shared/ConsentManager.mjs";
+import { getDefaultGameSource } from "./overviews/shared/GameSettings.mjs";
 const FAVORITES_KEY = "gf_favorites_v1";
 const MAX_FAVORITES = 12;
 const HOME_SETTINGS_KEY = "gf_home_settings_v1";
@@ -152,6 +153,7 @@ function renderCategory(list, targetId) {
 
 function getDefaultHomeSettings() {
     return {
+        selectedGame: getDefaultGameSource(),
         descriptionsEnabled: true,
         currentProjectsEnabled: false,
         favoritesEnabled: true,
@@ -166,6 +168,7 @@ function readHomeSettings() {
         const raw = localStorage.getItem(HOME_SETTINGS_KEY);
         const parsed = JSON.parse(raw || "{}");
         return {
+            selectedGame: parsed.selectedGame ?? defaults.selectedGame,
             descriptionsEnabled: parsed.descriptionsEnabled ?? defaults.descriptionsEnabled,
             currentProjectsEnabled: parsed.currentProjectsEnabled ?? defaults.currentProjectsEnabled,
             favoritesEnabled: parsed.favoritesEnabled ?? defaults.favoritesEnabled,
@@ -702,11 +705,27 @@ function setupSettingsModal() {
     const favoritesInput = document.getElementById("settingsFavorites");
     const videosInput = document.getElementById("settingsVideos");
     const devCommentsInput = document.getElementById("settingsDevComments");
-    if (!openBtn || !closeBtn || !modal || !descriptionsInput || !currentProjectsInput || !favoritesInput || !videosInput || !devCommentsInput) return;
+    const selectedGameInput = document.getElementById("settingsSelectedGame");
+    if (!openBtn || !closeBtn || !modal || !descriptionsInput || !currentProjectsInput || !favoritesInput || !videosInput || !devCommentsInput || !selectedGameInput) return;
     const MODAL_CLOSE_ANIM_MS = 190;
     let closeTimer = 0;
 
+    const empireOption = selectedGameInput.querySelector('option[value="empire"]');
+    const e4kOption = selectedGameInput.querySelector('option[value="e4k"]');
+
+    const syncGameOptionLabels = () => {
+        const isMobile = window.matchMedia("(max-width: 700px)").matches;
+        if (empireOption) {
+            empireOption.textContent = isMobile ? "EM (Browser)" : "Empire (Browser)";
+        }
+        if (e4kOption) {
+            e4kOption.textContent = isMobile ? "E4K (Mobile)" : "Empire: Four Kingdoms (Mobile)";
+        }
+    };
+
     const syncForm = () => {
+        syncGameOptionLabels();
+        selectedGameInput.value = uiSettings.selectedGame || getDefaultGameSource();
         descriptionsInput.checked = Boolean(uiSettings.descriptionsEnabled);
         currentProjectsInput.checked = Boolean(uiSettings.currentProjectsEnabled);
         favoritesInput.checked = Boolean(uiSettings.favoritesEnabled);
@@ -741,6 +760,7 @@ function setupSettingsModal() {
 
     const handleChange = () => {
         uiSettings = {
+            selectedGame: selectedGameInput.value || getDefaultGameSource(),
             descriptionsEnabled: descriptionsInput.checked,
             currentProjectsEnabled: currentProjectsInput.checked,
             favoritesEnabled: favoritesInput.checked,
@@ -762,11 +782,14 @@ function setupSettingsModal() {
         }
     });
 
+    selectedGameInput.addEventListener("change", handleChange);
     descriptionsInput.addEventListener("change", handleChange);
     currentProjectsInput.addEventListener("change", handleChange);
     favoritesInput.addEventListener("change", handleChange);
     videosInput.addEventListener("change", handleChange);
     devCommentsInput.addEventListener("change", handleChange);
+    window.addEventListener("resize", syncGameOptionLabels);
+    syncGameOptionLabels();
 
     document.addEventListener("keydown", (event) => {
         if (event.key === "Escape" && modal.classList.contains("open")) {
