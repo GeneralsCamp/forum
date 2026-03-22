@@ -286,13 +286,10 @@ label {
   box-sizing: border-box;
 }
 
-.item-card[data-name] {
-  cursor: pointer;
-}
-
 .item-card.id-link {
   text-decoration: none;
   color: inherit;
+  cursor: pointer;
 }
 
 .item-image-wrap {

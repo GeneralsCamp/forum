@@ -5,6 +5,16 @@ export function normalizeName(value) {
 export function getArray(data, names) {
   for (const name of names) {
     if (Array.isArray(data?.[name])) return data[name];
+
+    if (data && typeof data === "object") {
+      const actualKey = Object.keys(data).find(
+        (key) => String(key).toLowerCase() === String(name).toLowerCase()
+      );
+
+      if (actualKey && Array.isArray(data[actualKey])) {
+        return data[actualKey];
+      }
+    }
   }
   return [];
 }
@@ -12,6 +22,16 @@ export function getArray(data, names) {
 export function getProp(obj, names) {
   for (const name of names) {
     if (obj?.[name] !== undefined && obj?.[name] !== null) return obj[name];
+
+    if (obj && typeof obj === "object") {
+      const actualKey = Object.keys(obj).find(
+        (key) => String(key).toLowerCase() === String(name).toLowerCase()
+      );
+
+      if (actualKey && obj[actualKey] !== undefined && obj[actualKey] !== null) {
+        return obj[actualKey];
+      }
+    }
   }
   return null;
 }
