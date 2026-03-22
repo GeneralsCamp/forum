@@ -572,7 +572,7 @@ function renderRewardPanel(typeModel) {
   const currentLevelLabel = lang?.dialog_maindonationevent_reward_currentlevel || ui("current_level", "Current Level");
   const nextLevelLabel = lang?.dialog_maindonationevent_reward_nextlevel || ui("next_level", "Next Level");
   const pointsLabel = lang?.points_novalue || "Points";
-  const isMobile = window.matchMedia("(max-width: 700px)").matches;
+  const isCompactLevelView = window.matchMedia("(max-width: 991px)").matches;
   const mobileLevelLabel = String(lang?.dialog_maindonationevent_reward_tier || "Level").replace("{0}", "").trim() || "Level";
   const previewReachedFinalReward = !status.nextReward
     && status.previewReward
@@ -605,7 +605,7 @@ function renderRewardPanel(typeModel) {
   els.currentRewardImage.alt = getRewardLabel(currentReward);
   els.currentRewardName.textContent = currentReward ? getRewardLabel(currentReward) : "";
   els.currentRewardLevelLabel.textContent = currentReward
-    ? (isMobile
+    ? (isCompactLevelView
       ? `${mobileLevelLabel}: ${status.currentIndex}`
       : `${currentLevelLabel}: ${status.currentIndex} (${formatNumber(currentReward.minPoints)} ${pointsLabel})`)
     : currentLevelLabel;
@@ -614,7 +614,7 @@ function renderRewardPanel(typeModel) {
   els.nextRewardImage.alt = getRewardLabel(nextReward);
   els.nextRewardName.textContent = nextReward ? getRewardLabel(nextReward) : "";
   els.nextRewardLevelLabel.textContent = nextReward
-    ? (isMobile
+    ? (isCompactLevelView
       ? `${mobileLevelLabel}: ${nextIndex}`
       : `${nextLevelLabel}: ${nextIndex} (${formatNumber(nextReward.minPoints)} ${pointsLabel})`)
     : nextLevelLabel;
