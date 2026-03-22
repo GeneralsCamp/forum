@@ -41,7 +41,10 @@ const els = {
   content: document.getElementById("content"),
   setSelect: document.getElementById("setSelect"),
   typeSelect: document.getElementById("typeSelect"),
+  donationPanel: document.querySelector(".donation-panel"),
   donationRows: document.getElementById("donationRows"),
+  panelFooter: document.querySelector(".panel-footer"),
+  rewardPanel: document.querySelector(".reward-panel"),
   rewardMeterFill: document.getElementById("rewardMeterFill"),
   pointsToNextValue: document.getElementById("pointsToNextValue"),
   mobileCurrentPointsValue: document.getElementById("mobileCurrentPointsValue"),
@@ -122,6 +125,30 @@ function initTooltips(root = document) {
     }
     window.bootstrap.Tooltip.getOrCreateInstance(element);
   });
+}
+
+function syncMobileDonationPanelHeight() {
+  if (!els.donationPanel || !els.donationRows || !els.panelFooter) return;
+
+  const isMobile = window.matchMedia("(max-width: 700px)").matches;
+  if (!isMobile) {
+    els.donationPanel.style.height = "";
+    els.donationPanel.style.maxHeight = "";
+    els.donationRows.style.height = "";
+    els.donationRows.style.maxHeight = "";
+    return;
+  }
+
+  const panelRect = els.donationPanel.getBoundingClientRect();
+  const footerRect = els.panelFooter.getBoundingClientRect();
+  const availablePanelHeight = Math.floor(footerRect.top - panelRect.top);
+
+  if (availablePanelHeight > 120) {
+    els.donationPanel.style.height = `${availablePanelHeight}px`;
+    els.donationPanel.style.maxHeight = `${availablePanelHeight}px`;
+    els.donationRows.style.height = `${availablePanelHeight}px`;
+    els.donationRows.style.maxHeight = `${availablePanelHeight}px`;
+  }
 }
 
 function extractDecorations(buildings) {
@@ -618,6 +645,7 @@ function updateLivePanels(typeModel, optionId = null) {
   }
   renderRewardPanel(typeModel);
   initTooltips(els.donationRows);
+  syncMobileDonationPanelHeight();
 }
 
 function render() {
@@ -629,6 +657,7 @@ function render() {
   renderTypeSelect(setModel);
   renderDonationRows(typeModel);
   updateLivePanels(typeModel);
+  syncMobileDonationPanelHeight();
 }
 
 function bindEvents() {
@@ -682,7 +711,10 @@ function bindEvents() {
   els.resetSlidersBtn.addEventListener("click", resetCurrentTypeStaged);
   els.resetStagedBtn.addEventListener("click", resetCurrentTypeProgress);
   els.donateBtn.addEventListener("click", commitStaged);
-  window.addEventListener("resize", render);
+  window.addEventListener("resize", () => {
+    render();
+    syncMobileDonationPanelHeight();
+  });
 }
 
 function buildDonationModel(data, lang, imageMaps) {
@@ -870,6 +902,7 @@ async function init() {
     els.content.style.display = "";
     saveState();
     loader.hide();
+    syncMobileDonationPanelHeight();
   } catch (error) {
     console.error("Imperial Patronage simulator init failed:", error);
     loader.error("Data load failed", 30);
