@@ -578,7 +578,7 @@
     overflow: visible;
     height: auto;
     min-height: 0;
-    padding-bottom: 5px;
+    padding-bottom: 0%;
   }
 
   .reward-mobile-sticky {
@@ -949,7 +949,7 @@
     z-index: 3;
     background: rgba(67, 51, 38, 0.94);
     backdrop-filter: blur(2px);
-    padding: 8px 14px calc(8px + env(safe-area-inset-bottom, 0px));
+    padding: 2px 14px calc(8px + env(safe-area-inset-bottom, 0px));
     border-top: 1px solid var(--line-1);
   }
 
