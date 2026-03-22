@@ -21,6 +21,7 @@ let gachaEvents = [];
 let rewardsById = {};
 let currenciesById = {};
 let equipmentById = {};
+let gemsById = {};
 let constructionById = {};
 let decorationsById = {};
 let unitsById = {};
@@ -194,6 +195,15 @@ function getGemImageUrlByRewardValue(gemValue) {
     return uniqueGemImageUrlMap[gemId] || null;
 }
 
+function getGemNameById(gemId) {
+    const normalizedId = String(gemId || "").trim();
+    if (!normalizedId) return lang["gem_item"] || "Gem";
+
+    const item = gemsById[normalizedId];
+    const key = `gem_unique_${normalizedId}`.toLowerCase();
+    return lang[key] || item?.comment2 || item?.comment1 || `Gem ${normalizedId}`;
+}
+
 function explodeRewardForDisplay(reward, fallbackId = null) {
     const baseEntries = resolveRewardEntries(reward);
     const entries = baseEntries.map(entry => ({ ...entry }));
@@ -201,10 +211,11 @@ function explodeRewardForDisplay(reward, fallbackId = null) {
     if (reward?.gemIDs) {
         const rawGem = String(reward.gemIDs).trim();
         const gemIdMatch = rawGem.match(/\d+/);
+        const gemId = gemIdMatch ? gemIdMatch[0] : null;
         entries.push({
-            name: lang["gem_item"] || "Gem",
+            name: getGemNameById(gemId),
             amount: 1,
-            id: gemIdMatch ? gemIdMatch[0] : null,
+            id: gemId,
             type: "gem",
             gemValue: rawGem
         });
@@ -710,6 +721,7 @@ async function init() {
                 const rewards = getArray(itemsData, ["rewards"]);
                 const currencies = getArray(itemsData, ["currencies"]);
                 const equipment = getArray(itemsData, ["equipments"]);
+                const gems = getArray(itemsData, ["gems"]);
                 const skins = getArray(itemsData, ["worldmapskins"]);
 
                 lookSkinsById = {};
@@ -724,6 +736,7 @@ async function init() {
                 rewardsById = buildLookup(rewards, "rewardID");
                 currenciesById = buildLookup(currencies, "currencyID");
                 equipmentById = buildLookup(equipment, "equipmentID");
+                gemsById = buildLookup(gems, "gemID");
                 constructionById = buildLookup(constructions, "constructionItemID");
                 decorationsById = buildLookup(decorations, "wodID");
                 unitsById = buildLookup(units, "wodID");
