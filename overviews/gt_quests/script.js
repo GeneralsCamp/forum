@@ -3,6 +3,7 @@ import { findNewIDs } from "../shared/VersionService.mjs";
 import { createLoader } from "../shared/LoadingService.mjs";
 import { coreInit } from "../shared/CoreInit.mjs";
 import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageService.mjs";
+import { getSelectedGameSource } from "../shared/GameSettings.mjs";
 
 let lang = {};
 let itemsData = null;
@@ -16,6 +17,7 @@ let currenciesById = {};
 let unitsById = {};
 let newQuestIDsSet = new Set();
 let totalQuestChance = 0;
+const activeGameSource = getSelectedGameSource();
 
 const loader = createLoader();
 
@@ -389,6 +391,10 @@ function setupFilters() {
     searchInput.placeholder = UI_LANG.search_placeholder;
     if (showFilter.options[0]) showFilter.options[0].textContent = UI_LANG.show_all;
     if (showFilter.options[1]) showFilter.options[1].textContent = UI_LANG.show_new;
+    if (showFilter.options[1]) showFilter.options[1].disabled = activeGameSource === "e4k";
+    if (activeGameSource === "e4k" && showFilter.value === "new") {
+        showFilter.value = "all";
+    }
 
     if (!searchInput.dataset.bound) {
         searchInput.addEventListener("input", renderQuests);
@@ -397,6 +403,11 @@ function setupFilters() {
 
     if (!showFilter.dataset.bound) {
         showFilter.addEventListener("change", async () => {
+            if (activeGameSource === "e4k" && showFilter.value === "new") {
+                showFilter.value = "all";
+                renderQuests();
+                return;
+            }
             if (showFilter.value === "new" && newQuestIDsSet.size === 0) {
                 await compareWithOldVersion();
             }

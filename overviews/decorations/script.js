@@ -117,6 +117,10 @@ async function applyOwnLang() {
   if (showFilter) {
     showFilter.options[0].text = filters.show_all || "Show all decorations";
     showFilter.options[1].text = filters.show_new || "Show only new decorations";
+    showFilter.options[1].disabled = activeGameSource === "e4k";
+    if (activeGameSource === "e4k" && showFilter.value === "new") {
+      showFilter.value = "all";
+    }
     const lastCapOption = document.getElementById('lastCapOption');
     if (lastCapOption) lastCapOption.text = filters.show_selected_effect || "Selected effect";
   }
@@ -759,6 +763,12 @@ function setupEventListeners() {
       }
 
       if (val === "new") {
+        if (activeGameSource === "e4k") {
+          showFilter.value = "all";
+          specialFilter = null;
+          applyFiltersAndSorting();
+          return;
+        }
         specialFilter = "new";
         if (newWodIDsSet.size === 0) {
           await compareWithOldVersion();

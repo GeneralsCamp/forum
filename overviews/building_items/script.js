@@ -8,6 +8,7 @@ import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
 import { getSharedLanguagePack, getSharedText } from "../shared/SharedTextService.mjs";
 import { createLazyList } from "../shared/LazyList.mjs";
+import { getSelectedGameSource } from "../shared/GameSettings.mjs";
 
 // --- GLOBAL VARIABLES ---
 let lang = {};
@@ -25,6 +26,7 @@ let noMatchMessage = "No match to the current filters.";
 let sharedLangPack = { filters: {}, ui: {} };
 const loader = createLoader();
 let currentLanguage = getInitialLanguage();
+const activeGameSource = getSelectedGameSource();
 const HOME_SETTINGS_KEY = "gf_home_settings_v1";
 const devCommentsEnabled = readHomeSetting("devCommentsEnabled", true);
 const INITIAL_BATCH_SIZE = 40;
@@ -140,6 +142,14 @@ async function applyOwnLang() {
         if (showFilter.options[1])
             showFilter.options[1].text =
                 filters.show_new || "Show only new items";
+
+        if (showFilter.options[1])
+            showFilter.options[1].disabled =
+                activeGameSource === "e4k";
+
+        if (activeGameSource === "e4k" &&
+            showFilter.value === "new")
+            showFilter.value = "all";
     }
 
     const typeDropdown = document.getElementById("typeDropdown");
@@ -931,6 +941,12 @@ function setupEventListeners() {
         const value = showFilter.value;
 
         if (value === "new") {
+            if (activeGameSource === "e4k") {
+                showFilter.value = "all";
+                showOnlyNew = false;
+                applyFiltersAndSorting();
+                return;
+            }
             compareWithOldVersion();
         } else {
             showOnlyNew = false;
