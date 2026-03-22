@@ -36,8 +36,9 @@ async function getDllText() {
             const dllVersion =
                 versionMatch ? versionMatch[1] : "unknown";
 
-            console.log("DLL version:", dllVersion);
-            console.log("DLL URL:", dllUrl);
+            console.log(`DLL version: ${dllVersion}`);
+            console.log(`DLL URL: ${dllUrl}`);
+            console.log("");
 
 
             const dllRes =

@@ -1,32 +1,16 @@
 import { fetchWithFallback }
     from "./Fetcher.mjs";
+import { getCurrentVersionInfo as getSharedCurrentVersionInfo, getGameSource }
+    from "./DataService.mjs";
 
 export async function getCurrentVersionInfo() {
-
-    const url =
-        "https://empire-html5.goodgamestudios.com/default/items/ItemsVersion.properties";
-
-    const res = await fetchWithFallback(url);
-    const text = await res.text();
-
-    const match =
-        text.match(/CastleItemXMLVersion=(\d+\.\d+)/);
-
-    if (!match)
-        return { version: "unknown", date: "unknown" };
-
-    const version = match[1];
-
-    const jsonUrl =
-        `https://empire-html5.goodgamestudios.com/default/items/items_v${version}.json`;
-
-    const jsonRes = await fetchWithFallback(jsonUrl);
-    const json = await jsonRes.json();
-
-    return {
-        version,
-        date: json.versionInfo?.date?.["@value"] ?? "unknown"
-    };
+    if (getGameSource() === "e4k") {
+        return {
+            version: "unknown",
+            date: "unknown"
+        };
+    }
+    return getSharedCurrentVersionInfo();
 }
 
 export async function findNewIDs({
@@ -34,6 +18,8 @@ export async function findNewIDs({
     extractItemsFn,
     idField = "constructionItemID"
 }) {
+    if (getGameSource() === "e4k")
+        return new Set();
 
     const info = await getCurrentVersionInfo();
     const currentVersion = info.version;
