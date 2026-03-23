@@ -23,6 +23,8 @@ h1 {
   color: #f3c24a;
   padding: 4px;
   border-radius: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
   font-weight: bolder;
   text-align: center;
 }

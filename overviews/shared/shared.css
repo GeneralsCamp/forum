@@ -20,6 +20,8 @@ h1 {
     color: #F3C24A;
     padding: 4px;
     border-radius: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
 }
 
 .note {

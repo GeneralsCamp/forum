@@ -2,7 +2,7 @@ import { fetchWithFallback } from "./Fetcher.mjs";
 import { getSelectedGameSource } from "./GameSettings.mjs";
 
 const APP_LOOKUP_URL =
-    "https://itunes.apple.com/lookup?id=585661281&country=de";
+    "https://itunes.apple.com/lookup?id=585661281";
 const EMPIRE_ITEMS_VERSION_URL =
     "https://empire-html5.goodgamestudios.com/default/items/ItemsVersion.properties";
 const EMPIRE_ITEMS_BASE_URL =
