@@ -48,6 +48,7 @@ const els = {
   rewardPanel: document.querySelector(".reward-panel"),
   rewardMeterFill: document.getElementById("rewardMeterFill"),
   rewardMeterStagedFill: document.getElementById("rewardMeterStagedFill"),
+  rewardMeterLevelGain: document.getElementById("rewardMeterLevelGain"),
   pointsToNextValue: document.getElementById("pointsToNextValue"),
   mobileCurrentPointsValue: document.getElementById("mobileCurrentPointsValue"),
   mobilePointsToNextValue: document.getElementById("mobilePointsToNextValue"),
@@ -300,19 +301,19 @@ function getRewardStatus(typeModel) {
   const previewPoints = getPreviewPoints(typeModel);
   const currentReward = findRewardAtPoints(typeModel, committedPoints);
   const previewReward = findRewardAtPoints(typeModel, previewPoints);
-  const nextReward = findNextRewardAfterPoints(typeModel, previewPoints);
+  const nextReward = findNextRewardAfterPoints(typeModel, committedPoints);
 
   const currentIndex = currentReward ? typeModel.rewards.findIndex((reward) => reward.id === currentReward.id) + 1 : 0;
   const previewIndex = previewReward ? typeModel.rewards.findIndex((reward) => reward.id === previewReward.id) + 1 : 0;
   const nextIndex = nextReward ? typeModel.rewards.findIndex((reward) => reward.id === nextReward.id) + 1 : previewIndex;
-  const previewBaseReward = previewReward || currentReward;
-  const currentMin = Number(previewBaseReward?.minPoints) || 0;
-  const nextMin = Number(nextReward?.minPoints) || currentMin;
-  const progressSpan = Math.max(1, nextMin - currentMin);
-  const committedLevelPoints = Math.max(0, committedPoints - currentMin);
-  const previewLevelPoints = Math.max(0, previewPoints - currentMin);
-  const committedInside = nextReward ? Math.min(progressSpan, Math.max(0, committedPoints - currentMin)) : progressSpan;
-  const progressInside = nextReward ? Math.min(progressSpan, Math.max(0, previewPoints - currentMin)) : progressSpan;
+  const currentRewardMin = Number(currentReward?.minPoints) || 0;
+  const nextMin = Number(nextReward?.minPoints) || currentRewardMin;
+  const progressSpan = Math.max(1, nextMin - currentRewardMin);
+  const committedLevelPoints = Math.max(0, committedPoints - currentRewardMin);
+  const previewLevelPoints = Math.max(0, previewPoints - currentRewardMin);
+  const clampedPreviewPoints = nextReward ? Math.min(previewPoints, nextMin) : previewPoints;
+  const committedInside = nextReward ? Math.min(progressSpan, Math.max(0, committedPoints - currentRewardMin)) : progressSpan;
+  const progressInside = nextReward ? Math.min(progressSpan, Math.max(0, clampedPreviewPoints - currentRewardMin)) : progressSpan;
 
   return {
     committedPoints,
@@ -324,6 +325,7 @@ function getRewardStatus(typeModel) {
     nextReward,
     currentIndex,
     previewIndex,
+    levelGain: Math.max(0, previewIndex - currentIndex),
     nextIndex,
     pointsToNext: nextReward ? Math.max(0, nextMin - previewPoints) : 0,
     committedPercent: nextReward ? Math.round((committedInside / progressSpan) * 100) : 100,
@@ -582,12 +584,8 @@ function renderRewardPanel(typeModel) {
   const pointsLabel = lang?.points_novalue || "Points";
   const isCompactLevelView = window.matchMedia("(max-width: 991px)").matches;
   const mobileLevelLabel = String(lang?.dialog_maindonationevent_reward_tier || "Level").replace("{0}", "").trim() || "Level";
-  const previewReachedFinalReward = !status.nextReward
-    && status.previewReward
-    && status.previewReward.id !== currentReward?.id
-    && status.previewPoints > status.committedPoints;
-  const nextReward = status.nextReward || (previewReachedFinalReward ? status.previewReward : null);
-  const nextIndex = status.nextReward ? status.nextIndex : (previewReachedFinalReward ? status.previewIndex : 0);
+  const nextReward = status.nextReward;
+  const nextIndex = status.nextIndex;
   const stagedTotalPoints = Math.max(0, status.previewPoints - status.committedPoints);
   els.pointsToNextValue.textContent = formatNumber(status.pointsToNext);
   if (els.mobileCurrentPointsValue) {
@@ -600,6 +598,11 @@ function renderRewardPanel(typeModel) {
     ? `${formatNumber(status.committedLevelPoints)} <span class="reward-inline-note">(+${formatNumber(stagedTotalPoints)})</span>`
     : formatNumber(status.committedLevelPoints);
   els.rewardWarning.textContent = "";
+  if (els.rewardMeterLevelGain) {
+    const showLevelGain = status.levelGain > 0;
+    els.rewardMeterLevelGain.textContent = showLevelGain ? `+${status.levelGain}` : "";
+    els.rewardMeterLevelGain.classList.toggle("is-visible", showLevelGain);
+  }
 
   if (window.matchMedia("(max-width: 991px)").matches) {
     const stagedPercent = Math.max(0, status.percent - status.committedPercent);
@@ -952,7 +955,8 @@ function applyLanguage() {
   }
   const currentPointsTitle = document.querySelector(".reward-progress-box .reward-points-title");
   if (currentPointsTitle) {
-    currentPointsTitle.textContent = lang?.dialog_achv_totalprogress || ui("current_points", "Current points:");
+    const pointsLabel = lang?.points_novalue || lang?.points_noValue || ui("current_points", "Points");
+    currentPointsTitle.textContent = `${String(pointsLabel).replace(/[:\s]+$/, "")}:`;
   }
   if (els.resetSlidersBtn) els.resetSlidersBtn.textContent = ui("reset_sliders", "Reset Sliders");
   if (els.resetStagedBtn) els.resetStagedBtn.textContent = ui("reset_all", "Reset All");

@@ -416,8 +416,8 @@
   height: 100%;
   border-radius: 2px;
   background-color: rgb(180, 127, 92);
-  border: 1px solid var(--line-2);
-  overflow: hidden;
+  border: 1px solid rgba(123, 83, 54, 0.72);
+  overflow: visible;
 }
 
 .reward-meter-fill {
@@ -434,6 +434,31 @@
   height: 0%;
   background: #f1a63b;
   transition: height 180ms ease, width 180ms ease, left 180ms ease, bottom 180ms ease;
+}
+
+.reward-meter-level-gain {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 18px;
+  padding: 0 2px;
+  transform: translate(-50%, -1px);
+  background: rgba(255, 255, 255, 0.55);
+  border: 0;
+  color: #111;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  z-index: 2;
+  box-shadow: none;
+}
+
+.reward-meter-level-gain.is-visible {
+  display: inline-flex;
 }
 
 .reward-cards {
@@ -633,6 +658,21 @@
     height: 100%;
   }
 
+  .reward-meter-level-gain {
+    top: 50%;
+    left: auto;
+    right: 0;
+    min-width: 26px;
+    height: 16px;
+    padding: 0 5px;
+    transform: translateY(-50%);
+    border-radius: 0;
+    background: rgba(255, 255, 255, 0.55);
+    border: 0;
+    color: #111;
+    font-size: 9px;
+  }
+
   .reward-cards {
     display: grid;
     grid-template-columns: 1fr;
@@ -820,6 +860,32 @@
     width: 100%;
     min-height: 14px;
     height: 14px;
+  }
+
+  .reward-meter-level-gain {
+    position: absolute;
+    top: 50%;
+    left: auto;
+    right: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    min-width: 26px;
+    height: 14px;
+    padding: 0 5px;
+    transform: translateY(-50%);
+    border-radius: 0;
+    background: rgba(255, 255, 255, 0.55);
+    border: 0;
+    color: #111;
+    font-size: 9px;
+    font-weight: 800;
+    line-height: 1;
+    z-index: 2;
+  }
+
+  .reward-meter-level-gain.is-visible {
+    display: inline-flex;
   }
 
   .reward-meter-fill {
