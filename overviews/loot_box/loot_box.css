@@ -29,45 +29,27 @@
   user-select: none;
 }
 
-#lootBoxModal .modal-content {
-  background-color: #433120;
-  border-radius: 10px;
-  border: 1px solid #443326;
-  overflow: hidden;
+.lootbox-modal {
+  --gf-modal-width: min(800px, calc(100% - 20px));
 }
 
-#lootBoxModal .modal-header {
-  background-color: rgb(119, 80, 54);
-  border-bottom: 1px solid #443326;
-  padding: 6px 10px;
-}
-
-#lootBoxModal .modal-title {
-  color: #F3C24A;
-  font-weight: bolder;
-  font-size: 22px;
-  text-align: center;
-  width: 100%;
-}
-
-#lootBoxModal .modal-body {
-  background-color: rgb(145, 98, 65);
+.lootbox-modal-body {
   padding: 0;
   max-height: 450px;
   min-height: 450px;
   overflow-y: auto;
 }
 
-#lootBoxModal .modal-body::-webkit-scrollbar {
+.lootbox-modal-body::-webkit-scrollbar {
   width: 10px;
 }
 
-#lootBoxModal .modal-body::-webkit-scrollbar-thumb {
+.lootbox-modal-body::-webkit-scrollbar-thumb {
   background-color: #bd9a79;
   border-radius: 5px;
 }
 
-#lootBoxModal .modal-body::-webkit-scrollbar-track {
+.lootbox-modal-body::-webkit-scrollbar-track {
   background-color: #f2d9bb;
 }
 
@@ -80,7 +62,7 @@
 
   min-height: 72px;
   background-color: #7b5336;
-  border-bottom: 2px solid #5a3c27;
+  border-bottom: 1px solid #5a3c27;
 }
 
 .loot-row::before {
@@ -194,7 +176,7 @@
 
 @media (max-width: 768px) {
   .loot-row {
-    grid-template-columns: 70px 50px 1fr;
+    grid-template-columns: 76px 50px 1fr;
   }
 
   .loot-rarity {
@@ -218,11 +200,8 @@
   }
 }
 
-#lootBoxModal {
-  overflow-x: hidden;
-}
-
-#lootBoxModal .modal-body {
+.lootbox-modal,
+.lootbox-modal-body {
   overflow-x: hidden;
 }
 
@@ -233,4 +212,20 @@
 .offering-card .card-image,
 .offering-image {
   max-height: 80px;
+}
+
+.lootbox-image-slot .bi-zoom-in,
+.offering-zoom-indicator .bi-zoom-in {
+  font-size: 1.2rem;
+  color: white;
+}
+
+.offering-card,
+.offering-card *,
+.lootbox-image-slot,
+.lootbox-image-slot *,
+.lootbox-card .card-image,
+.offering-card .card-image,
+.offering-image {
+  cursor: pointer;
 }

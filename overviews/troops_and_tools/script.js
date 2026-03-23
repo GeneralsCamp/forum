@@ -5,6 +5,7 @@ import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageServ
 import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
 import { getSharedLanguagePack, getSharedText } from "../shared/SharedTextService.mjs";
+import { initCustomModal } from "../shared/ModalService.mjs";
 
 const loader = createLoader();
 let currentLanguage = getInitialLanguage();
@@ -17,6 +18,7 @@ let unitImageUrlMap = {};
 let unitImageEntries = [];
 let collectableCurrencyImageUrlMap = {};
 const composedUnitImageCache = new Map();
+let unitStatsModal = null;
 let noMatchMessage = "No match to the current filters.";
 let effectCtx = { effectDefinitions: {}, percentEffectIDs: new Set() };
 let sharedLangPack = { ui: {}, filters: {} };
@@ -648,7 +650,7 @@ function openUnitStatsModal({ name, stats }) {
   `;
 
   void hydrateComposedImages({ root: bodyEl, cache: composedUnitImageCache });
-  new bootstrap.Modal(modalEl).show();
+  unitStatsModal?.open();
 }
 
 function normalizeName(value) {
@@ -1157,6 +1159,7 @@ initAutoHeight({
 
 async function init() {
   try {
+    unitStatsModal = initCustomModal({ modalId: "unitStatsModal" });
     await coreInit({
       loader,
       itemLabel: "units",

@@ -449,7 +449,7 @@ function createCard(item, imageUrlMap = {}) {
         <hr>
         <div class="card-table">
           <div class="row g-0">
-            <div class="col-4 card-cell border-end d-flex justify-content-center align-items-center position-relative" style="cursor:pointer;">
+            <div class="col-4 card-cell border-end d-flex justify-content-center align-items-center position-relative" style="cursor:pointer;" data-modal-src="${imageUrl}" data-modal-caption="${safeName}">
               <div class="image-wrapper">
                 <img src="${imageUrl}" class="card-image w-100" loading="lazy" data-modal-src="${imageUrl}" data-modal-caption="${safeName}" ${composeAttrs}>
               </div>

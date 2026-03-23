@@ -1,6 +1,7 @@
 import { initConsentManager } from "./overviews/shared/ConsentManager.mjs";
 import { getDefaultGameSource } from "./overviews/shared/GameSettings.mjs";
 import { availableLanguages, getInitialLanguage } from "./overviews/shared/LanguageService.mjs";
+import { initCustomModal } from "./overviews/shared/ModalService.mjs";
 const FAVORITES_KEY = "gf_favorites_v1";
 const MAX_FAVORITES = 12;
 const HOME_SETTINGS_KEY = "gf_home_settings_v1";
@@ -735,8 +736,7 @@ function setupSettingsModal() {
     const selectedGameInput = document.getElementById("settingsSelectedGame");
     const selectedLanguageInput = document.getElementById("settingsSelectedLanguage");
     if (!openBtn || !closeBtn || !modal || !descriptionsInput || !currentProjectsInput || !favoritesInput || !videosInput || !devCommentsInput || !selectedGameInput || !selectedLanguageInput) return;
-    const MODAL_CLOSE_ANIM_MS = 190;
-    let closeTimer = 0;
+    const settingsModal = initCustomModal({ modalId: "settingsModal", closeAnimMs: 190 });
 
     const empireOption = selectedGameInput.querySelector('option[value="empire"]');
     const e4kOption = selectedGameInput.querySelector('option[value="e4k"]');
@@ -764,29 +764,9 @@ function setupSettingsModal() {
         devCommentsInput.checked = Boolean(uiSettings.devCommentsEnabled);
     };
 
-    const closeModal = () => {
-        if (!modal.classList.contains("open")) return;
-        modal.classList.remove("open");
-        modal.classList.add("closing");
-        modal.setAttribute("aria-hidden", "true");
-        if (closeTimer) {
-            window.clearTimeout(closeTimer);
-        }
-        closeTimer = window.setTimeout(() => {
-            modal.classList.remove("closing");
-            closeTimer = 0;
-        }, MODAL_CLOSE_ANIM_MS);
-    };
-
     const openModal = () => {
         syncForm();
-        if (closeTimer) {
-            window.clearTimeout(closeTimer);
-            closeTimer = 0;
-        }
-        modal.classList.remove("closing");
-        modal.classList.add("open");
-        modal.setAttribute("aria-hidden", "false");
+        settingsModal.open();
     };
 
     const handleChange = () => {
@@ -807,12 +787,6 @@ function setupSettingsModal() {
     };
 
     openBtn.addEventListener("click", openModal);
-    closeBtn.addEventListener("click", closeModal);
-    modal.addEventListener("click", (event) => {
-        if (!event.target.closest(".settings-modal-card") || event.target.closest("[data-close-settings]")) {
-            closeModal();
-        }
-    });
 
     selectedGameInput.addEventListener("change", handleChange);
     selectedLanguageInput.addEventListener("change", handleChange);
@@ -824,11 +798,6 @@ function setupSettingsModal() {
     window.addEventListener("resize", syncGameOptionLabels);
     syncGameOptionLabels();
 
-    document.addEventListener("keydown", (event) => {
-        if (event.key === "Escape" && modal.classList.contains("open")) {
-            closeModal();
-        }
-    });
 }
 
 function isMobileDevice() {

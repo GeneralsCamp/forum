@@ -65,21 +65,19 @@
   min-height: 18px;
 }
 
-#unitStatsModal .modal-content {
-  background-color: #7b5a3b;
-  border: 2px solid #fff;
+.unit-stats-modal {
+  --gf-modal-width: min(560px, calc(100% - 20px));
 }
 
-#unitStatsModal .modal-header {
+.unit-stats-modal-head {
   padding: 0.1rem 0.3rem;
 }
 
-#unitStatsModal .modal-title {
-  color: #f3c24a;
+.unit-stats-modal .gf-modal-title {
   font-weight: 700;
 }
 
-#unitStatsModal .modal-body {
+.unit-stats-modal-body {
   padding: 0;
 }
 

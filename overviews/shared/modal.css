@@ -1,0 +1,99 @@
+.gf-modal-open {
+    overflow: hidden;
+}
+
+.gf-modal {
+    --gf-modal-width: min(420px, calc(100% - 20px));
+    --gf-modal-shell-bg: #5b4330;
+    --gf-modal-shell-border: #2f2319;
+    --gf-modal-head-bg: #815638;
+    --gf-modal-head-border: #3a2b1f;
+    --gf-modal-body-bg: #9a6a45;
+    --gf-modal-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s ease;
+}
+
+.gf-modal.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.gf-modal.closing {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.gf-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    opacity: 0;
+    transition: opacity 0.18s ease;
+}
+
+.gf-modal.open .gf-modal-backdrop {
+    opacity: 1;
+}
+
+.gf-modal-card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -47%) scale(0.96);
+    width: var(--gf-modal-width);
+    background: var(--gf-modal-shell-bg);
+    border: 1px solid var(--gf-modal-shell-border);
+    border-radius: 10px;
+    box-shadow: var(--gf-modal-shadow);
+    overflow: hidden;
+    opacity: 0;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.gf-modal.open .gf-modal-card {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+}
+
+.gf-modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--gf-modal-head-border);
+    background: var(--gf-modal-head-bg);
+}
+
+.gf-modal-title {
+    margin: 0;
+    color: #f3c24a;
+    font-size: 18px;
+    font-weight: 800;
+    text-align: center;
+    flex: 1 1 auto;
+}
+
+.gf-modal-close {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    border: 1px solid rgba(243, 194, 74, 0.75);
+    background: rgba(67, 51, 38, 0.18);
+    color: #f3c24a;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gf-modal-close:hover {
+    background: rgba(67, 51, 38, 0.34);
+}
+
+.gf-modal-body {
+    background: var(--gf-modal-body-bg);
+}

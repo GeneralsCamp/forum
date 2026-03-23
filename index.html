@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css"
         rel="stylesheet">
+    <link rel="stylesheet" href="./overviews/shared/modal.css">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="./overviews/shared/consent.css">
     <link rel="icon" href="/forum/img_base/favicon.ico" sizes="any">
@@ -101,12 +102,12 @@
                 href="mailto:generalscampofficial@gmail.com">generalscampofficial@gmail.com</a>
         </div>
 
-        <div id="settingsModal" class="settings-modal" aria-hidden="true">
-            <div class="settings-modal-backdrop" data-close-settings="1"></div>
-            <div class="settings-modal-card" role="dialog" aria-modal="true" aria-labelledby="settingsModalTitle">
-                <div class="settings-modal-head">
-                    <h3 id="settingsModalTitle">Settings</h3>
-                    <button id="closeSettingsBtn" class="settings-close-btn" type="button" aria-label="Close settings">
+        <div id="settingsModal" class="gf-modal settings-modal" aria-hidden="true">
+            <div class="gf-modal-backdrop" data-close-modal="1"></div>
+            <div class="gf-modal-card settings-modal-card" role="dialog" aria-modal="true" aria-labelledby="settingsModalTitle">
+                <div class="gf-modal-head settings-modal-head">
+                    <h3 id="settingsModalTitle" class="gf-modal-title">Settings</h3>
+                    <button id="closeSettingsBtn" class="gf-modal-close settings-close-btn" type="button" aria-label="Close settings">
                         <i class="bi bi-x-lg" aria-hidden="true"></i>
                     </button>
                 </div>

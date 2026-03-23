@@ -634,7 +634,7 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
         const imageSection = placedUrl
             ? `
         <div class="col-5 card-cell border-end d-flex justify-content-center align-items-center position-relative ci-image"
-             style="cursor:pointer;" data-src="${placedUrl}" data-caption="${safeName}">
+             style="cursor:pointer;" data-src="${placedUrl}" data-caption="${safeName}" data-modal-src="${placedUrl}" data-modal-caption="${safeName}">
           <div class="image-wrapper">
             <img src="${placedUrl}" 
                  data-modal-src="${placedUrl}" 

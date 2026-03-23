@@ -5,6 +5,7 @@ import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageServ
 import { createRewardResolver } from "../shared/RewardResolver.mjs";
 import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
+import { initCustomModal } from "../shared/ModalService.mjs";
 
 // --- GLOBAL VARIABLES ---
 let lang = {};
@@ -47,6 +48,8 @@ const KEY_TYPE_MIN_RARITY = {
   Epic: RARITY_ORDER.epic,
   Legendary: RARITY_ORDER.legendary
 };
+
+let lootBoxModal = null;
 
 // --- LOOTBOX HELPERS ---
 function normalizeName(value) {
@@ -219,7 +222,7 @@ function openTombolaModal({ title, tombolaId, keyType = null }) {
 
   if (entries.length === 0) {
     container.innerHTML = `<div class="col-12">No rewards</div>`;
-    new bootstrap.Modal(modalEl).show();
+    lootBoxModal?.open();
     return;
   }
 
@@ -267,7 +270,7 @@ function openTombolaModal({ title, tombolaId, keyType = null }) {
 
   if (cards.length === 0) {
     container.innerHTML = `<div class="col-12">No rewards</div>`;
-    new bootstrap.Modal(modalEl).show();
+    lootBoxModal?.open();
     return;
   }
 
@@ -281,7 +284,7 @@ function openTombolaModal({ title, tombolaId, keyType = null }) {
     );
   });
 
-  new bootstrap.Modal(modalEl).show();
+  lootBoxModal?.open();
   void hydrateComposedImages({
     root: container,
     selector: 'img[data-compose-equipment="1"]:not([data-compose-ready])',
@@ -506,10 +509,13 @@ function createOfferingCard(offering) {
         <div class="box-content">
           <h2 class="ci-title">${displayName}</h2>
           <div class="offering-body">
-            <div class="image-wrapper">
+            <div class="image-wrapper offering-image-slot">
               ${imageSection}
             </div>
           </div>
+          <span class="position-absolute bottom-0 end-0 p-1 rounded-circle m-1 offering-zoom-indicator">
+            <i class="bi bi-zoom-in"></i>
+          </span>
         </div>
       </div>
     </div>
@@ -517,10 +523,10 @@ function createOfferingCard(offering) {
 }
 
 document.addEventListener("click", (e) => {
-  const img = e.target.closest(".card-image");
-  if (!img) return;
+  const slot = e.target.closest(".lootbox-image-slot");
+  if (!slot) return;
 
-  const card = img.closest(".lootbox-card");
+  const card = slot.closest(".lootbox-card");
   if (!card) return;
 
   const lootBoxId = card.getAttribute("data-lootbox-id");
@@ -531,7 +537,8 @@ document.addEventListener("click", (e) => {
 });
 
 document.addEventListener("click", (e) => {
-  const card = e.target.closest(".offering-card");
+  const slot = e.target.closest(".offering-image-slot");
+  const card = slot ? slot.closest(".offering-card") : e.target.closest(".offering-card");
   if (!card) return;
 
   const tombolaId = card.getAttribute("data-tombola-id");
@@ -583,17 +590,23 @@ function createLootBoxCard(box) {
 
   const imageSection = imgUrl
     ? `
-      <div class="col-5 card-cell border-end d-flex justify-content-center align-items-center">
+      <div class="col-5 card-cell border-end d-flex justify-content-center align-items-center position-relative lootbox-image-slot">
         <div class="image-wrapper">
           <img src="${imgUrl}" alt="${displayName}" class="card-image w-100" loading="lazy">
         </div>
+        <span class="position-absolute bottom-0 end-0 p-1 rounded-circle m-1">
+          <i class="bi bi-zoom-in"></i>
+        </span>
       </div>
     `
     : `
-      <div class="col-5 card-cell border-end d-flex justify-content-center align-items-center">
+      <div class="col-5 card-cell border-end d-flex justify-content-center align-items-center position-relative lootbox-image-slot">
         <div class="image-wrapper">
           <div class="no-image-text">no image</div>
         </div>
+        <span class="position-absolute bottom-0 end-0 p-1 rounded-circle m-1">
+          <i class="bi bi-zoom-in"></i>
+        </span>
       </div>
     `;
 
@@ -796,6 +809,7 @@ initAutoHeight({
 
 async function init() {
   try {
+    lootBoxModal = initCustomModal({ modalId: "lootBoxModal" });
     await coreInit({
       loader,
       itemLabel: "loot boxes",

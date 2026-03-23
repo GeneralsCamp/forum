@@ -80,8 +80,8 @@ label {
 
 .reward-card {
   background-color: rgb(145, 98, 65);
-  border: 2px solid white;
-  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 6px;
   padding: 0;
   height: 100%;
   overflow: hidden;
@@ -215,10 +215,10 @@ label {
   font-size: 0.86rem;
   font-weight: 900;
   margin: 0;
-  color: #3f2f23;
+  color: #ffffff;
   text-transform: uppercase;
-  background: #e4cfb2;
-  border-bottom: 1px solid rgba(62, 42, 22, 0.5);
+  background: rgb(119, 80, 54);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.48);
   padding: 6px 10px;
   letter-spacing: 0.2px;
 }
@@ -226,7 +226,7 @@ label {
 .reward-list {
   margin: 0;
   padding-left: 18px;
-  color: #433120;
+  color: #f3e0c2;
 }
 
 .reward-list li {
@@ -239,6 +239,7 @@ label {
   margin: 0;
   font-weight: 700;
   padding: 4px 10px;
+  background: rgb(145, 98, 65);
 }
 
 .item-grid {
@@ -250,6 +251,7 @@ label {
   height: 86px;
   overflow-x: auto;
   overflow-y: hidden;
+  background: rgb(145, 98, 65);
 }
 
 #individualSection .item-grid {
@@ -266,16 +268,16 @@ label {
 }
 
 .item-grid::-webkit-scrollbar-track {
-  background: #6b4a30;
+  background: rgb(119, 80, 54);
 }
 
 .item-card {
   width: 72px;
   min-width: 72px;
   height: 72px;
-  background-color: #f7edd7;
+  background-color: #f3e0c2;
   border: 1px solid #c9ab7a;
-  border-radius: 6px;
+  border-radius: 4px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -297,7 +299,7 @@ label {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f7edd7;
+  background: #f3e0c2;
 }
 
 .item-image {
@@ -319,18 +321,19 @@ label {
   left: 0;
   right: 0;
   bottom: 0;
-  height: 20px;
-  font-size: 10px;
-  font-weight: 800;
-  color: #433120;
+  height: 18px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
   text-align: center;
   padding: 0 2px;
-  background: rgba(225, 210, 183, 0.95);
-  border-top: 1px solid rgba(126, 90, 60, 0.45);
+  background: rgba(0, 0, 0, 0.4);
+  border-top: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   line-height: 1;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
 }
 
 .item-card[data-name]:hover::after {

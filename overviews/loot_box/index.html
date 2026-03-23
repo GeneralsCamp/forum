@@ -60,15 +60,17 @@
   </div>
   </div>
 
-  <div class="modal fade" id="lootBoxModal" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title"></h5>
-        </div>
-        <div class="modal-body">
-          <div id="lootBoxRewards" class="row g-1"></div>
-        </div>
+  <div id="lootBoxModal" class="gf-modal lootbox-modal" aria-hidden="true">
+    <div class="gf-modal-backdrop" data-close-modal="1"></div>
+    <div class="gf-modal-card lootbox-modal-card" role="dialog" aria-modal="true" aria-labelledby="lootBoxModalTitle">
+      <div class="gf-modal-head lootbox-modal-head">
+        <h5 id="lootBoxModalTitle" class="modal-title gf-modal-title"></h5>
+        <button type="button" class="gf-modal-close lootbox-modal-close" aria-label="Close">
+          <i class="bi bi-x-lg" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="gf-modal-body lootbox-modal-body">
+        <div id="lootBoxRewards" class="row g-1"></div>
       </div>
     </div>
   </div>
