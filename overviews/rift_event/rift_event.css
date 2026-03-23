@@ -109,8 +109,8 @@ label {
 }
 
 .boss-overview-card {
-  background: #7c5537;
-  border: 2px solid #f0dcc0;
+  background: rgb(145, 98, 65);
+  border: 1px solid rgba(255, 255, 255, 0.52);
   border-radius: 8px;
   overflow: hidden;
   min-width: 0;
@@ -118,13 +118,13 @@ label {
 
 .boss-overview-heading {
   margin: 0;
-  background: #e4cfb2;
-  color: #3f2f23;
+  background: rgb(119, 80, 54);
+  color: #f3c24a;
   font-size: 0.85rem;
   font-weight: 900;
   text-transform: uppercase;
   padding: 7px 10px;
-  border-bottom: 1px solid rgba(62, 42, 22, 0.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.42);
 }
 
 .boss-overview-stats {
@@ -142,7 +142,7 @@ label {
 
 .boss-overview-stat {
   background: #f3e0c2;
-  border: 1px solid #c9ab7a;
+  border: 1px solid rgba(255, 255, 255, 0.28);
   border-radius: 6px;
   padding: 6px 8px;
   display: flex;
@@ -154,7 +154,7 @@ label {
 .boss-overview-stat-key {
   font-size: 0.74rem;
   font-weight: 800;
-  color: #5c3f29;
+  color: #2f2116;
 }
 
 .boss-overview-stat-value {
@@ -185,7 +185,7 @@ label {
   flex: 1 1 auto;
   font-size: 0.74rem;
   font-weight: 800;
-  color: #5c3f29;
+  color: #2f2116;
   line-height: 1.15;
 }
 
@@ -207,7 +207,7 @@ label {
 .boss-overview-item-grid {
   padding: 8px;
   height: 90px;
-  background: #6b4a30;
+  background: rgb(119, 80, 54);
   justify-content: center;
 }
 

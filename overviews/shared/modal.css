@@ -31,13 +31,17 @@
 .gf-modal-backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.45);
+    background: rgba(0, 0, 0, 0.62);
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
     opacity: 0;
-    transition: opacity 0.18s ease;
+    transition: opacity 0.24s ease, backdrop-filter 0.24s ease, -webkit-backdrop-filter 0.24s ease;
 }
 
 .gf-modal.open .gf-modal-backdrop {
     opacity: 1;
+    backdrop-filter: blur(1.5px);
+    -webkit-backdrop-filter: blur(1.5px);
 }
 
 .gf-modal-card {
