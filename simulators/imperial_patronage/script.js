@@ -588,16 +588,16 @@ function renderRewardPanel(typeModel) {
     && status.previewPoints > status.committedPoints;
   const nextReward = status.nextReward || (previewReachedFinalReward ? status.previewReward : null);
   const nextIndex = status.nextReward ? status.nextIndex : (previewReachedFinalReward ? status.previewIndex : 0);
-  const stagedPoints = Math.max(0, status.previewLevelPoints - status.committedLevelPoints);
+  const stagedTotalPoints = Math.max(0, status.previewPoints - status.committedPoints);
   els.pointsToNextValue.textContent = formatNumber(status.pointsToNext);
   if (els.mobileCurrentPointsValue) {
-    els.mobileCurrentPointsValue.innerHTML = stagedPoints > 0
-      ? `${formatNumber(status.committedLevelPoints)} <span class="reward-inline-note">(+${formatNumber(stagedPoints)})</span>`
+    els.mobileCurrentPointsValue.innerHTML = stagedTotalPoints > 0
+      ? `${formatNumber(status.committedLevelPoints)} <span class="reward-inline-note">(+${formatNumber(stagedTotalPoints)})</span>`
       : formatNumber(status.committedLevelPoints);
   }
   if (els.mobilePointsToNextValue) els.mobilePointsToNextValue.textContent = formatNumber(status.pointsToNext);
-  els.rewardPreviewTotal.innerHTML = stagedPoints > 0
-    ? `${formatNumber(status.committedLevelPoints)} <span class="reward-inline-note">(+${formatNumber(stagedPoints)})</span>`
+  els.rewardPreviewTotal.innerHTML = stagedTotalPoints > 0
+    ? `${formatNumber(status.committedLevelPoints)} <span class="reward-inline-note">(+${formatNumber(stagedTotalPoints)})</span>`
     : formatNumber(status.committedLevelPoints);
   els.rewardWarning.textContent = "";
 
