@@ -28,7 +28,7 @@
 
 .set-shell {
   background: radial-gradient(circle at top right, #956544 0%, #7a5437 42%, #6a472d 100%);
-  border: 2px solid #fff;
+  border: 1px solid rgba(255, 255, 255, 0.58);
   border-radius: 12px;
   overflow: hidden;
   margin-bottom: 8px;
@@ -338,7 +338,7 @@
 }
 
 .compare-view-shell {
-  border: 2px solid #fff;
+  border: 1px solid rgba(255, 255, 255, 0.58);
 }
 
 .compare-view-toolbar {
