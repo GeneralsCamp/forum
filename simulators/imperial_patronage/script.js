@@ -2,7 +2,8 @@ import {
   getItemVersion,
   getLangVersion,
   loadItems,
-  loadLanguage
+  loadLanguage,
+  logResolvedDataUrls
 } from "../../overviews/shared/DataService.mjs";
 import { createLoader } from "../../overviews/shared/LoadingService.mjs";
 import { loadImageMaps } from "../../overviews/shared/ImageService.mjs";
@@ -873,6 +874,11 @@ async function init() {
   try {
     const [itemVersion, langVersion] = await Promise.all([getItemVersion(), getLangVersion()]);
     await loadOwnLang();
+    await logResolvedDataUrls({
+      langCode: currentLanguage,
+      itemVersion,
+      langVersion
+    });
 
     loader.set(2, 5, "Loading data...");
     const [items, langRaw] = await Promise.all([loadItems(itemVersion), loadLanguage(currentLanguage, langVersion)]);

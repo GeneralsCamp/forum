@@ -2,7 +2,8 @@ import {
   getItemVersion,
   loadItems,
   getLangVersion,
-  loadLanguage
+  loadLanguage,
+  logResolvedDataUrls
 } from "../../overviews/shared/DataService.mjs";
 import { createLoader } from "../../overviews/shared/LoadingService.mjs";
 
@@ -299,6 +300,12 @@ async function loadLiveData() {
     getItemVersion(),
     getLangVersion()
   ]);
+
+  await logResolvedDataUrls({
+    langCode: "en",
+    itemVersion,
+    langVersion
+  });
 
   const [items, lang] = await Promise.all([
     loadItems(itemVersion),

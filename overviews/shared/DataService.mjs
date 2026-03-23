@@ -121,6 +121,7 @@ export async function getResolvedUrls({ langCode = "en", itemVersion, langVersio
             appStoreUrl: APP_LOOKUP_URL,
             appVersion: info.appVersion,
             itemVersion: resolvedItemVersion,
+            langVersion: resolvedLangVersion,
             versionsUrl: info.versionsUrl,
             itemsUrl: `https://media.goodgamestudios.com/loader/empirefourkingdoms/${info.appVersion}/itemsXML/items_${String(resolvedItemVersion).replaceAll(".", "_")}.ggs`,
             languageVersionUrl: LANGUAGE_VERSION_URL,
@@ -133,11 +134,29 @@ export async function getResolvedUrls({ langCode = "en", itemVersion, langVersio
     return {
         source,
         itemVersion: resolvedItemVersion,
+        langVersion: resolvedLangVersion,
         itemVersionUrl: EMPIRE_ITEMS_VERSION_URL,
         itemsUrl: `${EMPIRE_ITEMS_BASE_URL}/items_v${resolvedItemVersion}.json`,
         languageVersionUrl: LANGUAGE_VERSION_URL,
         languageUrl: `${LANGUAGE_BASE_URL}/12@${resolvedLangVersion}/${langCode}/*`
     };
+}
+
+export async function logResolvedDataUrls({ langCode = "en", itemVersion, langVersion } = {}) {
+    const gameSource = getGameSource();
+    const shortGameSource = gameSource === "empire" ? "em" : gameSource;
+    const resolvedUrls = await getResolvedUrls({ langCode, itemVersion, langVersion });
+
+    console.log(`Game source: ${shortGameSource}`);
+    console.log("");
+    console.log(`Item version: ${resolvedUrls.itemVersion}`);
+    console.log(`Item URL: ${resolvedUrls.itemsUrl}`);
+    console.log("");
+    console.log(`Language version: ${resolvedUrls.langVersion}`);
+    console.log(`Language URL: ${resolvedUrls.languageUrl}`);
+    console.log("");
+
+    return resolvedUrls;
 }
 
 async function getE4kRemoteInfo() {

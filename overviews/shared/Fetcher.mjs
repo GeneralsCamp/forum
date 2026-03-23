@@ -44,13 +44,19 @@ function buildAttemptUrls(url, strategy, useCorsProxy) {
 
   if (strategy === "direct-only") {
     urls.push(directUrl);
+  } else if (strategy === "cors-proxy-first") {
+    urls.push(proxyUrl);
+    if (useCorsProxy) {
+      urls.push(corsProxyUrl);
+    }
+    urls.push(directUrl);
   } else if (strategy === "direct-first") {
     urls.push(directUrl, proxyUrl);
   } else {
     urls.push(proxyUrl, directUrl);
   }
 
-  if (useCorsProxy) {
+  if (useCorsProxy && strategy !== "cors-proxy-first") {
     urls.push(corsProxyUrl);
   }
 

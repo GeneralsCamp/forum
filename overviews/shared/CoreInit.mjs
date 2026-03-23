@@ -4,7 +4,7 @@ import {
     getLangVersion,
     loadLanguage,
     loadItems,
-    getResolvedUrls
+    logResolvedDataUrls
 } from "./DataService.mjs";
 
 import { buildEffectContext }
@@ -34,25 +34,10 @@ export async function coreInit({
     set("Checking item version...");
     const itemVersion = await getItemVersion();
     const gameSource = getGameSource();
-    const resolvedUrls =
-        await getResolvedUrls({ langCode, itemVersion });
-    const shortGameSource =
-        gameSource === "empire" ? "em" : gameSource;
-
-    console.log(`Game source: ${shortGameSource}`);
-    console.log("");
-    console.log(`Item version: ${itemVersion}`);
-    console.log(`Item URL: ${resolvedUrls.itemsUrl}`);
-    console.log("");
 
     set("Checking language version...");
     const langVersion = await getLangVersion();
-    const resolvedLangUrls =
-        await getResolvedUrls({ langCode, itemVersion, langVersion });
-
-    console.log(`Language version: ${langVersion}`);
-    console.log(`Language URL: ${resolvedLangUrls.languageUrl}`);
-    console.log("");
+    await logResolvedDataUrls({ langCode, itemVersion, langVersion });
 
     set("Loading language...");
     const langRaw =
