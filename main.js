@@ -1,5 +1,6 @@
 import { initConsentManager } from "./overviews/shared/ConsentManager.mjs";
 import { getDefaultGameSource } from "./overviews/shared/GameSettings.mjs";
+import { availableLanguages, getInitialLanguage } from "./overviews/shared/LanguageService.mjs";
 const FAVORITES_KEY = "gf_favorites_v1";
 const MAX_FAVORITES = 12;
 const HOME_SETTINGS_KEY = "gf_home_settings_v1";
@@ -182,6 +183,32 @@ function readHomeSettings() {
 
 function writeHomeSettings(settings) {
     localStorage.setItem(HOME_SETTINGS_KEY, JSON.stringify(settings));
+}
+
+function getSavedSiteLanguage() {
+    return localStorage.getItem("selectedLanguage") || getInitialLanguage();
+}
+
+function writeSiteLanguage(languageCode) {
+    if (!languageCode) return;
+    localStorage.setItem("selectedLanguage", String(languageCode));
+}
+
+function buildLanguageLabel(code) {
+    try {
+        const display = new Intl.DisplayNames([code], { type: "language" });
+        const nativeName = display.of(code);
+        return nativeName ? `${nativeName} (${String(code).toUpperCase()})` : String(code).toUpperCase();
+    } catch {
+        return String(code).toUpperCase();
+    }
+}
+
+function populateLanguageSelect(select) {
+    if (!select) return;
+    select.innerHTML = availableLanguages.map((code) =>
+        `<option value="${code}">${buildLanguageLabel(code)}</option>`
+    ).join("");
 }
 
 function applyHomeSettingsToLayout() {
@@ -706,7 +733,8 @@ function setupSettingsModal() {
     const videosInput = document.getElementById("settingsVideos");
     const devCommentsInput = document.getElementById("settingsDevComments");
     const selectedGameInput = document.getElementById("settingsSelectedGame");
-    if (!openBtn || !closeBtn || !modal || !descriptionsInput || !currentProjectsInput || !favoritesInput || !videosInput || !devCommentsInput || !selectedGameInput) return;
+    const selectedLanguageInput = document.getElementById("settingsSelectedLanguage");
+    if (!openBtn || !closeBtn || !modal || !descriptionsInput || !currentProjectsInput || !favoritesInput || !videosInput || !devCommentsInput || !selectedGameInput || !selectedLanguageInput) return;
     const MODAL_CLOSE_ANIM_MS = 190;
     let closeTimer = 0;
 
@@ -723,9 +751,12 @@ function setupSettingsModal() {
         }
     };
 
+    populateLanguageSelect(selectedLanguageInput);
+
     const syncForm = () => {
         syncGameOptionLabels();
         selectedGameInput.value = uiSettings.selectedGame || getDefaultGameSource();
+        selectedLanguageInput.value = getSavedSiteLanguage();
         descriptionsInput.checked = Boolean(uiSettings.descriptionsEnabled);
         currentProjectsInput.checked = Boolean(uiSettings.currentProjectsEnabled);
         favoritesInput.checked = Boolean(uiSettings.favoritesEnabled);
@@ -759,6 +790,7 @@ function setupSettingsModal() {
     };
 
     const handleChange = () => {
+        writeSiteLanguage(selectedLanguageInput.value || getInitialLanguage());
         uiSettings = {
             selectedGame: selectedGameInput.value || getDefaultGameSource(),
             descriptionsEnabled: descriptionsInput.checked,
@@ -783,6 +815,7 @@ function setupSettingsModal() {
     });
 
     selectedGameInput.addEventListener("change", handleChange);
+    selectedLanguageInput.addEventListener("change", handleChange);
     descriptionsInput.addEventListener("change", handleChange);
     currentProjectsInput.addEventListener("change", handleChange);
     favoritesInput.addEventListener("change", handleChange);

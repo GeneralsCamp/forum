@@ -1061,7 +1061,7 @@ body.favorites-reorder-mode #favorites .category-card-shell.is-reorder-active .f
 
 .settings-option-game {
     display: block;
-    padding: 12px;
+    padding: 10px 12px;
     background: rgba(67, 51, 38, 0.18);
     border-color: rgba(243, 194, 74, 0.48);
     box-shadow: inset 0 1px 0 rgba(255, 233, 187, 0.06);
@@ -1069,12 +1069,12 @@ body.favorites-reorder-mode #favorites .category-card-shell.is-reorder-active .f
 
 .settings-option-game .settings-option-title {
     color: #f7e1bf;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 
 .settings-option-game .settings-option-note {
     display: block;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
     color: rgba(242, 217, 187, 0.76);
     font-size: 12px;
     font-weight: 600;

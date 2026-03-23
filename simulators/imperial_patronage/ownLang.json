@@ -3,7 +3,7 @@
     "ui": {
       "donation_options": "Donation Options",
       "reset_sliders": "Reset Sliders",
-      "reset_all": "Reset All",
+      "reset_all": "Reset Progress",
       "total_used": "Total used",
       "latest_version": "Latest version",
       "version": "Version"
@@ -13,7 +13,7 @@
     "ui": {
       "donation_options": "خيارات التبرع",
       "reset_sliders": "إعادة ضبط أشرطة التمرير",
-      "reset_all": "إعادة ضبط الكل",
+      "reset_all": "إعادة ضبط التقدم",
       "total_used": "إجمالي المستخدم",
       "latest_version": "أحدث إصدار",
       "version": "الإصدار"
@@ -23,7 +23,7 @@
     "ui": {
       "donation_options": "Opciones de donación",
       "reset_sliders": "Restablecer deslizadores",
-      "reset_all": "Restablecer todo",
+      "reset_all": "Restablecer progreso",
       "total_used": "Total usado",
       "latest_version": "Última versión",
       "version": "Versión"
@@ -33,7 +33,7 @@
     "ui": {
       "donation_options": "Опции за дарение",
       "reset_sliders": "Нулиране на плъзгачите",
-      "reset_all": "Нулиране на всичко",
+      "reset_all": "Нулиране на напредъка",
       "total_used": "Общо използвано",
       "latest_version": "Последна версия",
       "version": "Версия"
@@ -43,7 +43,7 @@
     "ui": {
       "donation_options": "Opções de doação",
       "reset_sliders": "Redefinir controles",
-      "reset_all": "Redefinir tudo",
+      "reset_all": "Redefinir progresso",
       "total_used": "Total usado",
       "latest_version": "Versão mais recente",
       "version": "Versão"
@@ -53,7 +53,7 @@
     "ui": {
       "donation_options": "Možnosti darování",
       "reset_sliders": "Obnovit posuvníky",
-      "reset_all": "Obnovit vše",
+      "reset_all": "Obnovit postup",
       "total_used": "Celkem použito",
       "latest_version": "Nejnovější verze",
       "version": "Verze"
@@ -63,7 +63,7 @@
     "ui": {
       "donation_options": "Spendenoptionen",
       "reset_sliders": "Regler zurücksetzen",
-      "reset_all": "Alles zurücksetzen",
+      "reset_all": "Fortschritt zurücksetzen",
       "total_used": "Insgesamt genutzt",
       "latest_version": "Neueste Version",
       "version": "Version"
@@ -73,7 +73,7 @@
     "ui": {
       "donation_options": "Donationsmuligheder",
       "reset_sliders": "Nulstil skydere",
-      "reset_all": "Nulstil alt",
+      "reset_all": "Nulstil fremskridt",
       "total_used": "Samlet brugt",
       "latest_version": "Seneste version",
       "version": "Version"
@@ -83,7 +83,7 @@
     "ui": {
       "donation_options": "Lahjoitusvaihtoehdot",
       "reset_sliders": "Nollaa liukusäätimet",
-      "reset_all": "Nollaa kaikki",
+      "reset_all": "Nollaa edistyminen",
       "total_used": "Käytetty yhteensä",
       "latest_version": "Uusin versio",
       "version": "Versio"
@@ -93,7 +93,7 @@
     "ui": {
       "donation_options": "Options de don",
       "reset_sliders": "Réinitialiser les curseurs",
-      "reset_all": "Tout réinitialiser",
+      "reset_all": "Réinitialiser la progression",
       "total_used": "Total utilisé",
       "latest_version": "Dernière version",
       "version": "Version"
@@ -102,8 +102,8 @@
   "el": {
     "ui": {
       "donation_options": "Επιλογές δωρεάς",
-      "reset_sliders": "Επαναφορά ρυθμιστικών",
-      "reset_all": "Επαναφορά όλων",
+      "reset_sliders": "Επαναφορά ρυθμιστών",
+      "reset_all": "Επαναφορά προόδου",
       "total_used": "Συνολικά χρησιμοποιημένα",
       "latest_version": "Τελευταία έκδοση",
       "version": "Έκδοση"
@@ -113,7 +113,7 @@
     "ui": {
       "donation_options": "Adományozási lehetőségek",
       "reset_sliders": "Csúszkák nullázása",
-      "reset_all": "Teljes reset",
+      "reset_all": "Haladás nullázása",
       "total_used": "Összesen felhasználva",
       "latest_version": "Legfrissebb verzió",
       "version": "Verzió"
@@ -123,7 +123,7 @@
     "ui": {
       "donation_options": "Opzioni di donazione",
       "reset_sliders": "Reimposta cursori",
-      "reset_all": "Reimposta tutto",
+      "reset_all": "Reimposta progresso",
       "total_used": "Totale utilizzato",
       "latest_version": "Versione più recente",
       "version": "Versione"
@@ -133,7 +133,7 @@
     "ui": {
       "donation_options": "寄付オプション",
       "reset_sliders": "スライダーをリセット",
-      "reset_all": "すべてリセット",
+      "reset_all": "進行状況をリセット",
       "total_used": "合計使用量",
       "latest_version": "最新バージョン",
       "version": "バージョン"
@@ -143,7 +143,7 @@
     "ui": {
       "donation_options": "기부 옵션",
       "reset_sliders": "슬라이더 초기화",
-      "reset_all": "전체 초기화",
+      "reset_all": "진행도 초기화",
       "total_used": "총 사용량",
       "latest_version": "최신 버전",
       "version": "버전"
@@ -153,7 +153,7 @@
     "ui": {
       "donation_options": "Aukojimo parinktys",
       "reset_sliders": "Atstatyti slankiklius",
-      "reset_all": "Atstatyti viską",
+      "reset_all": "Atstatyti pažangą",
       "total_used": "Iš viso panaudota",
       "latest_version": "Naujausia versija",
       "version": "Versija"
@@ -163,7 +163,7 @@
     "ui": {
       "donation_options": "Donatieopties",
       "reset_sliders": "Schuifregelaars resetten",
-      "reset_all": "Alles resetten",
+      "reset_all": "Voortgang resetten",
       "total_used": "Totaal gebruikt",
       "latest_version": "Nieuwste versie",
       "version": "Versie"
@@ -173,7 +173,7 @@
     "ui": {
       "donation_options": "Donasjonsalternativer",
       "reset_sliders": "Tilbakestill skyveknapper",
-      "reset_all": "Tilbakestill alt",
+      "reset_all": "Tilbakestill fremdrift",
       "total_used": "Totalt brukt",
       "latest_version": "Nyeste versjon",
       "version": "Versjon"
@@ -183,7 +183,7 @@
     "ui": {
       "donation_options": "Opcje darowizny",
       "reset_sliders": "Reset suwaków",
-      "reset_all": "Reset wszystkiego",
+      "reset_all": "Reset postępu",
       "total_used": "Łącznie wykorzystano",
       "latest_version": "Najnowsza wersja",
       "version": "Wersja"
@@ -193,7 +193,7 @@
     "ui": {
       "donation_options": "Opțiuni de donație",
       "reset_sliders": "Resetează glisoarele",
-      "reset_all": "Resetează tot",
+      "reset_all": "Resetează progresul",
       "total_used": "Total folosit",
       "latest_version": "Cea mai nouă versiune",
       "version": "Versiune"
@@ -203,7 +203,7 @@
     "ui": {
       "donation_options": "Варианты пожертвования",
       "reset_sliders": "Сбросить ползунки",
-      "reset_all": "Сбросить всё",
+      "reset_all": "Сбросить прогресс",
       "total_used": "Всего использовано",
       "latest_version": "Последняя версия",
       "version": "Версия"
@@ -213,7 +213,7 @@
     "ui": {
       "donation_options": "Donationsalternativ",
       "reset_sliders": "Återställ reglage",
-      "reset_all": "Återställ allt",
+      "reset_all": "Återställ framsteg",
       "total_used": "Totalt använt",
       "latest_version": "Senaste version",
       "version": "Version"
@@ -223,7 +223,7 @@
     "ui": {
       "donation_options": "Možnosti darovania",
       "reset_sliders": "Obnoviť posuvníky",
-      "reset_all": "Obnoviť všetko",
+      "reset_all": "Obnoviť postup",
       "total_used": "Celkovo použité",
       "latest_version": "Najnovšia verzia",
       "version": "Verzia"
@@ -233,7 +233,7 @@
     "ui": {
       "donation_options": "Bağış seçenekleri",
       "reset_sliders": "Kaydırıcıları sıfırla",
-      "reset_all": "Tümünü sıfırla",
+      "reset_all": "İlerlemeyi sıfırla",
       "total_used": "Toplam kullanılan",
       "latest_version": "En son sürüm",
       "version": "Sürüm"

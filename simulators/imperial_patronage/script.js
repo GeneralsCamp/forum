@@ -46,6 +46,7 @@ const els = {
   panelFooter: document.querySelector(".panel-footer"),
   rewardPanel: document.querySelector(".reward-panel"),
   rewardMeterFill: document.getElementById("rewardMeterFill"),
+  rewardMeterStagedFill: document.getElementById("rewardMeterStagedFill"),
   pointsToNextValue: document.getElementById("pointsToNextValue"),
   mobileCurrentPointsValue: document.getElementById("mobileCurrentPointsValue"),
   mobilePointsToNextValue: document.getElementById("mobilePointsToNextValue"),
@@ -307,11 +308,16 @@ function getRewardStatus(typeModel) {
   const currentMin = Number(previewBaseReward?.minPoints) || 0;
   const nextMin = Number(nextReward?.minPoints) || currentMin;
   const progressSpan = Math.max(1, nextMin - currentMin);
+  const committedLevelPoints = Math.max(0, committedPoints - currentMin);
+  const previewLevelPoints = Math.max(0, previewPoints - currentMin);
+  const committedInside = nextReward ? Math.min(progressSpan, Math.max(0, committedPoints - currentMin)) : progressSpan;
   const progressInside = nextReward ? Math.min(progressSpan, Math.max(0, previewPoints - currentMin)) : progressSpan;
 
   return {
     committedPoints,
     previewPoints,
+    committedLevelPoints,
+    previewLevelPoints,
     currentReward,
     previewReward,
     nextReward,
@@ -319,6 +325,7 @@ function getRewardStatus(typeModel) {
     previewIndex,
     nextIndex,
     pointsToNext: nextReward ? Math.max(0, nextMin - previewPoints) : 0,
+    committedPercent: nextReward ? Math.round((committedInside / progressSpan) * 100) : 100,
     percent: nextReward ? Math.round((progressInside / progressSpan) * 100) : 100,
     overcap: previewPoints > getHighestThreshold(typeModel)
       ? previewPoints - getHighestThreshold(typeModel)
@@ -580,25 +587,41 @@ function renderRewardPanel(typeModel) {
     && status.previewPoints > status.committedPoints;
   const nextReward = status.nextReward || (previewReachedFinalReward ? status.previewReward : null);
   const nextIndex = status.nextReward ? status.nextIndex : (previewReachedFinalReward ? status.previewIndex : 0);
-  const stagedPoints = Math.max(0, status.previewPoints - status.committedPoints);
+  const stagedPoints = Math.max(0, status.previewLevelPoints - status.committedLevelPoints);
   els.pointsToNextValue.textContent = formatNumber(status.pointsToNext);
   if (els.mobileCurrentPointsValue) {
     els.mobileCurrentPointsValue.innerHTML = stagedPoints > 0
-      ? `${formatNumber(status.committedPoints)} <span class="reward-inline-note">(+${formatNumber(stagedPoints)})</span>`
-      : formatNumber(status.committedPoints);
+      ? `${formatNumber(status.committedLevelPoints)} <span class="reward-inline-note">(+${formatNumber(stagedPoints)})</span>`
+      : formatNumber(status.committedLevelPoints);
   }
   if (els.mobilePointsToNextValue) els.mobilePointsToNextValue.textContent = formatNumber(status.pointsToNext);
   els.rewardPreviewTotal.innerHTML = stagedPoints > 0
-    ? `${formatNumber(status.committedPoints)} <span class="reward-inline-note">(+${formatNumber(stagedPoints)})</span>`
-    : formatNumber(status.committedPoints);
+    ? `${formatNumber(status.committedLevelPoints)} <span class="reward-inline-note">(+${formatNumber(stagedPoints)})</span>`
+    : formatNumber(status.committedLevelPoints);
   els.rewardWarning.textContent = "";
 
   if (window.matchMedia("(max-width: 991px)").matches) {
-    els.rewardMeterFill.style.width = `${status.percent}%`;
+    const stagedPercent = Math.max(0, status.percent - status.committedPercent);
+    els.rewardMeterFill.style.width = `${status.committedPercent}%`;
     els.rewardMeterFill.style.height = "100%";
+    els.rewardMeterFill.style.left = "0";
+    if (els.rewardMeterStagedFill) {
+      els.rewardMeterStagedFill.style.width = `${stagedPercent}%`;
+      els.rewardMeterStagedFill.style.height = "100%";
+      els.rewardMeterStagedFill.style.left = `${status.committedPercent}%`;
+      els.rewardMeterStagedFill.style.bottom = "0";
+    }
   } else {
-    els.rewardMeterFill.style.height = `${status.percent}%`;
+    const stagedPercent = Math.max(0, status.percent - status.committedPercent);
+    els.rewardMeterFill.style.height = `${status.committedPercent}%`;
     els.rewardMeterFill.style.width = "100%";
+    els.rewardMeterFill.style.left = "0";
+    if (els.rewardMeterStagedFill) {
+      els.rewardMeterStagedFill.style.height = `${stagedPercent}%`;
+      els.rewardMeterStagedFill.style.width = "100%";
+      els.rewardMeterStagedFill.style.bottom = `${status.committedPercent}%`;
+      els.rewardMeterStagedFill.style.left = "0";
+    }
   }
 
   els.currentRewardImage.src = getRewardImage(currentReward);

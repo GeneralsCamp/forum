@@ -49,8 +49,8 @@
   height: 100%;
   min-height: 0;
   background: radial-gradient(circle at top right, #956544 0%, #7a5437 42%, #6a472d 100%);
-  border: 2px solid #fff;
-  border-radius: 12px;
+  border: 0;
+  border-radius: 0;
   overflow: hidden;
   color: var(--ink-1);
   display: flex;
@@ -216,7 +216,7 @@
 .amount-display {
   min-height: 38px;
   border: 2px solid #a97c50;
-  border-radius: 8px;
+  border-radius: 2px;
   background-color: #f3e0c2;
   color: #3e2a16;
   font-weight: 800;
@@ -424,8 +424,15 @@
   position: absolute;
   inset: auto 0 0;
   height: 0%;
-  background: #67d61f;
+  background: #3fa327;
   transition: height 60ms linear, width 60ms linear;
+}
+
+.reward-meter-fill-staged {
+  inset: auto auto 0 0;
+  width: 0%;
+  height: 0%;
+  background: #f1a63b;
 }
 
 .reward-cards {
@@ -459,14 +466,21 @@
   gap: 12px;
 }
 
+.reward-card {
+  border-radius: 0px;
+  border-width: 3px;
+  background: transparent;
+  box-shadow: none;
+}
+
 .reward-card.current {
-  border-width: 2px;
-  border-color: rgba(243, 194, 74, 0.7);
+  border-color: rgba(243, 194, 74, 0.88);
+  box-shadow: inset 0 0 0 1px rgba(255, 230, 165, 0.28);
 }
 
 .reward-card.next {
-  border-width: 2px;
-  border-color: rgba(255, 255, 255, 0.28);
+  border-color: rgba(255, 244, 221, 0.54);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
 }
 
 .reward-name {
@@ -534,7 +548,7 @@
 }
 
 .reward-inline-note {
-  color: var(--ink-2);
+  color: #ffbe5c;
   font-size: 13px;
   font-weight: 700;
 }
@@ -551,7 +565,7 @@
 
   .reward-level {
     position: absolute;
-    top: 8px;
+    top: 6px;
     left: 50%;
     z-index: 2;
     width: calc(100% - 16px);
@@ -574,7 +588,7 @@
 
   .reward-layout {
     grid-template-columns: 1fr;
-    gap: 8px;
+    gap: 6px;
     overflow: visible;
     height: auto;
     min-height: 0;
@@ -583,7 +597,7 @@
 
   .reward-mobile-sticky {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
   }
 
   .reward-mobile-stats {
@@ -591,23 +605,25 @@
     justify-content: space-between;
     align-items: center;
     color: #fff;
-    font-size: 17px;
+    font-size: 14px;
     font-weight: 800;
     line-height: 1;
-    padding-bottom: 2px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    padding-bottom: 1px;
   }
 
   .reward-meter {
     flex-direction: row;
     margin: 0;
-    padding-bottom: 2px;
+    padding-bottom: 1px;
   }
 
   .reward-meter-rail {
     width: 100%;
     min-height: 340px;
-    height: 22px;
-    min-height: 22px;
+    height: 16px;
+    min-height: 16px;
   }
 
   .reward-meter-fill {
@@ -619,7 +635,7 @@
   .reward-cards {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 8px;
+    gap: 6px;
     padding-right: 0;
     height: auto;
     min-height: 0;
@@ -635,7 +651,7 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: stretch;
-    gap: 8px;
+    gap: 6px;
     flex: 0 0 auto;
   }
 
@@ -650,8 +666,8 @@
   }
 
   .reward-cards-stack.single-card .reward-card {
-    width: min(220px, 100%);
-    max-width: min(220px, 100%);
+    width: calc((100% - 6px) / 2);
+    max-width: calc((100% - 6px) / 2);
     margin-inline: auto;
   }
 
@@ -662,7 +678,7 @@
   }
 
   .reward-card {
-    padding: 8px;
+    padding: 6px 6px 5px;
   }
 
   .reward-name {
@@ -670,12 +686,12 @@
   }
 
   .reward-level {
-    font-size: 11px;
+    font-size: 10px;
   }
 
   .reward-art-shell {
-    width: min(100%, 150px);
-    margin: 4px auto 2px;
+    width: min(100%, 128px);
+    margin: 2px auto 0;
   }
 
   .donation-panel,
@@ -700,6 +716,11 @@
 }
 
 @media (max-width: 700px) {
+  .patronage-toolbar {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+
   #content.event-layout {
     overflow: hidden;
     overscroll-behavior: contain;
@@ -746,6 +767,8 @@
     overflow: visible;
     height: auto;
     min-height: auto;
+    border: 0;
+    border-radius: 0;
   }
 
   .donation-panel {
@@ -754,14 +777,18 @@
     height: auto;
     min-height: 0;
     overflow: hidden;
+    border: 0;
+    border-radius: 0;
   }
 
   .reward-layout {
     grid-template-columns: 1fr;
-    gap: 8px;
+    gap: 4px;
     overflow: visible;
     height: auto;
     min-height: 0;
+    border: 0;
+    border-radius: 0;
   }
 
   .reward-mobile-sticky {
@@ -774,23 +801,24 @@
     justify-content: space-between;
     align-items: center;
     color: #fff;
-    font-size: 17px;
+    font-size: 13px;
     font-weight: 800;
     line-height: 1;
-    padding-bottom: 2px;
+    margin-top: 2px;
+    padding-bottom: 1px;
   }
 
   .reward-meter {
     order: 4;
     flex-direction: row;
     margin: 0;
-    padding-bottom: 2px;
+    padding-bottom: 0;
   }
 
   .reward-meter-rail {
     width: 100%;
-    min-height: 22px;
-    height: 22px;
+    min-height: 14px;
+    height: 14px;
   }
 
   .reward-meter-fill {
@@ -802,7 +830,7 @@
   .reward-cards {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 8px;
+    gap: 4px;
     padding-right: 0;
     height: auto;
     min-height: 0;
@@ -818,7 +846,7 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: stretch;
-    gap: 8px;
+    gap: 4px;
     flex: 0 0 auto;
   }
 
@@ -841,8 +869,8 @@
   }
 
   .reward-cards-stack.single-card .reward-card {
-    width: min(220px, 100%);
-    max-width: min(220px, 100%);
+    width: calc((100% - 4px) / 2);
+    max-width: calc((100% - 4px) / 2);
     margin-inline: auto;
   }
 
@@ -853,7 +881,7 @@
   }
 
   .reward-card {
-    padding: 8px;
+    padding: 5px 5px 4px;
   }
 
   .reward-name {
@@ -861,12 +889,12 @@
   }
 
   .reward-level {
-    font-size: 11px;
+    font-size: 9px;
   }
 
   .reward-art-shell {
-    width: min(100%, 96px);
-    margin: 4px auto 2px;
+    width: min(100%, 84px);
+    margin: 1px auto 0;
   }
 
   .donation-row {
@@ -934,7 +962,6 @@
   }
 
   .max-button {
-    margin-left: 8px;
     margin-right: 0;
     width: 42px;
     min-width: 42px;
@@ -950,7 +977,11 @@
     background: rgba(67, 51, 38, 0.94);
     backdrop-filter: blur(2px);
     padding: 2px 14px calc(8px + env(safe-area-inset-bottom, 0px));
-    border-top: 1px solid var(--line-1);
+    border-top: 1px solid rgba(255, 255, 255, 0.34);
+  }
+
+  .panel-footer-reset-sliders {
+    display: none !important;
   }
 
   .panel-footer > [class*="col-"] {
@@ -958,12 +989,6 @@
     width: 50%;
     max-width: 50%;
     display: flex;
-  }
-
-  .panel-footer > [class*="col-"]:last-child {
-    flex: 0 0 100%;
-    width: 100%;
-    max-width: 100%;
   }
 
   .panel-footer > [class*="col-"] .action-button {
