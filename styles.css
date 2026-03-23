@@ -991,11 +991,11 @@ body.favorites-reorder-mode #favorites .category-card-shell.is-reorder-active .f
     left: 50%;
     transform: translate(-50%, -47%) scale(0.96);
     width: min(420px, calc(100% - 20px));
-    background: linear-gradient(180deg, rgb(150, 103, 68), rgb(130, 90, 60));
-    border: 2px solid rgba(243, 194, 74, 0.7);
-    border-radius: 12px;
+    background: #5b4330;
+    border: 1px solid #2f2319;
+    border-radius: 10px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
-    padding: 10px;
+    overflow: hidden;
     opacity: 0;
     transition: transform 0.2s ease, opacity 0.2s ease;
 }
@@ -1009,7 +1009,9 @@ body.favorites-reorder-mode #favorites .category-card-shell.is-reorder-active .f
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 8px;
+    padding: 6px 10px;
+    border-bottom: 1px solid #3a2b1f;
+    background: #815638;
 }
 
 .settings-modal-head h3 {
@@ -1023,8 +1025,8 @@ body.favorites-reorder-mode #favorites .category-card-shell.is-reorder-active .f
     width: 28px;
     height: 28px;
     border-radius: 8px;
-    border: 1px solid rgba(243, 194, 74, 0.55);
-    background: rgba(67, 51, 38, 0.45);
+    border: 1px solid rgba(243, 194, 74, 0.75);
+    background: rgba(67, 51, 38, 0.18);
     color: #f3c24a;
     display: inline-flex;
     align-items: center;
@@ -1033,7 +1035,54 @@ body.favorites-reorder-mode #favorites .category-card-shell.is-reorder-active .f
 
 .settings-options {
     display: grid;
-    gap: 10px;
+    gap: 2px;
+    padding: 0;
+    background: #5b4330;
+}
+
+.settings-group {
+    border: 1px solid #3a2b1f;
+    border-radius: 0;
+    background: #9a6a45;
+    padding: 0;
+    overflow: hidden;
+}
+
+.settings-group + .settings-group {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 1px solid #3a2b1f;
+}
+
+.settings-group-head {
+    margin: 0;
+    padding: 10px 12px 6px;
+    background: #9a6a45;
+    border-bottom: 1px solid #3a2b1f;
+}
+
+.settings-group-title {
+    margin: 0;
+    color: #f3c24a;
+    font-size: 14px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.settings-group-note {
+    margin: 3px 0 0;
+    color: rgba(242, 217, 187, 0.72);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.settings-group-body {
+    display: grid;
+    gap: 0;
+    overflow: hidden;
+    background: transparent;
 }
 
 .settings-option {
@@ -1041,12 +1090,17 @@ body.favorites-reorder-mode #favorites .category-card-shell.is-reorder-active .f
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 8px 10px;
-    border: 1px solid rgba(243, 194, 74, 0.35);
-    border-radius: 10px;
+    padding: 10px 12px;
+    border: 0;
+    border-bottom: 1px solid #3a2b1f;
+    border-radius: 0;
     color: #f2d9bb;
     font-weight: 700;
-    background: rgba(67, 51, 38, 0.25);
+    background: transparent;
+}
+
+.settings-group-body .settings-option:last-child {
+    border-bottom: 0;
 }
 
 .settings-option-title {
@@ -1060,29 +1114,32 @@ body.favorites-reorder-mode #favorites .category-card-shell.is-reorder-active .f
 }
 
 .settings-option-game {
-    display: block;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
     padding: 10px 12px;
-    background: rgba(67, 51, 38, 0.18);
-    border-color: rgba(243, 194, 74, 0.48);
-    box-shadow: inset 0 1px 0 rgba(255, 233, 187, 0.06);
+    background: transparent;
+    box-shadow: none;
+    width: 100%;
+    min-width: 0;
+    justify-items: stretch;
 }
 
 .settings-option-game .settings-option-title {
     color: #f7e1bf;
-    margin-bottom: 2px;
+    margin: 0;
 }
 
-.settings-option-game .settings-option-note {
+.settings-option-game .settings-select-shell {
     display: block;
-    margin-bottom: 6px;
-    color: rgba(242, 217, 187, 0.76);
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 1.3;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
 }
 
 .settings-select-shell {
     position: relative;
+    display: block;
     border: 2px solid #a97c50;
     border-radius: 12px;
     background-color: #f2d9bb;
@@ -1112,7 +1169,10 @@ body.favorites-reorder-mode #favorites .category-card-shell.is-reorder-active .f
 
 .settings-select {
     width: 100%;
+    max-width: 100%;
     min-width: 0;
+    display: block;
+    box-sizing: border-box;
     appearance: none;
     border: 0;
     border-radius: 10px;
@@ -1120,7 +1180,7 @@ body.favorites-reorder-mode #favorites .category-card-shell.is-reorder-active .f
     color: #433120;
     padding: 10px 42px 10px 12px;
     font-weight: 700;
-    text-align: center;
+    text-align: left;
     box-shadow: none;
 }
 

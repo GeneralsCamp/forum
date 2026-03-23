@@ -111,43 +111,55 @@
                     </button>
                 </div>
                 <div class="settings-options">
-                    <label class="settings-option settings-option-game">
-                        <span class="settings-option-title">Game</span>
-                        <span class="settings-option-note">Choose which data source overview pages should use.</span>
-                        <div class="settings-select-shell">
-                            <select id="settingsSelectedGame" class="settings-select" aria-label="Choose game loader">
-                                <option value="empire">Empire (Browser)</option>
-                                <option value="e4k">Empire: Four Kingdoms (Mobile)</option>
-                            </select>
+                    <section class="settings-group" aria-labelledby="settingsGlobalTitle">
+                        <div class="settings-group-head">
+                            <h4 id="settingsGlobalTitle" class="settings-group-title">Global Settings</h4>
                         </div>
-                    </label>
-                    <label class="settings-option settings-option-game">
-                        <span class="settings-option-title">Language</span>
-                        <span class="settings-option-note">Choose the shared site language preference.</span>
-                        <div class="settings-select-shell">
-                            <select id="settingsSelectedLanguage" class="settings-select" aria-label="Choose language"></select>
+                        <div class="settings-group-body">
+                            <label class="settings-option settings-option-game">
+                                <span class="settings-option-title">Game</span>
+                                <div class="settings-select-shell">
+                                    <select id="settingsSelectedGame" class="settings-select" aria-label="Choose game loader">
+                                        <option value="empire">Empire (Browser)</option>
+                                        <option value="e4k">Empire: Four Kingdoms (Mobile)</option>
+                                    </select>
+                                </div>
+                            </label>
+                            <label class="settings-option settings-option-game">
+                                <span class="settings-option-title">Language</span>
+                                <div class="settings-select-shell">
+                                    <select id="settingsSelectedLanguage" class="settings-select" aria-label="Choose language"></select>
+                                </div>
+                            </label>
+                            <label class="settings-option">
+                                <span>Developer Comments</span>
+                                <input id="settingsDevComments" type="checkbox">
+                            </label>
                         </div>
-                    </label>
-                    <label class="settings-option">
-                        <span>Favorite Function</span>
-                        <input id="settingsFavorites" type="checkbox">
-                    </label>
-                    <label class="settings-option">
-                        <span>Descriptions</span>
-                        <input id="settingsDescriptions" type="checkbox">
-                    </label>
-                    <label class="settings-option">
-                        <span>Developer Comments</span>
-                        <input id="settingsDevComments" type="checkbox">
-                    </label>
-                    <label class="settings-option">
-                        <span>Current Projects Section</span>
-                        <input id="settingsCurrentProjects" type="checkbox">
-                    </label>
-                    <label class="settings-option">
-                        <span>Latest Videos Section</span>
-                        <input id="settingsVideos" type="checkbox">
-                    </label>
+                    </section>
+                    <section class="settings-group" aria-labelledby="settingsHomeTitle">
+                        <div class="settings-group-head">
+                            <h4 id="settingsHomeTitle" class="settings-group-title">Homepage Only</h4>
+                        </div>
+                        <div class="settings-group-body">
+                            <label class="settings-option">
+                                <span>Favorite Function</span>
+                                <input id="settingsFavorites" type="checkbox">
+                            </label>
+                            <label class="settings-option">
+                                <span>Descriptions</span>
+                                <input id="settingsDescriptions" type="checkbox">
+                            </label>
+                            <label class="settings-option">
+                                <span>Current Projects Section</span>
+                                <input id="settingsCurrentProjects" type="checkbox">
+                            </label>
+                            <label class="settings-option">
+                                <span>Latest Videos Section</span>
+                                <input id="settingsVideos" type="checkbox">
+                            </label>
+                        </div>
+                    </section>
                 </div>
             </div>
         </div>
