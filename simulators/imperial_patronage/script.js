@@ -327,7 +327,7 @@ function getRewardStatus(typeModel) {
     previewIndex,
     levelGain: Math.max(0, previewIndex - currentIndex),
     nextIndex,
-    pointsToNext: nextReward ? Math.max(0, nextMin - previewPoints) : 0,
+    pointsToNext: nextReward ? Math.max(0, nextMin - committedPoints) : 0,
     committedPercent: nextReward ? Math.round((committedInside / progressSpan) * 100) : 100,
     percent: nextReward ? Math.round((progressInside / progressSpan) * 100) : 100,
     overcap: previewPoints > getHighestThreshold(typeModel)
