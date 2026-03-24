@@ -22,6 +22,7 @@ let effectDefinitions = {};
 let effectCapsMap = {};
 const percentEffectIDs = new Set();
 const composedConstructionImageCache = new Map();
+let constructionGroupBuildingsMap = new Map();
 let noMatchMessage = "No match to the current filters.";
 let sharedLangPack = { filters: {}, ui: {} };
 const loader = createLoader();
@@ -194,6 +195,7 @@ async function applyOwnLang() {
 
         minute: ui.minute || "minute",
         minutes: ui.minutes || "minutes",
+        can_be_placed_on: ui.can_be_placed_on || "Can be placed on",
         hour: ui.hour || "hour",
         hours: ui.hours || "hours",
         day: ui.day || "day",
@@ -414,6 +416,48 @@ function normalizeName(str) {
     return str.toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 
+function getLocalizedBuildingName(buildingName) {
+    const rawName = String(buildingName || "").trim();
+    if (!rawName) return "";
+
+    const langKey = `${rawName.toLowerCase()}_name`;
+    return lang[langKey] || rawName;
+}
+
+function buildConstructionGroupBuildingsMap(buildings) {
+    const map = new Map();
+
+    (buildings || []).forEach(building => {
+        const buildingName = getLocalizedBuildingName(building?.name);
+        const rawGroupIds = String(building?.constructionItemGroupIDs || "").trim();
+        if (!buildingName || !rawGroupIds) return;
+
+        rawGroupIds
+            .split(",")
+            .map(id => id.trim())
+            .filter(Boolean)
+            .forEach(groupId => {
+                if (!map.has(groupId)) {
+                    map.set(groupId, new Set());
+                }
+                map.get(groupId).add(buildingName);
+            });
+    });
+
+    return new Map(
+        Array.from(map.entries()).map(([groupId, names]) => [
+            groupId,
+            Array.from(names).sort((a, b) => a.localeCompare(b))
+        ])
+    );
+}
+
+function getPlacementBuildingNames(item) {
+    const groupId = String(item?.constructionItemGroupID || "").trim();
+    if (!groupId) return [];
+    return constructionGroupBuildingsMap.get(groupId) || [];
+}
+
 // --- GROUPING AND VALUE CALCULATIONS ---
 function extractConstructionItems(data) {
     return data.constructionItems || [];
@@ -617,6 +661,10 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
             comments.push(`Effect IDs: ${item.effects}`);
         }
 
+        const placementBuildings = getPlacementBuildingNames(item);
+        const placementText =
+            placementBuildings.length > 0 ? placementBuildings.join(", ") : "-";
+
         let commentsHTML = "";
         if (devCommentsEnabled && comments.length > 0) {
             commentsHTML = `
@@ -684,6 +732,10 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
 
               <div class="card-cell flex-fill d-flex flex-column justify-content-center">
                 <strong>${UI_LANG.removal_cost}:</strong> ${removalCostText}
+              </div>
+
+              <div class="card-cell border-top flex-fill d-flex flex-column justify-content-center">
+                <strong>${UI_LANG.can_be_placed_on}:</strong> ${placementText}
               </div>
 
             </div>
@@ -1082,6 +1134,8 @@ async function init() {
 
                 lang = L;
                 allItems = data.constructionItems || [];
+                constructionGroupBuildingsMap =
+                    buildConstructionGroupBuildingsMap(data.buildings || []);
                 imageUrlMap = imageMaps.constructions || {};
 
                 effectDefinitions = effectCtx.effectDefinitions;

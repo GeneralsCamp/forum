@@ -5,3 +5,8 @@
   cursor: not-allowed;
   background-color: rgb(233, 236, 239);
 }
+
+#loadingBox p {
+  margin-top: 0;
+  font-weight: normal;
+}

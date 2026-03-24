@@ -33,7 +33,8 @@
       "hour": "hour",
       "hours": "hours",
       "minute": "minute",
-      "minutes": "minutes"
+      "minutes": "minutes",
+      "can_be_placed_on": "Can be placed on"
     }
   },
   "de": {
@@ -70,7 +71,8 @@
       "hour": "Stunde",
       "hours": "Stunden",
       "minute": "Minute",
-      "minutes": "Minuten"
+      "minutes": "Minuten",
+      "can_be_placed_on": "Kann platziert werden auf"
     }
   },
   "fr": {
@@ -107,7 +109,8 @@
       "hour": "heure",
       "hours": "heures",
       "minute": "minute",
-      "minutes": "minutes"
+      "minutes": "minutes",
+      "can_be_placed_on": "Peut être placé sur"
     }
   },
   "hu": {
@@ -144,7 +147,8 @@
       "hour": "óra",
       "hours": "óra",
       "minute": "perc",
-      "minutes": "perc"
+      "minutes": "perc",
+      "can_be_placed_on": "Elhelyezhető itt"
     }
   },
   "es": {
@@ -181,7 +185,8 @@
       "hour": "hora",
       "hours": "horas",
       "minute": "minuto",
-      "minutes": "minutos"
+      "minutes": "minutos",
+      "can_be_placed_on": "Se puede colocar en"
     }
   },
   "ru": {
@@ -218,7 +223,8 @@
       "hour": "час",
       "hours": "часов",
       "minute": "минута",
-      "minutes": "минут"
+      "minutes": "минут",
+      "can_be_placed_on": "Можно разместить на"
     }
   },
   "ja": {
@@ -255,7 +261,8 @@
       "hour": "時間",
       "hours": "時間",
       "minute": "分",
-      "minutes": "分"
+      "minutes": "分",
+      "can_be_placed_on": "設置可能"
     }
   },
   "pl": {
@@ -292,7 +299,8 @@
       "hour": "godzina",
       "hours": "godzin",
       "minute": "minuta",
-      "minutes": "minut"
+      "minutes": "minut",
+      "can_be_placed_on": "Można umieścić na"
     }
   },
   "ro": {
@@ -329,7 +337,8 @@
       "hour": "oră",
       "hours": "ore",
       "minute": "minut",
-      "minutes": "minute"
+      "minutes": "minute",
+      "can_be_placed_on": "Poate fi plasat pe"
     }
   },
   "el": {
@@ -366,7 +375,8 @@
       "hour": "ώρα",
       "hours": "ώρες",
       "minute": "λεπτό",
-      "minutes": "λεπτά"
+      "minutes": "λεπτά",
+      "can_be_placed_on": "Μπορεί να τοποθετηθεί σε"
     }
   },
   "nl": {
@@ -403,7 +413,8 @@
       "hour": "uur",
       "hours": "uur",
       "minute": "minuut",
-      "minutes": "minuten"
+      "minutes": "minuten",
+      "can_be_placed_on": "Kan geplaatst worden op"
     }
   },
   "cs": {
@@ -440,7 +451,8 @@
       "hour": "hodina",
       "hours": "hodin",
       "minute": "minuta",
-      "minutes": "minut"
+      "minutes": "minut",
+      "can_be_placed_on": "Lze umístit na"
     }
   },
   "ar": {
@@ -477,7 +489,8 @@
       "hour": "ساعة",
       "hours": "ساعات",
       "minute": "دقيقة",
-      "minutes": "دقائق"
+      "minutes": "دقائق",
+      "can_be_placed_on": "يمكن وضعه على"
     }
   },
   "it": {
@@ -514,7 +527,8 @@
       "hour": "ora",
       "hours": "ore",
       "minute": "minuto",
-      "minutes": "minuti"
+      "minutes": "minuti",
+      "can_be_placed_on": "Può essere posizionato su"
     }
   },
   "bg": {
@@ -551,7 +565,8 @@
       "hour": "час",
       "hours": "часа",
       "minute": "минута",
-      "minutes": "минути"
+      "minutes": "минути",
+      "can_be_placed_on": "Може да се постави върху"
     }
   },
   "pt": {
@@ -588,7 +603,8 @@
       "hour": "hora",
       "hours": "horas",
       "minute": "minuto",
-      "minutes": "minutos"
+      "minutes": "minutos",
+      "can_be_placed_on": "Pode ser colocado em"
     }
   },
   "da": {
@@ -625,7 +641,8 @@
       "hour": "time",
       "hours": "timer",
       "minute": "minut",
-      "minutes": "minutter"
+      "minutes": "minutter",
+      "can_be_placed_on": "Kan placeres på"
     }
   },
   "fi": {
@@ -662,7 +679,8 @@
       "hour": "tunti",
       "hours": "tuntia",
       "minute": "minuutti",
-      "minutes": "minuuttia"
+      "minutes": "minuuttia",
+      "can_be_placed_on": "Voidaan sijoittaa rakennukseen"
     }
   },
   "sv": {
@@ -699,7 +717,8 @@
       "hour": "timme",
       "hours": "timmar",
       "minute": "minut",
-      "minutes": "minuter"
+      "minutes": "minuter",
+      "can_be_placed_on": "Kan placeras på"
     }
   },
   "no": {
@@ -736,7 +755,8 @@
       "hour": "time",
       "hours": "timer",
       "minute": "minutt",
-      "minutes": "minutter"
+      "minutes": "minutter",
+      "can_be_placed_on": "Kan plasseres på"
     }
   },
   "sk": {
@@ -773,7 +793,8 @@
       "hour": "hodina",
       "hours": "hodín",
       "minute": "minúta",
-      "minutes": "minút"
+      "minutes": "minút",
+      "can_be_placed_on": "Možno umiestniť na"
     }
   },
   "tr": {
@@ -810,7 +831,8 @@
       "hour": "saat",
       "hours": "saat",
       "minute": "dakika",
-      "minutes": "dakika"
+      "minutes": "dakika",
+      "can_be_placed_on": "Şuraya yerleştirilebilir"
     }
   },
   "ko": {
@@ -847,7 +869,8 @@
       "hour": "시간",
       "hours": "시간",
       "minute": "분",
-      "minutes": "분"
+      "minutes": "분",
+      "can_be_placed_on": "배치 가능"
     }
   },
   "lt": {
@@ -884,7 +907,8 @@
       "hour": "valanda",
       "hours": "valandos",
       "minute": "minutė",
-      "minutes": "minutės"
+      "minutes": "minutės",
+      "can_be_placed_on": "Galima pastatyti ant"
     }
   }
 }
