@@ -1,4 +1,5 @@
 import { fetchWithFallback } from "./Fetcher.mjs";
+import { getCachedText, setCachedText } from "./VersionedCache.mjs";
 
 const BASE =
     "https://empire-html5.goodgamestudios.com/default/assets/itemassets/";
@@ -35,16 +36,23 @@ async function getDllText() {
 
             const dllVersion =
                 versionMatch ? versionMatch[1] : "unknown";
+            const cacheKey = `dll-text:${dllVersion}`;
+            const cachedDllText = await getCachedText(cacheKey);
+            const cacheState = cachedDllText ? "cached" : "network";
 
-            console.log(`DLL version: ${dllVersion}`);
+            console.log(`DLL version: ${dllVersion} (${cacheState})`);
             console.log(`DLL URL: ${dllUrl}`);
             console.log("");
-
+            if (cachedDllText) {
+                return cachedDllText;
+            }
 
             const dllRes =
                 await fetchWithFallback(dllUrl);
 
-            return dllRes.text();
+            const dllText = await dllRes.text();
+            await setCachedText(cacheKey, dllText);
+            return dllText;
 
         })();
     }

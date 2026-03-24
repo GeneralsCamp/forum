@@ -1,5 +1,6 @@
 import { fetchWithFallback } from "./Fetcher.mjs";
 import { getSelectedGameSource } from "./GameSettings.mjs";
+import { getCachedJson, setCachedJson } from "./VersionedCache.mjs";
 
 const APP_LOOKUP_URL =
     "https://itunes.apple.com/lookup?id=585661281";
@@ -47,11 +48,17 @@ export async function getLangVersion() {
 }
 
 export async function loadLanguage(langCode, version) {
+    const cacheKey = `lang:${getGameSource()}:${langCode}:${version}`;
+    const cached = await getCachedJson(cacheKey);
+    if (cached) return cached;
+
     const url =
         `${LANGUAGE_BASE_URL}/12@${version}/${langCode}/*`;
 
     const res = await fetchWithFallback(url);
-    return res.json();
+    const json = await res.json();
+    await setCachedJson(cacheKey, json);
+    return json;
 }
 
 export async function loadItems(version) {
@@ -74,8 +81,14 @@ export async function loadItems(version) {
     const url =
         `${EMPIRE_ITEMS_BASE_URL}/items_v${version}.json`;
 
+    const cacheKey = `items:empire:${version}`;
+    const cached = await getCachedJson(cacheKey);
+    if (cached) return cached;
+
     const res = await fetchWithFallback(url);
-    return res.json();
+    const json = await res.json();
+    await setCachedJson(cacheKey, json);
+    return json;
 }
 
 
@@ -142,17 +155,61 @@ export async function getResolvedUrls({ langCode = "en", itemVersion, langVersio
     };
 }
 
+export async function getVersionedResourceState({ langCode = "en", itemVersion, langVersion } = {}) {
+    const source = getGameSource();
+    const resolvedItemVersion = itemVersion || await getItemVersion();
+    const resolvedLangVersion = langVersion || await getLangVersion();
+
+    let itemCacheState = "network";
+    let langCacheState = "network";
+
+    if (source === "e4k") {
+        const e4kInfo = await getE4kRemoteInfo();
+        const normalizedItemVersion =
+            String(resolvedItemVersion || e4kInfo.itemVersion).replaceAll(".", "_");
+        const itemsUrl =
+            `https://media.goodgamestudios.com/loader/empirefourkingdoms/${e4kInfo.appVersion}/itemsXML/items_${normalizedItemVersion}.ggs`;
+        const langUrl =
+            `${LANGUAGE_BASE_URL}/12@${resolvedLangVersion}/${langCode}/*`;
+
+        const [itemsResponse, langResponse] = await Promise.all([
+            caches.match(itemsUrl),
+            caches.match(langUrl)
+        ]);
+
+        itemCacheState = itemsResponse ? "cached" : "network";
+        langCacheState = langResponse ? "cached" : "network";
+    } else {
+        const itemCacheKey = `items:empire:${resolvedItemVersion}`;
+        const langCacheKey = `lang:${source}:${langCode}:${resolvedLangVersion}`;
+
+        const [cachedItems, cachedLang] = await Promise.all([
+            getCachedJson(itemCacheKey),
+            getCachedJson(langCacheKey)
+        ]);
+
+        itemCacheState = cachedItems ? "cached" : "network";
+        langCacheState = cachedLang ? "cached" : "network";
+    }
+
+    return {
+        itemCacheState,
+        langCacheState
+    };
+}
+
 export async function logResolvedDataUrls({ langCode = "en", itemVersion, langVersion } = {}) {
     const gameSource = getGameSource();
     const shortGameSource = gameSource === "empire" ? "em" : gameSource;
     const resolvedUrls = await getResolvedUrls({ langCode, itemVersion, langVersion });
+    const cacheState = await getVersionedResourceState({ langCode, itemVersion, langVersion });
 
     console.log(`Game source: ${shortGameSource}`);
     console.log("");
-    console.log(`Item version: ${resolvedUrls.itemVersion}`);
+    console.log(`Item version: ${resolvedUrls.itemVersion} (${cacheState.itemCacheState})`);
     console.log(`Item URL: ${resolvedUrls.itemsUrl}`);
     console.log("");
-    console.log(`Language version: ${resolvedUrls.langVersion}`);
+    console.log(`Language version: ${resolvedUrls.langVersion} (${cacheState.langCacheState})`);
     console.log(`Language URL: ${resolvedUrls.languageUrl}`);
     console.log("");
 
