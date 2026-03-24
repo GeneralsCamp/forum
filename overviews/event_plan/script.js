@@ -14,7 +14,10 @@ const viewOptions = [
     { value: "calendar", label: "Calendar view" }
 ];
 
-const myProxy = "https://my-proxy-8u49.onrender.com/";
+const proxyChain = [
+  "https://cors-anywhere-qelm.onrender.com/",
+  "https://my-proxy-8u49.onrender.com/"
+];
 const fallbackProxy = "https://corsproxy.io/?";
 const placeholderImage = "";
 
@@ -566,11 +569,22 @@ async function fetchWithFallback(url, timeout = 10000) {
     const timer = setTimeout(() => controller.abort(), timeout);
 
     try {
-        const response = await fetch(myProxy + url, { signal: controller.signal });
-        if (!response.ok) throw new Error("myProxy: bad response");
-        return response;
-    } catch (err) {
-        console.warn("Proxy error:", err);
+        let lastProxyError = null;
+
+        for (const proxy of proxyChain) {
+            try {
+                const response = await fetch(proxy + url, { signal: controller.signal });
+                if (!response.ok) throw new Error(`${proxy}: bad response`);
+                return response;
+            } catch (err) {
+                lastProxyError = err;
+                console.warn("Proxy error:", err);
+            }
+        }
+
+        if (lastProxyError) {
+            console.warn("All direct proxies failed, trying encoded fallback proxy.");
+        }
 
         const encodedUrl = encodeURIComponent(url);
         const fallbackResponse = await fetch(fallbackProxy + encodedUrl);

@@ -1,4 +1,7 @@
-const MY_PROXY = "https://my-proxy-8u49.onrender.com/";
+const PROXY_URLS = [
+  "https://cors-anywhere-qelm.onrender.com/",
+  "https://my-proxy-8u49.onrender.com/"
+];
 
 export async function fetchWithFallback(url, timeout = 8000, options = {}) {
   const {
@@ -37,18 +40,18 @@ export async function fetchWithFallback(url, timeout = 8000, options = {}) {
 
 function buildAttemptUrls(url, strategy, useCorsProxy) {
   const directUrl = url;
-  const proxyUrl = MY_PROXY + url;
+  const proxyUrls = PROXY_URLS.map((proxyBase) => proxyBase + url);
   const urls = [];
 
   if (strategy === "direct-only") {
     urls.push(directUrl);
   } else if (strategy === "cors-proxy-first") {
-    urls.push(proxyUrl);
+    urls.push(...proxyUrls);
     urls.push(directUrl);
   } else if (strategy === "direct-first") {
-    urls.push(directUrl, proxyUrl);
+    urls.push(directUrl, ...proxyUrls);
   } else {
-    urls.push(proxyUrl, directUrl);
+    urls.push(...proxyUrls, directUrl);
   }
 
   return [...new Set(urls)];
