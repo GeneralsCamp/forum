@@ -159,7 +159,6 @@ function getDefaultHomeSettings() {
         descriptionsEnabled: true,
         currentProjectsEnabled: false,
         favoritesEnabled: true,
-        videosEnabled: true,
         devCommentsEnabled: true
     };
 }
@@ -174,7 +173,6 @@ function readHomeSettings() {
             descriptionsEnabled: parsed.descriptionsEnabled ?? defaults.descriptionsEnabled,
             currentProjectsEnabled: parsed.currentProjectsEnabled ?? defaults.currentProjectsEnabled,
             favoritesEnabled: parsed.favoritesEnabled ?? defaults.favoritesEnabled,
-            videosEnabled: parsed.videosEnabled ?? defaults.videosEnabled,
             devCommentsEnabled: parsed.devCommentsEnabled ?? defaults.devCommentsEnabled
         };
     } catch {
@@ -215,12 +213,8 @@ function populateLanguageSelect(select) {
 function applyHomeSettingsToLayout() {
     const currentHeader = document.getElementById("currentProjectsSection");
     const currentPanel = document.getElementById("nowPanel");
-    const videosHeader = document.getElementById("latestVideosSection");
-    const videosPanel = document.getElementById("latestVideos");
     if (currentHeader) currentHeader.style.display = uiSettings.currentProjectsEnabled ? "" : "none";
     if (currentPanel) currentPanel.style.display = uiSettings.currentProjectsEnabled ? "" : "none";
-    if (videosHeader) videosHeader.style.display = uiSettings.videosEnabled ? "" : "none";
-    if (videosPanel) videosPanel.style.display = uiSettings.videosEnabled ? "" : "none";
 }
 
 function rerenderMainSections() {
@@ -731,11 +725,10 @@ function setupSettingsModal() {
     const descriptionsInput = document.getElementById("settingsDescriptions");
     const currentProjectsInput = document.getElementById("settingsCurrentProjects");
     const favoritesInput = document.getElementById("settingsFavorites");
-    const videosInput = document.getElementById("settingsVideos");
     const devCommentsInput = document.getElementById("settingsDevComments");
     const selectedGameInput = document.getElementById("settingsSelectedGame");
     const selectedLanguageInput = document.getElementById("settingsSelectedLanguage");
-    if (!openBtn || !closeBtn || !modal || !descriptionsInput || !currentProjectsInput || !favoritesInput || !videosInput || !devCommentsInput || !selectedGameInput || !selectedLanguageInput) return;
+    if (!openBtn || !closeBtn || !modal || !descriptionsInput || !currentProjectsInput || !favoritesInput || !devCommentsInput || !selectedGameInput || !selectedLanguageInput) return;
     const settingsModal = initCustomModal({ modalId: "settingsModal", closeAnimMs: 190 });
 
     const empireOption = selectedGameInput.querySelector('option[value="empire"]');
@@ -760,7 +753,6 @@ function setupSettingsModal() {
         descriptionsInput.checked = Boolean(uiSettings.descriptionsEnabled);
         currentProjectsInput.checked = Boolean(uiSettings.currentProjectsEnabled);
         favoritesInput.checked = Boolean(uiSettings.favoritesEnabled);
-        videosInput.checked = Boolean(uiSettings.videosEnabled);
         devCommentsInput.checked = Boolean(uiSettings.devCommentsEnabled);
     };
 
@@ -776,14 +768,10 @@ function setupSettingsModal() {
             descriptionsEnabled: descriptionsInput.checked,
             currentProjectsEnabled: currentProjectsInput.checked,
             favoritesEnabled: favoritesInput.checked,
-            videosEnabled: videosInput.checked,
             devCommentsEnabled: devCommentsInput.checked
         };
         writeHomeSettings(uiSettings);
         rerenderMainSections();
-        if (uiSettings.videosEnabled) {
-            renderLatestVideos();
-        }
     };
 
     openBtn.addEventListener("click", openModal);
@@ -793,145 +781,10 @@ function setupSettingsModal() {
     descriptionsInput.addEventListener("change", handleChange);
     currentProjectsInput.addEventListener("change", handleChange);
     favoritesInput.addEventListener("change", handleChange);
-    videosInput.addEventListener("change", handleChange);
     devCommentsInput.addEventListener("change", handleChange);
     window.addEventListener("resize", syncGameOptionLabels);
     syncGameOptionLabels();
 
-}
-
-function isMobileDevice() {
-    return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || "");
-}
-
-function openYouTubeVideoPreferApp(videoId) {
-    const webUrl = `https://www.youtube.com/watch?v=${videoId}`;
-    const ua = navigator.userAgent || "";
-    const isAndroid = /Android/i.test(ua);
-    const isiOS = /iPhone|iPad|iPod/i.test(ua);
-
-    if (isAndroid) {
-        window.location.href = `intent://www.youtube.com/watch?v=${videoId}#Intent;package=com.google.android.youtube;scheme=https;end`;
-        setTimeout(() => {
-            window.open(webUrl, "_blank", "noopener");
-        }, 700);
-        return;
-    }
-
-    if (isiOS) {
-        window.location.href = `vnd.youtube://watch?v=${videoId}`;
-        setTimeout(() => {
-            window.open(webUrl, "_blank", "noopener");
-        }, 700);
-        return;
-    }
-
-    window.open(webUrl, "_blank", "noopener");
-}
-
-async function renderLatestVideos() {
-    const container = document.querySelector("#latestVideos .video-grid");
-    if (!container) return;
-    const videosSection = document.getElementById("latestVideos");
-    const videosHeader = videosSection?.previousElementSibling;
-    if (!uiSettings.videosEnabled) {
-        if (videosSection) videosSection.style.display = "none";
-        if (videosHeader && videosHeader.classList.contains("collapse-header")) {
-            videosHeader.style.display = "none";
-        }
-        return;
-    }
-
-    const proxy = "https://my-proxy-8u49.onrender.com/";
-    const fixedChannelId = "UCzHQ9zuwxhmJ2xmmANwrZfw";
-    const channelVideosUrl = "https://www.youtube.com/@GeneralsCamp/videos";
-
-    try {
-        let pairs = [];
-
-        const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${fixedChannelId}`;
-        const feedRes = await fetch(proxy + feedUrl, {
-            headers: { "x-requested-with": "XMLHttpRequest" }
-        });
-        if (feedRes.ok) {
-            const xmlText = await feedRes.text();
-            const xml = new DOMParser().parseFromString(xmlText, "application/xml");
-            const entries = Array.from(xml.querySelectorAll("entry"));
-            pairs = entries.map((entry) => {
-                const id =
-                    entry.querySelector("yt\\:videoId")?.textContent?.trim() ||
-                    entry.querySelector("videoId")?.textContent?.trim() ||
-                    "";
-                const title = entry.querySelector("title")?.textContent?.trim() || "";
-                return { id, title };
-            }).filter((x) => x.id && x.title);
-        }
-
-        if (!pairs.length) {
-            const res = await fetch(proxy + channelVideosUrl, {
-                headers: { "x-requested-with": "XMLHttpRequest" }
-            });
-            if (!res.ok) throw new Error(`Failed to load channel page (${res.status})`);
-
-            const html = await res.text();
-            const regex = /"videoId":"([A-Za-z0-9_-]{11})","thumbnail":[\s\S]{0,2200}?"title":\{"runs":\[\{"text":"([^"]+)"/g;
-            let match = null;
-            while ((match = regex.exec(html)) !== null) {
-                const id = match[1];
-                const title = (match[2] || "").replace(/\\u0026/g, "&");
-                if (!id || !title) continue;
-                pairs.push({ id, title });
-                if (pairs.length >= 120) break;
-            }
-        }
-
-        const uniquePairs = [];
-        const seenIds = new Set();
-        pairs.forEach((item) => {
-            if (seenIds.has(item.id)) return;
-            seenIds.add(item.id);
-            uniquePairs.push(item);
-        });
-
-        const ggeOnly = uniquePairs.filter((item) => /goodgame empire/i.test(item.title));
-        const latestTwenty = ggeOnly.slice(0, 10);
-        if (!latestTwenty.length) throw new Error("No videos found");
-
-        container.innerHTML = latestTwenty.map(({ id, title }) => `
-            <a class="video-card video-link" href="https://www.youtube.com/watch?v=${id}" data-video-id="${id}" target="_blank" rel="noopener">
-                <div class="video-frame-wrap">
-                    <img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="${title}" loading="lazy">
-                    <span class="video-play-icon"><i class="bi bi-play-fill"></i></span>
-                </div>
-            </a>
-        `).join("");
-
-        if (!container.dataset.mobileVideoHandlerBound) {
-            container.addEventListener("click", (event) => {
-                const link = event.target.closest(".video-link");
-                if (!link || !container.contains(link)) return;
-                if (!isMobileDevice()) return;
-
-                const videoId = link.dataset.videoId;
-                if (!videoId) return;
-
-                event.preventDefault();
-                openYouTubeVideoPreferApp(videoId);
-            });
-            container.dataset.mobileVideoHandlerBound = "1";
-        }
-
-        if (videosSection) videosSection.style.display = "";
-        if (videosHeader && videosHeader.classList.contains("collapse-header")) {
-            videosHeader.style.display = "";
-        }
-    } catch (err) {
-        if (videosSection) videosSection.style.display = "none";
-        if (videosHeader && videosHeader.classList.contains("collapse-header")) {
-            videosHeader.style.display = "none";
-        }
-        console.error(err);
-    }
 }
 
 function setupSearch() {
@@ -1161,6 +1014,5 @@ document.addEventListener("DOMContentLoaded", () => {
     setupMobileFavoritesReorder();
     setupSearch();
     setupBrandEasterEgg();
-    renderLatestVideos();
     setupKofiPrompt();
 });
