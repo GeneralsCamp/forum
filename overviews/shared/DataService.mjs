@@ -90,8 +90,13 @@ export async function loadLanguage(langCode, version) {
 export async function loadItems(version) {
     if (getGameSource() === "e4k") {
         const info = await getE4kRemoteInfo();
+        const resolvedVersion = String(version || info.itemVersion);
+        const cacheKey = `items:e4k:${info.appVersion}:${resolvedVersion}`;
+        const cached = await getCachedJson(cacheKey);
+        if (cached) return cached;
+
         const normalizedVersion =
-            String(version || info.itemVersion).replaceAll(".", "_");
+            resolvedVersion.replaceAll(".", "_");
         const url =
             `https://media.goodgamestudios.com/loader/empirefourkingdoms/${info.appVersion}/itemsXML/items_${normalizedVersion}.ggs`;
 
@@ -101,7 +106,9 @@ export async function loadItems(version) {
         });
         const zipBuffer = await res.arrayBuffer();
         const xmlText = await unpackE4kArchive(zipBuffer);
-        return parseE4kXml(xmlText);
+        const parsed = parseE4kXml(xmlText);
+        await setCachedJson(cacheKey, parsed);
+        return parsed;
     }
 
     const url =
@@ -191,20 +198,18 @@ export async function getVersionedResourceState({ langCode = "en", itemVersion, 
 
     if (source === "e4k") {
         const e4kInfo = await getE4kRemoteInfo();
-        const normalizedItemVersion =
-            String(resolvedItemVersion || e4kInfo.itemVersion).replaceAll(".", "_");
-        const itemsUrl =
-            `https://media.goodgamestudios.com/loader/empirefourkingdoms/${e4kInfo.appVersion}/itemsXML/items_${normalizedItemVersion}.ggs`;
-        const langUrl =
-            `${LANGUAGE_BASE_URL}/12@${resolvedLangVersion}/${langCode}/*`;
+        const itemCacheKey =
+            `items:e4k:${e4kInfo.appVersion}:${String(resolvedItemVersion || e4kInfo.itemVersion)}`;
+        const langCacheKey =
+            `lang:${source}:${langCode}:${resolvedLangVersion}`;
 
-        const [itemsResponse, langResponse] = await Promise.all([
-            caches.match(itemsUrl),
-            caches.match(langUrl)
+        const [cachedItems, cachedLang] = await Promise.all([
+            getCachedJson(itemCacheKey),
+            getCachedJson(langCacheKey)
         ]);
 
-        itemCacheState = itemsResponse ? "cached" : "network";
-        langCacheState = langResponse ? "cached" : "network";
+        itemCacheState = cachedItems ? "cached" : "network";
+        langCacheState = cachedLang ? "cached" : "network";
     } else {
         const itemCacheKey = `items:empire:${resolvedItemVersion}`;
         const langCacheKey = `lang:${source}:${langCode}:${resolvedLangVersion}`;
