@@ -1,5 +1,10 @@
 import { fetchWithFallback } from "./Fetcher.mjs";
-import { getCachedText, setCachedText } from "./VersionedCache.mjs";
+import {
+    getCachedText,
+    setCachedText,
+    getCachedMeta,
+    setCachedMeta
+} from "./VersionedCache.mjs";
 
 const BASE =
     "https://empire-html5.goodgamestudios.com/default/assets/itemassets/";
@@ -12,47 +17,72 @@ async function getDllText() {
     if (!dllTextPromise) {
 
         dllTextPromise = (async () => {
+            try {
+                const indexRes =
+                    await fetchWithFallback(
+                        "https://empire-html5.goodgamestudios.com/default/index.html"
+                    );
 
-            const indexRes =
-                await fetchWithFallback(
-                    "https://empire-html5.goodgamestudios.com/default/index.html"
+                const indexHtml = await indexRes.text();
+
+                const dllMatch = indexHtml.match(
+                    /<link\s+id=["']dll["']\s+rel=["']preload["']\s+href=["']([^"']+)["']/i
                 );
 
-            const indexHtml = await indexRes.text();
+                if (!dllMatch)
+                    throw new Error("DLL preload not found");
 
-            const dllMatch = indexHtml.match(
-                /<link\s+id=["']dll["']\s+rel=["']preload["']\s+href=["']([^"']+)["']/i
-            );
+                const dllUrl =
+                    `https://empire-html5.goodgamestudios.com/default/${dllMatch[1]}`;
 
-            if (!dllMatch)
-                throw new Error("DLL preload not found");
+                const dllPath = dllMatch[1];
+                const versionMatch =
+                    dllPath.match(/\.([a-f0-9]{10,})\.js$/i);
 
-            const dllUrl =
-                `https://empire-html5.goodgamestudios.com/default/${dllMatch[1]}`;
+                const dllVersion =
+                    versionMatch ? versionMatch[1] : "unknown";
+                const cacheKey = `dll-text:${dllVersion}`;
+                const cachedDllText = await getCachedText(cacheKey);
+                const cacheState = cachedDllText ? "cached" : "network";
 
-            const dllPath = dllMatch[1];
-            const versionMatch =
-                dllPath.match(/\.([a-f0-9]{10,})\.js$/i);
+                console.log(`DLL version: ${dllVersion} (${cacheState})`);
+                console.log(`DLL URL: ${dllUrl}`);
+                console.log("");
 
-            const dllVersion =
-                versionMatch ? versionMatch[1] : "unknown";
-            const cacheKey = `dll-text:${dllVersion}`;
-            const cachedDllText = await getCachedText(cacheKey);
-            const cacheState = cachedDllText ? "cached" : "network";
+                setCachedMeta("dll-meta:empire", {
+                    version: dllVersion,
+                    url: dllUrl
+                });
 
-            console.log(`DLL version: ${dllVersion} (${cacheState})`);
-            console.log(`DLL URL: ${dllUrl}`);
-            console.log("");
-            if (cachedDllText) {
-                return cachedDllText;
+                if (cachedDllText) {
+                    return cachedDllText;
+                }
+
+                const dllRes =
+                    await fetchWithFallback(dllUrl);
+
+                const dllText = await dllRes.text();
+                await setCachedText(cacheKey, dllText);
+                return dllText;
+            } catch (error) {
+                const fallbackMeta = getCachedMeta("dll-meta:empire");
+                const fallbackVersion = fallbackMeta?.version;
+                const fallbackUrl = fallbackMeta?.url;
+                const fallbackCacheKey =
+                    fallbackVersion ? `dll-text:${fallbackVersion}` : null;
+                const fallbackText =
+                    fallbackCacheKey ? await getCachedText(fallbackCacheKey) : null;
+
+                if (fallbackVersion && fallbackUrl && fallbackText) {
+                    console.warn(`DLL fallback to cached value: ${fallbackVersion}`);
+                    console.log(`DLL version: ${fallbackVersion} (cached)`);
+                    console.log(`DLL URL: ${fallbackUrl}`);
+                    console.log("");
+                    return fallbackText;
+                }
+
+                throw error;
             }
-
-            const dllRes =
-                await fetchWithFallback(dllUrl);
-
-            const dllText = await dllRes.text();
-            await setCachedText(cacheKey, dllText);
-            return dllText;
 
         })();
     }

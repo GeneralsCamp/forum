@@ -1,6 +1,11 @@
 import { fetchWithFallback } from "./Fetcher.mjs";
 import { getSelectedGameSource } from "./GameSettings.mjs";
-import { getCachedJson, setCachedJson } from "./VersionedCache.mjs";
+import {
+    getCachedJson,
+    setCachedJson,
+    getCachedMeta,
+    setCachedMeta
+} from "./VersionedCache.mjs";
 
 const APP_LOOKUP_URL =
     "https://itunes.apple.com/lookup?id=585661281";
@@ -25,26 +30,47 @@ export async function getItemVersion() {
         return info.itemVersion;
     }
 
-    const url =
-        EMPIRE_ITEMS_VERSION_URL;
+    try {
+        const url =
+            EMPIRE_ITEMS_VERSION_URL;
 
-    const res = await fetchWithFallback(url);
-    const text = await res.text();
+        const res = await fetchWithFallback(url);
+        const text = await res.text();
 
-    const match = text.match(/CastleItemXMLVersion=(\d+\.\d+)/);
-    if (!match) throw new Error("Version not found");
+        const match = text.match(/CastleItemXMLVersion=(\d+\.\d+)/);
+        if (!match) throw new Error("Version not found");
 
-    return match[1];
+        const version = match[1];
+        setCachedMeta("item-version:empire", { version });
+        return version;
+    } catch (error) {
+        const fallback = getCachedMeta("item-version:empire")?.version;
+        if (fallback) {
+            console.warn(`Item version fallback to cached value: ${fallback}`);
+            return fallback;
+        }
+        throw error;
+    }
 }
 
 export async function getLangVersion() {
-    const url =
-        LANGUAGE_VERSION_URL;
+    try {
+        const url =
+            LANGUAGE_VERSION_URL;
 
-    const res = await fetchWithFallback(url);
-    const json = await res.json();
-
-    return json["@metadata"].versionNo;
+        const res = await fetchWithFallback(url);
+        const json = await res.json();
+        const version = json["@metadata"].versionNo;
+        setCachedMeta("lang-version", { version });
+        return version;
+    } catch (error) {
+        const fallback = getCachedMeta("lang-version")?.version;
+        if (fallback) {
+            console.warn(`Language version fallback to cached value: ${fallback}`);
+            return fallback;
+        }
+        throw error;
+    }
 }
 
 export async function loadLanguage(langCode, version) {

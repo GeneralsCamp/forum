@@ -1,5 +1,6 @@
 const CACHE_NAME = "gf-versioned-data-v1";
 const memoryCache = new Map();
+const META_PREFIX = "gf-cache-meta:";
 
 function canUseCacheApi() {
     return typeof window !== "undefined" && "caches" in window;
@@ -79,4 +80,19 @@ export async function setCachedText(key, value) {
             }
         })
     );
+}
+
+export function getCachedMeta(key) {
+    try {
+        const raw = localStorage.getItem(`${META_PREFIX}${key}`);
+        return raw ? JSON.parse(raw) : null;
+    } catch {
+        return null;
+    }
+}
+
+export function setCachedMeta(key, value) {
+    try {
+        localStorage.setItem(`${META_PREFIX}${key}`, JSON.stringify(value));
+    } catch {}
 }
