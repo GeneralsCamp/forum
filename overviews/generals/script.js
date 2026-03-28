@@ -273,27 +273,31 @@ function getAbilitySlotIndex(general, abilityGroupId) {
 
     const attackSlots = (general.attackslots || "").split(",").map(s => s.trim());
     const defenseSlots = (general.defenseslots || "").split(",").map(s => s.trim());
-
-    const allSlots = [...attackSlots, ...defenseSlots];
-
-    for (let i = 0; i < allSlots.length; i++) {
-        const slotId = allSlots[i];
-        const abilityIds = abilitiesByGroupId
-            ? null
-            : null;
-    }
-
     const slots = itemsData.generalslots || [];
 
-    for (let i = 0; i < allSlots.length; i++) {
-        const slotId = allSlots[i];
-        const slot = slots.find(s => s.slotid === slotId);
-        if (!slot) continue;
+    const findWithinSlotList = (slotIds) => {
+        for (let i = 0; i < slotIds.length; i++) {
+            const slotId = slotIds[i];
+            const slot = slots.find(s => s.slotid === slotId);
+            if (!slot) continue;
 
-        const groups = slot.abilitygroupids.split(",").map(g => g.trim());
-        if (groups.includes(String(abilityGroupId))) {
-            return i + 1;
+            const groups = slot.abilitygroupids.split(",").map(g => g.trim());
+            if (groups.includes(String(abilityGroupId))) {
+                return i + 1;
+            }
         }
+
+        return null;
+    };
+
+    const defenseIndex = findWithinSlotList(defenseSlots);
+    if (defenseIndex != null) {
+        return defenseIndex;
+    }
+
+    const attackIndex = findWithinSlotList(attackSlots);
+    if (attackIndex != null) {
+        return attackIndex;
     }
 
     return null;
