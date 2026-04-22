@@ -223,6 +223,8 @@ function resolveEffectName(effectId) {
     const cleaned = String(label)
       .replace(/\{[^}]+\}/g, "")
       .replace(/[+%]/g, "")
+      .replace(/^\s*-\s*/, "")
+      .replace(/^of\s+/i, "")
       .replace(/\s+/g, " ")
       .trim();
     if (cleaned) {
@@ -273,6 +275,8 @@ function getBossEffectSummary(stage) {
     frontDefense: 0,
     flankDefense: 0,
     courtyardDefense: 0,
+    rangedAttackStrength: 0,
+    meleeAttackStrength: 0,
     isWallRegen: false,
     infectionBase: 0,
     infectionMelee: 0,
@@ -295,6 +299,15 @@ function getBossEffectSummary(stage) {
     if (effectName === "DefenseBoostFront") summary.frontDefense = value;
     if (effectName === "DefenseBoostFlank") summary.flankDefense = value;
     if (effectName === "defenseBoostYard") summary.courtyardDefense = value;
+  });
+
+  const attackerEffects = parseBattleEffects(stage?.attackerBattleEffects);
+  attackerEffects.forEach(effect => {
+    const effectId = String(effect.id);
+    const effectName = String(state.effectsById[String(effect.id)]?.name || "").trim();
+    const value = Number(effect.amount) || 0;
+    if (effectId === "432" || effectName === "offensiveRangeMalus") summary.rangedAttackStrength = value;
+    if (effectId === "433" || effectName === "offensiveMeleeMalus") summary.meleeAttackStrength = value;
   });
 
   const postEffects = parseBattleEffects(stage?.attackerPostBattleEffects);
@@ -738,6 +751,18 @@ function renderBossOverview() {
         icon: "../../img_base/battle_simulator/front-strength.png",
         value: `${formatNumber(effectSummary.frontDefense)}%`,
         valueNum: Number(effectSummary.frontDefense) || 0
+      },
+      {
+        title: resolveEffectName(432),
+        icon: "../../img_base/battle_simulator/ranged-icon.png",
+        value: `${formatNumber(effectSummary.rangedAttackStrength)}%`,
+        valueNum: Number(effectSummary.rangedAttackStrength) || 0
+      },
+      {
+        title: resolveEffectName(433),
+        icon: "../../img_base/battle_simulator/melee-icon.png",
+        value: `${formatNumber(effectSummary.meleeAttackStrength)}%`,
+        valueNum: Number(effectSummary.meleeAttackStrength) || 0
       },
       {
         title: wallRegenStageStartLabel,
