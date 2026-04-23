@@ -86,12 +86,19 @@ function resolveQuestTitle(quest) {
     return getLangValue([`popup_ame_quest_title_${quest.allianceQuestId}`], capitalizeWords(quest.parsed.type));
 }
 
+function formatLargeNumbersInText(text) {
+    return String(text || "").replace(/\b\d{5,}\b/g, match => {
+        const parsed = Number(match);
+        return Number.isFinite(parsed) ? parsed.toLocaleString(currentLanguage) : match;
+    });
+}
+
 function resolveQuestDescription(quest) {
     const req = getLangValue([`popup_ame_quest_requirement_${quest.allianceQuestId}`]);
-    if (req) return req;
+    if (req) return formatLargeNumbersInText(req);
     const typeLabel = capitalizeWords(quest.parsed.type);
     const conditionRaw = String(quest.condition || "").replace(/\+/g, " + ");
-    return `${typeLabel}: ${conditionRaw}`;
+    return formatLargeNumbersInText(`${typeLabel}: ${conditionRaw}`);
 }
 
 function getRequirementLabel() {

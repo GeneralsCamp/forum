@@ -908,7 +908,7 @@ async function init() {
     }
 
     const latestSet = simulatorModel.sets[simulatorModel.sets.length - 1];
-    state.selectedSetId = simulatorModel.setsById[String(state.selectedSetId)] ? state.selectedSetId : latestSet.id;
+    state.selectedSetId = latestSet.id;
     const currentSet = getCurrentSetModel();
     ensureSetProgress(currentSet.id, currentSet.types.map((type) => type.id));
     state.selectedTypeId = currentSet.typesById[String(state.selectedTypeId)] ? state.selectedTypeId : currentSet.types[0].id;
