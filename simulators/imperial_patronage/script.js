@@ -91,6 +91,12 @@ function formatAmountDisplayValue(value) {
   return formatNumber(value);
 }
 
+function parseAmountInput(value) {
+  return String(value ?? "")
+    .replace(/[.,\s]/g, "")
+    .replace(/[^\d]/g, "");
+}
+
 function resolveDonationTypeLabel(type, lang) {
   const rawName = String(type?.name || "").toLowerCase();
   const typeLabel = String(lang?.filters_filter_21 || "Type").toLowerCase();
@@ -513,9 +519,7 @@ function renderDonationRows(typeModel) {
           </div>
           <div class="row-controls">
             <button type="button" class="amount-button" data-action="decrease" data-option-id="${option.id}">-</button>
-            <div class="amount-display" data-role="amount-display">
-              <span class="amount-display-current">${formatAmountDisplayValue(currentAmount)}</span>
-            </div>
+            <input class="amount-display amount-display-current" data-action="amount-input" data-option-id="${option.id}" data-role="amount-display" type="text" inputmode="numeric" pattern="[0-9,.\\s]*" autocomplete="off" aria-label="${option.label} amount" value="${formatAmountDisplayValue(currentAmount)}">
             <button type="button" class="amount-button" data-action="increase" data-option-id="${option.id}">+</button>
             <input class="amount-slider" data-action="slider" data-option-id="${option.id}" type="range" min="0" max="${Math.min(sliderMax, allowedStageAmount === Infinity ? sliderMax : allowedStageAmount)}" step="${option.ratio}" value="${Math.min(currentAmount, sliderMax, allowedStageAmount === Infinity ? sliderMax : allowedStageAmount)}">
             <button type="button" class="max-button" data-action="max" data-option-id="${option.id}">Max</button>
@@ -548,7 +552,6 @@ function updateOptionRow(typeModel, optionId) {
   );
 
   const amountDisplay = row.querySelector('[data-role="amount-display"]');
-  const amountDisplayCurrent = row.querySelector('.amount-display-current');
   const usedCap = row.querySelector('[data-role="used-cap"]');
   const usedTotal = row.querySelector('[data-role="used-total"]');
   const slider = row.querySelector('.amount-slider');
@@ -556,7 +559,9 @@ function updateOptionRow(typeModel, optionId) {
   const increaseBtn = row.querySelector('[data-action="increase"]');
   const maxBtn = row.querySelector('[data-action="max"]');
 
-  if (amountDisplayCurrent) amountDisplayCurrent.textContent = formatAmountDisplayValue(currentAmount);
+  if (amountDisplay && document.activeElement !== amountDisplay) {
+    amountDisplay.value = formatAmountDisplayValue(currentAmount);
+  }
   if (usedCap && option.maxAmount !== null) {
     usedCap.textContent = `${ui("total_used", "Total used")}: ${formatNumber(totalUsedAmount)} / ${formatNumber(option.maxAmount)}`;
   }
@@ -572,6 +577,7 @@ function updateOptionRow(typeModel, optionId) {
   if (increaseBtn) increaseBtn.disabled = capped;
   if (maxBtn) maxBtn.disabled = capped;
   if (amountDisplay) amountDisplay.classList.toggle("is-capped", capped);
+  if (amountDisplay) amountDisplay.disabled = capped;
   if (slider) slider.disabled = capped;
   if (decreaseBtn) decreaseBtn.disabled = currentAmount <= 0;
 }
@@ -717,8 +723,17 @@ function bindEvents() {
   els.donationRows.addEventListener("input", (event) => {
     const input = event.target.closest("[data-action]");
     if (!input) return;
-    if (input.dataset.action !== "slider") return;
-    updateAmount(getCurrentTypeModel(), input.dataset.optionId, input.value);
+    if (input.dataset.action !== "slider" && input.dataset.action !== "amount-input") return;
+    const rawValue = input.dataset.action === "amount-input" ? parseAmountInput(input.value) : input.value;
+    updateAmount(getCurrentTypeModel(), input.dataset.optionId, rawValue);
+  });
+
+  els.donationRows.addEventListener("change", (event) => {
+    const input = event.target.closest('[data-action="amount-input"]');
+    if (!input) return;
+    const typeModel = getCurrentTypeModel();
+    updateAmount(typeModel, input.dataset.optionId, parseAmountInput(input.value));
+    updateOptionRow(typeModel, input.dataset.optionId);
   });
 
   els.rewardCardsStack.addEventListener("click", (event) => {
