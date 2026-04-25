@@ -155,6 +155,43 @@ function parseConstructions(text, normalize) {
     return map;
 }
 
+function parseBuildings(text, normalize) {
+
+    const regex =
+        /Building\/[^\s"'`<>]+?--\d+/g;
+
+    const map = {};
+
+    function addCandidate(candidate, url) {
+        const key = normalize(candidate);
+        if (!key) return;
+        map[key] ??= {};
+        map[key].placedUrl ??= url;
+    }
+
+    for (const m of text.matchAll(regex)) {
+
+        const path = m[0];
+        const url = `${BASE}${path}.webp`;
+        const parts = path.split("/");
+        const file =
+            parts[parts.length - 1].split("--")[0];
+        const parent =
+            parts.length > 1 ? parts[parts.length - 2] : "";
+        const baseName =
+            file.includes("_Building_")
+                ? file.split("_Building_")[0]
+                : file;
+
+        addCandidate(file, url);
+        addCandidate(parent, url);
+        addCandidate(baseName, url);
+        addCandidate(file.replace(/^Deco_Building_/, ""), url);
+    }
+
+    return map;
+}
+
 function parseUnits(text, normalize) {
 
     const regex =
@@ -455,6 +492,7 @@ export async function loadImageMaps({
     generals = false,
     lootboxes = false,
     allianceLayouts = false,
+    buildings = false,
     normalizeNameFn
 }) {
 
@@ -554,6 +592,15 @@ export async function loadImageMaps({
 
         result.allianceLayouts =
             parsedCache.allianceLayouts;
+    }
+
+    if (buildings) {
+
+        parsedCache.buildings ??=
+            parseBuildings(text, normalizeNameFn);
+
+        result.buildings =
+            parsedCache.buildings;
     }
 
     return result;
