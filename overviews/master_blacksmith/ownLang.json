@@ -1,0 +1,362 @@
+{
+  "en": {
+    "ui": {
+      "currency_type": "Currency type",
+      "level_bracket": "Level bracket",
+      "quantity": "Quantity",
+      "stock": "Stock",
+      "cost": "Cost",
+      "unlimited": "Unlimited",
+      "no_rewards": "No Master Blacksmith offers for this selection.",
+      "unknown_reward": "Unknown reward",
+      "shop": "shop",
+      "ruby": "Ruby",
+      "coin": "Coin"
+    }
+  },
+  "ar": {
+    "ui": {
+      "currency_type": "نوع العملة",
+      "level_bracket": "نطاق المستوى",
+      "quantity": "الكمية",
+      "stock": "المخزون",
+      "cost": "التكلفة",
+      "unlimited": "غير محدود",
+      "no_rewards": "لا توجد عروض للحداد الرئيسي لهذا الاختيار.",
+      "unknown_reward": "مكافأة غير معروفة",
+      "shop": "متجر",
+      "ruby": "ياقوت",
+      "coin": "عملات"
+    }
+  },
+  "es": {
+    "ui": {
+      "currency_type": "Tipo de moneda",
+      "level_bracket": "Rango de nivel",
+      "quantity": "Cantidad",
+      "stock": "Existencias",
+      "cost": "Coste",
+      "unlimited": "Ilimitado",
+      "no_rewards": "No hay ofertas del Maestro herrero para esta selección.",
+      "unknown_reward": "Recompensa desconocida",
+      "shop": "tienda",
+      "ruby": "Rubí",
+      "coin": "Monedas"
+    }
+  },
+  "bg": {
+    "ui": {
+      "currency_type": "Тип валута",
+      "level_bracket": "Диапазон нива",
+      "quantity": "Количество",
+      "stock": "Наличност",
+      "cost": "Цена",
+      "unlimited": "Неограничено",
+      "no_rewards": "Няма оферти от Майстора ковач за този избор.",
+      "unknown_reward": "Неизвестна награда",
+      "shop": "магазин",
+      "ruby": "Рубини",
+      "coin": "Монети"
+    }
+  },
+  "pt": {
+    "ui": {
+      "currency_type": "Tipo de moeda",
+      "level_bracket": "Faixa de nível",
+      "quantity": "Quantidade",
+      "stock": "Estoque",
+      "cost": "Custo",
+      "unlimited": "Ilimitado",
+      "no_rewards": "Não há ofertas do Mestre ferreiro para esta seleção.",
+      "unknown_reward": "Recompensa desconhecida",
+      "shop": "loja",
+      "ruby": "Rubi",
+      "coin": "Moedas"
+    }
+  },
+  "cs": {
+    "ui": {
+      "currency_type": "Typ měny",
+      "level_bracket": "Rozsah úrovně",
+      "quantity": "Množství",
+      "stock": "Sklad",
+      "cost": "Cena",
+      "unlimited": "Neomezeně",
+      "no_rewards": "Pro tento výběr nejsou žádné nabídky Mistra kováře.",
+      "unknown_reward": "Neznámá odměna",
+      "shop": "obchod",
+      "ruby": "Rubíny",
+      "coin": "Mince"
+    }
+  },
+  "de": {
+    "ui": {
+      "currency_type": "Währungstyp",
+      "level_bracket": "Levelbereich",
+      "quantity": "Menge",
+      "stock": "Vorrat",
+      "cost": "Kosten",
+      "unlimited": "Unbegrenzt",
+      "no_rewards": "Keine Meisterschmied-Angebote für diese Auswahl.",
+      "unknown_reward": "Unbekannte Belohnung",
+      "shop": "Shop",
+      "ruby": "Rubin",
+      "coin": "Münzen"
+    }
+  },
+  "da": {
+    "ui": {
+      "currency_type": "Valutatype",
+      "level_bracket": "Niveauinterval",
+      "quantity": "Antal",
+      "stock": "Lager",
+      "cost": "Pris",
+      "unlimited": "Ubegrænset",
+      "no_rewards": "Ingen Mestersmed-tilbud for dette valg.",
+      "unknown_reward": "Ukendt belønning",
+      "shop": "butik",
+      "ruby": "Rubin",
+      "coin": "Mønter"
+    }
+  },
+  "fi": {
+    "ui": {
+      "currency_type": "Valuutan tyyppi",
+      "level_bracket": "Tasoväli",
+      "quantity": "Määrä",
+      "stock": "Varasto",
+      "cost": "Hinta",
+      "unlimited": "Rajoittamaton",
+      "no_rewards": "Tälle valinnalle ei ole Mestarisepän tarjouksia.",
+      "unknown_reward": "Tuntematon palkinto",
+      "shop": "kauppa",
+      "ruby": "Rubiini",
+      "coin": "Kolikot"
+    }
+  },
+  "fr": {
+    "ui": {
+      "currency_type": "Type de monnaie",
+      "level_bracket": "Tranche de niveau",
+      "quantity": "Quantité",
+      "stock": "Stock",
+      "cost": "Coût",
+      "unlimited": "Illimité",
+      "no_rewards": "Aucune offre du Maître forgeron pour cette sélection.",
+      "unknown_reward": "Récompense inconnue",
+      "shop": "boutique",
+      "ruby": "Rubis",
+      "coin": "Pièces"
+    }
+  },
+  "el": {
+    "ui": {
+      "currency_type": "Τύπος νομίσματος",
+      "level_bracket": "Εύρος επιπέδου",
+      "quantity": "Ποσότητα",
+      "stock": "Απόθεμα",
+      "cost": "Κόστος",
+      "unlimited": "Απεριόριστο",
+      "no_rewards": "Δεν υπάρχουν προσφορές του Αρχισιδερά για αυτήν την επιλογή.",
+      "unknown_reward": "Άγνωστη ανταμοιβή",
+      "shop": "κατάστημα",
+      "ruby": "Ρουμπίνια",
+      "coin": "Νομίσματα"
+    }
+  },
+  "hu": {
+    "ui": {
+      "currency_type": "Valutatípus",
+      "level_bracket": "Szinttartomány",
+      "quantity": "Mennyiség",
+      "stock": "Készlet",
+      "cost": "Ár",
+      "unlimited": "Korlátlan",
+      "no_rewards": "Nincs Master Blacksmith ajánlat ehhez a választáshoz.",
+      "unknown_reward": "Ismeretlen jutalom",
+      "shop": "bolt",
+      "ruby": "Rubin",
+      "coin": "Érme"
+    }
+  },
+  "it": {
+    "ui": {
+      "currency_type": "Tipo di valuta",
+      "level_bracket": "Fascia di livello",
+      "quantity": "Quantità",
+      "stock": "Scorte",
+      "cost": "Costo",
+      "unlimited": "Illimitato",
+      "no_rewards": "Nessuna offerta del Mastro fabbro per questa selezione.",
+      "unknown_reward": "Ricompensa sconosciuta",
+      "shop": "negozio",
+      "ruby": "Rubini",
+      "coin": "Monete"
+    }
+  },
+  "ja": {
+    "ui": {
+      "currency_type": "通貨タイプ",
+      "level_bracket": "レベル帯",
+      "quantity": "数量",
+      "stock": "在庫",
+      "cost": "コスト",
+      "unlimited": "無制限",
+      "no_rewards": "この選択に該当するマスター鍛冶屋のオファーはありません。",
+      "unknown_reward": "不明な報酬",
+      "shop": "ショップ",
+      "ruby": "ルビー",
+      "coin": "コイン"
+    }
+  },
+  "ko": {
+    "ui": {
+      "currency_type": "화폐 유형",
+      "level_bracket": "레벨 구간",
+      "quantity": "수량",
+      "stock": "재고",
+      "cost": "비용",
+      "unlimited": "무제한",
+      "no_rewards": "이 선택에 해당하는 대장장이 오퍼가 없습니다.",
+      "unknown_reward": "알 수 없는 보상",
+      "shop": "상점",
+      "ruby": "루비",
+      "coin": "코인"
+    }
+  },
+  "lt": {
+    "ui": {
+      "currency_type": "Valiutos tipas",
+      "level_bracket": "Lygio intervalas",
+      "quantity": "Kiekis",
+      "stock": "Atsargos",
+      "cost": "Kaina",
+      "unlimited": "Neribota",
+      "no_rewards": "Šiam pasirinkimui nėra Meistro kalvio pasiūlymų.",
+      "unknown_reward": "Nežinomas atlygis",
+      "shop": "parduotuvė",
+      "ruby": "Rubinai",
+      "coin": "Monetos"
+    }
+  },
+  "nl": {
+    "ui": {
+      "currency_type": "Valutatype",
+      "level_bracket": "Levelbereik",
+      "quantity": "Aantal",
+      "stock": "Voorraad",
+      "cost": "Kosten",
+      "unlimited": "Onbeperkt",
+      "no_rewards": "Geen Meestersmid-aanbiedingen voor deze selectie.",
+      "unknown_reward": "Onbekende beloning",
+      "shop": "winkel",
+      "ruby": "Robijnen",
+      "coin": "Munten"
+    }
+  },
+  "no": {
+    "ui": {
+      "currency_type": "Valutatype",
+      "level_bracket": "Nivåintervall",
+      "quantity": "Antall",
+      "stock": "Lager",
+      "cost": "Kostnad",
+      "unlimited": "Ubegrenset",
+      "no_rewards": "Ingen Mestersmed-tilbud for dette valget.",
+      "unknown_reward": "Ukjent belønning",
+      "shop": "butikk",
+      "ruby": "Rubin",
+      "coin": "Mynter"
+    }
+  },
+  "pl": {
+    "ui": {
+      "currency_type": "Typ waluty",
+      "level_bracket": "Przedział poziomów",
+      "quantity": "Ilość",
+      "stock": "Zapas",
+      "cost": "Koszt",
+      "unlimited": "Bez limitu",
+      "no_rewards": "Brak ofert Mistrza kowala dla tego wyboru.",
+      "unknown_reward": "Nieznana nagroda",
+      "shop": "sklep",
+      "ruby": "Rubiny",
+      "coin": "Monety"
+    }
+  },
+  "ro": {
+    "ui": {
+      "currency_type": "Tip valuta",
+      "level_bracket": "Interval nivel",
+      "quantity": "Cantitate",
+      "stock": "Stoc",
+      "cost": "Cost",
+      "unlimited": "Nelimitat",
+      "no_rewards": "Nu există oferte de la Maestrul fierar pentru această selecție.",
+      "unknown_reward": "Recompensa necunoscuta",
+      "shop": "magazin",
+      "ruby": "Rubine",
+      "coin": "Monede"
+    }
+  },
+  "ru": {
+    "ui": {
+      "currency_type": "Тип валюты",
+      "level_bracket": "Диапазон уровней",
+      "quantity": "Количество",
+      "stock": "Запас",
+      "cost": "Стоимость",
+      "unlimited": "Без ограничений",
+      "no_rewards": "Для этого выбора нет предложений Мастера-кузнеца.",
+      "unknown_reward": "Неизвестная награда",
+      "shop": "магазин",
+      "ruby": "Рубины",
+      "coin": "Монеты"
+    }
+  },
+  "sv": {
+    "ui": {
+      "currency_type": "Valutatyp",
+      "level_bracket": "Nivåintervall",
+      "quantity": "Antal",
+      "stock": "Lager",
+      "cost": "Kostnad",
+      "unlimited": "Obegränsat",
+      "no_rewards": "Inga Mästarsmed-erbjudanden för detta val.",
+      "unknown_reward": "Okänd belöning",
+      "shop": "butik",
+      "ruby": "Rubin",
+      "coin": "Mynt"
+    }
+  },
+  "sk": {
+    "ui": {
+      "currency_type": "Typ meny",
+      "level_bracket": "Rozsah úrovne",
+      "quantity": "Množstvo",
+      "stock": "Zásoba",
+      "cost": "Cena",
+      "unlimited": "Neobmedzene",
+      "no_rewards": "Pre tento výber nie sú žiadne ponuky Majstra kováča.",
+      "unknown_reward": "Neznáma odmena",
+      "shop": "obchod",
+      "ruby": "Rubíny",
+      "coin": "Mince"
+    }
+  },
+  "tr": {
+    "ui": {
+      "currency_type": "Para birimi türü",
+      "level_bracket": "Seviye aralığı",
+      "quantity": "Miktar",
+      "stock": "Stok",
+      "cost": "Maliyet",
+      "unlimited": "Sınırsız",
+      "no_rewards": "Bu seçim için Usta Demirci teklifi yok.",
+      "unknown_reward": "Bilinmeyen ödül",
+      "shop": "dükkanı",
+      "ruby": "Yakut",
+      "coin": "Para"
+    }
+  }
+}

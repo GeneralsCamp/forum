@@ -1,0 +1,138 @@
+.blacksmith-card .box {
+    width: 100%;
+}
+
+.blacksmith-card .box-content {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.blacksmith-title {
+    margin-bottom: 0;
+    padding: 4px 6px !important;
+    min-height: 30px;
+    font-size: 18px !important;
+}
+
+.blacksmith-card .box-content hr {
+    width: 100%;
+    border: 0;
+    border-top: 1px solid white !important;
+    opacity: 1 !important;
+    margin: 0;
+}
+
+.blacksmith-table {
+    font-size: 14px;
+    text-align: center;
+    overflow: hidden;
+    display: flex;
+    flex: 1 1 auto;
+}
+
+.blacksmith-table .border-end {
+    border-right: 0 !important;
+    box-shadow: inset -1px 0 0 white;
+}
+
+.blacksmith-table > .row {
+    flex: 1 1 auto;
+    width: 100%;
+}
+
+.blacksmith-table > .row > .card-cell {
+    display: flex;
+}
+
+.blacksmith-table > .row > .col-8 {
+    flex-direction: column;
+}
+
+.blacksmith-table > .row > .col-8 > .row {
+    flex: 1 1 0;
+}
+
+.blacksmith-table > .row > .col-8 > .row > .card-cell {
+    flex: 1 1 auto;
+}
+
+.blacksmith-image-cell {
+    min-height: 122px;
+}
+
+.blacksmith-image-cell .image-wrapper {
+    min-height: 94px;
+    width: 100%;
+}
+
+.blacksmith-image-cell .card-image {
+    max-height: 94px;
+    max-width: 81%;
+    object-fit: contain;
+}
+
+.blacksmith-image-cell .currency-image,
+.cost-image {
+    image-rendering: auto;
+}
+
+.blacksmith-stat-cell {
+    min-height: 61px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 3px;
+    color: white;
+    line-height: 1.25;
+    padding: 3px 5px;
+    overflow-wrap: anywhere;
+}
+
+.blacksmith-stat-cell strong {
+    font-size: 14px;
+    font-weight: 800;
+    color: white;
+}
+
+.blacksmith-stat-cell span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cost-value {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.cost-image {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    flex: 0 0 auto;
+}
+
+.blacksmith-empty {
+    color: #f3c24a;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+@media (max-width: 575.98px) {
+    .blacksmith-image-cell {
+        min-height: 104px;
+    }
+
+    .blacksmith-image-cell .card-image {
+        max-height: 73px;
+    }
+
+    .blacksmith-stat-cell {
+        min-height: 52px;
+        padding: 3px 4px;
+    }
+}
