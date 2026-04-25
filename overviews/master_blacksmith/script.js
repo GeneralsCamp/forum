@@ -3,7 +3,6 @@ import { createLoader } from "../shared/LoadingService.mjs";
 import { coreInit } from "../shared/CoreInit.mjs";
 import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageService.mjs";
 import { getSharedText } from "../shared/SharedTextService.mjs";
-import { createLazyList } from "../shared/LazyList.mjs";
 import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
 import {
@@ -42,6 +41,16 @@ let currentLanguage = getInitialLanguage();
 
 const loader = createLoader();
 const composedImageCache = new Map();
+// These Sceat shop offers are present in static item data, but inactive in-game.
+const INACTIVE_PACKAGE_IDS = new Set(["10773", "10774", "10775", "3570", "3571", "10776", "10778"]);
+const ALLOWED_SHOP_CATEGORY_IDS = new Set([
+  "101", // Gold
+  "102", // Silver
+  "113", // Sceat
+  "119", // Ruby
+  "120", // Rift
+  "121" // Legendary Rift
+]);
 const SHOP_CATEGORY_EXTRA = {
   "119": {
     costField: "packagePriceC2",
@@ -53,12 +62,6 @@ const SHOP_CATEGORY_EXTRA = {
     costField: "costLegendaryRiftCoin",
     currencyName: "LegendaryRiftCoin",
     sortOrder: 121
-  },
-  "122": {
-    costField: "packagePriceC1",
-    currencyName: "Coin",
-    currencyImageUrl: "../../img_base/coin.png",
-    sortOrder: 122
   }
 };
 
@@ -77,16 +80,6 @@ const LOCAL_RESOURCE_IMAGES = {
   mead: "../../img_base/meadwastage.png",
   xp: "../../img_base/xpBoost.png"
 };
-
-const lazyList = createLazyList({
-  containerSelector: "#cards",
-  contentSelector: "#content",
-  initialBatchSize: 48,
-  batchSize: 36,
-  revealBuffer: 12,
-  emptyHtml: () => `<div class="col-12 filter-empty-message">${escapeHtml(noRewardsMessage)}</div>`,
-  onRenderBatch: (items, ctx) => appendOffers(items, ctx)
-});
 
 async function loadOwnLang() {
   try {
@@ -136,8 +129,23 @@ function formatNumber(value) {
 function getCurrencyLangName(rawName, fallback = null) {
   const name = String(rawName || "").trim();
   if (!name) return fallback || "";
-  const key = `currency_name_${name}`.toLowerCase();
-  return lang[key] || fallback || name;
+  const directKey = `currency_name_${name}`.toLowerCase();
+  if (lang[directKey]) return lang[directKey];
+
+  const currency = getCurrencyByName(name);
+  const assetName = String(currency?.assetName || "").trim();
+  if (assetName) {
+    const assetKey = `currency_name_${assetName}`.toLowerCase();
+    if (lang[assetKey]) return lang[assetKey];
+  }
+
+  const baseName = name.replace(/\d+$/, "");
+  if (baseName && baseName !== name) {
+    const baseKey = `currency_name_${baseName}`.toLowerCase();
+    if (lang[baseKey]) return lang[baseKey];
+  }
+
+  return fallback || assetName || baseName || name;
 }
 
 function getCurrencyByName(rawName) {
@@ -163,6 +171,7 @@ function buildShopDefinitions(data) {
   costRelations.forEach((row) => {
     const categoryId = String(row.categoryID || "").trim();
     if (!categoryId) return;
+    if (!ALLOWED_SHOP_CATEGORY_IDS.has(categoryId)) return;
 
     if (row.currencyID) {
       const currency = currenciesById[String(row.currencyID)];
@@ -190,6 +199,7 @@ function buildShopDefinitions(data) {
   });
 
   Object.entries(SHOP_CATEGORY_EXTRA).forEach(([categoryId, extra]) => {
+    if (!ALLOWED_SHOP_CATEGORY_IDS.has(categoryId)) return;
     if (definitionsByCategory[categoryId]) return;
     definitionsByCategory[categoryId] = {
       categoryId,
@@ -206,22 +216,54 @@ function buildShopDefinitions(data) {
     definitionsByRelation[String(relation.relationID)] = definitionsByCategory[categoryId];
   });
 
+  const definitionsByCostField = {};
+  Object.values(definitionsByCategory).forEach((definition) => {
+    if (!definition.costField) return;
+    definitionsByCostField[definition.costField] = definition;
+  });
+
   return {
     definitionsByCategory,
-    definitionsByRelation
+    definitionsByRelation,
+    definitionsByCostField
   };
 }
 
-function getShopForPackage(pkg, definitionsByRelation) {
+function hasPackageCost(pkg, costField) {
+  return pkg[costField] !== undefined && pkg[costField] !== null && String(pkg[costField]).trim() !== "";
+}
+
+function hasExactRelationIds(pkg, expectedIds) {
+  const relationIds = getRelationIds(pkg);
+  if (relationIds.length !== expectedIds.length) return false;
+  return expectedIds.every((id) => relationIds.includes(id));
+}
+
+function getShopForPackage(pkg, definitionsByRelation, definitionsByCostField) {
+  if (hasExactRelationIds(pkg, ["400", "999"])) {
+    if (hasPackageCost(pkg, "costGoldToken")) return definitionsByCostField.costGoldToken || null;
+    if (hasPackageCost(pkg, "costSilverToken")) return definitionsByCostField.costSilverToken || null;
+    return null;
+  }
+
   const relationIds = getRelationIds(pkg);
   for (const relationId of relationIds) {
     const def = definitionsByRelation[relationId];
     if (!def) continue;
-    if (pkg[def.costField] !== undefined && pkg[def.costField] !== null && String(pkg[def.costField]).trim() !== "") {
+    return def;
+  }
+
+  return null;
+}
+
+function getPackageCostDefinition(pkg, definitionsByCostField, fallbackDefinition = null) {
+  for (const def of Object.values(definitionsByCostField)) {
+    if (hasPackageCost(pkg, def.costField)) {
       return def;
     }
   }
-  return null;
+
+  return fallbackDefinition;
 }
 
 function getCIName(item) {
@@ -262,6 +304,29 @@ function getEquipmentName(item, id) {
 function getGemName(item, id) {
   const key = `gem_unique_${id}`.toLowerCase();
   return lang[key] || item?.comment2 || item?.comment1 || `Gem ${id}`;
+}
+
+function getBundleSetId(pkg) {
+  const text = `${pkg?.comment1 || ""} ${pkg?.comment2 || ""}`;
+  const setMatch = text.match(/\bSetID\s*(\d+)\b/i);
+  return setMatch ? setMatch[1] : null;
+}
+
+function getBundleName(pkg) {
+  const setId = getBundleSetId(pkg);
+  if (setId) {
+    const setName = lang[`equipment_set_${setId}`.toLowerCase()];
+    if (setName) return setName;
+  }
+  return pkg?.comment1 || pkg?.comment2 || "Bundle";
+}
+
+function getBundleImage(pkg) {
+  return getBundleSetId(pkg) ? LOCAL_RESOURCE_IMAGES.equipment : "../../img_base/placeholder.webp";
+}
+
+function getBundleQuantity(pkg, count) {
+  return getBundleSetId(pkg) ? `${count} (${ui("set", "set")})` : count;
 }
 
 function getUnitName(item) {
@@ -318,11 +383,16 @@ function parseOptionalNumber(value) {
 }
 
 function getLevelRequirement(pkg) {
+  const minLegendLevel = parseOptionalNumber(pkg.minLegendLevel);
+  const maxLegendLevel = parseOptionalNumber(pkg.maxLegendLevel);
+  const hasLegendRequirement = minLegendLevel !== null || maxLegendLevel !== null;
+  const maxLevel = parseOptionalNumber(pkg.maxLevel);
+
   return {
-    minLevel: parseOptionalNumber(pkg.minLevel),
-    maxLevel: parseOptionalNumber(pkg.maxLevel),
-    minLegendLevel: parseOptionalNumber(pkg.minLegendLevel),
-    maxLegendLevel: parseOptionalNumber(pkg.maxLegendLevel)
+    minLevel: hasLegendRequirement ? null : parseOptionalNumber(pkg.minLevel),
+    maxLevel: hasLegendRequirement || maxLevel === 99 ? null : maxLevel,
+    minLegendLevel,
+    maxLegendLevel
   };
 }
 
@@ -334,6 +404,10 @@ function getLevelBracket(requirement) {
   const parts = [];
   const levelLabel = gameText("level", ui("level", "Level"));
   const legendLevelLabel = gameText("legendLevel", ui("legend_level", "Legendary level"));
+
+  if (minLevel !== null && maxLevel === null && minLegendLevel === null && maxLegendLevel !== null) {
+    return `${levelLabel} ${minLevel} - ${legendLevelLabel} ${maxLegendLevel}`;
+  }
 
   if (minLevel !== null || maxLevel !== null) {
     if (minLevel !== null && maxLevel !== null) parts.push(`${levelLabel} ${minLevel}-${maxLevel}`);
@@ -356,8 +430,6 @@ function getShopLabel(shop) {
 
   if (shop.categoryId === "119") {
     currencyLabel = ui("ruby", "Ruby");
-  } else if (shop.categoryId === "122") {
-    currencyLabel = ui("coin", "Coin");
   }
 
   return `${currencyLabel} ${shopWord}`.trim();
@@ -393,6 +465,13 @@ function getBuildingImage(item) {
   return byName?.placedUrl || byName?.iconUrl || null;
 }
 
+function isDecorationItem(item) {
+  return (
+    /deco|decoration/i.test(String(item?.group || "")) ||
+    /deco|decoration/i.test(String(item?.name || ""))
+  );
+}
+
 function getConstructionImage(item) {
   if (!item) return null;
   const entry = constructionImageUrlMap[normalizeName(item.name)];
@@ -420,7 +499,7 @@ function resolvePrimaryReward(pkg) {
   if (pkg.buildingID) {
     const item = buildingsById[String(pkg.buildingID)];
     return {
-      type: "deco",
+      type: isDecorationItem(item) ? "decoration" : "building",
       id: pkg.buildingID,
       name: getBuildingName(item) || pkg.comment1 || ui("unknown_reward", "Unknown reward"),
       quantity: pkg.buildingAmount || "1",
@@ -493,9 +572,9 @@ function resolvePrimaryReward(pkg) {
     return {
       type: "packageBundle",
       id: ids[0] || pkg.packageID,
-      name: pkg.comment1 || pkg.comment2 || "Bundle",
-      quantity: ids.length || "1",
-      imageUrl: "../../img_base/placeholder.webp"
+      name: getBundleName(pkg),
+      quantity: getBundleQuantity(pkg, ids.length || "1"),
+      imageUrl: getBundleImage(pkg)
     };
   }
 
@@ -600,15 +679,16 @@ function formatDuration(seconds) {
 }
 
 function buildOffers(data) {
-  const { definitionsByRelation } = buildShopDefinitions(data);
+  const { definitionsByRelation, definitionsByCostField } = buildShopDefinitions(data);
   const packages = getArray(data, ["packages"]);
 
   return packages
     .filter((pkg) => !isTempServerPackage(pkg))
     .filter((pkg) => !isIgnoredPackage(pkg))
     .map((pkg) => {
-      const shop = getShopForPackage(pkg, definitionsByRelation);
+      const shop = getShopForPackage(pkg, definitionsByRelation, definitionsByCostField);
       if (!shop) return null;
+      const costDefinition = getPackageCostDefinition(pkg, definitionsByCostField, shop);
       const reward = resolvePrimaryReward(pkg);
       const levelRequirement = getLevelRequirement(pkg);
       const shopLabel = getShopLabel(shop);
@@ -618,12 +698,12 @@ function buildOffers(data) {
         rawSortOrder: String(pkg.sortOrder || ""),
         comment1: pkg.comment1 || "",
         comment2: pkg.comment2 || "",
-        cost: pkg[shop.costField],
-        costField: shop.costField,
-        currencyKey: shop.costField,
+        cost: pkg[costDefinition.costField],
+        costField: costDefinition.costField,
+        currencyKey: shop.categoryId,
         currencyLabel: shopLabel,
         currencySortOrder: Number(shop.sortOrder || 999),
-        currencyImageUrl: shop.currencyImageUrl,
+        currencyImageUrl: costDefinition.currencyImageUrl,
         levelRequirement,
         levelBracket: getLevelBracket(levelRequirement),
         stock: pkg.stock || ui("unlimited", "Unlimited"),
@@ -632,10 +712,10 @@ function buildOffers(data) {
     })
     .filter(Boolean)
     .sort((a, b) => {
-      const currencyDiff = a.currencySortOrder - b.currencySortOrder;
-      if (currencyDiff !== 0) return currencyDiff;
       const sortDiff = a.sortOrder - b.sortOrder;
       if (sortDiff !== 0) return sortDiff;
+      const currencyDiff = a.currencySortOrder - b.currencySortOrder;
+      if (currencyDiff !== 0) return currencyDiff;
       return Number(a.packageId || 0) - Number(b.packageId || 0);
     });
 }
@@ -646,6 +726,7 @@ function isTempServerPackage(pkg) {
 }
 
 function isIgnoredPackage(pkg) {
+  if (INACTIVE_PACKAGE_IDS.has(String(pkg?.packageID || ""))) return true;
   const text = `${pkg?.comment1 || ""} ${pkg?.comment2 || ""}`.toLowerCase();
   if (text.includes("x-play") || text.includes("xplay")) return true;
   if (/\bold\b/.test(text) || /\bdelete\b/.test(text)) return true;
@@ -681,37 +762,65 @@ function setupLevelOptions(previousValue = "") {
 }
 
 function buildLevelOptions(list) {
-  const map = new Map();
+  const normalMins = new Set();
+  const legendMins = new Set();
+
   list.forEach((offer) => {
-    if (!hasLevelRequirement(offer.levelRequirement)) return;
-    const value = String(offer.levelBracket || "");
-    if (!value || map.has(value)) return;
-    map.set(value, {
-      value,
-      label: value,
-      requirement: offer.levelRequirement
-    });
+    const requirement = offer.levelRequirement;
+    if (!hasLevelRequirement(requirement)) return;
+
+    if (requirement.minLegendLevel !== null || requirement.maxLegendLevel !== null) {
+      if (requirement.minLegendLevel !== null) legendMins.add(requirement.minLegendLevel);
+      return;
+    }
+
+    if (requirement.minLevel !== null) normalMins.add(requirement.minLevel);
+    if (requirement.maxLevel !== null) normalMins.add(requirement.maxLevel + 1);
   });
 
-  return Array.from(map.values()).sort((a, b) => {
-    const levelA = a.requirement.minLevel ?? (a.requirement.minLegendLevel !== null ? 70 : 0);
-    const levelB = b.requirement.minLevel ?? (b.requirement.minLegendLevel !== null ? 70 : 0);
-    if (levelA !== levelB) return levelB - levelA;
+  const normalLevels = Array.from(normalMins).sort((a, b) => a - b);
+  const legendLevels = Array.from(legendMins).sort((a, b) => a - b);
+  const normalOptions = [];
+  const legendOptions = [];
 
-    const legendA = a.requirement.minLegendLevel ?? -1;
-    const legendB = b.requirement.minLegendLevel ?? -1;
-    if (legendA !== legendB) return legendB - legendA;
-
-    const maxA = a.requirement.maxLevel ?? 9999;
-    const maxB = b.requirement.maxLevel ?? 9999;
-    if (maxA !== maxB) return maxB - maxA;
-
-    const maxLegendA = a.requirement.maxLegendLevel ?? 9999;
-    const maxLegendB = b.requirement.maxLegendLevel ?? 9999;
-    if (maxLegendA !== maxLegendB) return maxLegendB - maxLegendA;
-
-    return a.label.localeCompare(b.label);
+  normalLevels.forEach((minLevel, index) => {
+    const nextMin = normalLevels[index + 1] ?? null;
+    const firstLegendMin = legendLevels[0] ?? null;
+    const requirement = {
+      minLevel,
+      maxLevel: nextMin !== null ? nextMin - 1 : null,
+      minLegendLevel: null,
+      maxLegendLevel: nextMin === null && firstLegendMin !== null ? firstLegendMin - 1 : null
+    };
+    const label = getLevelBracket(requirement);
+    if (list.some((offer) => isOfferAvailableForLevelSelection(offer.levelRequirement, requirement))) {
+      normalOptions.push({
+        value: `level:${minLevel}:${requirement.maxLevel ?? ""}`,
+        label,
+        requirement
+      });
+    }
   });
+
+  legendLevels.forEach((minLegendLevel, index) => {
+    const nextMin = legendLevels[index + 1] ?? null;
+    const requirement = {
+      minLevel: null,
+      maxLevel: null,
+      minLegendLevel,
+      maxLegendLevel: nextMin !== null ? nextMin - 1 : null
+    };
+    const label = getLevelBracket(requirement);
+    if (list.some((offer) => isOfferAvailableForLevelSelection(offer.levelRequirement, requirement))) {
+      legendOptions.push({
+        value: `legend:${minLegendLevel}:${requirement.maxLegendLevel ?? ""}`,
+        label,
+        requirement
+      });
+    }
+  });
+
+  return [...legendOptions.reverse(), ...normalOptions.reverse()];
 }
 
 function uniqueOptions(list, valueKey, labelKey, sortKey = null) {
@@ -751,7 +860,7 @@ function applyFilters() {
     : offers;
   const selectedLevelRequirement =
     levelValue
-      ? sourceForLevel.find((offer) => offer.levelBracket === levelValue)?.levelRequirement || null
+      ? buildLevelOptions(sourceForLevel).find((option) => option.value === levelValue)?.requirement || null
       : null;
 
   filteredOffers = offers.filter((offer) => {
@@ -760,38 +869,47 @@ function applyFilters() {
     return true;
   });
 
-  lazyList.reset(filteredOffers, {
-    emptyHtml: () => `<div class="col-12 filter-empty-message">${escapeHtml(noRewardsMessage)}</div>`
-  });
+  renderOffers(filteredOffers);
 }
 
 function isOfferAvailableForLevelSelection(offerRequirement, selectedRequirement) {
   if (!hasLevelRequirement(offerRequirement)) return true;
 
-  const selectedLevel =
-    selectedRequirement.minLevel ??
-    (selectedRequirement.minLegendLevel !== null ? 70 : null);
-  const selectedLegend = selectedRequirement.minLegendLevel;
+  const offerHasLegend =
+    offerRequirement.minLegendLevel !== null ||
+    offerRequirement.maxLegendLevel !== null;
+  const selectedHasLegend =
+    selectedRequirement.minLegendLevel !== null ||
+    selectedRequirement.maxLegendLevel !== null;
 
-  if (offerRequirement.minLevel !== null && selectedLevel !== null && selectedLevel < offerRequirement.minLevel) {
-    return false;
+  if (!offerHasLegend && selectedHasLegend) {
+    return offerRequirement.maxLevel === null;
   }
 
-  if (offerRequirement.maxLevel !== null && selectedLevel !== null && selectedLevel > offerRequirement.maxLevel) {
-    return false;
+  if (offerHasLegend || selectedHasLegend) {
+    if (offerHasLegend !== selectedHasLegend) return false;
+    return rangesOverlap(
+      offerRequirement.minLegendLevel,
+      offerRequirement.maxLegendLevel,
+      selectedRequirement.minLegendLevel,
+      selectedRequirement.maxLegendLevel
+    );
   }
 
-  if (offerRequirement.minLegendLevel !== null) {
-    if (selectedLegend === null) return false;
-    if (selectedLegend < offerRequirement.minLegendLevel) return false;
-  }
+  return rangesOverlap(
+    offerRequirement.minLevel,
+    offerRequirement.maxLevel,
+    selectedRequirement.minLevel,
+    selectedRequirement.maxLevel
+  );
+}
 
-  if (offerRequirement.maxLegendLevel !== null) {
-    if (selectedLegend === null) return false;
-    if (selectedLegend > offerRequirement.maxLegendLevel) return false;
-  }
-
-  return true;
+function rangesOverlap(aMin, aMax, bMin, bMax) {
+  const fromA = aMin ?? Number.NEGATIVE_INFINITY;
+  const toA = aMax ?? Number.POSITIVE_INFINITY;
+  const fromB = bMin ?? Number.NEGATIVE_INFINITY;
+  const toB = bMax ?? Number.POSITIVE_INFINITY;
+  return fromA <= toB && fromB <= toA;
 }
 
 function setupEventListeners() {
@@ -809,7 +927,16 @@ function setupEventListeners() {
   });
 }
 
-function appendOffers(items, { container, sentinel }) {
+function renderOffers(items) {
+  const container = document.getElementById("cards");
+  if (!container) return;
+  container.innerHTML = "";
+
+  if (!items.length) {
+    container.innerHTML = `<div class="col-12 filter-empty-message">${escapeHtml(noRewardsMessage)}</div>`;
+    return;
+  }
+
   const fragment = document.createDocumentFragment();
   items.forEach((offer) => {
     const wrapper = document.createElement("div");
@@ -819,13 +946,25 @@ function appendOffers(items, { container, sentinel }) {
     window.setTimeout(() => card.classList.add("card-visible"), 30);
     fragment.appendChild(card);
   });
-  container.insertBefore(fragment, sentinel);
+  container.appendChild(fragment);
 
   void hydrateComposedImages({
     root: container,
     selector: 'img[data-compose-asset="1"]:not([data-compose-ready])',
     cache: composedImageCache
   });
+}
+
+function getRewardLink(reward) {
+  if (!reward?.id) return null;
+  const id = encodeURIComponent(String(reward.id));
+  if (reward.type === "decoration") {
+    return `https://generalscamp.github.io/forum/overviews/decorations#${id}`;
+  }
+  if (reward.type === "constructionItem") {
+    return `https://generalscamp.github.io/forum/overviews/building_items#${id}`;
+  }
+  return null;
 }
 
 function createOfferCard(offer) {
@@ -841,6 +980,10 @@ function createOfferCard(offer) {
   const imageHtml = reward.imageUrl
     ? `<img src="${escapeHtml(reward.imageUrl)}" alt="${escapeHtml(reward.name)}" class="card-image ${reward.type === "currency" ? "currency-image" : ""}" loading="lazy"${composeAttrs}>`
     : `<img src="../../img_base/placeholder.webp" alt="${escapeHtml(reward.name)}" class="card-image" loading="lazy">`;
+  const rewardLink = getRewardLink(reward);
+  const imageBlock = rewardLink
+    ? `<a class="blacksmith-image-link" href="${escapeHtml(rewardLink)}" target="_blank" rel="noopener">${imageHtml}</a>`
+    : imageHtml;
   const costIcon = offer.currencyImageUrl
     ? `<img src="${escapeHtml(offer.currencyImageUrl)}" alt="" class="cost-image" loading="lazy">`
     : "";
@@ -855,7 +998,7 @@ function createOfferCard(offer) {
           <div class="card-table blacksmith-table">
             <div class="row g-0">
               <div class="col-4 card-cell blacksmith-image-cell border-end d-flex justify-content-center align-items-center">
-                <div class="image-wrapper" data-offer-debug="${escapeHtml(debugLabel)}">${imageHtml}</div>
+                <div class="image-wrapper" data-offer-debug="${escapeHtml(debugLabel)}">${imageBlock}</div>
               </div>
               <div class="col-8 card-cell">
                 <div class="row g-0">

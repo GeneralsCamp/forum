@@ -9,6 +9,7 @@
       "unlimited": "Unlimited",
       "no_rewards": "No Master Blacksmith offers for this selection.",
       "unknown_reward": "Unknown reward",
+      "set": "set",
       "shop": "shop",
       "ruby": "Ruby",
       "coin": "Coin"
@@ -174,6 +175,7 @@
       "unlimited": "Korlátlan",
       "no_rewards": "Nincs Master Blacksmith ajánlat ehhez a választáshoz.",
       "unknown_reward": "Ismeretlen jutalom",
+      "set": "szett",
       "shop": "bolt",
       "ruby": "Rubin",
       "coin": "Érme"

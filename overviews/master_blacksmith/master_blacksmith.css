@@ -72,6 +72,19 @@
     object-fit: contain;
 }
 
+.blacksmith-image-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.blacksmith-image-link .card-image {
+    cursor: pointer;
+}
+
 .blacksmith-image-cell .currency-image,
 .cost-image {
     image-rendering: auto;
