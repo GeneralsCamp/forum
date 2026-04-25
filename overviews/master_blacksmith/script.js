@@ -42,7 +42,7 @@ let currentLanguage = getInitialLanguage();
 const loader = createLoader();
 const composedImageCache = new Map();
 // These Sceat shop offers are present in static item data, but inactive in-game.
-const INACTIVE_PACKAGE_IDS = new Set(["10773", "10774", "10775", "3570", "3571", "10776", "10778"]);
+const INACTIVE_PACKAGE_IDS = new Set(["10773", "10774", "10775", "3570", "3571", "10776", "10778", "2091"]);
 const ALLOWED_SHOP_CATEGORY_IDS = new Set([
   "101", // Gold
   "102", // Silver
@@ -109,6 +109,13 @@ function ui(key, fallback) {
 function gameText(key, fallback) {
   const normalized = String(key || "").toLowerCase();
   return lang[normalized] || fallback;
+}
+
+function formatGameText(template, ...values) {
+  return String(template ?? "").replace(/\{(\d+)\}/g, (_, index) => {
+    const value = values[Number(index)];
+    return value == null ? "" : String(value);
+  });
 }
 
 function escapeHtml(text) {
@@ -342,24 +349,73 @@ function getLootBoxName(box) {
   return lang[key] || box.name || "Loot box";
 }
 
+const REWARD_BAG_SIZE_KEY = {
+  1: "small",
+  2: "medium",
+  3: "large",
+  4: "huge"
+};
+
+const REWARD_BAG_RARITY_KEY = {
+  1: "common",
+  2: "rare",
+  3: "epic",
+  4: "legendary"
+};
+
+const FOCUSED_REWARD_BAG_MATERIALS = {
+  "30001": "commonFinesand",
+  "30002": "commonBricks",
+  "30003": "rareFlint",
+  "30004": "rareFarmingtools",
+  "30005": "epicResin",
+  "30006": "legendarySoulstone"
+};
+
+function getRewardBagMaterialKey(bag) {
+  const focusedId = String(bag?.focusedMaterialID || "").trim();
+  if (focusedId && FOCUSED_REWARD_BAG_MATERIALS[focusedId]) {
+    return FOCUSED_REWARD_BAG_MATERIALS[focusedId];
+  }
+
+  const materialKey = Object.values(FOCUSED_REWARD_BAG_MATERIALS).find((key) => {
+    const addValue = Number(bag?.[`add${key.charAt(0).toUpperCase()}${key.slice(1)}`] || 0);
+    const variableValue = Number(bag?.[`variable${key.charAt(0).toUpperCase()}${key.slice(1)}`] || 0);
+    return addValue > 0 || variableValue > 0;
+  });
+  return materialKey || null;
+}
+
+function getRewardBagMaterialName(materialKey) {
+  if (!materialKey) return null;
+  const ciKey = `ciMaterial_${materialKey}`;
+  const currencyKey = `currency_name_${materialKey.charAt(0).toUpperCase()}${materialKey.slice(1)}`;
+  return gameText(ciKey, gameText(currencyKey, materialKey));
+}
+
 function getRewardBagName(bag, id) {
   if (!bag) return `Reward bag ${id || ""}`.trim();
-  const rarityMap = {
-    1: "Common",
-    2: "Rare",
-    3: "Epic",
-    4: "Legendary"
-  };
-  const sizeMap = {
-    1: "Small",
-    2: "Medium",
-    3: "Large",
-    4: "Huge"
-  };
-  const rarity = rarityMap[Number(bag.rareness)] || `Rarity ${bag.rareness || "?"}`;
-  const size = sizeMap[Number(bag.size)] || `Size ${bag.size || "?"}`;
-  const focus = String(bag.focused || "") === "1" ? "focused" : "unfocused";
-  return `${rarity} ${size} ${focus} reward bag`;
+  const sizeKey = REWARD_BAG_SIZE_KEY[Number(bag.size)] || null;
+  const rarityKey = REWARD_BAG_RARITY_KEY[Number(bag.rareness)] || null;
+  const isFocused = String(bag.focused || "") === "1";
+  const materialKey = getRewardBagMaterialKey(bag);
+  const materialName = getRewardBagMaterialName(materialKey);
+
+  if (isFocused && sizeKey && materialName) {
+    return formatGameText(
+      gameText(`ciMaterialSack_${sizeKey}_focused`, `${sizeKey} {0} material sack`),
+      materialName
+    );
+  }
+
+  if (sizeKey && rarityKey) {
+    return gameText(
+      `ciMaterialSack_${sizeKey}_${rarityKey}`,
+      `${sizeKey} ${rarityKey} material sack`
+    );
+  }
+
+  return `Reward bag ${id || ""}`.trim();
 }
 
 function getPackageTypeLabel(type) {
@@ -582,7 +638,10 @@ function resolvePrimaryReward(pkg) {
     return {
       type: "relicItem",
       id: pkg.relicEquipments,
-      name: lang.relicequipment_name || lang.relic_equipment || "Relic equipment",
+      name: gameText(
+        "relicequip_dialog_randomRelic_equipmentMystery",
+        lang.relicequipment_name || lang.relic_equipment || "Relic equipment"
+      ),
       quantity: "1",
       imageUrl: LOCAL_RESOURCE_IMAGES.relic
     };
