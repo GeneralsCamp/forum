@@ -30,6 +30,7 @@ const categories = {
         { name: "Gacha Overview", desc: "This page loads the in-game gacha rewards automatically!", icon: "main_page/gacha-icon.webp", link: "./overviews/gacha_events/index.html", disabled: false },
         { name: "Mystery Boxes Overview", desc: "This page loads in-game mystery box key chances and full reward pools!", icon: "main_page/lootbox-icon.webp", link: "./overviews/loot_box/index.html#boxes", disabled: false },
         { name: "Offerings Overview", desc: "This page loads in-game offerings and their linked reward pools!", icon: "main_page/offerings-icon.webp", link: "./overviews/loot_box/index.html#offerings", disabled: false },
+        { name: "Master Blacksmith Overview", desc: "This page loads Master Blacksmith shops automatically!", icon: "main_page/master-blacksmith.webp", link: "./overviews/master_blacksmith/index.html", disabled: false },
         { name: "Troops Overview", desc: "This page loads all in-game troops with detailed stats!", icon: "main_page/troops-icon.webp", link: "./overviews/troops_and_tools/index.html#troops", disabled: false },
         { name: "Tools Overview", desc: "This page loads all in-game tools with detailed stats!", icon: "main_page/tools-icon.webp", link: "./overviews/troops_and_tools/index.html#tools", disabled: false },
         { name: "Rift Event Overview", desc: "This page loads in-game Rift activity and boss defeat rewards!", icon: "main_page/rift-raid-points-icon.webp", link: "./overviews/rift_event/index.html", disabled: false },

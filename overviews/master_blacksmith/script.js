@@ -322,7 +322,7 @@ function getBundleName(pkg) {
 }
 
 function getBundleImage(pkg) {
-  return getBundleSetId(pkg) ? LOCAL_RESOURCE_IMAGES.equipment : "../../img_base/placeholder.webp";
+  return getBundleSetId(pkg) ? "../../img_base/setPlaceholder.webp" : "../../img_base/placeholder.webp";
 }
 
 function getBundleQuantity(pkg, count) {
