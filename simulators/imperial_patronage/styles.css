@@ -165,7 +165,12 @@
     --gf-modal-width: calc(100% - 10px);
   }
 
+  .patronage-reward-modal-card {
+    max-height: calc(100dvh - 16px);
+  }
+
   .patronage-reward-modal-body {
+    max-height: calc(100dvh - 72px);
     padding: 6px;
   }
 
