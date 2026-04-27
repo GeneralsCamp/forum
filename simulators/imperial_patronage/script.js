@@ -226,6 +226,42 @@ function getCurrentTypeModel() {
   return setModel?.typesById?.[String(state.selectedTypeId)] || setModel?.types?.[0] || null;
 }
 
+function normalizeHash(value) {
+  return String(value || "")
+    .replace(/^#/, "")
+    .trim()
+    .toLowerCase();
+}
+
+function getSetIdFromHash() {
+  const hash = normalizeHash(window.location.hash);
+  if (!hash) return "";
+  const versionMatch = hash.match(/^v(?:ersion)?[-_]?(\d+)$/);
+  if (versionMatch) {
+    const setId = versionMatch[1];
+    return simulatorModel?.setsById?.[setId] ? setId : "";
+  }
+  return simulatorModel?.setsById?.[hash] ? hash : "";
+}
+
+function updateHashForSet(setId) {
+  if (!setId) return;
+  const nextHash = `version${setId}`;
+  if (normalizeHash(window.location.hash) !== nextHash) {
+    window.location.hash = nextHash;
+  }
+}
+
+function applySetSelection(setId, { updateHash = true } = {}) {
+  const nextSet = simulatorModel?.setsById?.[String(setId)];
+  if (!nextSet) return false;
+  state.selectedSetId = nextSet.id;
+  state.selectedTypeId = nextSet.typesById[String(state.selectedTypeId)] ? state.selectedTypeId : nextSet.types[0].id;
+  ensureSetProgress(nextSet.id, nextSet.types.map((type) => type.id));
+  if (updateHash) updateHashForSet(nextSet.id);
+  return true;
+}
+
 function getCurrentProgress() {
   const setModel = getCurrentSetModel();
   return setModel ? ensureSetProgress(setModel.id, setModel.types.map((type) => type.id)) : null;
@@ -695,11 +731,7 @@ function render() {
 
 function bindEvents() {
   els.setSelect.addEventListener("change", (event) => {
-    const nextSet = simulatorModel.setsById[String(event.target.value)];
-    if (!nextSet) return;
-    state.selectedSetId = nextSet.id;
-    state.selectedTypeId = nextSet.typesById[String(state.selectedTypeId)] ? state.selectedTypeId : nextSet.types[0].id;
-    ensureSetProgress(nextSet.id, nextSet.types.map((type) => type.id));
+    if (!applySetSelection(event.target.value)) return;
     saveState();
     render();
   });
@@ -756,6 +788,14 @@ function bindEvents() {
   window.addEventListener("resize", () => {
     render();
     syncMobileDonationPanelHeight();
+  });
+
+  window.addEventListener("hashchange", () => {
+    const hashSetId = getSetIdFromHash();
+    if (!hashSetId || String(hashSetId) === String(state.selectedSetId)) return;
+    if (!applySetSelection(hashSetId, { updateHash: false })) return;
+    saveState();
+    render();
   });
 }
 
@@ -923,7 +963,8 @@ async function init() {
     }
 
     const latestSet = simulatorModel.sets[simulatorModel.sets.length - 1];
-    state.selectedSetId = latestSet.id;
+    const hashSetId = getSetIdFromHash();
+    applySetSelection(hashSetId || latestSet.id, { updateHash: false });
     const currentSet = getCurrentSetModel();
     ensureSetProgress(currentSet.id, currentSet.types.map((type) => type.id));
     state.selectedTypeId = currentSet.typesById[String(state.selectedTypeId)] ? state.selectedTypeId : currentSet.types[0].id;
@@ -939,6 +980,7 @@ async function init() {
       }
     });
     render();
+    updateHashForSet(currentSet.id);
 
     loader.set(5, 5, "Finalizing...");
     const waitMs = Math.max(0, MIN_LOADING_MS - (Date.now() - startedAt));

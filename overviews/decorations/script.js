@@ -549,7 +549,7 @@ function findRevealIndex(items, search, selectedFilters) {
   return null;
 }
 
-function applyFiltersAndSorting({ revealId = null } = {}) {
+function applyFiltersAndSorting({ revealId = null, exactId = null } = {}) {
   const search = appliedSearchText.toLowerCase().trim();
 
   const selectedFilters = Array.from(document.querySelectorAll(".search-filter:checked")).map(cb => cb.value);
@@ -557,7 +557,9 @@ function applyFiltersAndSorting({ revealId = null } = {}) {
   const hasFilters = selectedFilters.length > 0;
   const onlyFullWords = selectedFilters.includes("fullwords");
 
-  const filtered = allDecorations.filter(item => {
+  const filtered = exactId
+    ? allDecorations.filter(item => String(item.wodID || "") === String(exactId))
+    : allDecorations.filter(item => {
     if (specialFilter === "new" && !newWodIDsSet.has(item.wodID)) return false;
     if (specialFilter && specialFilter.startsWith("cap-")) {
       const capID = specialFilter.slice(4);
@@ -637,7 +639,7 @@ function applyHashSearch() {
   searchInput.value = id;
   appliedSearchText = id;
 
-  applyFiltersAndSorting({ revealId: id });
+  applyFiltersAndSorting({ revealId: id, exactId: id });
 }
 
 function setupMaxCapClick(root = document) {

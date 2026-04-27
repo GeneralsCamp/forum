@@ -874,7 +874,7 @@ function findRevealIndex(groups, search, selectedFilters) {
     return null;
 }
 
-function applyFiltersAndSorting({ revealId = null } = {}) {
+function applyFiltersAndSorting({ revealId = null, exactId = null } = {}) {
     const search = appliedSearchText.toLowerCase().trim();
     const selectedTypes = Array.from(typeFilterCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
 
@@ -883,7 +883,9 @@ function applyFiltersAndSorting({ revealId = null } = {}) {
     const hasFilters = selectedFilters.length > 0;
     const onlyFullWords = selectedFilters.includes("fullwords");
 
-    const filtered = allItems.filter(item => {
+    const filtered = exactId
+        ? allItems.filter(item => String(item.constructionItemID || "") === String(exactId))
+        : allItems.filter(item => {
         let matchSearch = true;
 
         if (hasSearchText && hasFilters) {
@@ -975,7 +977,7 @@ function applyHashSearch() {
     searchInput.value = id;
     appliedSearchText = id;
 
-    applyFiltersAndSorting({ revealId: id });
+    applyFiltersAndSorting({ revealId: id, exactId: id });
 }
 
 function formatNumber(num) {
