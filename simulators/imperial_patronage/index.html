@@ -10,6 +10,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css"
     rel="stylesheet">
   <link rel="stylesheet" href="../../overviews/shared/shared.css">
+  <link rel="stylesheet" href="../../overviews/shared/modal.css">
   <link rel="stylesheet" href="../../overviews/shared/consent.css">
   <link rel="stylesheet" href="styles.css">
   <meta property="og:title" content="Imperial Patronage Simulator | Generals Forum">
@@ -27,6 +28,12 @@
         </div>
 
         <div id="topButtonsContainer">
+          <button id="rewardListBtn" class="home-icon-link patronage-list-button" type="button"
+            aria-label="Open reward list" title="Reward list">
+            <div class="home-icon">
+              <i class="bi bi-list-stars"></i>
+            </div>
+          </button>
           <a href="https://generalscamp.github.io/forum/" class="home-icon-link" aria-label="Back to homepage">
             <div class="home-icon">
               <i class="bi bi-house"></i>
@@ -128,6 +135,20 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div id="rewardListModal" class="gf-modal patronage-reward-modal" aria-hidden="true">
+    <div class="gf-modal-backdrop" data-close-modal="1"></div>
+    <div class="gf-modal-card patronage-reward-modal-card" role="dialog" aria-modal="true"
+      aria-labelledby="rewardListModalTitle">
+      <div class="gf-modal-head patronage-reward-modal-head">
+        <h2 id="rewardListModalTitle" class="gf-modal-title">Patronage Reward List</h2>
+        <button type="button" class="gf-modal-close patronage-reward-modal-close" aria-label="Close">
+          <i class="bi bi-x-lg" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div id="rewardListModalBody" class="gf-modal-body patronage-reward-modal-body"></div>
     </div>
   </div>
 

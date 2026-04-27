@@ -9,6 +9,7 @@ import { createLoader } from "../../overviews/shared/LoadingService.mjs";
 import { loadImageMaps } from "../../overviews/shared/ImageService.mjs";
 import { initAutoHeight } from "../../overviews/shared/ResizeService.mjs";
 import { initLanguageSelector, getInitialLanguage } from "../../overviews/shared/LanguageService.mjs";
+import { initCustomModal } from "../../overviews/shared/ModalService.mjs";
 import {
   createRewardResolver,
   buildLookup,
@@ -31,6 +32,7 @@ let rewardResolver = null;
 let ownLang = {};
 let currentLanguage = getInitialLanguage();
 let lang = {};
+let rewardListModal = null;
 
 const state = {
   selectedSetId: "",
@@ -65,7 +67,10 @@ const els = {
   rewardWarning: document.getElementById("rewardWarning"),
   resetSlidersBtn: document.getElementById("resetSlidersBtn"),
   resetStagedBtn: document.getElementById("resetStagedBtn"),
-  donateBtn: document.getElementById("donateBtn")
+  donateBtn: document.getElementById("donateBtn"),
+  rewardListBtn: document.getElementById("rewardListBtn"),
+  rewardListModal: document.getElementById("rewardListModal"),
+  rewardListModalBody: document.getElementById("rewardListModalBody")
 };
 
 function lowercaseKeysRecursive(input) {
@@ -89,6 +94,15 @@ function formatNumber(value) {
 
 function formatAmountDisplayValue(value) {
   return formatNumber(value);
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 function parseAmountInput(value) {
@@ -380,15 +394,19 @@ function getRewardStatus(typeModel) {
 
 function getRewardImage(reward) {
   if (!reward?.entries?.length) return FALLBACK_IMAGE;
-  const primary = reward.entries[0];
+  return getRewardEntryImage(reward.entries[0]);
+}
+
+function getRewardEntryImage(entry) {
+  if (!entry) return FALLBACK_IMAGE;
   return (
-    rewardResolver.getDecorationImageUrl(primary) ||
-    rewardResolver.getConstructionImageUrl(primary) ||
-    rewardResolver.getEquipmentImageUrl(primary) ||
-    rewardResolver.getUnitImageUrl(primary) ||
-    rewardResolver.getCurrencyImageUrl(primary) ||
-    rewardResolver.getLootBoxImageUrl(primary) ||
-    rewardResolver.getAllianceLayoutImageUrl(primary) ||
+    rewardResolver.getDecorationImageUrl(entry) ||
+    rewardResolver.getConstructionImageUrl(entry) ||
+    rewardResolver.getEquipmentImageUrl(entry) ||
+    rewardResolver.getUnitImageUrl(entry) ||
+    rewardResolver.getCurrencyImageUrl(entry) ||
+    rewardResolver.getLootBoxImageUrl(entry) ||
+    rewardResolver.getAllianceLayoutImageUrl(entry) ||
     FALLBACK_IMAGE
   );
 }
@@ -402,6 +420,10 @@ function getRewardLabel(reward) {
 
 function getRewardNavigationUrl(reward) {
   const primary = reward?.entries?.[0];
+  return getRewardEntryNavigationUrl(primary);
+}
+
+function getRewardEntryNavigationUrl(primary) {
   if (!primary?.id || !primary?.type) return null;
 
   if (primary.type === "decoration") {
@@ -439,6 +461,65 @@ function applyRewardNavigation(card, reward) {
 function openRewardNavigation(url) {
   if (!url) return;
   window.open(url, "_blank", "noopener,noreferrer");
+}
+
+function getRewardEntryLabel(entry) {
+  if (!entry) return "Reward";
+  return `${entry.name || "Reward"}${entry.amount > 1 ? ` x${formatNumber(entry.amount)}` : ""}`;
+}
+
+function renderRewardListModal() {
+  if (!els.rewardListModalBody || !simulatorModel?.sets?.length) return;
+  const visibleSets = simulatorModel.sets
+    .filter((setModel) => String(setModel.id) === String(state.selectedSetId));
+
+  els.rewardListModalBody.innerHTML = `
+    <div class="patronage-reward-list">
+      ${visibleSets.map((setModel) => `
+        <section class="patronage-version-group">
+          <h3 class="patronage-version-title">${escapeHtml(setModel.label)}</h3>
+          ${setModel.types.map((typeModel) => `
+            <section class="patronage-type-group">
+              <h4 class="patronage-type-title">${escapeHtml(typeModel.label)}</h4>
+              <table class="patronage-reward-table">
+                <thead>
+                  <tr>
+                    <th>${escapeHtml(ui("level", "Level"))}</th>
+                    <th>${escapeHtml(lang?.points_novalue || "Points")}</th>
+                    <th>${escapeHtml(ui("reward", "Reward"))}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${typeModel.rewards.map((reward, index) => `
+                    <tr>
+                      <td class="patronage-level-cell">${formatNumber(index + 1)}</td>
+                      <td class="patronage-points-cell">${formatNumber(reward.minPoints)}</td>
+                      <td>
+                        <div class="patronage-reward-items">
+                          ${(reward.entries?.length ? reward.entries : [null]).map((entry) => {
+                            const label = getRewardEntryLabel(entry);
+                            const url = getRewardEntryNavigationUrl(entry);
+                            const imageUrl = getRewardEntryImage(entry);
+                            const content = `
+                              <img src="${escapeHtml(imageUrl)}" alt="">
+                              <span>${escapeHtml(label)}</span>
+                            `;
+                            return url
+                              ? `<a class="patronage-reward-item" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${content}</a>`
+                              : `<div class="patronage-reward-item">${content}</div>`;
+                          }).join("")}
+                        </div>
+                      </td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table>
+            </section>
+          `).join("")}
+        </section>
+      `).join("")}
+    </div>
+  `;
 }
 
 function updateAmount(typeModel, optionId, rawValue) {
@@ -785,6 +866,10 @@ function bindEvents() {
   els.resetSlidersBtn.addEventListener("click", resetCurrentTypeStaged);
   els.resetStagedBtn.addEventListener("click", resetCurrentTypeProgress);
   els.donateBtn.addEventListener("click", commitStaged);
+  els.rewardListBtn?.addEventListener("click", () => {
+    renderRewardListModal();
+    rewardListModal?.open();
+  });
   window.addEventListener("resize", () => {
     render();
     syncMobileDonationPanelHeight();
@@ -926,6 +1011,7 @@ async function init() {
   const MIN_LOADING_MS = 900;
   const startedAt = Date.now();
 
+  rewardListModal = initCustomModal({ modalId: "rewardListModal" });
   readSavedState();
   loader.set(1, 5, "Initializing...");
 
@@ -1018,6 +1104,13 @@ function applyLanguage() {
   if (els.resetSlidersBtn) els.resetSlidersBtn.textContent = ui("reset_sliders", "Reset Sliders");
   if (els.resetStagedBtn) els.resetStagedBtn.textContent = ui("reset_all", "Reset All");
   if (els.donateBtn) els.donateBtn.textContent = lang?.dialog_alliance_donate || ui("donate", "Donate");
+  if (els.rewardListBtn) {
+    const rewardListLabel = ui("reward_list", "Reward list");
+    els.rewardListBtn.setAttribute("aria-label", rewardListLabel);
+    els.rewardListBtn.setAttribute("title", rewardListLabel);
+  }
+  const rewardListTitle = document.getElementById("rewardListModalTitle");
+  if (rewardListTitle) rewardListTitle.textContent = ui("patronage_reward_list", "Patronage Reward List");
 }
 
 init();
