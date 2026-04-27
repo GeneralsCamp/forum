@@ -6,7 +6,8 @@
       "reset_all": "Reset Progress",
       "total_used": "Total used",
       "latest_version": "Latest version",
-      "version": "Version"
+      "version": "Version",
+      "patronage_reward_list": "Patronage Reward List"
     }
   },
   "ar": {
@@ -16,7 +17,8 @@
       "reset_all": "إعادة ضبط التقدم",
       "total_used": "إجمالي المستخدم",
       "latest_version": "أحدث إصدار",
-      "version": "الإصدار"
+      "version": "الإصدار",
+      "patronage_reward_list": "قائمة مكافآت الرعاية الإمبراطورية"
     }
   },
   "es": {
@@ -26,7 +28,8 @@
       "reset_all": "Restablecer progreso",
       "total_used": "Total usado",
       "latest_version": "Última versión",
-      "version": "Versión"
+      "version": "Versión",
+      "patronage_reward_list": "Lista de recompensas del patronazgo"
     }
   },
   "bg": {
@@ -36,7 +39,8 @@
       "reset_all": "Нулиране на напредъка",
       "total_used": "Общо използвано",
       "latest_version": "Последна версия",
-      "version": "Версия"
+      "version": "Версия",
+      "patronage_reward_list": "Списък с награди от покровителството"
     }
   },
   "pt": {
@@ -46,7 +50,8 @@
       "reset_all": "Redefinir progresso",
       "total_used": "Total usado",
       "latest_version": "Versão mais recente",
-      "version": "Versão"
+      "version": "Versão",
+      "patronage_reward_list": "Lista de recompensas do patrocínio"
     }
   },
   "cs": {
@@ -56,7 +61,8 @@
       "reset_all": "Obnovit postup",
       "total_used": "Celkem použito",
       "latest_version": "Nejnovější verze",
-      "version": "Verze"
+      "version": "Verze",
+      "patronage_reward_list": "Seznam odměn patronátu"
     }
   },
   "de": {
@@ -66,7 +72,8 @@
       "reset_all": "Fortschritt zurücksetzen",
       "total_used": "Insgesamt genutzt",
       "latest_version": "Neueste Version",
-      "version": "Version"
+      "version": "Version",
+      "patronage_reward_list": "Patronage-Belohnungsliste"
     }
   },
   "da": {
@@ -76,7 +83,8 @@
       "reset_all": "Nulstil fremskridt",
       "total_used": "Samlet brugt",
       "latest_version": "Seneste version",
-      "version": "Version"
+      "version": "Version",
+      "patronage_reward_list": "Liste over patronagebelønninger"
     }
   },
   "fi": {
@@ -86,7 +94,8 @@
       "reset_all": "Nollaa edistyminen",
       "total_used": "Käytetty yhteensä",
       "latest_version": "Uusin versio",
-      "version": "Versio"
+      "version": "Versio",
+      "patronage_reward_list": "Suojeluksen palkintolista"
     }
   },
   "fr": {
@@ -96,7 +105,8 @@
       "reset_all": "Réinitialiser la progression",
       "total_used": "Total utilisé",
       "latest_version": "Dernière version",
-      "version": "Version"
+      "version": "Version",
+      "patronage_reward_list": "Liste des récompenses du patronage"
     }
   },
   "el": {
@@ -106,7 +116,8 @@
       "reset_all": "Επαναφορά προόδου",
       "total_used": "Συνολικά χρησιμοποιημένα",
       "latest_version": "Τελευταία έκδοση",
-      "version": "Έκδοση"
+      "version": "Έκδοση",
+      "patronage_reward_list": "Λίστα ανταμοιβών προστασίας"
     }
   },
   "hu": {
@@ -116,7 +127,8 @@
       "reset_all": "Haladás nullázása",
       "total_used": "Összesen felhasználva",
       "latest_version": "Legfrissebb verzió",
-      "version": "Verzió"
+      "version": "Verzió",
+      "patronage_reward_list": "Patrónusi jutalmak listája"
     }
   },
   "it": {
@@ -126,7 +138,8 @@
       "reset_all": "Reimposta progresso",
       "total_used": "Totale utilizzato",
       "latest_version": "Versione più recente",
-      "version": "Versione"
+      "version": "Versione",
+      "patronage_reward_list": "Elenco ricompense patronato"
     }
   },
   "ja": {
@@ -136,7 +149,8 @@
       "reset_all": "進行状況をリセット",
       "total_used": "合計使用量",
       "latest_version": "最新バージョン",
-      "version": "バージョン"
+      "version": "バージョン",
+      "patronage_reward_list": "後援報酬リスト"
     }
   },
   "ko": {
@@ -146,7 +160,8 @@
       "reset_all": "진행도 초기화",
       "total_used": "총 사용량",
       "latest_version": "최신 버전",
-      "version": "버전"
+      "version": "버전",
+      "patronage_reward_list": "후원 보상 목록"
     }
   },
   "lt": {
@@ -156,7 +171,8 @@
       "reset_all": "Atstatyti pažangą",
       "total_used": "Iš viso panaudota",
       "latest_version": "Naujausia versija",
-      "version": "Versija"
+      "version": "Versija",
+      "patronage_reward_list": "Patronažo apdovanojimų sąrašas"
     }
   },
   "nl": {
@@ -166,7 +182,8 @@
       "reset_all": "Voortgang resetten",
       "total_used": "Totaal gebruikt",
       "latest_version": "Nieuwste versie",
-      "version": "Versie"
+      "version": "Versie",
+      "patronage_reward_list": "Lijst met patronagebeloningen"
     }
   },
   "no": {
@@ -176,7 +193,8 @@
       "reset_all": "Tilbakestill fremdrift",
       "total_used": "Totalt brukt",
       "latest_version": "Nyeste versjon",
-      "version": "Versjon"
+      "version": "Versjon",
+      "patronage_reward_list": "Liste over patronasjebelønninger"
     }
   },
   "pl": {
@@ -186,7 +204,8 @@
       "reset_all": "Reset postępu",
       "total_used": "Łącznie wykorzystano",
       "latest_version": "Najnowsza wersja",
-      "version": "Wersja"
+      "version": "Wersja",
+      "patronage_reward_list": "Lista nagród patronatu"
     }
   },
   "ro": {
@@ -196,7 +215,8 @@
       "reset_all": "Resetează progresul",
       "total_used": "Total folosit",
       "latest_version": "Cea mai nouă versiune",
-      "version": "Versiune"
+      "version": "Versiune",
+      "patronage_reward_list": "Lista recompenselor de patronaj"
     }
   },
   "ru": {
@@ -206,7 +226,8 @@
       "reset_all": "Сбросить прогресс",
       "total_used": "Всего использовано",
       "latest_version": "Последняя версия",
-      "version": "Версия"
+      "version": "Версия",
+      "patronage_reward_list": "Список наград покровительства"
     }
   },
   "sv": {
@@ -216,7 +237,8 @@
       "reset_all": "Återställ framsteg",
       "total_used": "Totalt använt",
       "latest_version": "Senaste version",
-      "version": "Version"
+      "version": "Version",
+      "patronage_reward_list": "Lista över patronagebelöningar"
     }
   },
   "sk": {
@@ -226,7 +248,8 @@
       "reset_all": "Obnoviť postup",
       "total_used": "Celkovo použité",
       "latest_version": "Najnovšia verzia",
-      "version": "Verzia"
+      "version": "Verzia",
+      "patronage_reward_list": "Zoznam odmien patronátu"
     }
   },
   "tr": {
@@ -236,7 +259,8 @@
       "reset_all": "İlerlemeyi sıfırla",
       "total_used": "Toplam kullanılan",
       "latest_version": "En son sürüm",
-      "version": "Sürüm"
+      "version": "Sürüm",
+      "patronage_reward_list": "Himaye ödülleri listesi"
     }
   }
 }

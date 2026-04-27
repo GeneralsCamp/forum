@@ -464,8 +464,9 @@ function openRewardNavigation(url) {
 }
 
 function getRewardEntryLabel(entry) {
-  if (!entry) return "Reward";
-  return `${entry.name || "Reward"}${entry.amount > 1 ? ` x${formatNumber(entry.amount)}` : ""}`;
+  const rewardLabel = lang?.reward || "Reward";
+  if (!entry) return rewardLabel;
+  return `${entry.name || rewardLabel}${entry.amount > 1 ? ` x${formatNumber(entry.amount)}` : ""}`;
 }
 
 function renderRewardListModal() {
@@ -484,9 +485,9 @@ function renderRewardListModal() {
               <table class="patronage-reward-table">
                 <thead>
                   <tr>
-                    <th>${escapeHtml(ui("level", "Level"))}</th>
+                    <th>${escapeHtml(lang?.level || "Level")}</th>
                     <th>${escapeHtml(lang?.points_novalue || "Points")}</th>
-                    <th>${escapeHtml(ui("reward", "Reward"))}</th>
+                    <th>${escapeHtml(lang?.reward || "Reward")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1105,7 +1106,7 @@ function applyLanguage() {
   if (els.resetStagedBtn) els.resetStagedBtn.textContent = ui("reset_all", "Reset All");
   if (els.donateBtn) els.donateBtn.textContent = lang?.dialog_alliance_donate || ui("donate", "Donate");
   if (els.rewardListBtn) {
-    const rewardListLabel = ui("reward_list", "Reward list");
+    const rewardListLabel = ui("patronage_reward_list", ui("reward_list", "Reward list"));
     els.rewardListBtn.setAttribute("aria-label", rewardListLabel);
     els.rewardListBtn.setAttribute("title", rewardListLabel);
   }
