@@ -20,6 +20,7 @@ import {
 let lang = {};
 let itemsData = null;
 let leagueEntries = [];
+let leaderboardRewardEntries = [];
 let rewardsById = {};
 let currenciesById = {};
 let equipmentById = {};
@@ -125,6 +126,11 @@ function applyOwnLang() {
             ownKey: "view_summary_all",
             fallback: "Summarized all",
             langKeys: []
+        }),
+        activity: pick({
+            ownKey: "activity",
+            fallback: "Activity",
+            langKeys: ["dialog_are_activityRewards_title"]
         }),
 
         no_rewards: pick({ ownKey: "no_rewards", fallback: "No rewards for this selection.", langKeys: [] }),
@@ -390,6 +396,18 @@ function isBerimondRedEntry(entry) {
 }
 
 function getLevelLabel(eventId, leagueTypeId) {
+    if (isAllianceMobilizationEvent(eventId)) {
+        const labels = {
+            1: "Copper",
+            2: "Glass",
+            3: "Bronze",
+            4: "Silver",
+            5: "Gold"
+        };
+        const langKey = `popup_ame_rewards_division_name_${leagueTypeId}`.toLowerCase();
+        return lang[langKey] || labels[String(leagueTypeId)] || `League ${leagueTypeId}`;
+    }
+
     const leagueTypes = getArray(itemsData, ["leaguetypes"]);
     const matches = leagueTypes
         .filter(x =>
@@ -454,8 +472,12 @@ function isIndividualOnlyEvent(eventId) {
     return String(eventId) === "3";
 }
 
+function isAllianceMobilizationEvent(eventId) {
+    return String(eventId) === "129";
+}
+
 function hasDifficultyFilter(eventId) {
-    return String(eventId) !== "3";
+    return String(eventId) !== "3" && !isAllianceMobilizationEvent(eventId);
 }
 
 function shouldRenderTopRewards(eventId) {
@@ -537,6 +559,86 @@ function getTopRewardPairsForEntry({ entry, eventId, baseRewardIds, baseNeededPo
     }));
 }
 
+function pushResolvedReward(rewards, rewardId, { requirementText, modeText, isTopReward = false }) {
+    const reward = rewardsById[String(rewardId)];
+    const entriesToPush = resolveRewardEntries(reward);
+
+    if (entriesToPush.length > 0) {
+        entriesToPush.forEach(it => {
+            rewards.push({
+                name: it.name,
+                amount: it.amount,
+                chanceText: requirementText,
+                modeText,
+                id: it.id,
+                type: it.type || null,
+                addKeyName: it.addKeyName || null,
+                isTopReward
+            });
+        });
+        return;
+    }
+
+    rewards.push({
+        name: resolveRewardName(reward) || "Reward",
+        amount: getRewardAmount(reward),
+        chanceText: requirementText,
+        modeText,
+        id: resolveRewardIdStrict(reward),
+        type: resolveRewardType(reward),
+        addKeyName: getAddKeyName(reward),
+        isTopReward
+    });
+}
+
+function getLeaderboardRewardSetId(eventId) {
+    const setIds = leaderboardRewardEntries
+        .filter(row => String(getProp(row, ["eventTypeID", "eventTypeId", "eventtypeid"])) === String(eventId))
+        .map(row => Number(getProp(row, ["leaderboardRewardSetID", "leaderboardRewardSetId", "leaderboardrewardsetid"])))
+        .filter(value => Number.isFinite(value));
+
+    if (setIds.length === 0) return null;
+    return Math.min(...setIds);
+}
+
+function pushAllianceMobilizationTopRewards(rewards, eventId, leagueId) {
+    if (!isAllianceMobilizationEvent(eventId)) return;
+
+    const rewardSetId = getLeaderboardRewardSetId(eventId);
+    if (rewardSetId === null) return;
+
+    const rows = leaderboardRewardEntries
+        .filter(row =>
+            String(getProp(row, ["eventTypeID", "eventTypeId", "eventtypeid"])) === String(eventId) &&
+            String(getProp(row, ["leagueID", "leagueId", "leagueid"])) === String(leagueId) &&
+            Number(getProp(row, ["leaderboardRewardSetID", "leaderboardRewardSetId", "leaderboardrewardsetid"])) === rewardSetId)
+        .sort((a, b) =>
+            Number(getProp(a, ["maxRank", "maxrank"])) -
+            Number(getProp(b, ["maxRank", "maxrank"])));
+
+    let previousMaxRank = 0;
+    rows.forEach(row => {
+        const maxRank = Number(getProp(row, ["maxRank", "maxrank"]));
+        if (!Number.isFinite(maxRank)) return;
+
+        const startRank = previousMaxRank + 1;
+        const requirementText = startRank === maxRank
+            ? `${UI_LANG.top}${maxRank}`
+            : `${UI_LANG.top}${startRank}-${maxRank}`;
+        const modeText = getLevelLabel(eventId, leagueId);
+
+        parseCsvIds(getProp(row, ["rewardIDs", "rewardIds", "rewardids"])).forEach(rewardId => {
+            pushResolvedReward(rewards, rewardId, {
+                requirementText,
+                modeText,
+                isTopReward: true
+            });
+        });
+
+        previousMaxRank = maxRank;
+    });
+}
+
 function updateSelectorVisibility() {
     const difficultySelect = document.getElementById("difficultySelect");
     const difficultyContainer = difficultySelect?.parentElement;
@@ -556,7 +658,8 @@ function setupSelectors() {
         { id: "71", fallback: "Event 71" },
         { id: "72", fallback: "Nomad Invasion" },
         { id: "80", fallback: "Samurai Invasion" },
-        { id: "103", fallback: "Event 103" }
+        { id: "103", fallback: "Event 103" },
+        { id: "129", fallback: "Grand Tournament" }
     ].filter(ev => leagueEntries.some(e => String(getProp(e, ["eventID", "eventId", "eventid"])) === ev.id));
 
     eventSelect.innerHTML = "";
@@ -944,40 +1047,17 @@ function renderRewardsForSelection() {
             const milestoneCount = Math.min(rewardIds.length, neededPoints.length);
 
             for (let i = 0; i < milestoneCount && i < neededPoints.length; i++) {
-                const reward = rewardsById[String(rewardIds[i])];
                 const pointsValue = Number(neededPoints[i]);
                 const pointsText = Number.isNaN(pointsValue) ? String(neededPoints[i]) : formatNumber(pointsValue);
                 const requirementText = pointsText;
                 const modeText = mode === "alliance"
-                    ? UI_LANG.alliance_rewards
+                    ? (isAllianceMobilizationEvent(eventId) ? UI_LANG.activity : UI_LANG.alliance_rewards)
                     : (scenario.difficultyId ? (difficultyLabelById[String(scenario.difficultyId)] || String(scenario.difficultyId)) : "-");
-                const entriesToPush = resolveRewardEntries(reward);
-
-                if (entriesToPush.length > 0) {
-                    entriesToPush.forEach(it => {
-                        rewards.push({
-                            name: it.name,
-                            amount: it.amount,
-                            chanceText: requirementText,
-                            modeText,
-                            id: it.id,
-                            type: it.type || null,
-                            addKeyName: it.addKeyName || null,
-                            isTopReward: false
-                        });
-                    });
-                } else {
-                    rewards.push({
-                        name: resolveRewardName(reward) || "Reward",
-                        amount: getRewardAmount(reward),
-                        chanceText: requirementText,
-                        modeText,
-                        id: resolveRewardIdStrict(reward),
-                        type: resolveRewardType(reward),
-                        addKeyName: getAddKeyName(reward),
-                        isTopReward: false
-                    });
-                }
+                pushResolvedReward(rewards, rewardIds[i], {
+                    requirementText,
+                    modeText,
+                    isTopReward: false
+                });
             }
         });
 
@@ -991,39 +1071,18 @@ function renderRewardsForSelection() {
         });
         if (rankingPairs.length > 0) {
             rankingPairs.forEach(pair => {
-                const reward = rewardsById[String(pair.rewardId)];
                 const requirementText = `${UI_LANG.top}${pair.tier}`;
                 const modeText = "-";
-                const entriesToPush = resolveRewardEntries(reward);
-
-                if (entriesToPush.length > 0) {
-                    entriesToPush.forEach(it => {
-                        rewards.push({
-                            name: it.name,
-                            amount: it.amount,
-                            chanceText: requirementText,
-                            modeText,
-                            id: it.id,
-                            type: it.type || null,
-                            addKeyName: it.addKeyName || null,
-                            isTopReward: true
-                        });
-                    });
-                } else {
-                    rewards.push({
-                        name: resolveRewardName(reward) || "Reward",
-                        amount: getRewardAmount(reward),
-                        chanceText: requirementText,
-                        modeText,
-                        id: resolveRewardIdStrict(reward),
-                        type: resolveRewardType(reward),
-                        addKeyName: getAddKeyName(reward),
-                        isTopReward: true
-                    });
-                }
+                pushResolvedReward(rewards, pair.rewardId, {
+                    requirementText,
+                    modeText,
+                    isTopReward: true
+                });
             });
         }
     });
+
+    pushAllianceMobilizationTopRewards(rewards, eventId, levelId);
 
     const selectedView = viewSelect?.value || "detailed";
     let outputRewards = rewards;
@@ -1194,6 +1253,7 @@ async function init() {
                 allianceLayoutImageUrlMap = imageMaps?.allianceLayouts ?? {};
 
                 const rewards = getArray(itemsData, ["rewards"]);
+                leaderboardRewardEntries = getArray(itemsData, ["leaderboardRewards", "leaderboardrewards"]);
                 const currencies = getArray(itemsData, ["currencies"]);
                 const equipment = getArray(itemsData, ["equipments"]);
                 const skins = getArray(itemsData, ["worldmapskins"]);
