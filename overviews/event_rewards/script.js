@@ -783,6 +783,13 @@ function summarizeRewards(rewards, includeTopRewards = true) {
     return summarized;
 }
 
+function getAllianceMobilizationSummaryRewards(rewards) {
+    const topOneText = `${UI_LANG.top}1`;
+    return rewards.filter(reward =>
+        !reward.isTopReward || String(reward.chanceText || "") === topOneText
+    );
+}
+
 function updateModeOptions() {
     const eventSelect = document.getElementById("eventSelect");
     const modeSelect = document.getElementById("modeSelect");
@@ -1089,7 +1096,10 @@ function renderRewardsForSelection() {
     if (selectedView === "summary_activity") {
         outputRewards = summarizeRewards(rewards, false);
     } else if (selectedView === "summary_all") {
-        outputRewards = summarizeRewards(rewards, true);
+        const summarySource = isAllianceMobilizationEvent(eventId)
+            ? getAllianceMobilizationSummaryRewards(rewards)
+            : rewards;
+        outputRewards = summarizeRewards(summarySource, true);
     }
 
     renderRewards(outputRewards, UI_LANG.requirement);
