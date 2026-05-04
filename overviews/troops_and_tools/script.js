@@ -66,7 +66,9 @@ const STAT_ICONS = {
   unknown: "../../img_base/placeholder.webp"
 };
 const EFFECT_ICON_RULES = [
-  { pattern: /additionalwaves|amountperwave|attackunitamount|attack\s*waves|tool\s*limit|wave/i, icon: STAT_ICONS.amountPerWave },
+  { pattern: /ranged?.*defen[cs]e|defen[cs]e.*ranged?|ranged?.*defen[cs]e units/i, icon: STAT_ICONS.defRangeBonus },
+  { pattern: /melee.*defen[cs]e|defen[cs]e.*melee|melee.*defen[cs]e units/i, icon: STAT_ICONS.defMeleeBonus },
+  { pattern: /additionalwaves|amountperwave|attackunitamount|attack\s*waves|tool\s*limit/i, icon: STAT_ICONS.amountPerWave },
   { pattern: /increase the wall capacity for defenders|wall capacity/i, icon: "../../img_base/battle_simulator/castellan-modal3.png" },
   { pattern: /bonuswallcapacity|wall/i, icon: STAT_ICONS.wallBonus },
   { pattern: /gate/i, icon: STAT_ICONS.gateBonus },
@@ -185,6 +187,19 @@ function formatPlusPercent(value) {
   if (raw.endsWith("%")) return raw.startsWith("+") || raw.startsWith("-") ? raw : `+${raw}`;
   if (raw.startsWith("+") || raw.startsWith("-")) return `${raw}%`;
   return `+${raw}%`;
+}
+
+function formatSignedPercent(value, sign = "+") {
+  const raw = String(value ?? "").trim();
+  if (!raw || raw === "-") return raw || "-";
+  if (raw === "0" || raw === "0.0") return "0";
+  if (raw.endsWith("%")) {
+    if (sign === "-" && raw.startsWith("+")) return `-${raw.slice(1)}`;
+    return raw.startsWith("+") || raw.startsWith("-") ? raw : `${sign}${raw}`;
+  }
+  if (sign === "-" && raw.startsWith("+")) return `-${raw.slice(1)}%`;
+  if (raw.startsWith("+") || raw.startsWith("-")) return `${raw}%`;
+  return `${sign}${raw}%`;
 }
 
 function getSupplyInfo(unit, getStatFn) {
@@ -459,6 +474,7 @@ function cleanupEffectTitle(text) {
 
   let out = raw
     .replace(/\{\d+\}/g, "")
+    .replace(/\s*[+\-]\s*%\s*/g, " ")
     .replace(/\s*[+\-]\s*(?=[a-zA-Z])/g, " ")
     .replace(/\s*%\s*/g, " ")
     .replace(/\s+/g, " ")
@@ -553,6 +569,8 @@ function buildToolDynamicEffects(unit) {
     const effectName = def?.name || `effect_${effectId}`;
     const isPercent = effectCtx?.percentEffectIDs?.has?.(effectId);
     const effectNameLc = String(effectName).toLowerCase();
+    const template = getEffectTemplate(effectName);
+    const isNegativePercent = effectNameLc.includes("malus") || /^\s*-/.test(template);
     const forcePlusPercent = FORCE_PLUS_PERCENT_EFFECT_NAMES.has(effectNameLc);
     const autoPercentByName =
       /(bonus|boost|booster|protection)/.test(effectNameLc) &&
@@ -561,14 +579,13 @@ function buildToolDynamicEffects(unit) {
     let value = formatStatValue(rawValue);
 
     if ((isPercent || forcePlusPercent || autoPercentByName) && rawValue && rawValue !== "-") {
-      value = formatPlusPercent(rawValue);
+      value = formatSignedPercent(rawValue, isNegativePercent ? "-" : "+");
     }
 
     const meta = resolveEffectMeta(effectName, effectId);
     let title = meta.title;
     const iconUrl = meta.iconUrl;
 
-    const template = getEffectTemplate(effectName);
     if (template && template.includes("{1}")) {
       const argName = resolveEffectArgName(argId);
       title = template
@@ -657,17 +674,47 @@ function normalizeName(value) {
   return String(value || "").toLowerCase().replace(/[^a-z0-9]/g, "");
 }
 
+function getTypeAliases(rawType) {
+  const type = String(rawType || "").trim();
+  const typeLc = type.toLowerCase();
+  const aliases = [type];
+
+  if (/^nomadcoinboost(?:wood|stone)$/i.test(type)) {
+    aliases.push("NomadCoinBoost", "NomadCoinBoostStone");
+  }
+
+  if (typeLc.startsWith("aliensamuraianti")) {
+    const suffix = type.slice("AlienSamuraiAnti".length);
+    if (suffix) {
+      aliases.push(`AlienInvasionAnti${suffix}`);
+      if (suffix.toLowerCase() === "shield") {
+        aliases.push("AlienInvasionAntiShields");
+      }
+    }
+  }
+
+  return [...new Set(aliases.filter(Boolean))];
+}
+
+function isGenericUnitAssetName(rawName) {
+  const name = normalizeName(rawName);
+  return name === "eventtool" || name === "eventunit" || name === "unit";
+}
+
 function getUnitImageUrl(unit) {
   const rawName = unit?.name || unit?.Name || "";
   const rawType = unit?.type || unit?.Type || "";
   if (!rawName || !rawType) return null;
   const nameNorm = normalizeName(rawName);
-  const typeNorm = normalizeName(rawType);
+  const typeAliases = getTypeAliases(rawType);
+  const typeNorms = typeAliases.map(normalizeName);
 
   const exactKeys = [
-    normalizeName(`${rawName}_unit_${rawType}`),
-    normalizeName(`${rawType}_unit_${rawName}`),
-    normalizeName(rawType),
+    ...typeAliases.flatMap(type => [
+      normalizeName(`${rawName}_unit_${type}`),
+      normalizeName(`${type}_unit_${rawName}`),
+      normalizeName(type)
+    ]),
     normalizeName(rawName)
   ];
 
@@ -678,21 +725,23 @@ function getUnitImageUrl(unit) {
   if (!unitImageEntries.length) return null;
 
   const strictMatch = unitImageEntries.find(([key]) =>
-    key.includes(typeNorm) &&
+    typeNorms.some(typeNorm => key.includes(typeNorm)) &&
     key.includes(nameNorm) &&
     key.includes("unit")
   );
   if (strictMatch) return strictMatch[1];
 
   const typeMatch = unitImageEntries.find(([key]) =>
-    key.includes(typeNorm) && key.includes("unit")
+    typeNorms.some(typeNorm => key.includes(typeNorm)) && key.includes("unit")
   );
   if (typeMatch) return typeMatch[1];
 
-  const nameMatch = unitImageEntries.find(([key]) =>
-    key.includes(nameNorm) && key.includes("unit")
-  );
-  if (nameMatch) return nameMatch[1];
+  if (!isGenericUnitAssetName(rawName)) {
+    const nameMatch = unitImageEntries.find(([key]) =>
+      key.includes(nameNorm) && key.includes("unit")
+    );
+    if (nameMatch) return nameMatch[1];
+  }
 
   return null;
 }
@@ -701,8 +750,11 @@ function getUnitName(unit) {
   const rawName = unit?.name || unit?.Name || "";
   const rawType = unit?.type || unit?.Type || "";
   const nameKey = rawName ? `${String(rawName).toLowerCase()}_name` : "";
-  const typeKey = rawType ? `${String(rawType).toLowerCase()}_name` : "";
-  return lang[typeKey] || rawType || lang[nameKey] || rawName || "Unit";
+  const typeKeys = getTypeAliases(rawType).map(type => `${String(type).toLowerCase()}_name`);
+  for (const typeKey of typeKeys) {
+    if (lang[typeKey]) return lang[typeKey];
+  }
+  return rawType || lang[nameKey] || rawName || "Unit";
 }
 
 function getUnitLevel(unit) {
