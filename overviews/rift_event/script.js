@@ -629,6 +629,18 @@ function getStagesForLevel(levelId) {
     .sort((a, b) => Number(a.raidBossStageID) - Number(b.raidBossStageID));
 }
 
+function populateStageSelect(stageSelect, stages) {
+  const bossStageLabel = ownText("boss_stage", "Boss stage");
+  stageSelect.innerHTML = "";
+  stages.forEach((_, index) => {
+    const option = document.createElement("option");
+    option.value = String(index);
+    option.textContent = `${bossStageLabel} ${index}`;
+    stageSelect.appendChild(option);
+  });
+  stageSelect.disabled = stages.length === 0;
+}
+
 function updateBossOverviewFilters() {
   const boss = selectedRift();
   const levelSelect = document.getElementById("bossLevelSelect");
@@ -663,21 +675,12 @@ function updateBossOverviewFilters() {
   }
 
   const selectedLevelId = levelSelect.value;
-  const stages = getStagesForLevel(selectedLevelId).slice(0, 6);
-  const bossStageLabel = ownText("boss_stage", "Boss stage");
-
-  stageSelect.innerHTML = "";
-  stages.forEach((_, index) => {
-    const option = document.createElement("option");
-    option.value = String(index);
-    option.textContent = `${bossStageLabel} ${index}`;
-    stageSelect.appendChild(option);
-  });
+  const stages = getStagesForLevel(selectedLevelId);
+  populateStageSelect(stageSelect, stages);
 
   if (stages.length === 0) {
-    stageSelect.disabled = true;
+    localStorage.removeItem("rift_rewards_overview_stage_id");
   } else {
-    stageSelect.disabled = false;
     const parsed = Number(savedStageIndex);
     if (Number.isFinite(parsed) && parsed >= 0 && parsed < stages.length) {
       stageSelect.value = String(parsed);
@@ -701,7 +704,7 @@ function renderBossOverview() {
   }
 
   const level = state.raidBossLevels.find(x => String(x.raidBossLevelID) === String(levelId));
-  const stageRows = getStagesForLevel(levelId).slice(0, 6);
+  const stageRows = getStagesForLevel(levelId);
   const stage = stageRows[stageIndex];
 
   if (!level || !stage) {
@@ -1121,19 +1124,13 @@ function setupBossOverviewSelectors() {
 
   levelSelect.addEventListener("change", () => {
     localStorage.setItem("rift_rewards_overview_level_id", levelSelect.value);
-    const stages = getStagesForLevel(levelSelect.value).slice(0, 6);
-    stageSelect.innerHTML = "";
-    const bossStageLabel = ownText("boss_stage", "Boss stage");
-    stages.forEach((_, index) => {
-      const option = document.createElement("option");
-      option.value = String(index);
-      option.textContent = `${bossStageLabel} ${index}`;
-      stageSelect.appendChild(option);
-    });
-    stageSelect.disabled = stages.length === 0;
+    const stages = getStagesForLevel(levelSelect.value);
+    populateStageSelect(stageSelect, stages);
     if (stages.length > 0) {
       stageSelect.value = "0";
       localStorage.setItem("rift_rewards_overview_stage_id", stageSelect.value);
+    } else {
+      localStorage.removeItem("rift_rewards_overview_stage_id");
     }
     renderBossOverview();
   });
