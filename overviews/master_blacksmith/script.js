@@ -49,7 +49,8 @@ const ALLOWED_SHOP_CATEGORY_IDS = new Set([
   "113", // Sceat
   "119", // Ruby
   "120", // Rift
-  "121" // Legendary Rift
+  "121", // Legendary Rift
+  "123" // Rift Shard
 ]);
 const SHOP_CATEGORY_EXTRA = {
   "119": {
