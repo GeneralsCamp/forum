@@ -160,7 +160,8 @@ function getDefaultHomeSettings() {
         descriptionsEnabled: true,
         currentProjectsEnabled: false,
         favoritesEnabled: true,
-        devCommentsEnabled: true
+        devCommentsEnabled: true,
+        e4kDeveloperModeEnabled: false
     };
 }
 
@@ -174,7 +175,9 @@ function readHomeSettings() {
             descriptionsEnabled: parsed.descriptionsEnabled ?? defaults.descriptionsEnabled,
             currentProjectsEnabled: parsed.currentProjectsEnabled ?? defaults.currentProjectsEnabled,
             favoritesEnabled: parsed.favoritesEnabled ?? defaults.favoritesEnabled,
-            devCommentsEnabled: parsed.devCommentsEnabled ?? defaults.devCommentsEnabled
+            devCommentsEnabled: parsed.devCommentsEnabled ?? defaults.devCommentsEnabled,
+            e4kDeveloperModeEnabled: parsed.e4kDeveloperModeEnabled === true &&
+                (parsed.selectedGame ?? defaults.selectedGame) === "e4k"
         };
     } catch {
         return defaults;
@@ -727,9 +730,11 @@ function setupSettingsModal() {
     const currentProjectsInput = document.getElementById("settingsCurrentProjects");
     const favoritesInput = document.getElementById("settingsFavorites");
     const devCommentsInput = document.getElementById("settingsDevComments");
+    const e4kDeveloperModeInput = document.getElementById("settingsE4kDeveloperMode");
+    const e4kDeveloperModeRow = document.getElementById("settingsE4kDeveloperModeRow");
     const selectedGameInput = document.getElementById("settingsSelectedGame");
     const selectedLanguageInput = document.getElementById("settingsSelectedLanguage");
-    if (!openBtn || !closeBtn || !modal || !descriptionsInput || !currentProjectsInput || !favoritesInput || !devCommentsInput || !selectedGameInput || !selectedLanguageInput) return;
+    if (!openBtn || !closeBtn || !modal || !descriptionsInput || !currentProjectsInput || !favoritesInput || !devCommentsInput || !e4kDeveloperModeInput || !e4kDeveloperModeRow || !selectedGameInput || !selectedLanguageInput) return;
     const settingsModal = initCustomModal({ modalId: "settingsModal", closeAnimMs: 190 });
 
     const empireOption = selectedGameInput.querySelector('option[value="empire"]');
@@ -747,6 +752,19 @@ function setupSettingsModal() {
 
     populateLanguageSelect(selectedLanguageInput);
 
+    const syncE4kDeveloperModeState = () => {
+        const e4kSelected = selectedGameInput.value === "e4k";
+        e4kDeveloperModeInput.disabled = !e4kSelected;
+        e4kDeveloperModeRow.classList.toggle("settings-option-disabled", !e4kSelected);
+        e4kDeveloperModeRow.title = e4kSelected
+            ? ""
+            : "Available only when Game is set to E4K.";
+
+        if (!e4kSelected) {
+            e4kDeveloperModeInput.checked = false;
+        }
+    };
+
     const syncForm = () => {
         syncGameOptionLabels();
         selectedGameInput.value = uiSettings.selectedGame || getDefaultGameSource();
@@ -755,6 +773,8 @@ function setupSettingsModal() {
         currentProjectsInput.checked = Boolean(uiSettings.currentProjectsEnabled);
         favoritesInput.checked = Boolean(uiSettings.favoritesEnabled);
         devCommentsInput.checked = Boolean(uiSettings.devCommentsEnabled);
+        e4kDeveloperModeInput.checked = Boolean(uiSettings.e4kDeveloperModeEnabled);
+        syncE4kDeveloperModeState();
     };
 
     const openModal = () => {
@@ -763,13 +783,16 @@ function setupSettingsModal() {
     };
 
     const handleChange = () => {
+        syncE4kDeveloperModeState();
+        const selectedGame = selectedGameInput.value || getDefaultGameSource();
         writeSiteLanguage(selectedLanguageInput.value || getInitialLanguage());
         uiSettings = {
-            selectedGame: selectedGameInput.value || getDefaultGameSource(),
+            selectedGame,
             descriptionsEnabled: descriptionsInput.checked,
             currentProjectsEnabled: currentProjectsInput.checked,
             favoritesEnabled: favoritesInput.checked,
-            devCommentsEnabled: devCommentsInput.checked
+            devCommentsEnabled: devCommentsInput.checked,
+            e4kDeveloperModeEnabled: selectedGame === "e4k" && e4kDeveloperModeInput.checked
         };
         writeHomeSettings(uiSettings);
         rerenderMainSections();
@@ -783,6 +806,7 @@ function setupSettingsModal() {
     currentProjectsInput.addEventListener("change", handleChange);
     favoritesInput.addEventListener("change", handleChange);
     devCommentsInput.addEventListener("change", handleChange);
+    e4kDeveloperModeInput.addEventListener("change", handleChange);
     window.addEventListener("resize", syncGameOptionLabels);
     syncGameOptionLabels();
 

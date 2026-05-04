@@ -1011,6 +1011,14 @@ body.favorites-reorder-mode #favorites .category-card-shell.is-reorder-active .f
     accent-color: #f3c24a;
 }
 
+.settings-option-disabled {
+    opacity: 0.48;
+}
+
+.settings-option-disabled input {
+    cursor: not-allowed;
+}
+
 .settings-select {
     width: 100%;
     max-width: 100%;

@@ -1,5 +1,8 @@
 import { fetchWithFallback } from "./Fetcher.mjs";
-import { getSelectedGameSource } from "./GameSettings.mjs";
+import {
+    getSelectedGameSource,
+    isE4kDeveloperModeEnabled
+} from "./GameSettings.mjs";
 import {
     getCachedJson,
     setCachedJson,
@@ -17,6 +20,9 @@ const LANGUAGE_VERSION_URL =
     "https://langserv.public.ggs-ep.com/12/fr/@metadata";
 const LANGUAGE_BASE_URL =
     "https://langserv.public.ggs-ep.com";
+const E4K_LOADER_MINOR_LOOKAHEAD = 2;
+const E4K_LOADER_MAX_PATCH = 40;
+const E4K_LOADER_PROBE_BATCH_SIZE = 8;
 
 let e4kRemoteInfoPromise = null;
 
@@ -250,14 +256,11 @@ export async function logResolvedDataUrls({ langCode = "en", itemVersion, langVe
 async function getE4kRemoteInfo() {
     if (!e4kRemoteInfoPromise) {
         e4kRemoteInfoPromise = (async () => {
-            const appVersion = await getE4kAppVersion();
-            const versionsUrl =
-                `https://media.goodgamestudios.com/loader/empirefourkingdoms/${appVersion}/versions.json`;
-            const res = await fetchWithFallback(versionsUrl, 15000, {
-                strategy: "direct-first",
-                useCorsProxy: true
-            });
-            const json = await res.json();
+            const appStoreVersion = await getE4kAppStoreVersion();
+            const info = isE4kDeveloperModeEnabled()
+                ? await getLatestE4kLoaderInfo(appStoreVersion)
+                : await getE4kLoaderInfo(appStoreVersion);
+            const json = info.json;
             const itemVersion = json?.CastleItemXMLVersion;
 
             if (!itemVersion) {
@@ -265,9 +268,10 @@ async function getE4kRemoteInfo() {
             }
 
             return {
-                appVersion,
+                appVersion: info.loaderVersion,
+                appStoreVersion,
                 itemVersion,
-                versionsUrl
+                versionsUrl: info.versionsUrl
             };
         })();
     }
@@ -275,7 +279,7 @@ async function getE4kRemoteInfo() {
     return e4kRemoteInfoPromise;
 }
 
-async function getE4kAppVersion() {
+async function getE4kAppStoreVersion() {
     const res = await fetchWithFallback(APP_LOOKUP_URL, 15000, {
         strategy: "direct-first",
         useCorsProxy: true
@@ -297,6 +301,117 @@ async function getE4kAppVersion() {
     const patch = (parts[2] || "0").padStart(3, "0");
 
     return `${major}${minor}${patch}`;
+}
+
+async function getE4kLoaderInfo(loaderVersion) {
+    const versionsUrl =
+        `https://media.goodgamestudios.com/loader/empirefourkingdoms/${loaderVersion}/versions.json`;
+    const res = await fetchWithFallback(versionsUrl, 15000, {
+        strategy: "direct-first",
+        useCorsProxy: true
+    });
+    const json = await res.json();
+
+    return {
+        loaderVersion,
+        versionsUrl,
+        json
+    };
+}
+
+async function getLatestE4kLoaderInfo(appStoreLoaderVersion) {
+    const baseVersion = parseE4kLoaderVersion(appStoreLoaderVersion);
+    const highPatch = Math.max(E4K_LOADER_MAX_PATCH, baseVersion.patch);
+    const candidates = [];
+
+    for (
+        let minor = baseVersion.minor + E4K_LOADER_MINOR_LOOKAHEAD;
+        minor >= baseVersion.minor;
+        minor--
+    ) {
+        for (let patch = highPatch; patch >= 0; patch--) {
+            const candidate = {
+                major: baseVersion.major,
+                minor,
+                patch
+            };
+
+            if (compareE4kVersions(candidate, baseVersion) >= 0) {
+                candidates.push(candidate);
+            }
+        }
+    }
+
+    for (let i = 0; i < candidates.length; i += E4K_LOADER_PROBE_BATCH_SIZE) {
+        const batch =
+            candidates.slice(i, i + E4K_LOADER_PROBE_BATCH_SIZE);
+        const results =
+            await Promise.all(batch.map(probeE4kLoaderVersion));
+        const match =
+            results.find(Boolean);
+
+        if (match) {
+            if (match.loaderVersion !== appStoreLoaderVersion) {
+                console.log(`E4K loader version: ${match.loaderVersion} (App Store: ${appStoreLoaderVersion})`);
+            }
+            return match;
+        }
+    }
+
+    throw new Error(`Could not resolve an E4K loader version from ${appStoreLoaderVersion}.`);
+}
+
+async function probeE4kLoaderVersion(versionParts) {
+    const loaderVersion =
+        formatE4kLoaderVersion(versionParts);
+    const versionsUrl =
+        `https://media.goodgamestudios.com/loader/empirefourkingdoms/${loaderVersion}/versions.json`;
+
+    try {
+        const res = await fetchWithFallback(versionsUrl, 5000, {
+            strategy: "direct-only"
+        });
+        const json = await res.json();
+
+        if (!json?.CastleItemXMLVersion) {
+            return null;
+        }
+
+        return {
+            loaderVersion,
+            versionsUrl,
+            json
+        };
+    } catch {
+        return null;
+    }
+}
+
+function parseE4kLoaderVersion(version) {
+    const raw = String(version);
+    const match = raw.match(/^(\d)(\d+)(\d{3})$/);
+
+    if (!match) {
+        throw new Error(`Unexpected E4K loader version format: ${version}`);
+    }
+
+    return {
+        major: Number(match[1]),
+        minor: Number(match[2]),
+        patch: Number(match[3])
+    };
+}
+
+function formatE4kLoaderVersion({ major, minor, patch }) {
+    return `${major}${minor}${String(patch).padStart(3, "0")}`;
+}
+
+function compareE4kVersions(a, b) {
+    return (
+        a.major - b.major ||
+        a.minor - b.minor ||
+        a.patch - b.patch
+    );
 }
 
 async function ensureJsZipLoaded() {
