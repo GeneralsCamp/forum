@@ -16,6 +16,7 @@ let wearerById = {};
 let unitsById = {};
 let equipmentUniqueImageUrlMap = {};
 let uniqueGemImageUrlMap = {};
+let currencyImageUrlMap = {};
 let equipmentEffectToEffectId = {};
 let ownLang = {};
 let lastMobileMode = null;
@@ -188,6 +189,45 @@ function formatLocalizedNumber(value) {
   if (!Number.isFinite(number)) return "0";
   const locale = String(currentLanguage || "en").toLowerCase();
   return Math.abs(number).toLocaleString(locale);
+}
+
+function hasPositiveNumber(value) {
+  const number = Number(value);
+  return Number.isFinite(number) && number > 0;
+}
+
+function getRiftShardLabel() {
+  return (
+    lang["currency_name_riftshard"] ||
+    lang["currency_name_RiftShard"] ||
+    "Rift Shard"
+  );
+}
+
+function getRiftShardImageUrl() {
+  return (
+    currencyImageUrlMap.riftshard ||
+    currencyImageUrlMap[normalizeName("RiftShard")] ||
+    null
+  );
+}
+
+function formatSellValueText(value, currencyLabel) {
+  const amountText = formatLocalizedNumber(value);
+  const valueText = `${amountText} ${currencyLabel}`.trim();
+  const template =
+    lang["relicequip_dialog_sellvalue_name"] ||
+    lang["relicequip_dialog_sellValue_name"];
+
+  if (template) {
+    const rendered = String(template)
+      .replace(/\{0\}/g, valueText)
+      .replace(/\s+/g, " ")
+      .trim();
+    if (rendered) return rendered;
+  }
+
+  return `${ui("sell_value", "Sell value")} ${valueText}`.trim();
 }
 
 function formatEffectValue(effectId, value, sourceType = "auto") {
@@ -531,7 +571,8 @@ function toPieceRows(setEntry) {
       wearerLabel: getLocalizedWearerName(item.wearerID),
       name: getEquipmentName(item),
       effects: parseEffects(item.effects, "equipment"),
-      imageUrl: getEquipmentImageUrl(item) || "../../img_base/equipment.png"
+      imageUrl: getEquipmentImageUrl(item) || "../../img_base/equipment.png",
+      sellRiftShard: item.sellRiftShard
     });
   });
 
@@ -550,7 +591,8 @@ function toPieceRows(setEntry) {
       wearerLabel: getLocalizedWearerName(item.wearerID),
       name: getGemName(item),
       effects: parseEffects(item.effects, "gem"),
-      imageUrl: gemImage
+      imageUrl: gemImage,
+      sellRiftShard: item.sellRiftShard
     });
   });
 
@@ -1008,6 +1050,12 @@ function renderSet(setId) {
     const itemEffects = piece.effects.length > 0
       ? piece.effects.map((line) => `<li>${line}</li>`).join("")
       : `<li>No effect data</li>`;
+    const sellRiftShardHtml = hasPositiveNumber(piece.sellRiftShard)
+      ? `<div class="piece-sell-value">
+          ${getRiftShardImageUrl() ? `<img src="${getRiftShardImageUrl()}" alt="" loading="lazy">` : ""}
+          <span>${escapeHtml(formatSellValueText(piece.sellRiftShard, getRiftShardLabel()))}</span>
+        </div>`
+      : "";
 
     const composed =
       piece.imageUrl &&
@@ -1031,6 +1079,7 @@ function renderSet(setId) {
         <div class="piece-content">
           <h3 class="piece-name piece-name-desktop">${displayName}</h3>
           <ul class="effect-list">${itemEffects}</ul>
+          ${sellRiftShardHtml}
         </div>
       </article>
     `;
@@ -1281,7 +1330,8 @@ async function init() {
       normalizeNameFn: normalizeName,
       assets: {
         equipmentUniques: true,
-        uniqueGems: true
+        uniqueGems: true,
+        currencies: true
       },
       onReady: async ({ lang: L, data, imageMaps, effectCtx: E }) => {
         lang = L;
@@ -1308,6 +1358,7 @@ async function init() {
         unitsById = buildLookup(units, "wodID");
         equipmentUniqueImageUrlMap = imageMaps?.equipmentUniques ?? {};
         uniqueGemImageUrlMap = imageMaps?.uniqueGems ?? {};
+        currencyImageUrlMap = imageMaps?.currencies ?? {};
 
         setIndexById = buildSetIndex({
           equipments,

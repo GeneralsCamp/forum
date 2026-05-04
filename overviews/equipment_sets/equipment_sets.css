@@ -171,6 +171,34 @@
   font-size: 11px;
 }
 
+.piece-sell-value {
+  width: fit-content;
+  margin: 6px 0 0;
+  padding: 2px 7px;
+  border: 1px solid rgba(243, 194, 74, 0.22);
+  border-radius: 999px;
+  background: rgba(67, 51, 38, 0.22);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: rgba(230, 209, 175, 0.86);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.piece-sell-value strong {
+  color: var(--gold-1);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.piece-sell-value img {
+  width: 13px;
+  height: 13px;
+  object-fit: contain;
+}
+
 .effect-list {
   margin: 6px 0 0;
   padding: 0;
