@@ -445,7 +445,29 @@ function getEquipmentName(item) {
   if (!item) return "Equipment";
   const id = String(item.equipmentID || "");
   const langKey = `equipment_unique_${id}`.toLowerCase();
-  return lang[langKey] || item.comment2 || item.comment1 || `Equipment ${id}`;
+  if (lang[langKey]) return lang[langKey];
+
+  const areSetName = String(item.comment1 || "").match(/^9 piece ARE set\s*-?\s*(.+?)\s+\d+$/i);
+  if (areSetName?.[1]) {
+    const slotName = String(item.slotID || "") === "6" ? "Commander" : "";
+    return [areSetName[1].trim(), slotName].filter(Boolean).join(" ");
+  }
+
+  const candidates = [item.comment2, item.comment1, item.name, item.Name];
+  const specific = candidates.find((value) => {
+    const normalized = normalizeName(value);
+    return (
+      normalized &&
+      normalized !== "equipment" &&
+      normalized !== "commander" &&
+      normalized !== "general" &&
+      normalized !== "baron" &&
+      normalized !== "castellan" &&
+      !normalized.includes("placeholder")
+    );
+  });
+
+  return specific || `Equipment ${id}`;
 }
 
 function getEquipmentImageUrl(item) {
@@ -509,7 +531,7 @@ function toPieceRows(setEntry) {
       wearerLabel: getLocalizedWearerName(item.wearerID),
       name: getEquipmentName(item),
       effects: parseEffects(item.effects, "equipment"),
-      imageUrl: getEquipmentImageUrl(item)
+      imageUrl: getEquipmentImageUrl(item) || "../../img_base/equipment.png"
     });
   });
 

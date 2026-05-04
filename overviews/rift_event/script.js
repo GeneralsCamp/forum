@@ -473,7 +473,7 @@ function imageUrlFor(entry) {
   if (!state.rewardResolver || !entry) return null;
   if (entry.type === "decoration") return state.rewardResolver.getDecorationImageUrl(entry);
   if (entry.type === "construction") return state.rewardResolver.getConstructionImageUrl(entry);
-  if (entry.type === "equipment") return state.rewardResolver.getEquipmentImageUrl(entry);
+  if (entry.type === "equipment") return state.rewardResolver.getEquipmentImageUrl(entry) || "../../img_base/equipment.png";
   if (entry.type === "unit") return state.rewardResolver.getUnitImageUrl(entry);
   if (entry.type === "lootbox") return state.rewardResolver.getLootBoxImageUrl(entry);
   if (entry.type === "currency") return state.rewardResolver.getCurrencyImageUrl(entry);
@@ -1139,6 +1139,7 @@ async function init() {
         looks: true,
         units: true,
         currencies: true,
+        equipmentUniques: true,
         lootboxes: true
       },
       onReady: async ({ lang, data, imageMaps }) => {
@@ -1182,6 +1183,7 @@ async function init() {
             decorationImageUrlMap: state.imageMaps.decorations || {},
             constructionImageUrlMap: state.imageMaps.constructions || {},
             equipmentImageUrlMap: state.imageMaps.looks || {},
+            equipmentUniqueImageUrlMap: state.imageMaps.equipmentUniques || {},
             unitImageUrlMap: state.imageMaps.units || {},
             currencyImageUrlMap: state.imageMaps.currencies || {},
             lootBoxImageUrlMap: state.imageMaps.lootboxes || {}

@@ -205,6 +205,45 @@ function getUnitDisplayName(lang, unit, includeLevel) {
   return `${baseName} (lvl.${levelRaw})`;
 }
 
+function isGenericEquipmentName(value) {
+  const normalized = normalizeName(value);
+  return (
+    !normalized ||
+    normalized === "equipment" ||
+    normalized === "commander" ||
+    normalized === "general" ||
+    normalized === "baron" ||
+    normalized === "castellan" ||
+    normalized.includes("placeholder")
+  );
+}
+
+function getEquipmentDisplayName(lang, item, id) {
+  const equipmentId = String(id || item?.equipmentID || "").trim();
+  const langKey = equipmentId ? `equipment_unique_${equipmentId}`.toLowerCase() : null;
+  if (langKey && lang?.[langKey]) return lang[langKey];
+
+  const areSetName = String(item?.comment1 || "").match(/^9 piece ARE set\s*-?\s*(.+?)\s+\d+$/i);
+  if (areSetName?.[1]) {
+    const slot = String(item?.slotID || "").trim();
+    const slotName =
+      slot === "6"
+        ? "Commander"
+        : "";
+    return [areSetName[1].trim(), slotName].filter(Boolean).join(" ");
+  }
+
+  const candidates = [
+    item?.comment2,
+    item?.comment1,
+    item?.name,
+    item?.Name
+  ];
+
+  const specific = candidates.find((value) => !isGenericEquipmentName(value));
+  return specific || (equipmentId ? `Equipment ${equipmentId}` : "Equipment");
+}
+
 export function createRewardResolver(getContext, options = {}) {
   const opts = {
     includeCurrency2: true,
@@ -284,15 +323,15 @@ export function createRewardResolver(getContext, options = {}) {
     const equipmentIds = getProp(reward, ["equipmentIDs", "equipmentIds", "equipmentids"]);
     if (equipmentId) {
       const item = c.equipmentById?.[String(equipmentId)];
-      const rawName = item ? item.name || item.Name : null;
-      return getLangByPrefixes(lang, rawName, ["equip_name_", "equipment_name_", "equip_"]) || rawName || "Equipment";
+      return getEquipmentDisplayName(lang, item, equipmentId);
     }
     if (equipmentIds) {
       const ids = parseCsvIds(equipmentIds);
       const firstId = ids[0];
-      const key = firstId ? `equipment_unique_${firstId}`.toLowerCase() : null;
-      if (key && lang[key]) return lang[key];
-      return firstId ? "Equipment" : null;
+      const parsed = firstId ? parseIdAmountToken(firstId)[0] : null;
+      const id = parsed?.id ?? firstId;
+      const item = id != null ? c.equipmentById?.[String(id)] : null;
+      return id != null ? getEquipmentDisplayName(lang, item, id) : null;
     }
 
     const decoId = getProp(reward, ["decoWODID", "decoWodID", "decowodid"]);
@@ -453,9 +492,8 @@ export function createRewardResolver(getContext, options = {}) {
     const equipmentId = getProp(reward, ["equipmentID", "equipmentId", "equipmentid"]);
     if (equipmentId) {
       const item = c.equipmentById?.[String(equipmentId)];
-      const rawName = item ? item.name || item.Name : null;
       entries.push({
-        name: getLangByPrefixes(lang, rawName, ["equip_name_", "equipment_name_", "equip_"]) || rawName || "Equipment",
+        name: getEquipmentDisplayName(lang, item, equipmentId),
         amount: 1,
         id: equipmentId,
         type: "equipment",
@@ -466,8 +504,13 @@ export function createRewardResolver(getContext, options = {}) {
     if (equipmentIds) {
       parseCsvIds(equipmentIds).forEach((token) => {
         parseIdAmountToken(token).forEach((parsed) => {
-          const key = `equipment_unique_${parsed.id}`.toLowerCase();
-          entries.push({ name: lang[key] || "Equipment", amount: parsed.amount, id: parsed.id, type: "equipment" });
+          const item = c.equipmentById?.[String(parsed.id)];
+          entries.push({
+            name: getEquipmentDisplayName(lang, item, parsed.id),
+            amount: parsed.amount,
+            id: parsed.id,
+            type: "equipment"
+          });
         });
       });
     }

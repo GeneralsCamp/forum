@@ -304,9 +304,32 @@ function getBuildingName(item) {
   return item.comment2 || item.comment1 || item.type || item.name || null;
 }
 
-function getEquipmentName(item, id) {
+function isGenericEquipmentName(value) {
+  const normalized = normalizeName(value);
+  return (
+    !normalized ||
+    normalized === "equipment" ||
+    normalized === "commander" ||
+    normalized === "general" ||
+    normalized === "baron" ||
+    normalized === "castellan" ||
+    normalized.includes("placeholder")
+  );
+}
+
+function getEquipmentName(item, id, fallback = null) {
   const key = `equipment_unique_${id}`.toLowerCase();
-  return lang[key] || item?.comment2 || item?.comment1 || `Equipment ${id}`;
+  if (lang[key]) return lang[key];
+
+  const candidates = [
+    fallback,
+    item?.comment2,
+    item?.comment1,
+    item?.name,
+    item?.Name
+  ];
+  const specific = candidates.find((value) => !isGenericEquipmentName(value));
+  return specific || `Equipment ${id}`;
 }
 
 function getGemName(item, id) {
@@ -593,7 +616,7 @@ function resolvePrimaryReward(pkg) {
     return {
       type: "item",
       id,
-      name: getEquipmentName(item, id),
+      name: getEquipmentName(item, id, pkg.comment2),
       quantity: pkg.equipmentAmount || parsed?.amount || "1",
       imageUrl: equipmentUniqueImageUrlMap[String(item?.reuseAssetOfEquipmentID || id)] || "../../img_base/equipment.png"
     };

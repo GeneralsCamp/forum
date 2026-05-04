@@ -31,6 +31,7 @@ let lootBoxesById = {};
 let imageUrlMap = {};
 let constructionImageUrlMap = {};
 let equipmentImageUrlMap = {};
+let equipmentUniqueImageUrlMap = {};
 let lookSkinsById = {};
 let unitImageUrlMap = {};
 let collectableCurrencyImageUrlMap = {};
@@ -1147,6 +1148,7 @@ function renderRewards(rewards, label) {
             imageUrl = getConstructionImageUrl(reward);
         } else if (reward.type === "equipment") {
             imageUrl = getEquipmentImageUrl(reward);
+            if (!imageUrl) imageUrl = "../../img_base/equipment.png";
         } else if (reward.type === "unit") {
             imageUrl = getUnitImageUrl(reward);
         } else if (reward.type === "lootbox") {
@@ -1241,6 +1243,7 @@ async function init() {
                 looks: true,
                 units: true,
                 currencies: true,
+                equipmentUniques: true,
                 lootboxes: true,
                 allianceLayouts: true
             },
@@ -1257,6 +1260,7 @@ async function init() {
                 imageUrlMap = imageMaps?.decorations ?? {};
                 constructionImageUrlMap = imageMaps?.constructions ?? {};
                 equipmentImageUrlMap = imageMaps?.looks ?? {};
+                equipmentUniqueImageUrlMap = imageMaps?.equipmentUniques ?? {};
                 unitImageUrlMap = imageMaps?.units ?? {};
                 collectableCurrencyImageUrlMap = imageMaps?.currencies ?? {};
                 lootBoxImageUrlMap = imageMaps?.lootboxes ?? {};
@@ -1304,6 +1308,7 @@ async function init() {
                         decorationImageUrlMap: imageUrlMap,
                         constructionImageUrlMap,
                         equipmentImageUrlMap,
+                        equipmentUniqueImageUrlMap,
                         unitImageUrlMap,
                         currencyImageUrlMap: collectableCurrencyImageUrlMap,
                         lootBoxImageUrlMap,

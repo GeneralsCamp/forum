@@ -433,6 +433,8 @@ function parseEquipmentUniques(text) {
         /Equipment\/Uniques\/Item_Unique_(\d+)\/Item_Unique_\1--\d+/g;
     const heroRegex =
         /Equipment\/Heroes\/Hero_Unique_(\d+)\/Hero_Unique_\1--\d+/g;
+    const uniqueHeroRegex =
+        /Equipment\/Uniques\/Hero_Unique_(\d+)\/Hero_Unique_\1--\d+/g;
 
     const map = {};
 
@@ -443,9 +445,12 @@ function parseEquipmentUniques(text) {
 
     for (const m of text.matchAll(heroRegex)) {
         const id = String(m[1]);
-        if (!map[id]) {
-            map[id] = `${BASE}${m[0]}.webp`;
-        }
+        map[id] = `${BASE}${m[0]}.webp`;
+    }
+
+    for (const m of text.matchAll(uniqueHeroRegex)) {
+        const id = String(m[1]);
+        map[id] = `${BASE}${m[0]}.webp`;
     }
 
     return map;
