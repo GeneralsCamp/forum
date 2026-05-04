@@ -375,7 +375,8 @@ function parseSpawnReserveUnits(stage) {
       const effectName = String(state.effectsById[effectId]?.name || "").trim();
       const isSpawnReserve =
         effectId === "465" ||
-        effectName === "spawnReserveUnit";
+        effectName === "spawnReserveUnit" ||
+        effectName.startsWith("spawnReserveUnit");
 
       if (!isSpawnReserve || !payloadRaw) return;
 
@@ -403,6 +404,53 @@ function parseSpawnReserveUnits(stage) {
       name: resolveUnitName(id)
     }))
     .sort((a, b) => Number(b.amount) - Number(a.amount));
+}
+
+function getSpawnReserveEffectId(stage) {
+  let foundId = null;
+
+  const collect = (value) => {
+    if (!value || foundId) return;
+
+    csv(value).some(token => {
+      const [effectIdRaw, payloadRaw] = String(token).split("&");
+      const effectId = String(effectIdRaw || "").trim();
+      const effectName = String(state.effectsById[effectId]?.name || "").trim();
+      const isSpawnReserve =
+        effectId === "465" ||
+        effectName === "spawnReserveUnit" ||
+        effectName.startsWith("spawnReserveUnit");
+
+      if (isSpawnReserve && payloadRaw) {
+        foundId = effectId;
+        return true;
+      }
+
+      return false;
+    });
+  };
+
+  collect(stage?.defenderWallRegenerationEffects);
+  collect(stage?.defenderStageEffects);
+
+  return foundId;
+}
+
+function getSpawnReserveLabel(stage) {
+  const effectId = getSpawnReserveEffectId(stage);
+  const effectName = effectId
+    ? String(state.effectsById[String(effectId)]?.name || "").trim()
+    : "";
+
+  if (effectName) {
+    const label = langValue(`dialog_are_highlightedeffect_name_${effectName}`);
+    if (label) return label;
+  }
+
+  return (
+    langValue("dialog_are_highlightedeffect_name_spawnReserveUnit") ||
+    "Reserve Units Added"
+  );
 }
 
 // --- REWARD MAPPING ---
@@ -671,9 +719,7 @@ function renderBossOverview() {
   const courtyardUnits = parseWallUnitsList(level.courtyardReserveUnits);
   const spawnReserveUnits = parseSpawnReserveUnits(stage);
   const unitsLabel = uiText("units", "Units");
-  const reserveUnitsLabel =
-    langValue("dialog_are_highlightedeffect_name_spawnReserveUnit")
-    || "Reserve Units Added";
+  const reserveUnitsLabel = getSpawnReserveLabel(stage);
   const leftFlankLabel = uiText("dialog_defence_leftFlank", "Left flank");
   const frontLabel = uiText("dialog_defence_middleFlank", "Front");
   const rightFlankLabel = uiText("dialog_defence_rightFlank", "Right flank");
