@@ -208,7 +208,7 @@ label {
   padding: 8px;
   height: 90px;
   background: rgb(119, 80, 54);
-  justify-content: center;
+  justify-content: safe center;
 }
 
 .reward-title {
@@ -249,13 +249,15 @@ label {
   gap: 8px;
   padding: 6px 8px 8px;
   height: 86px;
+  max-width: 100%;
+  min-width: 0;
   overflow-x: auto;
   overflow-y: hidden;
   background: rgb(145, 98, 65);
 }
 
 #individualSection .item-grid {
-  justify-content: center;
+  justify-content: safe center;
 }
 
 .item-grid::-webkit-scrollbar {
