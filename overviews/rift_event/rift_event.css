@@ -125,6 +125,9 @@ label {
   text-transform: uppercase;
   padding: 7px 10px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.42);
+  line-height: 1.15;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .boss-overview-stats {
@@ -206,9 +209,18 @@ label {
 
 .boss-overview-item-grid {
   padding: 8px;
-  height: 90px;
+  min-height: 90px;
+  height: auto;
   background: rgb(119, 80, 54);
   justify-content: safe center;
+}
+
+.boss-overview-item-grid.item-grid {
+  flex-wrap: wrap;
+  align-content: flex-start;
+  height: auto;
+  overflow-x: hidden;
+  overflow-y: visible;
 }
 
 .reward-title {
@@ -362,6 +374,11 @@ label {
   .item-grid {
     gap: 5px;
     height: 76px;
+  }
+
+  .boss-overview-item-grid {
+    min-height: 76px;
+    height: auto;
   }
 
   .item-card {
