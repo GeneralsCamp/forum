@@ -41,6 +41,162 @@ const eventCache = {
     e4k: null
 };
 
+const manualEventFallback = {
+    empire: [
+        {
+            title: "LTPE",
+            dates: [
+                "01/05/2026-16/05/2026",
+                "16/05/2026-01/06/2026"
+            ],
+            dateGroups: [
+                { label: "Current LTPE", dates: ["01/05/2026-16/05/2026"] },
+                { label: "Next LTPE", dates: ["16/05/2026-02/06/2026"] }
+            ],
+            imageUrl: ""
+        },
+        {
+            title: "Nomad Invasion",
+            dates: [
+                "02/05/2026-05/05/2026",
+                "09/05/2026-12/05/2026",
+                "16/05/2026-19/05/2026",
+                "23/05/2026-26/05/2026",
+                "30/05/2026-02/06/2026"
+            ],
+            imageUrl: ""
+        },
+        {
+            title: "War of the Realms",
+            dates: [
+                "05/05/2026-08/05/2026",
+                "19/05/2026-22/05/2026"
+            ],
+            imageUrl: ""
+        },
+        {
+            title: "Bloodcrow Invasion",
+            dates: [
+                "12/05/2026-15/05/2026",
+                "26/05/2026-29/05/2026"
+            ],
+            imageUrl: ""
+        },
+        {
+            title: "Samurai Invasion",
+            dates: [
+                "01/05/2026-02/05/2026",
+                "08/05/2026-09/05/2026",
+                "15/05/2026-16/05/2026",
+                "22/05/2026-23/05/2026",
+                "29/05/2026-30/05/2026"
+            ],
+            imageUrl: ""
+        },
+        {
+            title: "Berimond",
+            dates: [
+                "05/05/2026-08/05/2026",
+                "16/05/2026-19/05/2026",
+                "26/05/2026-29/05/2026"
+            ],
+            dateGroups: [
+                {
+                    label: "Berimond Kingdom",
+                    dates: [
+                        "05/05/2026-08/05/2026",
+                        "26/05/2026-29/05/2026"
+                    ]
+                },
+                {
+                    label: "Berimond Invasion",
+                    dates: ["16/05/2026-19/05/2026"]
+                }
+            ],
+            imageUrl: ""
+        },
+        {
+            title: "The Bladecoast",
+            dates: ["10/05/2026-17/05/2026"],
+            imageUrl: ""
+        },
+        {
+            title: "Beyond the Horizon",
+            dates: [
+                "14/05/2026-18/05/2026",
+                "21/05/2026-25/05/2026"
+            ],
+            imageUrl: ""
+        },
+        {
+            title: "Outer Realms",
+            dates: [
+                "01/05/2026-04/05/2026",
+                "05/05/2026-08/05/2026",
+                "07/05/2026-11/05/2026",
+                "11/05/2026-14/05/2026",
+                "18/05/2026-21/05/2026",
+                "25/05/2026-28/05/2026",
+                "28/05/2026-01/06/2026"
+            ],
+            dateGroups: [
+                {
+                    label: "Heritage",
+                    dates: [
+                        "01/05/2026-04/05/2026",
+                        "07/05/2026-11/05/2026",
+                        "28/05/2026-01/06/2026"
+                    ]
+                },
+                {
+                    label: "Rank Swap",
+                    dates: [
+                        "04/05/2026-07/05/2026",
+                        "18/05/2026-21/05/2026"
+                    ]
+                },
+                {
+                    label: "Might Points",
+                    dates: [
+                        "11/05/2026-14/05/2026",
+                        "25/05/2026-28/05/2026"
+                    ]
+                }
+            ],
+            imageUrl: ""
+        },
+        {
+            title: "The Imperial Patronage",
+            dates: [
+                "01/05/2026-04/05/2026",
+                "16/05/2026-23/05/2026"
+            ],
+            imageUrl: ""
+        },
+        {
+            title: "The Grand Tournament",
+            dates: ["20/05/2026-27/05/2026"],
+            imageUrl: ""
+        },
+        {
+            title: "Rift Raid",
+            dates: ["06/05/2026-13/05/2026"],
+            imageUrl: ""
+        }
+    ],
+    e4k: []
+};
+
+manualEventFallback.e4k = manualEventFallback.empire.map(event => {
+    const cloned = cloneManualFallbackEvent(event);
+    if (cloned.title === "Berimond") {
+        const kingdomGroup = (cloned.dateGroups || []).find(group => group.label === "Berimond Kingdom");
+        cloned.dateGroups = kingdomGroup ? [kingdomGroup] : null;
+        cloned.dates = kingdomGroup ? [...kingdomGroup.dates] : cloned.dates;
+    }
+    return cloned;
+});
+
 const gameIcons = {
     empire: "../../img_base/event_icons/logo-em.webp",
     e4k: "../../img_base/event_icons/logo-e4k.webp"
@@ -270,6 +426,20 @@ function rangesOverlap(a, b) {
     const bStart = normalizeUtcDate(b.start).getTime();
     const bEnd = normalizeUtcDate(b.end).getTime();
     return bStart <= aEnd && bEnd >= aStart;
+}
+
+function rangesTouchOrOverlap(a, b) {
+    const dayMs = 24 * 60 * 60 * 1000;
+    const aEnd = normalizeUtcDate(a.end).getTime();
+    const bStart = normalizeUtcDate(b.start).getTime();
+    return bStart <= aEnd + dayMs;
+}
+
+function shouldShareRangeBoundary(a, b) {
+    const dayMs = 24 * 60 * 60 * 1000;
+    const aEnd = normalizeUtcDate(a.end).getTime();
+    const bStart = normalizeUtcDate(b.start).getTime();
+    return bStart === aEnd + dayMs;
 }
 
 function getSortedEvents(events) {
@@ -564,6 +734,45 @@ function extractEvents(doc, baseUrl) {
     });
 }
 
+function isEventPlanSourceUnavailable(doc) {
+    const bodyText = normalizeText(doc?.body?.textContent || "").toLowerCase();
+    return Boolean(
+        doc?.querySelector(".wpcom-coming-soon-main") ||
+        bodyText.includes("coming soon") ||
+        (bodyText.includes("log in") && !doc?.querySelector(".entry-content"))
+    );
+}
+
+function cloneManualFallbackEvent(event) {
+    return {
+        ...event,
+        dates: [...(event.dates || [])],
+        dateGroups: event.dateGroups
+            ? event.dateGroups.map(group => ({
+                ...group,
+                dates: [...(group.dates || [])]
+            }))
+            : null
+    };
+}
+
+function getManualFallbackEvents(sourceKey) {
+    const fallback = manualEventFallback[sourceKey] || [];
+    return fallback.map(cloneManualFallbackEvent);
+}
+
+function resolveEventsForSource(sourceKey, doc, baseUrl) {
+    const events = extractEvents(doc, baseUrl);
+    const manualEvents = getManualFallbackEvents(sourceKey);
+
+    if ((isEventPlanSourceUnavailable(doc) || events.length === 0) && manualEvents.length > 0) {
+        console.warn(`Using manual event plan fallback for ${sourceKey}.`);
+        return manualEvents;
+    }
+
+    return events;
+}
+
 async function fetchWithFallback(url, timeout = 10000) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeout);
@@ -788,7 +997,10 @@ function renderCalendar(events) {
         let prev = null;
         let alt = false;
         sortedRanges.forEach(range => {
-            if (prev && rangesOverlap(prev, range)) {
+            if (prev && rangesTouchOrOverlap(prev, range)) {
+                if (shouldShareRangeBoundary(prev, range)) {
+                    prev.end = new Date(normalizeUtcDate(range.start).getTime());
+                }
                 alt = !alt;
             } else {
                 alt = false;
@@ -987,13 +1199,15 @@ function renderCalendar(events) {
                 const endTime = normalizeUtcDate(range.end).getTime();
                 if (dateTime >= startTime && dateTime <= endTime) {
                     active = true;
-                    activeRangeIndex = rangeIndex;
-                    activeRange = range;
                     if (range.label && range.label.toLowerCase().includes("invasion")) {
                         invasionActive = true;
                     }
                     const isStart = dateTime === startTime;
                     const isEnd = dateTime === endTime;
+                    if (!activeRange || isStart) {
+                        activeRangeIndex = rangeIndex;
+                        activeRange = range;
+                    }
                     const trimmedStart = range.trimmedStart === true;
                     const trimmedEnd = range.trimmedEnd === true;
                     if ((isStart && !trimmedStart) || (isEnd && !trimmedEnd)) {
@@ -1313,13 +1527,22 @@ async function loadEvents(sourceKey) {
     try {
         const html = await fetchEventPlanHtml(source.url);
         const doc = new DOMParser().parseFromString(html, "text/html");
-        const events = extractEvents(doc, source.url);
+        const events = resolveEventsForSource(sourceKey, doc, source.url);
         eventCache[sourceKey] = events;
         renderCurrentView();
         setLoadingProgress(100, `Loaded: ${source.label}`);
         setLoadingState("", false);
     } catch (err) {
         console.error("Load error:", err);
+        const manualEvents = getManualFallbackEvents(sourceKey);
+        if (manualEvents.length > 0) {
+            console.warn(`Using manual event plan fallback for ${sourceKey}.`);
+            eventCache[sourceKey] = manualEvents;
+            renderCurrentView();
+            setLoadingProgress(100, `Loaded: ${source.label}`);
+            setLoadingState("", false);
+            return;
+        }
         setLoadingProgress(100, "Failed to load event plan data.");
         setLoadingState("Failed to load event plan data.", true);
     }
@@ -1336,10 +1559,10 @@ async function preloadAllEvents() {
         try {
             const html = await fetchEventPlanHtml(eventSources[key].url);
             const doc = new DOMParser().parseFromString(html, "text/html");
-            eventCache[key] = extractEvents(doc, eventSources[key].url);
+            eventCache[key] = resolveEventsForSource(key, doc, eventSources[key].url);
         } catch (err) {
             console.error("Preload error:", err);
-            eventCache[key] = [];
+            eventCache[key] = getManualFallbackEvents(key);
         } finally {
             completed += 1;
             setLoadingProgress((completed / total) * 100, "Loading event plans...");
