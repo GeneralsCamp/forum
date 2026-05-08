@@ -1,9 +1,8 @@
 import { initAutoHeight } from "../shared/ResizeService.mjs";
-import { findNewIDs } from "../shared/VersionService.mjs";
 import { createLoader } from "../shared/LoadingService.mjs";
 import { coreInit } from "../shared/CoreInit.mjs";
 import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageService.mjs";
-import { getSelectedGameSource } from "../shared/GameSettings.mjs";
+import { revealCard } from "../shared/CardReveal.mjs";
 
 let lang = {};
 let itemsData = null;
@@ -15,9 +14,7 @@ let quests = [];
 let questsById = {};
 let currenciesById = {};
 let unitsById = {};
-let newQuestIDsSet = new Set();
 let totalQuestChance = 0;
-const activeGameSource = getSelectedGameSource();
 
 const loader = createLoader();
 
@@ -45,8 +42,6 @@ function applyOwnLang() {
     UI_LANG = {
         no_quests: L.no_quests || "No quests match the current filters.",
         search_placeholder: L.search_placeholder || "Search by title or requirement...",
-        show_all: L.show_all || "Show all quests",
-        show_new: L.show_new || "Show only new quests",
         chance: L.chance || "Chance",
         type_all: L.type_all || "All quest types",
         type_defeat_target: L.type_defeat_target || "Defeat Target",
@@ -201,31 +196,9 @@ function buildQuestData() {
     totalQuestChance = quests.reduce((sum, q) => sum + q.chanceValue, 0);
 }
 
-async function compareWithOldVersion() {
-    try {
-        const newIDs = await findNewIDs({
-            currentItems: quests,
-            extractItemsFn: json =>
-                (json.allianceQuests || [])
-                    .map(q => ({ allianceQuestId: String(q.allianceQuestID || "") })),
-            idField: "allianceQuestId"
-        });
-
-        newQuestIDsSet = newIDs;
-    } catch (err) {
-        console.error("new quest detection error:", err);
-        newQuestIDsSet = new Set();
-    }
-}
-
 function getSearchQuery() {
     const el = document.getElementById("searchInput");
     return String(el?.value || "").trim().toLowerCase();
-}
-
-function getShowFilterMode() {
-    const el = document.getElementById("showFilter");
-    return el?.value === "new" ? "new" : "all";
 }
 
 function getTypeFilterValue() {
@@ -277,11 +250,9 @@ function populateTypeFilterOptions() {
 
 function getFilteredQuests() {
     const searchQuery = getSearchQuery();
-    const showMode = getShowFilterMode();
     const typeValue = getTypeFilterValue();
 
     return quests.filter(q => {
-        if (showMode === "new" && !newQuestIDsSet.has(q.allianceQuestId)) return false;
         if (typeValue !== "all" && String(q.questType || "") !== typeValue) return false;
 
         if (!searchQuery) return true;
@@ -301,7 +272,7 @@ function renderQuests() {
 
     if (!rows.length) {
         const empty = document.createElement("div");
-        empty.className = "col-12 quest-empty";
+        empty.className = "col-12 filter-empty-message";
         empty.textContent = UI_LANG.no_quests;
         container.appendChild(empty);
         return;
@@ -360,67 +331,39 @@ function renderQuests() {
         panel.appendChild(infoGrid);
 
         col.appendChild(panel);
-        container.appendChild(col);
+        container.appendChild(revealCard(col));
     });
 }
 
 function setFiltersLoadingState(isLoading) {
     const searchInput = document.getElementById("searchInput");
-    const showFilter = document.getElementById("showFilter");
     const typeFilter = document.getElementById("typeFilter");
-    if (!searchInput || !showFilter || !typeFilter) return;
+    if (!searchInput || !typeFilter) return;
 
     if (isLoading) {
         searchInput.disabled = true;
         searchInput.placeholder = "Loading search filter...";
-        if (showFilter.options[0]) showFilter.options[0].textContent = "Loading quest filters...";
-        if (showFilter.options[1]) showFilter.options[1].textContent = "Loading...";
-        showFilter.value = "all";
-        showFilter.disabled = true;
         typeFilter.innerHTML = `<option value="all" selected>Loading quest types...</option>`;
         typeFilter.disabled = true;
         return;
     }
 
     searchInput.disabled = false;
-    showFilter.disabled = false;
     typeFilter.disabled = false;
 }
 
 function setupFilters() {
     const searchInput = document.getElementById("searchInput");
-    const showFilter = document.getElementById("showFilter");
     const typeFilter = document.getElementById("typeFilter");
-    if (!searchInput || !showFilter || !typeFilter) return;
+    if (!searchInput || !typeFilter) return;
 
     setFiltersLoadingState(false);
     populateTypeFilterOptions();
     searchInput.placeholder = UI_LANG.search_placeholder;
-    if (showFilter.options[0]) showFilter.options[0].textContent = UI_LANG.show_all;
-    if (showFilter.options[1]) showFilter.options[1].textContent = UI_LANG.show_new;
-    if (showFilter.options[1]) showFilter.options[1].disabled = activeGameSource === "e4k";
-    if (activeGameSource === "e4k" && showFilter.value === "new") {
-        showFilter.value = "all";
-    }
 
     if (!searchInput.dataset.bound) {
         searchInput.addEventListener("input", renderQuests);
         searchInput.dataset.bound = "1";
-    }
-
-    if (!showFilter.dataset.bound) {
-        showFilter.addEventListener("change", async () => {
-            if (activeGameSource === "e4k" && showFilter.value === "new") {
-                showFilter.value = "all";
-                renderQuests();
-                return;
-            }
-            if (showFilter.value === "new" && newQuestIDsSet.size === 0) {
-                await compareWithOldVersion();
-            }
-            renderQuests();
-        });
-        showFilter.dataset.bound = "1";
     }
 
     if (!typeFilter.dataset.bound) {

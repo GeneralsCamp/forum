@@ -4,6 +4,7 @@ import { coreInit } from "../shared/CoreInit.mjs";
 import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageService.mjs";
 import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
+import { revealCard } from "../shared/CardReveal.mjs";
 import {
     createRewardResolver,
     normalizeName as sharedNormalizeName,
@@ -1122,13 +1123,8 @@ function renderRewards(rewards, label) {
 
     if (!rewards || rewards.length === 0) {
         const emptyCol = document.createElement("div");
-        emptyCol.className = "col-12";
-        emptyCol.innerHTML = `
-      <div class="box">
-        <div class="box-content d-flex align-items-center px-2 py-1">
-          <p class="mb-0">${UI_LANG.no_rewards}</p>
-        </div>
-      </div>`;
+        emptyCol.className = "col-12 filter-empty-message";
+        emptyCol.textContent = UI_LANG.no_rewards;
         container.appendChild(emptyCol);
         return;
     }
@@ -1213,7 +1209,7 @@ function renderRewards(rewards, label) {
           </div>
         </div>
       </div>`;
-        container.appendChild(col);
+        container.appendChild(revealCard(col));
     });
 
     void hydrateComposedImages({

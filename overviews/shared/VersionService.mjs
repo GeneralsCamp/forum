@@ -1,6 +1,8 @@
-import { fetchWithFallback }
-    from "./Fetcher.mjs";
-import { getCurrentVersionInfo as getSharedCurrentVersionInfo, getGameSource }
+import {
+    getCurrentVersionInfo as getSharedCurrentVersionInfo,
+    getGameSource,
+    getVersionHistory
+}
     from "./DataService.mjs";
 
 export async function getCurrentVersionInfo() {
@@ -17,49 +19,41 @@ export async function findNewIDs({
 
     const info = await getCurrentVersionInfo();
     const currentVersion = info.version;
+    const history = await getVersionHistory().catch(() => null);
+    const historyIds = findAddedIdsInHistory(history, currentVersion, idField);
 
-    const [majorStr] = currentVersion.split(".");
-    let major = parseInt(majorStr, 10);
+    if (historyIds.size > 0)
+        return historyIds;
 
-    while (major > 0) {
+    return new Set();
+}
 
-        for (let minor = 5; minor >= 1; minor--) {
+function findAddedIdsInHistory(history, currentVersion, idField) {
+    const rows =
+        Array.isArray(history)
+            ? history
+            : Array.isArray(history?.versions)
+                ? history.versions
+                : Array.isArray(history?.empire)
+                    ? history.empire
+                    : [];
 
-            const candidate =
-                `${major - 1}.${String(minor).padStart(2,"0")}`;
+    const match = rows.find(row =>
+        String(row?.version || row?.itemVersion || "") === String(currentVersion)
+    );
 
-            const url =
-                `https://empire-html5.goodgamestudios.com/default/items/items_v${candidate}.json`;
+    const added =
+        match?.added ||
+        match?.new ||
+        match?.newIds ||
+        match?.itemsAdded ||
+        match?.[idField];
 
-            try {
-                const res =
-                    await fetchWithFallback(url);
-
-                if (!res.ok) continue;
-
-                const json =
-                    await res.json();
-
-                const oldItems =
-                    extractItemsFn(json);
-
-                const oldIDs =
-                    new Set(oldItems.map(i => i[idField]));
-
-                const newIDs =
-                    new Set(currentItems.map(i => i[idField]));
-
-                const added =
-                    [...newIDs]
-                    .filter(id => !oldIDs.has(id));
-
-                if (added.length)
-                    return new Set(added);
-
-            } catch {}
-        }
-
-        major--;
+    if (!added) return new Set();
+    if (Array.isArray(added)) {
+        return new Set(added.map(item =>
+            typeof item === "object" ? item[idField] : item
+        ).filter(id => id != null));
     }
 
     return new Set();

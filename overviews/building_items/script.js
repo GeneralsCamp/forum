@@ -1,5 +1,4 @@
 import { initAutoHeight } from "../shared/ResizeService.mjs";
-import { findNewIDs } from "../shared/VersionService.mjs";
 import { createLoader } from "../shared/LoadingService.mjs";
 import { coreInit } from "../shared/CoreInit.mjs";
 import { initImageModal } from "../shared/ModalService.mjs";
@@ -8,7 +7,7 @@ import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
 import { getSharedLanguagePack, getSharedText } from "../shared/SharedTextService.mjs";
 import { createLazyList } from "../shared/LazyList.mjs";
-import { getSelectedGameSource } from "../shared/GameSettings.mjs";
+import { revealCard } from "../shared/CardReveal.mjs";
 
 // --- GLOBAL VARIABLES ---
 let lang = {};
@@ -16,8 +15,6 @@ let ownLang = {};
 let allItems = [];
 let imageUrlMap = {};
 let typeFilterCheckboxes = [];
-let newItemIDsSet = new Set();
-let showOnlyNew = false;
 let effectDefinitions = {};
 let effectCapsMap = {};
 const percentEffectIDs = new Set();
@@ -27,7 +24,6 @@ let noMatchMessage = "No match to the current filters.";
 let sharedLangPack = { filters: {}, ui: {} };
 const loader = createLoader();
 let currentLanguage = getInitialLanguage();
-const activeGameSource = getSelectedGameSource();
 const HOME_SETTINGS_KEY = "gf_home_settings_v1";
 const devCommentsEnabled = readHomeSetting("devCommentsEnabled", true);
 const INITIAL_BATCH_SIZE = 40;
@@ -52,20 +48,6 @@ function readHomeSetting(key, fallback) {
     } catch {
         return fallback;
     }
-}
-
-// --- FETCH FUNCTIONS ---
-async function compareWithOldVersion() {
-
-    const newIDs = await findNewIDs({
-        currentItems: allItems,
-        extractItemsFn: extractConstructionItems,
-        idField: "constructionItemID"
-    });
-
-    newItemIDsSet = newIDs;
-    showOnlyNew = true;
-    applyFiltersAndSorting();
 }
 
 async function loadOwnLang() {
@@ -132,25 +114,6 @@ async function applyOwnLang() {
         searchInput.placeholder =
             (filters.search_placeholder_prefix || "Search by: ")
             + names.join(", ");
-    }
-
-    const showFilter = document.getElementById("showFilter");
-    if (showFilter) {
-        if (showFilter.options[0])
-            showFilter.options[0].text =
-                filters.show_all || "Show all items";
-
-        if (showFilter.options[1])
-            showFilter.options[1].text =
-                filters.show_new || "Show only new items";
-
-        if (showFilter.options[1])
-            showFilter.options[1].disabled =
-                activeGameSource === "e4k";
-
-        if (activeGameSource === "e4k" &&
-            showFilter.value === "new")
-            showFilter.value = "all";
     }
 
     const typeDropdown = document.getElementById("typeDropdown");
@@ -825,13 +788,7 @@ function appendGroups(groups, { container, sentinel }) {
         wrapper.innerHTML = cardHtml;
         const card = wrapper.firstElementChild;
 
-        card.classList.add("card-hidden");
-
-        setTimeout(() => {
-            card.classList.add("card-visible");
-        }, 50);
-
-        fragment.appendChild(card);
+        fragment.appendChild(revealCard(card));
     });
 
     container.insertBefore(fragment, sentinel);
@@ -928,8 +885,6 @@ function applyFiltersAndSorting({ revealId = null, exactId = null } = {}) {
             if (type === "permanent" && Number(item.slotTypeID) === 0 && !item.decoPoints && !item.duration) matchesType = true;
         }
 
-        if (showOnlyNew && !newItemIDsSet.has(item.constructionItemID)) return false;
-
         return matchSearch && matchesType;
     });
 
@@ -989,25 +944,6 @@ function setupEventListeners() {
     const searchButton = document.getElementById("searchButton");
     typeFilterCheckboxes = document.querySelectorAll(".type-filter");
     const searchFilters = document.querySelectorAll(".search-filter");
-    const showFilter = document.getElementById("showFilter");
-
-    showFilter.addEventListener("change", () => {
-        const value = showFilter.value;
-
-        if (value === "new") {
-            if (activeGameSource === "e4k") {
-                showFilter.value = "all";
-                showOnlyNew = false;
-                applyFiltersAndSorting();
-                return;
-            }
-            compareWithOldVersion();
-        } else {
-            showOnlyNew = false;
-            applyFiltersAndSorting();
-        }
-    });
-
     function runSearch() {
         if (searchInput.disabled) return;
         appliedSearchText = searchInput.value || "";

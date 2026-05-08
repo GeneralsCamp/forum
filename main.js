@@ -55,20 +55,6 @@ const categories = {
     ]
 };
 
-const nowWorkingOn = [
-    {
-        title: "Battle Simulator",
-        text: "Paused until current overviews are stabilized.",
-        status: "Paused"
-    },
-    {
-        title: "Attack speed & Detection Calculator",
-        text: "Fixing the currently incorrect detection time calculation.",
-        status: "Paused"
-    }
-];
-
-
 function createCategoryCard(item, options = {}) {
     const {
         draggable = false,
@@ -158,7 +144,6 @@ function getDefaultHomeSettings() {
     return {
         selectedGame: getDefaultGameSource(),
         descriptionsEnabled: true,
-        currentProjectsEnabled: false,
         favoritesEnabled: true,
         devCommentsEnabled: true,
         e4kDeveloperModeEnabled: false
@@ -173,7 +158,6 @@ function readHomeSettings() {
         return {
             selectedGame: parsed.selectedGame ?? defaults.selectedGame,
             descriptionsEnabled: parsed.descriptionsEnabled ?? defaults.descriptionsEnabled,
-            currentProjectsEnabled: parsed.currentProjectsEnabled ?? defaults.currentProjectsEnabled,
             favoritesEnabled: parsed.favoritesEnabled ?? defaults.favoritesEnabled,
             devCommentsEnabled: parsed.devCommentsEnabled ?? defaults.devCommentsEnabled,
             e4kDeveloperModeEnabled: parsed.e4kDeveloperModeEnabled === true &&
@@ -214,20 +198,11 @@ function populateLanguageSelect(select) {
     ).join("");
 }
 
-function applyHomeSettingsToLayout() {
-    const currentHeader = document.getElementById("currentProjectsSection");
-    const currentPanel = document.getElementById("nowPanel");
-    if (currentHeader) currentHeader.style.display = uiSettings.currentProjectsEnabled ? "" : "none";
-    if (currentPanel) currentPanel.style.display = uiSettings.currentProjectsEnabled ? "" : "none";
-}
-
 function rerenderMainSections() {
     renderCategory(categories.overviews, "overviews");
     renderCategory(categories.calculators, "calculators");
     renderCategory(categories.simulators, "simulators");
     renderFavorites();
-    renderNowPanel(nowWorkingOn);
-    applyHomeSettingsToLayout();
 }
 
 function getAllCategoryItems() {
@@ -475,29 +450,6 @@ function setupFavoritesDragAndDrop() {
     });
 }
 
-function renderNowPanel(list) {
-    const container = document.querySelector("#nowPanel .now-grid");
-    if (!container) return;
-
-    const getStatusClass = (status) => {
-        const v = String(status || "").toLowerCase();
-        if (v.includes("active") || v.includes("progress") || v.includes("megy")) return "status-active";
-        if (v.includes("pause") || v.includes("szunet")) return "status-paused";
-        if (v.includes("plan")) return "status-planned";
-        if (v.includes("done") || v.includes("kesz")) return "status-done";
-        return "status-default";
-    };
-
-    container.innerHTML = list.map(item => `
-        <article class="now-card ${getStatusClass(item.status)}">
-            <div class="now-card-head">
-                <h3>${item.title}</h3>
-            </div>
-            <p>${item.text}</p>
-        </article>
-    `).join("");
-}
-
 function isMobileReorderAvailable() {
     const coarse = window.matchMedia?.("(pointer:coarse)").matches ?? false;
     const smallViewport = window.matchMedia?.("(max-width: 900px)").matches ?? false;
@@ -727,14 +679,13 @@ function setupSettingsModal() {
     const closeBtn = document.getElementById("closeSettingsBtn");
     const modal = document.getElementById("settingsModal");
     const descriptionsInput = document.getElementById("settingsDescriptions");
-    const currentProjectsInput = document.getElementById("settingsCurrentProjects");
     const favoritesInput = document.getElementById("settingsFavorites");
     const devCommentsInput = document.getElementById("settingsDevComments");
     const e4kDeveloperModeInput = document.getElementById("settingsE4kDeveloperMode");
     const e4kDeveloperModeRow = document.getElementById("settingsE4kDeveloperModeRow");
     const selectedGameInput = document.getElementById("settingsSelectedGame");
     const selectedLanguageInput = document.getElementById("settingsSelectedLanguage");
-    if (!openBtn || !closeBtn || !modal || !descriptionsInput || !currentProjectsInput || !favoritesInput || !devCommentsInput || !e4kDeveloperModeInput || !e4kDeveloperModeRow || !selectedGameInput || !selectedLanguageInput) return;
+    if (!openBtn || !closeBtn || !modal || !descriptionsInput || !favoritesInput || !devCommentsInput || !e4kDeveloperModeInput || !e4kDeveloperModeRow || !selectedGameInput || !selectedLanguageInput) return;
     const settingsModal = initCustomModal({ modalId: "settingsModal", closeAnimMs: 190 });
 
     const empireOption = selectedGameInput.querySelector('option[value="empire"]');
@@ -770,7 +721,6 @@ function setupSettingsModal() {
         selectedGameInput.value = uiSettings.selectedGame || getDefaultGameSource();
         selectedLanguageInput.value = getSavedSiteLanguage();
         descriptionsInput.checked = Boolean(uiSettings.descriptionsEnabled);
-        currentProjectsInput.checked = Boolean(uiSettings.currentProjectsEnabled);
         favoritesInput.checked = Boolean(uiSettings.favoritesEnabled);
         devCommentsInput.checked = Boolean(uiSettings.devCommentsEnabled);
         e4kDeveloperModeInput.checked = Boolean(uiSettings.e4kDeveloperModeEnabled);
@@ -787,9 +737,9 @@ function setupSettingsModal() {
         const selectedGame = selectedGameInput.value || getDefaultGameSource();
         writeSiteLanguage(selectedLanguageInput.value || getInitialLanguage());
         uiSettings = {
+            ...uiSettings,
             selectedGame,
             descriptionsEnabled: descriptionsInput.checked,
-            currentProjectsEnabled: currentProjectsInput.checked,
             favoritesEnabled: favoritesInput.checked,
             devCommentsEnabled: devCommentsInput.checked,
             e4kDeveloperModeEnabled: selectedGame === "e4k" && e4kDeveloperModeInput.checked
@@ -803,7 +753,6 @@ function setupSettingsModal() {
     selectedGameInput.addEventListener("change", handleChange);
     selectedLanguageInput.addEventListener("change", handleChange);
     descriptionsInput.addEventListener("change", handleChange);
-    currentProjectsInput.addEventListener("change", handleChange);
     favoritesInput.addEventListener("change", handleChange);
     devCommentsInput.addEventListener("change", handleChange);
     e4kDeveloperModeInput.addEventListener("change", handleChange);

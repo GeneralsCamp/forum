@@ -784,11 +784,6 @@
   font-weight: 700;
 }
 
-.loading-message {
-  max-width: none;
-  margin-top: 8px;
-}
-
 @media (max-width: 991px) {
   .reward-card {
     position: relative;

@@ -4,6 +4,43 @@ const textCache = new Map();
 const blobCache = new Map();
 const imageCache = new Map();
 const composedCache = new Map();
+const RENDER_PROXY_URLS = [
+  "https://my-proxy-8u49.onrender.com/"
+];
+const GOODGAME_ITEM_ASSET_ROOT =
+  "https://empire-html5.goodgamestudios.com/default/assets/itemassets/";
+
+function isGoodgameItemAsset(url) {
+  return String(url || "").startsWith(GOODGAME_ITEM_ASSET_ROOT);
+}
+
+function isComposableAssetFile(url) {
+  return /\.(json|js|webp|png)$/i.test(String(url || "").split("?")[0]);
+}
+
+function buildComposerFetchUrls(url) {
+  if (!isGoodgameItemAsset(url) || !isComposableAssetFile(url)) {
+    return [url];
+  }
+
+  return [
+    ...RENDER_PROXY_URLS.map(proxyUrl => `${proxyUrl}${url}`)
+  ];
+}
+
+async function fetchComposerAsset(url, timeout = 20000) {
+  let lastError = null;
+
+  for (const fetchUrl of buildComposerFetchUrls(url)) {
+    try {
+      return await fetchWithFallback(fetchUrl, timeout);
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  throw lastError || new Error(`Fetch failed: ${url}`);
+}
 
 function createSpriteSheet(atlasImage, atlasJson) {
   const frames = Array.isArray(atlasJson?.frames) ? atlasJson.frames : [];
@@ -184,7 +221,7 @@ function measureNodeBounds(node, parentMatrix, bounds) {
 async function fetchText(url) {
   if (!textCache.has(url)) {
     textCache.set(url, (async () => {
-      const res = await fetchWithFallback(url);
+      const res = await fetchComposerAsset(url);
       return res.text();
     })());
   }
@@ -194,7 +231,7 @@ async function fetchText(url) {
 async function fetchBlob(url) {
   if (!blobCache.has(url)) {
     blobCache.set(url, (async () => {
-      const res = await fetchWithFallback(url);
+      const res = await fetchComposerAsset(url, 30000);
       return res.blob();
     })());
   }
@@ -323,17 +360,16 @@ export async function composeAssetToDataUrl({
   if (composedCache.has(cacheKey)) return composedCache.get(cacheKey);
 
   const task = (async () => {
-    const [jsonText, atlasImage] = await Promise.all([
-      fetchText(jsonUrl),
-      loadImage(imageUrl)
-    ]);
-
+    const jsonText = await fetchText(jsonUrl);
     const atlasJson = parseJsonSafely(jsonText);
     if (isSingleFrameAtlas(atlasJson)) {
       return imageUrl;
     }
 
-    const jsCode = await fetchText(jsUrl);
+    const [jsCode, atlasImage] = await Promise.all([
+      fetchText(jsUrl),
+      loadImage(imageUrl)
+    ]);
     const { assetId, rootClassName } = parseAssetMeta(jsCode);
     const root = instantiateRoot(jsCode, assetId, rootClassName, atlasImage, atlasJson);
 

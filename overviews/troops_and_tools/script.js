@@ -6,6 +6,7 @@ import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
 import { getSharedLanguagePack, getSharedText } from "../shared/SharedTextService.mjs";
 import { initCustomModal } from "../shared/ModalService.mjs";
+import { revealCard } from "../shared/CardReveal.mjs";
 
 const loader = createLoader();
 let currentLanguage = getInitialLanguage();
@@ -19,6 +20,7 @@ let unitImageEntries = [];
 let collectableCurrencyImageUrlMap = {};
 const composedUnitImageCache = new Map();
 let unitStatsModal = null;
+let currentGameSource = "empire";
 let noMatchMessage = "No match to the current filters.";
 let effectCtx = { effectDefinitions: {}, percentEffectIDs: new Set() };
 let sharedLangPack = { ui: {}, filters: {} };
@@ -693,6 +695,10 @@ function getTypeAliases(rawType) {
     }
   }
 
+  if (currentGameSource === "e4k" && typeLc === "skeletalhunter") {
+    aliases.push("Skeletalarcher");
+  }
+
   return [...new Set(aliases.filter(Boolean))];
 }
 
@@ -1078,7 +1084,7 @@ function renderUnits(groups) {
   groups.forEach((group, index) => {
     const wrapper = document.createElement("div");
     wrapper.innerHTML = createUnitCard(group, index);
-    container.appendChild(wrapper.firstElementChild);
+    container.appendChild(revealCard(wrapper.firstElementChild));
   });
 
   void hydrateComposedImages({ root: container, cache: composedUnitImageCache });
@@ -1221,9 +1227,10 @@ async function init() {
         units: true,
         currencies: true
       },
-      onReady: async ({ lang: L, data, imageMaps, effectCtx: E }) => {
+      onReady: async ({ lang: L, data, imageMaps, effectCtx: E, versions }) => {
         lang = L || {};
         effectCtx = E || { effectDefinitions: {}, percentEffectIDs: new Set() };
+        currentGameSource = versions?.gameSource || "empire";
         await loadOwnLang();
         sharedLangPack = await getSharedLanguagePack(currentLanguage);
         applyUiLabels();

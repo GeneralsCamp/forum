@@ -1,8 +1,5 @@
 function ensureLoadingElements({
-  boxId = "loadingBox",
-  statusId = "loadingStatus",
-  progressId = "loadingProgress",
-  percentId = "loadingPercentText"
+  boxId = "loadingBox"
 } = {}) {
   let box = document.getElementById(boxId);
   if (box) return box;
@@ -12,68 +9,19 @@ function ensureLoadingElements({
   box = document.createElement("div");
   box.id = boxId;
   box.className = "loading-message";
-  box.innerHTML = `
-    <h3 id="${statusId}">Initializing...</h3>
-    <div class="progress">
-      <div id="${progressId}" class="progress-bar"></div>
-      <span id="${percentId}" class="progress-text">0%</span>
-    </div>
-  `;
+  box.style.display = "none";
 
   host.appendChild(box);
   return box;
 }
 
-export function createLoader({
-  statusSelector = "#loadingStatus",
-  barSelector = "#loadingProgress",
-  percentSelector = "#loadingPercentText",
-  animationMs = 25
-} = {}) {
-  ensureLoadingElements();
-
-  const statusEl = document.querySelector(statusSelector);
-  const barEl = document.querySelector(barSelector);
-  const percentEl = document.querySelector(percentSelector);
-
-  function toggleFilterControlsDisabled(isDisabled) {
-    const controls = document.querySelectorAll(
-      ".note input, .note select, .note button, .note textarea"
-    );
-
-    controls.forEach((el) => {
-      if ("disabled" in el) {
-        el.disabled = !!isDisabled;
-      }
-      el.setAttribute("aria-disabled", isDisabled ? "true" : "false");
-    });
-  }
-
+export function createLoader() {
   function setLoadingState(isActive) {
     if (!document?.body) return;
     document.body.classList.toggle("gf-loading-active", !!isActive);
-    toggleFilterControlsDisabled(!!isActive);
   }
 
-  function set(step, totalSteps, text) {
-    if (!statusEl || !barEl || !percentEl) return;
-
-    const target = Math.round((step / totalSteps) * 100);
-    statusEl.textContent = text;
-    setLoadingState(target < 100);
-
-    let current = parseInt(barEl.style.width) || 0;
-
-    const interval = setInterval(() => {
-      if (current >= target) {
-        clearInterval(interval);
-        return;
-      }
-      current++;
-      barEl.style.width = current + "%";
-      percentEl.textContent = current + "%";
-    }, animationMs);
-  }
+  function set() {}
 
   function hide(boxSelector = "#loadingBox") {
     const box = document.querySelector(boxSelector);
@@ -82,13 +30,14 @@ export function createLoader({
   }
 
   function error(message = "Something went wrong...", seconds = 30) {
-    const box = document.querySelector("#loadingBox");
+    const box = ensureLoadingElements();
     if (!box) return;
     setLoadingState(true);
+    box.style.display = "flex";
 
     box.innerHTML = `
       <h3>${message}</h3>
-      <p class="mb-1">The proxy server may be unavailable.</p>
+      <p class="mb-1">The data cache or network may be unavailable.</p>
       <p class="mb-1">Please wait a moment (max. 3 min).</p>
       <p>Reload in <span id="retryCountdown">${seconds}</span> seconds</p>
     `;

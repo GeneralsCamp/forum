@@ -91,6 +91,12 @@ label {
   min-width: 0;
 }
 
+.rift-empty-message {
+  grid-column: 1 / -1;
+  width: 100%;
+  margin-bottom: 0;
+}
+
 #individualRows,
 #bossRows {
   display: grid !important;
@@ -317,8 +323,8 @@ label {
 }
 
 .item-image {
-  width: 42px;
-  height: 42px;
+  width: 42px !important;
+  height: 42px !important;
   object-fit: contain;
 }
 
@@ -370,6 +376,13 @@ label {
   white-space: normal;
 }
 
+.boss-overview-reserve-slot {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  min-width: 0;
+}
+
 @media (max-width: 768px) {
   .item-grid {
     gap: 5px;
@@ -388,8 +401,8 @@ label {
   }
 
   .item-image {
-    width: 36px;
-    height: 36px;
+    width: 36px !important;
+    height: 36px !important;
   }
 
   .item-amount {
@@ -422,10 +435,16 @@ label {
 }
 
 @media (min-width: 768px) and (max-width: 1199.98px) {
-  .boss-overview-reserve-card {
+  .boss-overview-grid > .boss-overview-reserve-card,
+  .boss-overview-reserve-slot {
     grid-column: 1 / span 2;
     width: calc(50% - 4px);
     justify-self: center;
+  }
+
+  .boss-overview-reserve-slot {
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -447,8 +466,13 @@ label {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .boss-overview-reserve-card {
+  .boss-overview-grid > .boss-overview-reserve-card,
+  .boss-overview-reserve-slot {
     grid-column: 2 / span 2;
+  }
+
+  .boss-overview-reserve-slot {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

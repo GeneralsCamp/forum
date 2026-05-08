@@ -24,51 +24,35 @@ export async function coreInit({
 
     onReady
 }) {
+    loader?.hide();
 
-    const totalSteps = 5;
-    let step = 0;
-
-    const set = (t) =>
-        loader?.set(++step, totalSteps, t);
-
-    set("Checking item version...");
-    const itemVersion = await getItemVersion();
+    const [itemVersion, langVersion] = await Promise.all([
+        getItemVersion(),
+        getLangVersion()
+    ]);
     const gameSource = getGameSource();
 
-    set("Checking language version...");
-    const langVersion = await getLangVersion();
     await logResolvedDataUrls({ langCode, itemVersion, langVersion });
 
-    set("Loading language...");
-    const langRaw =
-        await loadLanguage(langCode, langVersion);
+    const imageMapsPromise =
+        Object.keys(assets).length > 0
+            ? loadImageMaps({
+                ...assets,
+                normalizeNameFn
+            })
+            : Promise.resolve({});
+
+    const [langRaw, json, imageMaps] = await Promise.all([
+        loadLanguage(langCode, langVersion),
+        loadItems(itemVersion),
+        imageMapsPromise
+    ]);
 
     const lang =
         lowercaseKeysRecursive(langRaw);
 
-    set("Loading items...");
-    const json =
-        await loadItems(itemVersion);
-
-
     const effectCtx =
         buildEffectContext(json, lang);
-
-    let imageMaps = {};
-
-    if (Object.keys(assets).length > 0) {
-
-        set("Loading images...");
-
-        imageMaps =
-            await loadImageMaps({
-                ...assets,
-                normalizeNameFn
-            });
-    }
-
-    loader?.set(totalSteps, totalSteps,
-        "Rendering...");
 
 
     await onReady({
@@ -84,8 +68,6 @@ export async function coreInit({
             gameSource
         }
     });
-
-    loader?.hide();
 }
 
 function lowercaseKeysRecursive(input) {

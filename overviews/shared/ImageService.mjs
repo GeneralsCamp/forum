@@ -2,12 +2,14 @@ import { fetchWithFallback } from "./Fetcher.mjs";
 import {
     getCachedText,
     setCachedText,
-    getCachedMeta,
     setCachedMeta
 } from "./VersionedCache.mjs";
+import { DATA_URLS } from "./DataService.mjs";
 
+const ASSET_ROOT =
+    "https://empire-html5.goodgamestudios.com/default/assets/";
 const BASE =
-    "https://empire-html5.goodgamestudios.com/default/assets/itemassets/";
+    `${ASSET_ROOT}itemassets/`;
 
 // ---- DLL CACHE ----
 let dllTextPromise = null;
@@ -17,73 +19,43 @@ async function getDllText() {
     if (!dllTextPromise) {
 
         dllTextPromise = (async () => {
-            try {
-                const indexRes =
-                    await fetchWithFallback(
-                        "https://empire-html5.goodgamestudios.com/default/index.html"
-                    );
-
-                const indexHtml = await indexRes.text();
-
-                const dllMatch = indexHtml.match(
-                    /<link\s+id=["']dll["']\s+rel=["']preload["']\s+href=["']([^"']+)["']/i
+            const versionRes =
+                await fetchWithFallback(DATA_URLS.empireDllVersion, 10000);
+            const versionJson =
+                await versionRes.json();
+            const dllVersion =
+                String(
+                    versionJson.version ||
+                    versionJson.hash ||
+                    versionJson.dllVersion ||
+                    versionJson.fileVersion ||
+                    versionJson.updatedAt ||
+                    "latest"
                 );
+            const dllUrl = DATA_URLS.empireDll;
+            const cacheKey = `dll-text:${dllVersion}`;
+            const cachedDllText = await getCachedText(cacheKey);
+            const cacheState = cachedDllText ? "cached" : "network";
 
-                if (!dllMatch)
-                    throw new Error("DLL preload not found");
+            console.log(`DLL version: ${dllVersion} (${cacheState})`);
+            console.log(`DLL URL: ${dllUrl}`);
+            console.log("");
 
-                const dllUrl =
-                    `https://empire-html5.goodgamestudios.com/default/${dllMatch[1]}`;
+            setCachedMeta("dll-meta:empire", {
+                version: dllVersion,
+                url: dllUrl
+            });
 
-                const dllPath = dllMatch[1];
-                const versionMatch =
-                    dllPath.match(/\.([a-f0-9]{10,})\.js$/i);
-
-                const dllVersion =
-                    versionMatch ? versionMatch[1] : "unknown";
-                const cacheKey = `dll-text:${dllVersion}`;
-                const cachedDllText = await getCachedText(cacheKey);
-                const cacheState = cachedDllText ? "cached" : "network";
-
-                console.log(`DLL version: ${dllVersion} (${cacheState})`);
-                console.log(`DLL URL: ${dllUrl}`);
-                console.log("");
-
-                setCachedMeta("dll-meta:empire", {
-                    version: dllVersion,
-                    url: dllUrl
-                });
-
-                if (cachedDllText) {
-                    return cachedDllText;
-                }
-
-                const dllRes =
-                    await fetchWithFallback(dllUrl);
-
-                const dllText = await dllRes.text();
-                await setCachedText(cacheKey, dllText);
-                return dllText;
-            } catch (error) {
-                const fallbackMeta = getCachedMeta("dll-meta:empire");
-                const fallbackVersion = fallbackMeta?.version;
-                const fallbackUrl = fallbackMeta?.url;
-                const fallbackCacheKey =
-                    fallbackVersion ? `dll-text:${fallbackVersion}` : null;
-                const fallbackText =
-                    fallbackCacheKey ? await getCachedText(fallbackCacheKey) : null;
-
-                if (fallbackVersion && fallbackUrl && fallbackText) {
-                    console.warn(`DLL fallback to cached value: ${fallbackVersion}`);
-                    console.log(`DLL version: ${fallbackVersion} (cached)`);
-                    console.log(`DLL URL: ${fallbackUrl}`);
-                    console.log("");
-                    return fallbackText;
-                }
-
-                throw error;
+            if (cachedDllText) {
+                return cachedDllText;
             }
 
+            const dllRes =
+                await fetchWithFallback(dllUrl);
+
+            const dllText = await dllRes.text();
+            await setCachedText(cacheKey, dllText);
+            return dllText;
         })();
     }
 
@@ -244,7 +216,7 @@ function parseCurrencies(text, normalize) {
 function parseLooks(text, normalize) {
 
     const base =
-        "https://empire-html5.goodgamestudios.com/default/assets/itemassets/";
+        BASE;
 
     const map = {};
 
@@ -309,7 +281,7 @@ function parseLooks(text, normalize) {
             ensure(key);
 
             map[key].mapObjects.castleUrl =
-                "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Worldmap/WorldmapObjects/Castles/Underworld_Special/Castle_Mapobject_Special_Underworld_5/Castle_Mapobject_Special_Underworld_5--1573584429307.webp";
+                `${BASE}Worldmap/WorldmapObjects/Castles/Underworld_Special/Castle_Mapobject_Special_Underworld_5/Castle_Mapobject_Special_Underworld_5--1573584429307.webp`;
         }
     }
 
@@ -361,7 +333,7 @@ function parseLooks(text, normalize) {
 function parseGenerals(text) {
 
     const base =
-        "https://empire-html5.goodgamestudios.com/default/assets/";
+        ASSET_ROOT;
 
     const portraits = {};
     const abilities = {};

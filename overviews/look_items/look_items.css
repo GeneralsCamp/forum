@@ -31,11 +31,15 @@
     }
 }
 
-.box-content img {
-    width: 70%;
+.box-content img,
+.box-content canvas {
+    width: 70% !important;
     max-width: 70%;
     aspect-ratio: 1/1;
     object-fit: contain;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .no-image-text {

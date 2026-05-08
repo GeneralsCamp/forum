@@ -5,11 +5,11 @@ import {
   loadLanguage,
   logResolvedDataUrls
 } from "../../overviews/shared/DataService.mjs";
-import { createLoader } from "../../overviews/shared/LoadingService.mjs";
 import { loadImageMaps } from "../../overviews/shared/ImageService.mjs";
 import { initAutoHeight } from "../../overviews/shared/ResizeService.mjs";
 import { initLanguageSelector, getInitialLanguage } from "../../overviews/shared/LanguageService.mjs";
 import { initCustomModal } from "../../overviews/shared/ModalService.mjs";
+import { createLoader } from "../../overviews/shared/LoadingService.mjs";
 import {
   createRewardResolver,
   buildLookup,
@@ -19,7 +19,6 @@ import {
 
 const STORAGE_KEY = "gf_imperial_patronage_simulator_v1";
 const FALLBACK_IMAGE = "../../img_base/placeholder.webp";
-const loader = createLoader();
 
 initAutoHeight({
   contentSelector: "#content",
@@ -33,6 +32,7 @@ let ownLang = {};
 let currentLanguage = getInitialLanguage();
 let lang = {};
 let rewardListModal = null;
+const loader = createLoader();
 
 const state = {
   selectedSetId: "",
@@ -1009,12 +1009,8 @@ function buildDonationModel(data, lang, imageMaps) {
 }
 
 async function init() {
-  const MIN_LOADING_MS = 900;
-  const startedAt = Date.now();
-
   rewardListModal = initCustomModal({ modalId: "rewardListModal" });
   readSavedState();
-  loader.set(1, 5, "Initializing...");
 
   try {
     const [itemVersion, langVersion] = await Promise.all([getItemVersion(), getLangVersion()]);
@@ -1025,11 +1021,9 @@ async function init() {
       langVersion
     });
 
-    loader.set(2, 5, "Loading data...");
     const [items, langRaw] = await Promise.all([loadItems(itemVersion), loadLanguage(currentLanguage, langVersion)]);
     lang = lowercaseKeysRecursive(langRaw);
 
-    loader.set(3, 5, "Loading images...");
     const imageMaps = await loadImageMaps({
       decorations: true,
       constructions: true,
@@ -1042,7 +1036,6 @@ async function init() {
       normalizeNameFn: normalizeName
     });
 
-    loader.set(4, 5, "Preparing view...");
     simulatorModel = buildDonationModel(items, lang, imageMaps);
 
     if (!simulatorModel.sets.length) {
@@ -1069,19 +1062,16 @@ async function init() {
     render();
     updateHashForSet(currentSet.id);
 
-    loader.set(5, 5, "Finalizing...");
-    const waitMs = Math.max(0, MIN_LOADING_MS - (Date.now() - startedAt));
-    if (waitMs > 0) {
-      await new Promise((resolve) => setTimeout(resolve, waitMs));
-    }
-
     els.content.style.display = "";
     saveState();
-    loader.hide();
     syncMobileDonationPanelHeight();
   } catch (error) {
     console.error("Imperial Patronage simulator init failed:", error);
-    loader.error("Data load failed", 30);
+    if (els.content) {
+      els.content.innerHTML = "";
+      els.content.style.display = "";
+      loader.error("Something went wrong...", 30);
+    }
   }
 }
 

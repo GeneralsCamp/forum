@@ -6,6 +6,7 @@ import { createRewardResolver } from "../shared/RewardResolver.mjs";
 import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
 import { initCustomModal } from "../shared/ModalService.mjs";
+import { revealCard } from "../shared/CardReveal.mjs";
 
 // --- GLOBAL VARIABLES ---
 let lang = {};
@@ -221,7 +222,7 @@ function openTombolaModal({ title, tombolaId, keyType = null }) {
   );
 
   if (entries.length === 0) {
-    container.innerHTML = `<div class="col-12">No rewards</div>`;
+    container.innerHTML = `<div class="col-12 filter-empty-message">No rewards</div>`;
     lootBoxModal?.open();
     return;
   }
@@ -269,7 +270,7 @@ function openTombolaModal({ title, tombolaId, keyType = null }) {
   });
 
   if (cards.length === 0) {
-    container.innerHTML = `<div class="col-12">No rewards</div>`;
+    container.innerHTML = `<div class="col-12 filter-empty-message">No rewards</div>`;
     lootBoxModal?.open();
     return;
   }
@@ -641,7 +642,7 @@ function renderLootBoxes(list) {
   list.forEach((box) => {
     const wrapper = document.createElement("div");
     wrapper.innerHTML = createLootBoxCard(box);
-    container.appendChild(wrapper.firstElementChild);
+    container.appendChild(revealCard(wrapper.firstElementChild));
   });
 }
 
@@ -657,7 +658,7 @@ function renderOfferings(list) {
   list.forEach(offering => {
     const wrapper = document.createElement("div");
     wrapper.innerHTML = createOfferingCard(offering);
-    container.appendChild(wrapper.firstElementChild);
+    container.appendChild(revealCard(wrapper.firstElementChild));
   });
 }
 

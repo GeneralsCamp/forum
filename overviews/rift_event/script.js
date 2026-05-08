@@ -4,6 +4,7 @@ import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageServ
 import { initAutoHeight, handleAutoHeight } from "../shared/ResizeService.mjs";
 import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
+import { revealCard } from "../shared/CardReveal.mjs";
 import {
   createRewardResolver,
   normalizeName as sharedNormalizeName,
@@ -146,7 +147,7 @@ function buildOverviewUnitItem(unit) {
 
 function unitCardsHtml(units) {
   if (!units || units.length === 0) {
-    return `<div class="boss-overview-empty">${ownText("no_units", "No units")}</div>`;
+    return `<div class="filter-empty-message">${ownText("no_units", "No units")}</div>`;
   }
 
   return units.map(unit => {
@@ -156,12 +157,13 @@ function unitCardsHtml(units) {
     const imageHtml = imageUrl
       ? `<img class="item-image" loading="lazy" alt="${item.name || ownText("unit", "Unit")}" src="${imageUrl}">`
       : `<div class="item-fallback">${ownText("unit", "Unit").toLowerCase()}</div>`;
+    const displayAmount = unit.displayAmount ?? formatNumber(unit.amount);
     return `
       <div class="item-card" data-name="${tooltipName}" title="${tooltipName}">
         <div class="item-image-wrap">
           ${imageHtml}
         </div>
-        <div class="item-amount">${formatNumber(unit.amount)}</div>
+        <div class="item-amount">${displayAmount}</div>
       </div>
     `;
   }).join("");
@@ -404,6 +406,98 @@ function parseSpawnReserveUnits(stage) {
       name: resolveUnitName(id)
     }))
     .sort((a, b) => Number(b.amount) - Number(a.amount));
+}
+
+function parseDefenderMutationEffects(stage) {
+  const mutationsByUnitId = {};
+
+  csv(stage?.defenderPostBattleEffects).forEach(token => {
+    const [effectIdRaw, payloadRaw] = String(token).split("&");
+    const effectId = String(effectIdRaw || "").trim();
+    const effectName = String(state.effectsById[effectId]?.name || "").trim().toLowerCase();
+    const isMutationEffect =
+      effectId === "488" ||
+      effectName.includes("mutation");
+
+    if (!isMutationEffect || !payloadRaw) return;
+
+    String(payloadRaw)
+      .split("#")
+      .map(part => String(part || "").trim())
+      .filter(Boolean)
+      .forEach(part => {
+        const [unitIdRaw, percentRaw] = part.split("+");
+        const unitId = String(unitIdRaw || "").trim();
+        const percent = Number(percentRaw);
+        if (!unitId || !Number.isFinite(percent) || percent <= 0) return;
+        mutationsByUnitId[unitId] = {
+          percent
+        };
+      });
+  });
+
+  return mutationsByUnitId;
+}
+
+function buildMutationUnits(stage) {
+  const mutationEffects = parseDefenderMutationEffects(stage);
+  return Object.entries(mutationEffects)
+    .map(([id, mutation]) => ({
+      id,
+      amount: 1,
+      displayAmount: `${formatNumber(mutation.percent)}%`,
+      percent: mutation.percent,
+      name: resolveUnitName(id)
+    }))
+    .sort((a, b) => Number(a.id) - Number(b.id));
+}
+
+function getMutationSectionTitle(stage) {
+  let title = "";
+
+  csv(stage?.defenderPostBattleEffects).some(token => {
+    const [effectIdRaw, payloadRaw] = String(token).split("&");
+    const effectId = String(effectIdRaw || "").trim();
+    const effectName = String(state.effectsById[effectId]?.name || "").trim();
+    const isMutationEffect =
+      effectId === "488" ||
+      effectName.toLowerCase().includes("mutation") ||
+      effectName.toLowerCase().includes("mutate");
+
+    if (!isMutationEffect || !payloadRaw || !effectName) return false;
+
+    title =
+      langValue(`dialog_are_highlightedeffect_name_${effectName}`) ||
+      resolveEffectName(effectId);
+    return !!title;
+  });
+
+  return title || ownText("mutation", "Mutation");
+}
+
+function reserveAndMutationHtml(spawnReserveUnits, mutationUnits, reserveUnitsLabel, stage) {
+  if (spawnReserveUnits.length === 0) return "";
+
+  const reserveCard = `
+    <article class="boss-overview-card boss-overview-reserve-card">
+      <h3 class="boss-overview-heading">${reserveUnitsLabel}</h3>
+      <div class="item-grid boss-overview-item-grid">${unitCardsHtml(spawnReserveUnits)}</div>
+    </article>
+  `;
+
+  if (!mutationUnits.length) {
+    return reserveCard;
+  }
+
+  return `
+    <div class="boss-overview-reserve-slot">
+      ${reserveCard}
+      <article class="boss-overview-card boss-overview-mutation-card">
+        <h3 class="boss-overview-heading">${getMutationSectionTitle(stage)}</h3>
+        <div class="item-grid boss-overview-item-grid">${unitCardsHtml(mutationUnits)}</div>
+      </article>
+    </div>
+  `;
 }
 
 function getSpawnReserveEffectId(stage) {
@@ -699,7 +793,7 @@ function renderBossOverview() {
   const stageIndex = Number(document.getElementById("bossStageSelect")?.value || "0");
 
   if (!boss || !levelId) {
-    root.innerHTML = `<div class="reward-card"><div class="reward-title">${ownText("no_boss_overview_data", "No boss overview data found")}</div></div>`;
+    root.innerHTML = `<div class="filter-empty-message rift-empty-message">${ownText("no_boss_overview_data", "No boss overview data found")}</div>`;
     return;
   }
 
@@ -708,7 +802,7 @@ function renderBossOverview() {
   const stage = stageRows[stageIndex];
 
   if (!level || !stage) {
-    root.innerHTML = `<div class="reward-card"><div class="reward-title">${ownText("no_boss_overview_data", "No boss overview data found")}</div></div>`;
+    root.innerHTML = `<div class="filter-empty-message rift-empty-message">${ownText("no_boss_overview_data", "No boss overview data found")}</div>`;
     return;
   }
 
@@ -721,6 +815,7 @@ function renderBossOverview() {
   const rightUnits = parseWallUnitsList(stage.rightWallUnits);
   const courtyardUnits = parseWallUnitsList(level.courtyardReserveUnits);
   const spawnReserveUnits = parseSpawnReserveUnits(stage);
+  const mutationUnits = buildMutationUnits(stage);
   const unitsLabel = uiText("units", "Units");
   const reserveUnitsLabel = getSpawnReserveLabel(stage);
   const leftFlankLabel = uiText("dialog_defence_leftFlank", "Left flank");
@@ -883,12 +978,7 @@ function renderBossOverview() {
         <div class="item-grid boss-overview-item-grid">${unitCardsHtml(courtyardUnits)}</div>
       </article>
 
-      ${spawnReserveUnits.length > 0 ? `
-      <article class="boss-overview-card boss-overview-reserve-card">
-        <h3 class="boss-overview-heading">${reserveUnitsLabel}</h3>
-        <div class="item-grid boss-overview-item-grid">${unitCardsHtml(spawnReserveUnits)}</div>
-      </article>
-      ` : ""}
+      ${reserveAndMutationHtml(spawnReserveUnits, mutationUnits, reserveUnitsLabel, stage)}
     </div>
   `;
 }
@@ -899,10 +989,10 @@ function renderCardRows(containerId, rows, emptyText) {
   root.innerHTML = "";
 
   if (!rows || rows.length === 0) {
-    const col = document.createElement("div");
-    col.className = "reward-col";
-    col.innerHTML = `<div class="reward-card"><div class="reward-title">${emptyText}</div></div>`;
-    root.appendChild(col);
+    const empty = document.createElement("div");
+    empty.className = "filter-empty-message rift-empty-message";
+    empty.textContent = emptyText;
+    root.appendChild(empty);
     return;
   }
 
@@ -993,7 +1083,7 @@ function renderCardRows(containerId, rows, emptyText) {
     }
     card.appendChild(grid);
     col.appendChild(card);
-    root.appendChild(col);
+    root.appendChild(revealCard(col));
   });
 
   void hydrateComposedImages({

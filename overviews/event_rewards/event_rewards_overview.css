@@ -76,6 +76,12 @@
     max-width: 95%;
 }
 
+canvas.card-image {
+    height: 100px !important;
+    width: auto !important;
+    max-width: 95%;
+}
+
 .card-cell a {
     color: #fff;
     text-decoration: none;

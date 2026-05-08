@@ -15,10 +15,8 @@ const viewOptions = [
 ];
 
 const proxyChain = [
-  "https://cors-anywhere-qelm.onrender.com/",
   "https://my-proxy-8u49.onrender.com/"
 ];
-const fallbackProxy = "https://corsproxy.io/?";
 const placeholderImage = "";
 
 const customEventImages = [
@@ -791,14 +789,7 @@ async function fetchWithFallback(url, timeout = 10000) {
             }
         }
 
-        if (lastProxyError) {
-            console.warn("All direct proxies failed, trying encoded fallback proxy.");
-        }
-
-        const encodedUrl = encodeURIComponent(url);
-        const fallbackResponse = await fetch(fallbackProxy + encodedUrl);
-        if (!fallbackResponse.ok) throw new Error("fallbackProxy: bad response");
-        return fallbackResponse;
+        throw lastProxyError || new Error("All proxies failed.");
     } finally {
         clearTimeout(timer);
     }
@@ -812,27 +803,12 @@ async function fetchEventPlanHtml(url) {
 function setLoadingState(message, show = true) {
     const loadingBox = document.getElementById("loadingBox");
     const loadingStatus = document.getElementById("loadingStatus");
-    const loadingProgress = document.getElementById("loadingProgress");
-    const loadingPercentText = document.getElementById("loadingPercentText");
     const eventGrid = document.getElementById("eventGrid");
 
     if (!loadingBox) return;
     loadingBox.style.display = show ? "flex" : "none";
     if (loadingStatus && message) loadingStatus.textContent = message;
-    if (loadingProgress) loadingProgress.style.width = show ? "0%" : "0%";
-    if (loadingPercentText) loadingPercentText.textContent = show ? "0%" : "";
     if (eventGrid) eventGrid.style.visibility = show ? "hidden" : "visible";
-}
-
-function setLoadingProgress(percent, message) {
-    const loadingStatus = document.getElementById("loadingStatus");
-    const loadingProgress = document.getElementById("loadingProgress");
-    const loadingPercentText = document.getElementById("loadingPercentText");
-    const safePercent = Math.max(0, Math.min(100, Math.round(percent)));
-
-    if (loadingStatus && message) loadingStatus.textContent = message;
-    if (loadingProgress) loadingProgress.style.width = `${safePercent}%`;
-    if (loadingPercentText) loadingPercentText.textContent = `${safePercent}%`;
 }
 
 function ensureEventGrid() {
@@ -865,7 +841,7 @@ function renderEvents(events) {
 
     if (!events || events.length === 0) {
         const empty = document.createElement("div");
-        empty.className = "event-card";
+        empty.className = "filter-empty-message";
         empty.textContent = "No events available.";
         container.appendChild(empty);
         return;
@@ -958,7 +934,7 @@ function renderCalendar(events) {
 
     if (!events || events.length === 0) {
         const empty = document.createElement("div");
-        empty.className = "event-card";
+        empty.className = "filter-empty-message";
         empty.textContent = "No events available.";
         container.appendChild(empty);
         return;
@@ -1052,7 +1028,7 @@ function renderCalendar(events) {
     const allRanges = rangesByEvent.flatMap(entry => entry.ranges);
     if (allRanges.length === 0) {
         const empty = document.createElement("div");
-        empty.className = "event-card";
+        empty.className = "filter-empty-message";
         empty.textContent = "No calendar data available.";
         container.appendChild(empty);
         return;
@@ -1522,7 +1498,6 @@ async function loadEvents(sourceKey) {
     }
 
     setLoadingState(`Loading: ${source.label}...`, true);
-    setLoadingProgress(0, `Loading: ${source.label}...`);
 
     try {
         const html = await fetchEventPlanHtml(source.url);
@@ -1530,7 +1505,6 @@ async function loadEvents(sourceKey) {
         const events = resolveEventsForSource(sourceKey, doc, source.url);
         eventCache[sourceKey] = events;
         renderCurrentView();
-        setLoadingProgress(100, `Loaded: ${source.label}`);
         setLoadingState("", false);
     } catch (err) {
         console.error("Load error:", err);
@@ -1539,21 +1513,24 @@ async function loadEvents(sourceKey) {
             console.warn(`Using manual event plan fallback for ${sourceKey}.`);
             eventCache[sourceKey] = manualEvents;
             renderCurrentView();
-            setLoadingProgress(100, `Loaded: ${source.label}`);
             setLoadingState("", false);
             return;
         }
-        setLoadingProgress(100, "Failed to load event plan data.");
-        setLoadingState("Failed to load event plan data.", true);
+        setLoadingState("", false);
+        const container = ensureEventGrid();
+        if (container) {
+            container.innerHTML = "";
+            const empty = document.createElement("div");
+            empty.className = "filter-empty-message";
+            empty.textContent = "Failed to load event plan data.";
+            container.appendChild(empty);
+        }
     }
 }
 
 async function preloadAllEvents() {
     setLoadingState("Loading event plans...", true);
-    setLoadingProgress(0, "Loading event plans...");
     const keys = Object.keys(eventSources);
-    const total = keys.length;
-    let completed = 0;
     for (const key of keys) {
         if (eventCache[key]) continue;
         try {
@@ -1563,12 +1540,8 @@ async function preloadAllEvents() {
         } catch (err) {
             console.error("Preload error:", err);
             eventCache[key] = getManualFallbackEvents(key);
-        } finally {
-            completed += 1;
-            setLoadingProgress((completed / total) * 100, "Loading event plans...");
         }
     }
-    setLoadingProgress(100, "Loading complete");
     setLoadingState("", false);
 }
 

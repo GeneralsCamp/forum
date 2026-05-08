@@ -722,7 +722,7 @@ function getSetOptions(wearerFilter = "all") {
 function renderEmpty(message) {
   const root = document.getElementById("setOverview");
   if (!root) return;
-  root.innerHTML = `<div class="empty-state">${message}</div>`;
+  root.innerHTML = `<div class="filter-empty-message">${message}</div>`;
 }
 
 function getSelectedBonusView() {
@@ -809,7 +809,7 @@ function buildEffectSummaryHtml(setEntry) {
     })
     .join("");
 
-  if (!rows) return `<div class="empty-state">No effect data</div>`;
+  if (!rows) return `<div class="filter-empty-message">No effect data</div>`;
 
   return `
     <section class="summary-view">
@@ -870,7 +870,7 @@ function renderSetCompareView() {
   const { filtered } = getVisibleSetOptionsForCompare(wearerFilter);
 
   if (filtered.length === 0) {
-    root.innerHTML = `<div class="empty-state">${ui("no_sets_for_compare", "No sets available for comparison in this filter.")}</div>`;
+    root.innerHTML = `<div class="filter-empty-message">${ui("no_sets_for_compare", "No sets available for comparison in this filter.")}</div>`;
     return;
   }
 
@@ -1103,7 +1103,7 @@ function renderSet(setId) {
         </div>
       `;
     }).join("")
-    : `<div class="empty-state">${ui("no_set_milestones", "No set milestone data.")}</div>`;
+    : `<div class="filter-empty-message">${ui("no_set_milestones", "No set milestone data.")}</div>`;
 
   const desktopSelectedView = getSelectedBonusView();
   const mobilePanel = getSelectedMobilePanel();
@@ -1142,7 +1142,7 @@ function renderSet(setId) {
       <div class="set-layout ${mobileClass}">
         <section class="panel">
           <div class="panel-head">${ui("set_pieces", "Set pieces")}</div>
-          <div class="pieces-wrap">${pieceRowsHtml || `<div class="empty-state">${ui("no_pieces_found", "No pieces found.")}</div>`}</div>
+          <div class="pieces-wrap">${pieceRowsHtml || `<div class="filter-empty-message">${ui("no_pieces_found", "No pieces found.")}</div>`}</div>
         </section>
 
         <section class="panel">

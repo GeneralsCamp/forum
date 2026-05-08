@@ -1,5 +1,4 @@
 import { initAutoHeight } from "../shared/ResizeService.mjs";
-import { findNewIDs } from "../shared/VersionService.mjs";
 import { createLoader } from "../shared/LoadingService.mjs";
 import { coreInit } from "../shared/CoreInit.mjs";
 import { initImageModal } from "../shared/ModalService.mjs";
@@ -9,6 +8,7 @@ import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
 import { getSharedLanguagePack, getSharedText } from "../shared/SharedTextService.mjs";
 import { createLazyList } from "../shared/LazyList.mjs";
 import { getSelectedGameSource } from "../shared/GameSettings.mjs";
+import { revealCard } from "../shared/CardReveal.mjs";
 
 // --- GLOBAL VARIABLES ---
 const loader = createLoader();
@@ -23,7 +23,6 @@ let currentSort = "po";
 let allDecorations = [];
 let imageUrlMap = {};
 let specialFilter = null;
-let newWodIDsSet = new Set();
 let noMatchMessage = "No match to the current filters.";
 const composedDecorationImageCache = new Map();
 let sharedLangPack = { filters: {}, ui: {} };
@@ -53,24 +52,6 @@ function readHomeSetting(key, fallback) {
   } catch {
     return fallback;
   }
-}
-
-// --- FETCH FUNCTIONS ---
-async function compareWithOldVersion() {
-
-  const newIDs = await findNewIDs({
-    currentItems: allDecorations,
-
-    extractItemsFn: (json) =>
-      extractDecorations(json.buildings || []),
-
-    idField: "wodID"
-  });
-
-  newWodIDsSet = newIDs;
-  specialFilter = "new";
-
-  applyFiltersAndSorting();
 }
 
 async function loadOwnLang() {
@@ -115,12 +96,7 @@ async function applyOwnLang() {
 
   const showFilter = document.getElementById('showFilter');
   if (showFilter) {
-    showFilter.options[0].text = filters.show_all || "Show all decorations";
-    showFilter.options[1].text = filters.show_new || "Show only new decorations";
-    showFilter.options[1].disabled = activeGameSource === "e4k";
-    if (activeGameSource === "e4k" && showFilter.value === "new") {
-      showFilter.value = "all";
-    }
+    if (showFilter.options[0]) showFilter.options[0].text = filters.show_all || "Show all decorations";
     const lastCapOption = document.getElementById('lastCapOption');
     if (lastCapOption) lastCapOption.text = filters.show_selected_effect || "Selected effect";
   }
@@ -503,13 +479,7 @@ function appendCards(items, { container, sentinel }) {
     wrapper.innerHTML = cardHtml;
     const card = wrapper.firstElementChild;
 
-    card.classList.add("card-hidden");
-
-    setTimeout(() => {
-      card.classList.add("card-visible");
-    }, 50);
-
-    fragment.appendChild(card);
+    fragment.appendChild(revealCard(card));
   });
 
   container.insertBefore(fragment, sentinel);
@@ -560,7 +530,6 @@ function applyFiltersAndSorting({ revealId = null, exactId = null } = {}) {
   const filtered = exactId
     ? allDecorations.filter(item => String(item.wodID || "") === String(exactId))
     : allDecorations.filter(item => {
-    if (specialFilter === "new" && !newWodIDsSet.has(item.wodID)) return false;
     if (specialFilter && specialFilter.startsWith("cap-")) {
       const capID = specialFilter.slice(4);
       if (!item.areaSpecificEffects || !item.areaSpecificEffects.split(",").some(eff => {
@@ -755,7 +724,7 @@ function setupEventListeners() {
   });
 
   if (showFilter) {
-    showFilter.addEventListener("change", async () => {
+    showFilter.addEventListener("change", () => {
       const val = showFilter.value;
 
       if (val.startsWith("cap-")) {
@@ -764,23 +733,8 @@ function setupEventListeners() {
         return;
       }
 
-      if (val === "new") {
-        if (activeGameSource === "e4k") {
-          showFilter.value = "all";
-          specialFilter = null;
-          applyFiltersAndSorting();
-          return;
-        }
-        specialFilter = "new";
-        if (newWodIDsSet.size === 0) {
-          await compareWithOldVersion();
-        } else {
-          applyFiltersAndSorting();
-        }
-      } else {
-        specialFilter = null;
-        applyFiltersAndSorting();
-      }
+      specialFilter = null;
+      applyFiltersAndSorting();
     });
   }
 

@@ -5,6 +5,7 @@ import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageServ
 import { getSharedText } from "../shared/SharedTextService.mjs";
 import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
+import { revealCard } from "../shared/CardReveal.mjs";
 import {
   normalizeName,
   getArray,
@@ -1025,9 +1026,7 @@ function renderOffers(items) {
     const wrapper = document.createElement("div");
     wrapper.innerHTML = createOfferCard(offer);
     const card = wrapper.firstElementChild;
-    card.classList.add("card-hidden");
-    window.setTimeout(() => card.classList.add("card-visible"), 30);
-    fragment.appendChild(card);
+    fragment.appendChild(revealCard(card));
   });
   container.appendChild(fragment);
 

@@ -1,8 +1,5 @@
 import { fetchWithFallback } from "./Fetcher.mjs";
-import {
-    getSelectedGameSource,
-    isE4kDeveloperModeEnabled
-} from "./GameSettings.mjs";
+import { getSelectedGameSource } from "./GameSettings.mjs";
 import {
     getCachedJson,
     setCachedJson,
@@ -10,24 +7,53 @@ import {
     setCachedMeta
 } from "./VersionedCache.mjs";
 
-const APP_LOOKUP_URL =
-    "https://itunes.apple.com/lookup?id=585661281";
-const EMPIRE_ITEMS_VERSION_URL =
-    "https://empire-html5.goodgamestudios.com/default/items/ItemsVersion.properties";
-const EMPIRE_ITEMS_BASE_URL =
-    "https://empire-html5.goodgamestudios.com/default/items";
-const LANGUAGE_VERSION_URL =
-    "https://langserv.public.ggs-ep.com/12/fr/@metadata";
-const LANGUAGE_BASE_URL =
-    "https://langserv.public.ggs-ep.com";
-const E4K_LOADER_MINOR_LOOKAHEAD = 2;
-const E4K_LOADER_MAX_PATCH = 40;
-const E4K_LOADER_PROBE_BATCH_SIZE = 8;
+export const DATA_BASE_URL =
+    "https://raw.githubusercontent.com/GeneralsCamp/ggempire-data-cache/main/public/data";
 
+export const DATA_URLS = {
+    manifest: `${DATA_BASE_URL}/manifest.json`,
+    versionHistory: `${DATA_BASE_URL}/version-history.json`,
+    empireItemVersion: `${DATA_BASE_URL}/empire/ItemsVersion.properties`,
+    empireItems: `${DATA_BASE_URL}/empire/items_latest.json`,
+    empireDllVersion: `${DATA_BASE_URL}/empire/dll/version.json`,
+    empireDll: `${DATA_BASE_URL}/empire/dll/ggs.dll.latest.js`,
+    e4kAppStore: `${DATA_BASE_URL}/e4k/appstore.json`,
+    e4kVersions: `${DATA_BASE_URL}/e4k/versions.json`,
+    e4kItems: `${DATA_BASE_URL}/e4k/items_latest.json`,
+    langMetadata: `${DATA_BASE_URL}/lang/metadata.json`,
+    lang: (langCode) => `${DATA_BASE_URL}/lang/${langCode}.json`
+};
+
+let manifestPromise = null;
+let versionHistoryPromise = null;
 let e4kRemoteInfoPromise = null;
 
 export function getGameSource() {
     return getSelectedGameSource();
+}
+
+export async function getDataManifest() {
+    if (!manifestPromise) {
+        manifestPromise = loadJsonWithMetaFallback(
+            DATA_URLS.manifest,
+            "data-manifest",
+            10000
+        );
+    }
+
+    return manifestPromise;
+}
+
+export async function getVersionHistory() {
+    if (!versionHistoryPromise) {
+        versionHistoryPromise = loadJsonWithMetaFallback(
+            DATA_URLS.versionHistory,
+            "version-history",
+            10000
+        );
+    }
+
+    return versionHistoryPromise;
 }
 
 export async function getItemVersion() {
@@ -37,13 +63,26 @@ export async function getItemVersion() {
     }
 
     try {
-        const url =
-            EMPIRE_ITEMS_VERSION_URL;
+        const manifest = await getDataManifest();
+        const manifestVersion =
+            pickString(manifest, [
+                ["empire", "items", "version"],
+                ["empire", "itemVersion"],
+                ["empire", "CastleItemXMLVersion"],
+                ["versions", "empireItems"],
+                ["items", "empire", "version"]
+            ]);
 
-        const res = await fetchWithFallback(url);
+        if (manifestVersion) {
+            setCachedMeta("item-version:empire", { version: manifestVersion });
+            return manifestVersion;
+        }
+    } catch {}
+
+    try {
+        const res = await fetchWithFallback(DATA_URLS.empireItemVersion);
         const text = await res.text();
-
-        const match = text.match(/CastleItemXMLVersion=(\d+\.\d+)/);
+        const match = text.match(/CastleItemXMLVersion=(\d+(?:\.\d+)+)/);
         if (!match) throw new Error("Version not found");
 
         const version = match[1];
@@ -61,12 +100,36 @@ export async function getItemVersion() {
 
 export async function getLangVersion() {
     try {
-        const url =
-            LANGUAGE_VERSION_URL;
+        const manifest = await getDataManifest();
+        const manifestVersion =
+            pickString(manifest, [
+                ["lang", "version"],
+                ["language", "version"],
+                ["versions", "lang"],
+                ["versions", "language"]
+            ]);
 
-        const res = await fetchWithFallback(url);
+        if (manifestVersion) {
+            setCachedMeta("lang-version", { version: manifestVersion });
+            return manifestVersion;
+        }
+    } catch {}
+
+    try {
+        const res = await fetchWithFallback(DATA_URLS.langMetadata);
         const json = await res.json();
-        const version = json["@metadata"].versionNo;
+        const version =
+            pickString(json, [
+                ["@metadata", "versionNo"],
+                ["metadata", "versionNo"],
+                ["versionNo"],
+                ["version"]
+            ]);
+
+        if (!version) {
+            throw new Error("Language version not found.");
+        }
+
         setCachedMeta("lang-version", { version });
         return version;
     } catch (error) {
@@ -80,60 +143,45 @@ export async function getLangVersion() {
 }
 
 export async function loadLanguage(langCode, version) {
-    const cacheKey = `lang:${getGameSource()}:${langCode}:${version}`;
+    const resolvedVersion = String(version || await getLangVersion());
+    const cacheKey = `lang:${getGameSource()}:${langCode}:${resolvedVersion}`;
     const cached = await getCachedJson(cacheKey);
     if (cached) return cached;
 
-    const url =
-        `${LANGUAGE_BASE_URL}/12@${version}/${langCode}/*`;
-
-    const res = await fetchWithFallback(url);
+    const res = await fetchWithFallback(DATA_URLS.lang(langCode), 30000);
     const json = await res.json();
     await setCachedJson(cacheKey, json);
     return json;
 }
 
 export async function loadItems(version) {
-    if (getGameSource() === "e4k") {
-        const info = await getE4kRemoteInfo();
-        const resolvedVersion = String(version || info.itemVersion);
-        const cacheKey = `items:e4k:${info.appVersion}:${resolvedVersion}`;
-        const cached = await getCachedJson(cacheKey);
-        if (cached) return cached;
-
-        const normalizedVersion =
-            resolvedVersion.replaceAll(".", "_");
-        const url =
-            `https://media.goodgamestudios.com/loader/empirefourkingdoms/${info.appVersion}/itemsXML/items_${normalizedVersion}.ggs`;
-
-        const res = await fetchWithFallback(url, 30000, {
-            strategy: "proxy-first",
-            useCorsProxy: true
-        });
-        const zipBuffer = await res.arrayBuffer();
-        const xmlText = await unpackE4kArchive(zipBuffer);
-        const parsed = parseE4kXml(xmlText);
-        await setCachedJson(cacheKey, parsed);
-        return parsed;
+    const source = getGameSource();
+    const resolvedVersion = String(
+        version || (source === "e4k"
+            ? (await getE4kRemoteInfo()).itemVersion
+            : await getItemVersion())
+    );
+    const cacheKey = `items:${source}:${resolvedVersion}`;
+    const cached = await getCachedJson(cacheKey);
+    if (cached) {
+        const normalizedCached = normalizeItemsPayload(cached);
+        if (normalizedCached !== cached) {
+            await setCachedJson(cacheKey, normalizedCached);
+        }
+        return normalizedCached;
     }
 
-    const url =
-        `${EMPIRE_ITEMS_BASE_URL}/items_v${version}.json`;
-
-    const cacheKey = `items:empire:${version}`;
-    const cached = await getCachedJson(cacheKey);
-    if (cached) return cached;
-
-    const res = await fetchWithFallback(url);
-    const json = await res.json();
+    const url = source === "e4k"
+        ? DATA_URLS.e4kItems
+        : DATA_URLS.empireItems;
+    const res = await fetchWithFallback(url, 60000);
+    const json = normalizeItemsPayload(await res.json());
     await setCachedJson(cacheKey, json);
     return json;
 }
 
-
 export async function getCurrentVersionInfo() {
     const version = await getItemVersion();
-
     const json = await loadItems(version);
 
     return {
@@ -163,34 +211,32 @@ export async function loadCoreData(langCode = "en") {
 
 export async function getResolvedUrls({ langCode = "en", itemVersion, langVersion } = {}) {
     const source = getGameSource();
+    const resolvedItemVersion = itemVersion || await getItemVersion();
+    const resolvedLangVersion = langVersion || await getLangVersion();
 
     if (source === "e4k") {
         const info = await getE4kRemoteInfo();
-        const resolvedItemVersion = itemVersion || info.itemVersion;
-        const resolvedLangVersion = langVersion || await getLangVersion();
         return {
             source,
-            appStoreUrl: APP_LOOKUP_URL,
+            appStoreUrl: DATA_URLS.e4kAppStore,
             appVersion: info.appVersion,
             itemVersion: resolvedItemVersion,
             langVersion: resolvedLangVersion,
-            versionsUrl: info.versionsUrl,
-            itemsUrl: `https://media.goodgamestudios.com/loader/empirefourkingdoms/${info.appVersion}/itemsXML/items_${String(resolvedItemVersion).replaceAll(".", "_")}.ggs`,
-            languageVersionUrl: LANGUAGE_VERSION_URL,
-            languageUrl: `${LANGUAGE_BASE_URL}/12@${resolvedLangVersion}/${langCode}/*`
+            versionsUrl: DATA_URLS.e4kVersions,
+            itemsUrl: DATA_URLS.e4kItems,
+            languageVersionUrl: DATA_URLS.langMetadata,
+            languageUrl: DATA_URLS.lang(langCode)
         };
     }
 
-    const resolvedItemVersion = itemVersion || await getItemVersion();
-    const resolvedLangVersion = langVersion || await getLangVersion();
     return {
         source,
         itemVersion: resolvedItemVersion,
         langVersion: resolvedLangVersion,
-        itemVersionUrl: EMPIRE_ITEMS_VERSION_URL,
-        itemsUrl: `${EMPIRE_ITEMS_BASE_URL}/items_v${resolvedItemVersion}.json`,
-        languageVersionUrl: LANGUAGE_VERSION_URL,
-        languageUrl: `${LANGUAGE_BASE_URL}/12@${resolvedLangVersion}/${langCode}/*`
+        itemVersionUrl: DATA_URLS.empireItemVersion,
+        itemsUrl: DATA_URLS.empireItems,
+        languageVersionUrl: DATA_URLS.langMetadata,
+        languageUrl: DATA_URLS.lang(langCode)
     };
 }
 
@@ -199,39 +245,14 @@ export async function getVersionedResourceState({ langCode = "en", itemVersion, 
     const resolvedItemVersion = itemVersion || await getItemVersion();
     const resolvedLangVersion = langVersion || await getLangVersion();
 
-    let itemCacheState = "network";
-    let langCacheState = "network";
-
-    if (source === "e4k") {
-        const e4kInfo = await getE4kRemoteInfo();
-        const itemCacheKey =
-            `items:e4k:${e4kInfo.appVersion}:${String(resolvedItemVersion || e4kInfo.itemVersion)}`;
-        const langCacheKey =
-            `lang:${source}:${langCode}:${resolvedLangVersion}`;
-
-        const [cachedItems, cachedLang] = await Promise.all([
-            getCachedJson(itemCacheKey),
-            getCachedJson(langCacheKey)
-        ]);
-
-        itemCacheState = cachedItems ? "cached" : "network";
-        langCacheState = cachedLang ? "cached" : "network";
-    } else {
-        const itemCacheKey = `items:empire:${resolvedItemVersion}`;
-        const langCacheKey = `lang:${source}:${langCode}:${resolvedLangVersion}`;
-
-        const [cachedItems, cachedLang] = await Promise.all([
-            getCachedJson(itemCacheKey),
-            getCachedJson(langCacheKey)
-        ]);
-
-        itemCacheState = cachedItems ? "cached" : "network";
-        langCacheState = cachedLang ? "cached" : "network";
-    }
+    const [cachedItems, cachedLang] = await Promise.all([
+        getCachedJson(`items:${source}:${resolvedItemVersion}`),
+        getCachedJson(`lang:${source}:${langCode}:${resolvedLangVersion}`)
+    ]);
 
     return {
-        itemCacheState,
-        langCacheState
+        itemCacheState: cachedItems ? "cached" : "network",
+        langCacheState: cachedLang ? "cached" : "network"
     };
 }
 
@@ -256,22 +277,57 @@ export async function logResolvedDataUrls({ langCode = "en", itemVersion, langVe
 async function getE4kRemoteInfo() {
     if (!e4kRemoteInfoPromise) {
         e4kRemoteInfoPromise = (async () => {
-            const appStoreVersion = await getE4kAppStoreVersion();
-            const info = isE4kDeveloperModeEnabled()
-                ? await getLatestE4kLoaderInfo(appStoreVersion)
-                : await getE4kLoaderInfo(appStoreVersion);
-            const json = info.json;
-            const itemVersion = json?.CastleItemXMLVersion;
+            const manifest = await getDataManifest().catch(() => null);
+            const appStore = await loadJsonWithMetaFallback(
+                DATA_URLS.e4kAppStore,
+                "e4k-appstore",
+                10000
+            ).catch(() => null);
+            const versions = await loadJsonWithMetaFallback(
+                DATA_URLS.e4kVersions,
+                "e4k-versions",
+                10000
+            );
+
+            const appVersion =
+                pickString(manifest, [
+                    ["e4k", "appVersion"],
+                    ["e4k", "loaderVersion"],
+                    ["versions", "e4kApp"]
+                ]) ||
+                pickString(appStore, [
+                    ["version"],
+                    ["appVersion"],
+                    ["loaderVersion"],
+                    ["results", 0, "version"]
+                ]) ||
+                "unknown";
+
+            const itemVersion =
+                pickString(manifest, [
+                    ["e4k", "items", "version"],
+                    ["e4k", "itemVersion"],
+                    ["e4k", "CastleItemXMLVersion"],
+                    ["versions", "e4kItems"],
+                    ["items", "e4k", "version"]
+                ]) ||
+                pickString(versions, [
+                    ["CastleItemXMLVersion"],
+                    ["itemVersion"],
+                    ["items", "version"]
+                ]);
 
             if (!itemVersion) {
-                throw new Error("CastleItemXMLVersion missing from E4K versions.json.");
+                throw new Error("CastleItemXMLVersion missing from E4K cache metadata.");
             }
 
+            setCachedMeta("item-version:e4k", { version: itemVersion });
+
             return {
-                appVersion: info.loaderVersion,
-                appStoreVersion,
+                appVersion,
+                appStoreVersion: appVersion,
                 itemVersion,
-                versionsUrl: info.versionsUrl
+                versionsUrl: DATA_URLS.e4kVersions
             };
         })();
     }
@@ -279,257 +335,108 @@ async function getE4kRemoteInfo() {
     return e4kRemoteInfoPromise;
 }
 
-async function getE4kAppStoreVersion() {
-    const res = await fetchWithFallback(APP_LOOKUP_URL, 15000, {
-        strategy: "direct-first",
-        useCorsProxy: true
-    });
-    const json = await res.json();
-    const version = json?.results?.[0]?.version;
-
-    if (!version) {
-        throw new Error("Could not resolve E4K app version from the Apple lookup API.");
-    }
-
-    const parts = String(version).split(".");
-    if (parts.length < 2) {
-        throw new Error(`Unexpected E4K version format: ${version}`);
-    }
-
-    const major = parts[0];
-    const minor = parts[1];
-    const patch = (parts[2] || "0").padStart(3, "0");
-
-    return `${major}${minor}${patch}`;
-}
-
-async function getE4kLoaderInfo(loaderVersion) {
-    const versionsUrl =
-        `https://media.goodgamestudios.com/loader/empirefourkingdoms/${loaderVersion}/versions.json`;
-    const res = await fetchWithFallback(versionsUrl, 15000, {
-        strategy: "direct-first",
-        useCorsProxy: true
-    });
-    const json = await res.json();
-
-    return {
-        loaderVersion,
-        versionsUrl,
-        json
-    };
-}
-
-async function getLatestE4kLoaderInfo(appStoreLoaderVersion) {
-    const baseVersion = parseE4kLoaderVersion(appStoreLoaderVersion);
-    const highPatch = Math.max(E4K_LOADER_MAX_PATCH, baseVersion.patch);
-    const candidates = [];
-
-    for (
-        let minor = baseVersion.minor + E4K_LOADER_MINOR_LOOKAHEAD;
-        minor >= baseVersion.minor;
-        minor--
-    ) {
-        for (let patch = highPatch; patch >= 0; patch--) {
-            const candidate = {
-                major: baseVersion.major,
-                minor,
-                patch
-            };
-
-            if (compareE4kVersions(candidate, baseVersion) >= 0) {
-                candidates.push(candidate);
-            }
-        }
-    }
-
-    for (let i = 0; i < candidates.length; i += E4K_LOADER_PROBE_BATCH_SIZE) {
-        const batch =
-            candidates.slice(i, i + E4K_LOADER_PROBE_BATCH_SIZE);
-        const results =
-            await Promise.all(batch.map(probeE4kLoaderVersion));
-        const match =
-            results.find(Boolean);
-
-        if (match) {
-            if (match.loaderVersion !== appStoreLoaderVersion) {
-                console.log(`E4K loader version: ${match.loaderVersion} (App Store: ${appStoreLoaderVersion})`);
-            }
-            return match;
-        }
-    }
-
-    throw new Error(`Could not resolve an E4K loader version from ${appStoreLoaderVersion}.`);
-}
-
-async function probeE4kLoaderVersion(versionParts) {
-    const loaderVersion =
-        formatE4kLoaderVersion(versionParts);
-    const versionsUrl =
-        `https://media.goodgamestudios.com/loader/empirefourkingdoms/${loaderVersion}/versions.json`;
-
+async function loadJsonWithMetaFallback(url, metaKey, timeout) {
     try {
-        const res = await fetchWithFallback(versionsUrl, 5000, {
-            strategy: "direct-only"
-        });
+        const res = await fetchWithFallback(url, timeout);
         const json = await res.json();
-
-        if (!json?.CastleItemXMLVersion) {
-            return null;
+        setCachedMeta(metaKey, json);
+        return json;
+    } catch (error) {
+        const fallback = getCachedMeta(metaKey);
+        if (fallback) {
+            console.warn(`${metaKey} fallback to cached value.`);
+            return fallback;
         }
-
-        return {
-            loaderVersion,
-            versionsUrl,
-            json
-        };
-    } catch {
-        return null;
+        throw error;
     }
 }
 
-function parseE4kLoaderVersion(version) {
-    const raw = String(version);
-    const match = raw.match(/^(\d)(\d+)(\d{3})$/);
-
-    if (!match) {
-        throw new Error(`Unexpected E4K loader version format: ${version}`);
-    }
-
-    return {
-        major: Number(match[1]),
-        minor: Number(match[2]),
-        patch: Number(match[3])
-    };
-}
-
-function formatE4kLoaderVersion({ major, minor, patch }) {
-    return `${major}${minor}${String(patch).padStart(3, "0")}`;
-}
-
-function compareE4kVersions(a, b) {
-    return (
-        a.major - b.major ||
-        a.minor - b.minor ||
-        a.patch - b.patch
-    );
-}
-
-async function ensureJsZipLoaded() {
-    if (window.JSZip) {
-        return window.JSZip;
-    }
-
-    await new Promise((resolve, reject) => {
-        const existing =
-            document.querySelector('script[data-jszip-loader="1"]');
-
-        if (existing) {
-            existing.addEventListener("load", () => resolve(), { once: true });
-            existing.addEventListener("error", () => reject(new Error("JSZip failed to load.")), { once: true });
-            return;
-        }
-
-        const script = document.createElement("script");
-        script.src = "https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js";
-        script.async = true;
-        script.dataset.jszipLoader = "1";
-        script.addEventListener("load", () => resolve(), { once: true });
-        script.addEventListener("error", () => reject(new Error("JSZip failed to load.")), { once: true });
-        document.head.appendChild(script);
-    });
-
-    if (!window.JSZip) {
-        throw new Error("JSZip is not available after loading.");
-    }
-
-    return window.JSZip;
-}
-
-async function unpackE4kArchive(zipBuffer) {
-    const JSZip = await ensureJsZipLoaded();
-    const zip = await JSZip.loadAsync(zipBuffer);
-    const firstFile =
-        Object.values(zip.files).find((file) => !file.dir);
-
-    if (!firstFile) {
-        throw new Error("The E4K archive did not contain any files.");
-    }
-
-    return firstFile.async("text");
-}
-
-function parseE4kXml(xmlText) {
-    const parser = new DOMParser();
-    const xml = parser.parseFromString(xmlText, "application/xml");
-    const parseError = xml.querySelector("parsererror");
-
-    if (parseError) {
-        throw new Error("Could not parse the E4K XML payload.");
-    }
-
-    const root = xml.querySelector("root");
-    if (!root) {
-        throw new Error("The E4K XML root element is missing.");
-    }
-
-    const data = {};
-    for (const child of Array.from(root.children)) {
-        data[child.nodeName] = xmlElementToJsonShape(child);
-    }
-
-    return data;
-}
-
-function xmlElementToJsonShape(element) {
-    const children = Array.from(element.children);
-
-    if (children.length > 0) {
-        const distinctNames =
-            [...new Set(children.map((child) => child.nodeName))];
-
-        if (distinctNames.length === 1) {
-            return children.map(xmlElementToObject);
+function pickString(source, paths) {
+    for (const path of paths) {
+        const value = readPath(source, path);
+        if (value !== undefined && value !== null && String(value).trim() !== "") {
+            return String(value).trim();
         }
     }
 
-    return xmlElementToObject(element);
+    return "";
 }
 
-function xmlElementToObject(element) {
-    const hasAttributes = element.attributes.length > 0;
-    const children = Array.from(element.children);
-    const hasChildElements = children.length > 0;
-    const rawText = element.textContent?.trim() || "";
-    const hasText = Boolean(rawText) && !hasChildElements;
+function readPath(source, path) {
+    let value = source;
+    for (const key of path) {
+        if (value == null) return undefined;
+        value = value[key];
+    }
+    return value;
+}
 
-    if (!hasAttributes && !hasChildElements) {
-        return rawText;
+function normalizeItemsPayload(payload) {
+    if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+        return payload;
     }
 
-    const result = {};
+    const normalized = { ...payload };
 
-    for (const attr of Array.from(element.attributes)) {
-        result[attr.name] = attr.value;
-    }
-
-    const groups = new Map();
-    for (const child of children) {
-        if (!groups.has(child.nodeName)) {
-            groups.set(child.nodeName, []);
+    for (const [key, value] of Object.entries(normalized)) {
+        if (Array.isArray(value) || !value || typeof value !== "object") {
+            continue;
         }
-        groups.get(child.nodeName).push(child);
+
+        const collection = extractCollection(value, key);
+        if (collection) {
+            normalized[key] = collection;
+        }
     }
 
-    for (const [name, nodes] of groups.entries()) {
-        result[name] =
-            nodes.length === 1
-                ? xmlElementToObject(nodes[0])
-                : nodes.map(xmlElementToObject);
+    return normalized;
+}
+
+function extractCollection(value, key) {
+    const singular = key.endsWith("ies")
+        ? `${key.slice(0, -3)}y`
+        : key.endsWith("s")
+            ? key.slice(0, -1)
+            : key;
+    const candidates = [
+        key,
+        singular,
+        key.toLowerCase(),
+        singular.toLowerCase(),
+        capitalize(key),
+        capitalize(singular),
+        "items",
+        "item",
+        "Items",
+        "Item",
+        "rows",
+        "row",
+        "Rows",
+        "Row",
+        "entries",
+        "entry",
+        "Entries",
+        "Entry"
+    ];
+
+    for (const candidate of candidates) {
+        if (Array.isArray(value[candidate])) {
+            return value[candidate];
+        }
     }
 
-    if (hasText) {
-        result.value = rawText;
+    const values = Object.values(value);
+    if (values.length > 0 && values.every(entry =>
+        entry && typeof entry === "object" && !Array.isArray(entry)
+    )) {
+        return values;
     }
 
-    return result;
+    return null;
+}
+
+function capitalize(value) {
+    return value
+        ? value.charAt(0).toUpperCase() + value.slice(1)
+        : value;
 }

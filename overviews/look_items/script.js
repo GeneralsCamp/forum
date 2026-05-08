@@ -6,6 +6,7 @@ import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageServ
 import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
 import { getSharedLanguagePack, getSharedText } from "../shared/SharedTextService.mjs";
+import { revealCards } from "../shared/CardReveal.mjs";
 
 // --- GLOBAL VARIABLES ---
 let lang = {};
@@ -298,6 +299,8 @@ function applyFiltersAndSorting() {
             .map(item =>
                 createLookCard(item, showFilter))
             .join("");
+
+    revealCards(container.children);
 
     void hydrateComposedImages({
         root: container,

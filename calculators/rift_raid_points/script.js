@@ -321,32 +321,19 @@ async function loadLiveData() {
 }
 
 async function init() {
-  const MIN_LOADING_MS = 1000;
-  const loadingStart = Date.now();
-
   setSectionsVisible(false);
-  loader.set(1, 4, "Loading versions...");
 
   try {
-    loader.set(2, 4, "Loading items and language...");
     await loadLiveData();
 
-    loader.set(3, 4, "Building raid boss data...");
     populateRaidBossSelect();
     restoreFromLocalStorage();
     bindUI();
     calculateActivityPoints();
-    loader.set(4, 4, "Finalizing...");
-    const elapsed = Date.now() - loadingStart;
-    const waitMs = Math.max(0, MIN_LOADING_MS - elapsed);
-    if (waitMs > 0) {
-      await new Promise(resolve => setTimeout(resolve, waitMs));
-    }
-    loader.hide();
     setSectionsVisible(true);
   } catch (err) {
     console.error("Rift raid live data load failed:", err);
-    loader.error("Data load failed", 30);
+    loader.error("Something went wrong...", 30);
   }
 }
 
