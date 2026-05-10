@@ -5,6 +5,7 @@ import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageServ
 import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
 import { revealCard } from "../shared/CardReveal.mjs";
+import { initRewardDetailModal, rewardDetailAttrs } from "../shared/RewardDetailModal.mjs";
 import {
     createRewardResolver,
     normalizeName as sharedNormalizeName,
@@ -25,6 +26,7 @@ let leaderboardRewardEntries = [];
 let rewardsById = {};
 let currenciesById = {};
 let equipmentById = {};
+let gemsById = {};
 let constructionById = {};
 let decorationsById = {};
 let unitsById = {};
@@ -33,11 +35,14 @@ let imageUrlMap = {};
 let constructionImageUrlMap = {};
 let equipmentImageUrlMap = {};
 let equipmentUniqueImageUrlMap = {};
+let uniqueGemImageUrlMap = {};
 let lookSkinsById = {};
 let unitImageUrlMap = {};
 let collectableCurrencyImageUrlMap = {};
 let lootBoxImageUrlMap = {};
 let allianceLayoutImageUrlMap = {};
+let offeringByCurrencyId = {};
+let offeringByCurrencyName = {};
 let ownLang = {};
 let UI_LANG = {};
 let difficultyTypeById = {};
@@ -320,6 +325,76 @@ function getLootBoxImageUrl(reward) {
 
 function getAllianceLayoutImageUrl(reward) {
     return rewardResolver ? rewardResolver.getAllianceLayoutImageUrl(reward) : null;
+}
+
+function parseOfferingTombolas(value) {
+    return String(value || "")
+        .split("#")
+        .map(item => item.trim())
+        .filter(Boolean)
+        .map(item => {
+            const [currencyId, tombolaId] = item.split("+").map(part => part.trim());
+            return currencyId && tombolaId ? { currencyId, tombolaId } : null;
+        })
+        .filter(Boolean);
+}
+
+function getOfferingDisplayName(currency) {
+    if (!currency) return "Offering";
+    const key = `currency_name_${currency.Name}`.toLowerCase();
+    return lang[key] || currency.Name || currency.JSONKey || "Offering";
+}
+
+function buildOfferingLookups(data) {
+    offeringByCurrencyId = {};
+    offeringByCurrencyName = {};
+    getArray(data, ["characters"]).forEach(character => {
+        parseOfferingTombolas(character?.tombolas).forEach(row => {
+            const currency = currenciesById[String(row.currencyId)];
+            const offering = {
+                currencyId: String(row.currencyId),
+                tombolaId: String(row.tombolaId),
+                name: getOfferingDisplayName(currency)
+            };
+            offeringByCurrencyId[offering.currencyId] = offering;
+            [currency?.Name, currency?.assetName, currency?.JSONKey, offering.name]
+                .filter(Boolean)
+                .forEach(value => {
+                    offeringByCurrencyName[sharedNormalizeName(value)] = offering;
+                });
+        });
+    });
+}
+
+function getOfferingForReward(reward) {
+    if (reward?.type !== "currency") return null;
+    const id = reward.id !== undefined && reward.id !== null ? String(reward.id) : "";
+    if (id && offeringByCurrencyId[id]) return offeringByCurrencyId[id];
+    const keys = [reward.addKeyName, reward.name].map(sharedNormalizeName).filter(Boolean);
+    for (const key of keys) {
+        if (offeringByCurrencyName[key]) return offeringByCurrencyName[key];
+    }
+    return null;
+}
+
+function getRewardDetailMarkup(reward, idText, amountText, imageUrl) {
+    const offering = getOfferingForReward(reward);
+    if (offering) {
+        return rewardDetailAttrs({
+            type: "offering",
+            id: offering.tombolaId,
+            name: reward.name || offering.name,
+            amount: amountText,
+            imageUrl
+        });
+    }
+    return rewardDetailAttrs({
+        type: reward.type,
+        id: idText !== "-" ? idText : "",
+        name: reward.name,
+        amount: amountText,
+        imageUrl
+    });
 }
 
 // --- UI RENDERING ---
@@ -1169,17 +1244,13 @@ function renderRewards(rewards, label) {
         const composeAttrs = composeSource
             ? ` data-compose-asset="1" data-image-url="${composeSource.imageUrl}" data-json-url="${composeSource.jsonUrl}" data-js-url="${composeSource.jsUrl}"`
             : "";
+        const detailAttrs = getRewardDetailMarkup(reward, idText, amountText, imageUrl);
         const imageInner = imageUrl
-            ? `<div class="image-wrapper"><img src="${imageUrl}" class="${imageClass}" loading="lazy" alt=""${composeAttrs}></div>`
-            : `<div class="reward-image-placeholder">img</div>`;
-        let imageBlock = imageInner;
-        if (idText !== "-" && reward.type === "decoration") {
-            imageBlock = `<a class="id-link" data-id="${idText}" href="https://generalscamp.github.io/forum/overviews/decorations#${idText}" target="_blank" rel="noopener">${imageInner}</a>`;
-        } else if (idText !== "-" && reward.type === "construction") {
-            imageBlock = `<a class="id-link" data-id="${idText}" href="https://generalscamp.github.io/forum/overviews/building_items#${idText}" target="_blank" rel="noopener">${imageInner}</a>`;
-        }
+            ? `<div class="image-wrapper" ${detailAttrs}><img src="${imageUrl}" class="${imageClass}" loading="lazy" alt=""${composeAttrs}></div>`
+            : `<div class="reward-image-placeholder" ${detailAttrs}>img</div>`;
+        const imageBlock = imageInner;
         col.innerHTML = `
-      <div class="box flex-fill">
+      <div class="box flex-fill" ${detailAttrs}>
         <div class="box-content">
           <h2 class="ci-title reward-title">${reward.name}</h2>
           <div class="reward-body row g-0 align-items-stretch">
@@ -1240,6 +1311,7 @@ async function init() {
                 units: true,
                 currencies: true,
                 equipmentUniques: true,
+                uniqueGems: true,
                 lootboxes: true,
                 allianceLayouts: true
             },
@@ -1247,7 +1319,8 @@ async function init() {
             onReady: async ({
                 lang: L,
                 data,
-                imageMaps
+                imageMaps,
+                effectCtx
             }) => {
 
                 lang = L;
@@ -1257,6 +1330,7 @@ async function init() {
                 constructionImageUrlMap = imageMaps?.constructions ?? {};
                 equipmentImageUrlMap = imageMaps?.looks ?? {};
                 equipmentUniqueImageUrlMap = imageMaps?.equipmentUniques ?? {};
+                uniqueGemImageUrlMap = imageMaps?.uniqueGems ?? {};
                 unitImageUrlMap = imageMaps?.units ?? {};
                 collectableCurrencyImageUrlMap = imageMaps?.currencies ?? {};
                 lootBoxImageUrlMap = imageMaps?.lootboxes ?? {};
@@ -1266,8 +1340,10 @@ async function init() {
                 leaderboardRewardEntries = getArray(itemsData, ["leaderboardRewards", "leaderboardrewards"]);
                 const currencies = getArray(itemsData, ["currencies"]);
                 const equipment = getArray(itemsData, ["equipments"]);
+                const gems = getArray(itemsData, ["gems"]);
                 const skins = getArray(itemsData, ["worldmapskins"]);
                 const lootBoxes = getArray(itemsData, ["lootBoxes", "lootboxes"]);
+                const lootBoxTombolas = getArray(itemsData, ["lootBoxTombolas", "lootboxtombolas"]);
 
                 lookSkinsById = {};
                 skins.forEach(s => {
@@ -1285,10 +1361,12 @@ async function init() {
                 rewardsById = buildLookup(rewards, "rewardID");
                 currenciesById = buildLookup(currencies, "currencyID");
                 equipmentById = buildLookup(equipment, "equipmentID");
+                gemsById = buildLookup(gems, "gemID");
                 constructionById = buildLookup(constructions, "constructionItemID");
                 decorationsById = buildLookup(decorations, "wodID");
                 unitsById = buildLookup(units, "wodID");
                 lootBoxesById = buildLookup(lootBoxes, "lootBoxID");
+                buildOfferingLookups(itemsData);
                 const allianceCoatLayoutsById = buildLookup(allianceCoatLayouts, "allianceCoatLayoutID");
                 difficultyTypeById = buildLookup(autoScalingDifficultyTypes, "difficultyTypeID");
                 rewardResolver = createRewardResolver(
@@ -1296,6 +1374,7 @@ async function init() {
                         lang,
                         currenciesById,
                         equipmentById,
+                        gemsById,
                         constructionById,
                         decorationsById,
                         unitsById,
@@ -1318,6 +1397,36 @@ async function init() {
                         rubyImageUrl: "../../img_base/ruby.png"
                     }
                 );
+                initRewardDetailModal({
+                    getContext: () => ({
+                        lang,
+                        rewardResolver,
+                        currenciesById,
+                        equipmentById,
+                        gemsById,
+                        constructionById,
+                        decorationsById,
+                        buildings: decorations,
+                        unitsById,
+                        effectsById: effectCtx?.effectDefinitions || {},
+                        effectCapsMap: effectCtx?.effectCapsMap || {},
+                        percentEffectIDs: effectCtx?.percentEffectIDs || new Set(),
+                        equipmentEffects: getArray(itemsData, ["equipment_effects", "equipmentEffects"]),
+                        equipmentSlotsById: buildLookup(getArray(itemsData, ["equipment_slots", "equipmentSlots"]), "slotID"),
+                        currentLanguage,
+                        lootBoxesById,
+                        rewardsById,
+                        lootBoxTombolas,
+                        unitImageUrlMap,
+                        currencyImageUrlMap: collectableCurrencyImageUrlMap,
+                        lootBoxImageUrlMap,
+                        decorationImageUrlMap: imageUrlMap,
+                        constructionImageUrlMap,
+                        equipmentImageUrlMap,
+                        equipmentUniqueImageUrlMap,
+                        uniqueGemImageUrlMap
+                    })
+                });
                 difficultyByEvent = {};
                 autoScalingDifficulties.forEach(item => {
                     const eventId = String(item.eventID || "");

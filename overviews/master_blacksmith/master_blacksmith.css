@@ -77,11 +77,11 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    cursor: pointer;
     text-decoration: none;
 }
 
-.blacksmith-image-link .card-image {
+.blacksmith-reward-trigger,
+.blacksmith-reward-trigger .card-image {
     cursor: pointer;
 }
 

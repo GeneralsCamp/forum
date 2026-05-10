@@ -5,6 +5,7 @@ import { initAutoHeight, handleAutoHeight } from "../shared/ResizeService.mjs";
 import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
 import { revealCard } from "../shared/CardReveal.mjs";
+import { initRewardDetailModal } from "../shared/RewardDetailModal.mjs";
 import {
   createRewardResolver,
   normalizeName as sharedNormalizeName,
@@ -35,12 +36,17 @@ const state = {
   rewardsById: {},
   effectsById: {},
   effectTypesById: {},
+  percentEffectIDs: new Set(),
   unitsById: {},
   lootBoxesById: {},
   constructionById: {},
+  decorationsById: {},
   equipmentById: {},
+  gemsById: {},
   lookSkinsById: {},
   currenciesById: {},
+  offeringByCurrencyId: {},
+  offeringByCurrencyName: {},
   rewardResolver: null,
   imageMaps: {}
 };
@@ -121,6 +127,56 @@ function formatMinSec(value) {
 function formatLangTemplate(template, value) {
   return String(template || "").replace("{0}", String(value ?? ""));
 }
+
+function getOfferingDisplayName(currency) {
+  if (!currency) return "Offering";
+  const key = `currency_name_${currency.Name}`.toLowerCase();
+  return langValue(key) || currency.Name || currency.JSONKey || "Offering";
+}
+
+function buildOfferingLookups(data) {
+  state.offeringByCurrencyId = {};
+  state.offeringByCurrencyName = {};
+  getArray(data, ["characters"]).forEach(character => {
+    parseOfferingTombolas(character?.tombolas).forEach(row => {
+      const currency = state.currenciesById[String(row.currencyId)];
+      const offering = {
+        currencyId: String(row.currencyId),
+        tombolaId: String(row.tombolaId),
+        name: getOfferingDisplayName(currency)
+      };
+      state.offeringByCurrencyId[offering.currencyId] = offering;
+      [currency?.Name, currency?.assetName, currency?.JSONKey, offering.name]
+        .filter(Boolean)
+        .forEach(value => {
+          state.offeringByCurrencyName[sharedNormalizeName(value)] = offering;
+        });
+    });
+  });
+}
+
+function getOfferingForRewardEntry(entry) {
+  if (entry?.type !== "currency") return null;
+  const id = entry.id !== undefined && entry.id !== null ? String(entry.id) : "";
+  if (id && state.offeringByCurrencyId[id]) return state.offeringByCurrencyId[id];
+  const keys = [entry.addKeyName, entry.name].map(sharedNormalizeName).filter(Boolean);
+  for (const key of keys) {
+    if (state.offeringByCurrencyName[key]) return state.offeringByCurrencyName[key];
+  }
+  return null;
+}
+
+function mapOfferingEntry(entry, offering) {
+  return {
+    ...entry,
+    name: entry.name || offering.name,
+    type: "offering",
+    id: offering.tombolaId,
+    currencyId: offering.currencyId,
+    addKeyName: entry.addKeyName || offering.name
+  };
+}
+
 // --- NAME HELPERS ---
 function resolveUnitName(id) {
   const unit = state.unitsById[String(id)];
@@ -159,7 +215,15 @@ function unitCardsHtml(units) {
       : `<div class="item-fallback">${ownText("unit", "Unit").toLowerCase()}</div>`;
     const displayAmount = unit.displayAmount ?? formatNumber(unit.amount);
     return `
-      <div class="item-card" data-name="${tooltipName}" title="${tooltipName}">
+      <div class="item-card"
+        data-reward-detail="1"
+        data-reward-type="unit"
+        data-reward-id="${item.id || ""}"
+        data-reward-name="${tooltipName}"
+        data-reward-amount="${item.amount ?? ""}"
+        data-reward-image="${imageUrl || ""}"
+        data-name="${tooltipName}"
+        title="${tooltipName}">
         <div class="item-image-wrap">
           ${imageHtml}
         </div>
@@ -561,13 +625,16 @@ function mapRewardToEntries(reward) {
       const name = String(item?.name || "").trim();
       const addKeyName = item?.addKeyName || null;
       if (isMeadLikeName(name) || isMeadLikeName(addKeyName)) return;
+      const offering = getOfferingForRewardEntry(item);
+      const detailItem = offering ? mapOfferingEntry(item, offering) : item;
 
       entries.push({
         name: name || `${ownText("reward", "Reward")} ${reward.rewardID || "?"}`,
-        amount: Number(item?.amount) || 1,
-        type: item?.type || null,
-        id: item?.id ?? null,
-        addKeyName
+        amount: Number(detailItem?.amount) || 1,
+        type: detailItem?.type || null,
+        id: detailItem?.id ?? null,
+        addKeyName: detailItem?.addKeyName || addKeyName,
+        currencyId: detailItem?.currencyId || null
       });
     });
   }
@@ -597,13 +664,15 @@ function mapRewardToEntries(reward) {
     const fallbackName = state.rewardResolver.resolveRewardName(reward) || `${ownText("reward", "Reward")} ${reward.rewardID || "?"}`;
     const fallbackAddKey = state.rewardResolver.getAddKeyName(reward) || null;
     if (!isMeadLikeName(fallbackName) && !isMeadLikeName(fallbackAddKey)) {
-      return [{
+      const fallbackEntry = {
         name: fallbackName,
         amount: state.rewardResolver.getRewardAmount(reward) || 1,
         type: state.rewardResolver.resolveRewardType(reward),
         id: state.rewardResolver.resolveRewardIdStrict(reward),
         addKeyName: fallbackAddKey
-      }];
+      };
+      const offering = getOfferingForRewardEntry(fallbackEntry);
+      return [offering ? mapOfferingEntry(fallbackEntry, offering) : fallbackEntry];
     }
   }
 
@@ -616,10 +685,29 @@ function imageUrlFor(entry) {
   if (entry.type === "decoration") return state.rewardResolver.getDecorationImageUrl(entry);
   if (entry.type === "construction") return state.rewardResolver.getConstructionImageUrl(entry);
   if (entry.type === "equipment") return state.rewardResolver.getEquipmentImageUrl(entry) || "../../img_base/equipment.png";
+  if (entry.type === "gem") return state.imageMaps.uniqueGems?.[String(entry.id)] || "../../img_base/placeholder.webp";
   if (entry.type === "unit") return state.rewardResolver.getUnitImageUrl(entry);
   if (entry.type === "lootbox") return state.rewardResolver.getLootBoxImageUrl(entry);
+  if (entry.type === "offering") return state.rewardResolver.getCurrencyImageUrl(entry);
   if (entry.type === "currency") return state.rewardResolver.getCurrencyImageUrl(entry);
   return null;
+}
+
+function parseOfferingTombolas(value) {
+  return String(value || "")
+    .split("#")
+    .map(item => item.trim())
+    .filter(Boolean)
+    .map(item => {
+      const [currencyId, tombolaId] = item.split("+").map(part => part.trim());
+      return currencyId && tombolaId ? { currencyId, tombolaId } : null;
+    })
+    .filter(Boolean);
+}
+
+function supportsRewardDetail(entry) {
+  const type = String(entry?.type || "").toLowerCase();
+  return ["lootbox", "loot_box", "offering", "unit", "troop", "tool", "decoration", "construction", "equipment", "gem"].includes(type);
 }
 
 function selectedRiftId() {
@@ -1015,18 +1103,8 @@ function renderCardRows(containerId, rows, emptyText) {
     grid.className = "item-grid";
 
     row.items.forEach(item => {
-      const constructionId = item?.id !== undefined && item?.id !== null && String(item.id).trim() !== ""
-        ? String(item.id)
-        : null;
-      const isConstructionLink = item?.type === "construction" && !!constructionId;
-      const itemCard = document.createElement(isConstructionLink ? "a" : "div");
+      const itemCard = document.createElement("div");
       itemCard.className = "item-card";
-      if (isConstructionLink) {
-        itemCard.classList.add("id-link");
-        itemCard.href = `https://generalscamp.github.io/forum/overviews/building_items#${constructionId}`;
-        itemCard.target = "_blank";
-        itemCard.rel = "noopener";
-      }
       const tooltipName = item?.type === "unit"
         ? resolveUnitTooltipName(item)
         : (item.name || "Reward");
@@ -1037,6 +1115,14 @@ function renderCardRows(containerId, rows, emptyText) {
       imageWrap.className = "item-image-wrap";
 
       const imageUrl = imageUrlFor(item);
+      if (supportsRewardDetail(item)) {
+        itemCard.dataset.rewardDetail = "1";
+        itemCard.dataset.rewardType = item?.type || "";
+        itemCard.dataset.rewardId = item?.id || "";
+        itemCard.dataset.rewardName = item?.name || "";
+        itemCard.dataset.rewardAmount = item?.amount ?? "";
+        if (imageUrl) itemCard.dataset.rewardImage = imageUrl;
+      }
       if (imageUrl) {
         const img = document.createElement("img");
         img.className = "item-image";
@@ -1273,9 +1359,10 @@ async function init() {
         units: true,
         currencies: true,
         equipmentUniques: true,
+        uniqueGems: true,
         lootboxes: true
       },
-      onReady: async ({ lang, data, imageMaps }) => {
+      onReady: async ({ lang, data, imageMaps, effectCtx }) => {
         await loadOwnLang();
         state.lang = lang || {};
         state.items = data;
@@ -1290,11 +1377,15 @@ async function init() {
         state.rewardsById = buildLookup(getArray(data, ["rewards"]), "rewardID");
         state.effectsById = buildLookup(getArray(data, ["effects"]), "effectID");
         state.effectTypesById = buildLookup(getArray(data, ["effecttypes", "effectTypes"]), "effectTypeID");
+        state.percentEffectIDs = effectCtx?.percentEffectIDs || new Set();
         state.unitsById = buildLookup(getArray(data, ["units"]), "wodID");
         state.lootBoxesById = buildLookup(getArray(data, ["lootBoxes", "lootboxes"]), "lootBoxID");
         state.constructionById = buildLookup(getArray(data, ["constructionItems"]), "constructionItemID");
+        state.decorationsById = buildLookup(getArray(data, ["buildings"]), "wodID");
         state.equipmentById = buildLookup(getArray(data, ["equipments"]), "equipmentID");
+        state.gemsById = buildLookup(getArray(data, ["gems"]), "gemID");
         state.currenciesById = buildLookup(getArray(data, ["currencies"]), "currencyID");
+        buildOfferingLookups(data);
         const skins = getArray(data, ["worldmapskins"]);
         state.lookSkinsById = {};
         skins.forEach(s => {
@@ -1308,8 +1399,10 @@ async function init() {
             lang: state.lang,
             currenciesById: state.currenciesById,
             equipmentById: state.equipmentById,
+            gemsById: state.gemsById,
             constructionById: state.constructionById,
-            decorationsById: {},
+            decorationsById: state.decorationsById,
+            buildings: getArray(state.items, ["buildings"]),
             unitsById: state.unitsById,
             lootBoxesById: state.lootBoxesById,
             lookSkinsById: state.lookSkinsById,
@@ -1317,6 +1410,7 @@ async function init() {
             constructionImageUrlMap: state.imageMaps.constructions || {},
             equipmentImageUrlMap: state.imageMaps.looks || {},
             equipmentUniqueImageUrlMap: state.imageMaps.equipmentUniques || {},
+            uniqueGemImageUrlMap: state.imageMaps.uniqueGems || {},
             unitImageUrlMap: state.imageMaps.units || {},
             currencyImageUrlMap: state.imageMaps.currencies || {},
             lootBoxImageUrlMap: state.imageMaps.lootboxes || {}
@@ -1328,6 +1422,35 @@ async function init() {
             rubyImageUrl: "../../img_base/ruby.png"
           }
         );
+        initRewardDetailModal({
+          getContext: () => ({
+            lang: state.lang,
+            rewardResolver: state.rewardResolver,
+            currenciesById: state.currenciesById,
+            equipmentById: state.equipmentById,
+            gemsById: state.gemsById,
+            constructionById: state.constructionById,
+            decorationsById: state.decorationsById,
+            unitsById: state.unitsById,
+            effectsById: state.effectsById,
+            effectCapsMap: effectCtx?.effectCapsMap || {},
+            effectTypesById: state.effectTypesById,
+            percentEffectIDs: state.percentEffectIDs,
+            equipmentEffects: getArray(state.items, ["equipment_effects", "equipmentEffects"]),
+            equipmentSlotsById: buildLookup(getArray(state.items, ["equipment_slots", "equipmentSlots"]), "slotID"),
+            currentLanguage,
+            lootBoxesById: state.lootBoxesById,
+            rewardsById: state.rewardsById,
+            lootBoxTombolas: getArray(state.items, ["lootBoxTombolas", "lootboxtombolas"]),
+            unitImageUrlMap: state.imageMaps.units || {},
+            currencyImageUrlMap: state.imageMaps.currencies || {},
+            lootBoxImageUrlMap: state.imageMaps.lootboxes || {},
+            constructionImageUrlMap: state.imageMaps.constructions || {},
+            equipmentImageUrlMap: state.imageMaps.looks || {},
+            equipmentUniqueImageUrlMap: state.imageMaps.equipmentUniques || {},
+            uniqueGemImageUrlMap: state.imageMaps.uniqueGems || {}
+          })
+        });
 
         setupRiftSelector();
         setupBossOverviewSelectors();

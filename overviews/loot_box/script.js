@@ -2,11 +2,9 @@ import { initAutoHeight } from "../shared/ResizeService.mjs";
 import { createLoader } from "../shared/LoadingService.mjs";
 import { coreInit } from "../shared/CoreInit.mjs";
 import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageService.mjs";
-import { createRewardResolver } from "../shared/RewardResolver.mjs";
-import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
-import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
-import { initCustomModal } from "../shared/ModalService.mjs";
+import { createRewardResolver, getArray, buildLookup } from "../shared/RewardResolver.mjs";
 import { revealCard } from "../shared/CardReveal.mjs";
+import { initRewardDetailModal, rewardDetailAttrs } from "../shared/RewardDetailModal.mjs";
 
 // --- GLOBAL VARIABLES ---
 let lang = {};
@@ -20,6 +18,8 @@ let currenciesById = {};
 let buildingsById = {};
 let constructionItemsById = {};
 let equipmentsById = {};
+let gemsById = {};
+let unitsById = {};
 let lootBoxesById = {};
 let lookSkinsById = {};
 let rewardResolver = null;
@@ -30,27 +30,11 @@ let decorationImageUrlMap = {};
 let constructionImageUrlMap = {};
 let lookImageUrlMap = {};
 let equipmentUniqueImageUrlMap = {};
+let unitImageUrlMap = {};
 let uniqueGemImageUrlMap = {};
-const composedEquipmentImageCache = new Map();
 
 const loader = createLoader();
 let currentLanguage = getInitialLanguage();
-
-const RARITY_ORDER = {
-  common: 1,
-  rare: 2,
-  epic: 3,
-  legendary: 4
-};
-
-const KEY_TYPE_MIN_RARITY = {
-  Common: RARITY_ORDER.common,
-  Rare: RARITY_ORDER.rare,
-  Epic: RARITY_ORDER.epic,
-  Legendary: RARITY_ORDER.legendary
-};
-
-let lootBoxModal = null;
 
 // --- LOOTBOX HELPERS ---
 function normalizeName(value) {
@@ -161,15 +145,6 @@ function parseTombolaString(value) {
     .filter(Boolean);
 }
 
-function getGemImageUrlByRewardValue(gemValue) {
-  const raw = String(gemValue || "").trim();
-  if (!raw) return null;
-  const match = raw.match(/\d+/);
-  if (!match) return null;
-  const gemId = String(match[0]);
-  return uniqueGemImageUrlMap[gemId] || null;
-}
-
 function buildOfferingsForCharacter(character) {
   const rows = parseTombolaString(character?.tombolas);
   return rows.map(row => ({
@@ -178,321 +153,6 @@ function buildOfferingsForCharacter(character) {
     currencyId: String(row.currencyId),
     tombolaId: String(row.tombolaId),
   }));
-}
-
-// --- REWARDS ---
-let unitsById = {};
-let unitImageUrlMap = {};
-function getRarityFromCategory(categoryValue) {
-  const category = Number(categoryValue);
-  if (category === 1) return "common";
-  if (category === 2) return "rare";
-  if (category === 3) return "epic";
-  if (category === 4) return "legendary";
-  return null;
-}
-
-function getEntryRarity(entry, rewards) {
-  const fromCategory = getRarityFromCategory(entry?.rewardCategory ?? entry?.rewardcategory);
-  if (fromCategory) return fromCategory;
-
-  const r = rewards.find(x => typeof x.comment2 === "string");
-  if (!r) return "common";
-
-  const v = r.comment2.trim().toLowerCase();
-
-  if (v === "common") return "common";
-  if (v === "rare") return "rare";
-  if (v === "epic") return "epic";
-  if (v === "legendary") return "legendary";
-
-  return "common";
-}
-
-function openTombolaModal({ title, tombolaId, keyType = null }) {
-  const modalEl = document.getElementById("lootBoxModal");
-  const modalTitle = modalEl.querySelector(".modal-title");
-  const container = document.getElementById("lootBoxRewards");
-
-  modalTitle.textContent = title || "Rewards";
-  container.innerHTML = "";
-
-  const entries = lootBoxTombolas.filter(
-    e => String(e.tombolaID) === String(tombolaId)
-  );
-
-  if (entries.length === 0) {
-    container.innerHTML = `<div class="col-12 filter-empty-message">No rewards</div>`;
-    lootBoxModal?.open();
-    return;
-  }
-
-  const cardsRaw = entries
-    .map(entry => {
-      const rewardIds = String(entry.rewardIDs)
-        .split(",")
-        .map(x => x.trim())
-        .filter(Boolean);
-
-      const rewards = rewardIds
-        .map(id => rewardsById[id])
-        .filter(Boolean);
-
-      if (rewards.length === 0) return null;
-
-      const rarity = getEntryRarity(entry, rewards);
-      const shares = Number(entry.shares || 0);
-
-      return {
-        rarity,
-        order: RARITY_ORDER[rarity] || 99,
-        shares,
-        rewards
-      };
-    })
-    .filter(Boolean);
-
-  const minRarity = keyType && KEY_TYPE_MIN_RARITY[keyType]
-    ? KEY_TYPE_MIN_RARITY[keyType]
-    : null;
-
-  const cards = cardsRaw
-    .filter(card => minRarity === null || card.order >= minRarity)
-    .map(card => ({ ...card }))
-    .sort((a, b) => {
-      if (a.order !== b.order) return a.order - b.order;
-      return b.shares - a.shares;
-    });
-
-  const totalShares = cards.reduce((sum, card) => sum + card.shares, 0);
-  cards.forEach(card => {
-    card.chance = totalShares > 0 ? (card.shares / totalShares) * 100 : 0;
-  });
-
-  if (cards.length === 0) {
-    container.innerHTML = `<div class="col-12 filter-empty-message">No rewards</div>`;
-    lootBoxModal?.open();
-    return;
-  }
-
-  cards.forEach(card => {
-    container.appendChild(
-      createEntryCard({
-        rewards: card.rewards,
-        chance: card.chance,
-        rarity: card.rarity
-      })
-    );
-  });
-
-  lootBoxModal?.open();
-  void hydrateComposedImages({
-    root: container,
-    selector: 'img[data-compose-equipment="1"]:not([data-compose-ready])',
-    cache: composedEquipmentImageCache
-  });
-}
-
-function openLootBoxModal(box, keyType = null) {
-  openTombolaModal({
-    title: getLootBoxDisplayName(box),
-    tombolaId: box.lootBoxTombolaID,
-    keyType
-  });
-}
-
-function explodeReward(reward) {
-  const entries = [];
-  const resolved = rewardResolver
-    ? rewardResolver.resolveRewardEntries(reward)
-    : [];
-
-  resolved.forEach((entry) => {
-    let imageUrl = null;
-
-    if (entry.type === "currency") {
-      imageUrl = rewardResolver.getCurrencyImageUrl(entry);
-    } else if (entry.type === "unit") {
-      imageUrl = rewardResolver.getUnitImageUrl(entry);
-    } else if (entry.type === "construction") {
-      imageUrl = rewardResolver.getConstructionImageUrl(entry);
-    } else if (entry.type === "decoration") {
-      imageUrl = rewardResolver.getDecorationImageUrl(entry);
-    } else if (entry.type === "equipment") {
-      imageUrl = rewardResolver.getEquipmentImageUrl(entry);
-      if (!imageUrl) {
-        imageUrl = "../../img_base/equipment.png";
-      }
-    } else if (entry.type === "lootbox") {
-      imageUrl = rewardResolver.getLootBoxImageUrl(entry);
-    }
-
-    const isRemoteItemAsset = typeof imageUrl === "string" &&
-      imageUrl.startsWith("https://empire-html5.goodgamestudios.com/default/assets/itemassets/") &&
-      /\.(webp|png)$/i.test(imageUrl);
-    const shouldCompose = (
-      entry.type === "equipment" ||
-      entry.type === "gem" ||
-      entry.type === "construction"
-    ) && isRemoteItemAsset;
-    const composedSource = shouldCompose ? deriveCompanionUrls(imageUrl) : null;
-
-    entries.push({
-      ...entry,
-      imageUrl,
-      composedSource,
-      title: entry.id ? `${entry.type}=${entry.id}` : entry.type
-    });
-  });
-
-  const simpleResources = ["food", "wood", "stone"];
-  for (const res of simpleResources) {
-    if (!reward[res]) continue;
-
-    entries.push({
-      type: res,
-      name: lang[res] ?? res,
-      amount: Number(reward[res]) || 1,
-      imageUrl: `../../img_base/${res}.png`,
-      title: `${res}=${reward[res]}`
-    });
-  }
-
-  if (reward.vipPoints) {
-    entries.push({
-      type: "vipPoints",
-      name: lang["vipPoints_name"] ?? "VIP points",
-      amount: Number(reward.vipPoints),
-      imageUrl: "../../img_base/vipPoints.png",
-      title: `vipPoints=${reward.vipPoints}`
-    });
-  }
-
-  if (reward.vipTime) {
-    const totalSeconds = Number(reward.vipTime);
-
-    const days = Math.floor(totalSeconds / 86400);
-    const hours = Math.floor((totalSeconds % 86400) / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-
-    let label = [];
-    if (days) label.push(`${days}d`);
-    if (hours) label.push(`${hours}h`);
-    if (minutes || label.length === 0) label.push(`${minutes}m`);
-
-    entries.push({
-      type: "vipTime",
-      name: lang["vipTime_name"] ?? "VIP time",
-      amount: label.join(" "),
-      imageUrl: "../../img_base/vipTime.png",
-      title: `vipTime=${reward.vipTime}`
-    });
-  }
-
-  if (reward.relicEquipments) {
-    entries.push({
-      type: "relic",
-      name: lang["relic_equipment"] || "Relic",
-      amount: 1,
-      imageUrl: "../../img_base/relic.png",
-      title: `relicEquipments=${reward.relicEquipments}`
-    });
-  }
-
-  if (reward.gemIDs) {
-    const gemImageUrl = getGemImageUrlByRewardValue(reward.gemIDs) || "../../img_base/placeholder.webp";
-    const isComposedGem = typeof gemImageUrl === "string" &&
-      gemImageUrl.startsWith("https://empire-html5.goodgamestudios.com/default/assets/itemassets/") &&
-      /\.(webp|png)$/i.test(gemImageUrl);
-    entries.push({
-      type: "gem",
-      name: lang["gem_item"] || "Gem",
-      amount: 1,
-      imageUrl: gemImageUrl,
-      composedSource: isComposedGem ? deriveCompanionUrls(gemImageUrl) : null,
-      title: `gemIDs=${reward.gemIDs}`
-    });
-  }
-
-  if (reward.enchantedEquipmentIDs) {
-    entries.push({
-      type: "enchantedEquipment",
-      name: lang["enchanted_equipment"] || "Enchanted Equipment",
-      amount: 1,
-      imageUrl: "../../img_base/placeholder.webp",
-      title: `enchantedEquipmentIDs=${reward.enchantedEquipmentIDs}`
-    });
-  }
-
-  return entries;
-}
-
-function getRarityLabel(rarity) {
-  const key = `dialog_mysteryBoxSystem_boxRarity_${rarity}`;
-
-  if (lang[key]) return lang[key];
-  if (lang[key.toLowerCase()]) return lang[key.toLowerCase()];
-  if (lang[key.toUpperCase()]) return lang[key.toUpperCase()];
-
-  return "";
-}
-
-function createEntryCard({ rewards, chance, rarity }) {
-  const row = document.createElement("div");
-  row.className = `loot-row rarity-${rarity}`;
-
-
-  const rewardCells = rewards
-    .flatMap(r => explodeReward(r))
-    .map(e => {
-      const composedAttrs = e.composedSource
-        ? `data-compose-equipment="1" data-image-url="${e.composedSource.imageUrl}" data-json-url="${e.composedSource.jsonUrl}" data-js-url="${e.composedSource.jsUrl}"`
-        : "";
-      const core = `
-        <div class="loot-reward" title="${e.title ?? ""}">
-          ${e.imageUrl ? `<img src="${e.imageUrl}" ${composedAttrs}>` : ""}
-          <div class="loot-amount">
-            <span>${e.amount}</span>
-          </div>
-        </div>
-      `;
-
-      if (e.id && e.type === "decoration") {
-        return `
-          <a class="id-link" data-id="${e.id}" href="https://generalscamp.github.io/forum/overviews/decorations#${e.id}" target="_blank" rel="noopener">
-            ${core}
-          </a>
-        `;
-      }
-
-      if (e.id && e.type === "construction") {
-        return `
-          <a class="id-link" data-id="${e.id}" href="https://generalscamp.github.io/forum/overviews/building_items#${e.id}" target="_blank" rel="noopener">
-            ${core}
-          </a>
-        `;
-      }
-
-      return core;
-    })
-    .join("");
-
-  row.innerHTML = `
-<div class="loot-rarity">
-  ${getRarityLabel(rarity)}
-</div>
-
-
-    <div class="loot-chance">
-      ${formatPercent(chance)}
-    </div>
-
-    <div class="loot-rewards">
-      ${rewardCells}
-    </div>
-  `;
-
-  return row;
 }
 
 function createOfferingCard(offering) {
@@ -506,11 +166,11 @@ function createOfferingCard(offering) {
 
   return `
     <div class="col-md-4 col-sm-6 d-flex flex-column">
-      <div class="box flex-fill offering-card" data-tombola-id="${offering.tombolaId}" data-title="${displayName}">
+      <div class="box flex-fill offering-card" data-tombola-id="${offering.tombolaId}" data-title="${displayName}" ${rewardDetailAttrs({ type: "offering", id: offering.tombolaId, name: displayName, amount: "", imageUrl: imgUrl || "" })}>
         <div class="box-content">
           <h2 class="ci-title">${displayName}</h2>
           <div class="offering-body">
-            <div class="image-wrapper offering-image-slot">
+            <div class="image-wrapper offering-image-slot" ${rewardDetailAttrs({ type: "offering", id: offering.tombolaId, name: displayName, amount: "", imageUrl: imgUrl || "" })}>
               ${imageSection}
             </div>
           </div>
@@ -522,32 +182,6 @@ function createOfferingCard(offering) {
     </div>
   `;
 }
-
-document.addEventListener("click", (e) => {
-  const slot = e.target.closest(".lootbox-image-slot");
-  if (!slot) return;
-
-  const card = slot.closest(".lootbox-card");
-  if (!card) return;
-
-  const lootBoxId = card.getAttribute("data-lootbox-id");
-  const box = lootBoxes.find(b => String(b.lootBoxID) === String(lootBoxId));
-  if (!box) return;
-
-  openLootBoxModal(box, getSelectedKeyType());
-});
-
-document.addEventListener("click", (e) => {
-  const slot = e.target.closest(".offering-image-slot");
-  const card = slot ? slot.closest(".offering-card") : e.target.closest(".offering-card");
-  if (!card) return;
-
-  const tombolaId = card.getAttribute("data-tombola-id");
-  const title = card.getAttribute("data-title");
-
-  if (!tombolaId) return;
-  openTombolaModal({ title, tombolaId });
-});
 
 // --- RENDER ---
 function createLootBoxCard(box) {
@@ -613,7 +247,7 @@ function createLootBoxCard(box) {
 
   return `
     <div class="col-md-6 col-sm-12 d-flex flex-column">
-      <div class="box flex-fill lootbox-card" data-lootbox-id="${box.lootBoxID}">
+      <div class="box flex-fill lootbox-card" data-lootbox-id="${box.lootBoxID}" ${rewardDetailAttrs({ type: "lootbox", id: box.lootBoxID, name: displayName, amount: "", imageUrl: imgUrl || "" })}>
         <div class="box-content">
 
           <h2 class="ci-title">${displayName}</h2>
@@ -810,7 +444,6 @@ initAutoHeight({
 
 async function init() {
   try {
-    lootBoxModal = initCustomModal({ modalId: "lootBoxModal" });
     await coreInit({
       loader,
       itemLabel: "loot boxes",
@@ -832,6 +465,7 @@ async function init() {
         lang: L,
         data,
         imageMaps,
+        effectCtx
       }) => {
 
         lang = L;
@@ -883,6 +517,10 @@ async function init() {
         equipments.forEach(item => {
           equipmentsById[String(item.equipmentID)] = item;
         });
+        gemsById = {};
+        getArray(data, ["gems"]).forEach(item => {
+          gemsById[String(item.gemID)] = item;
+        });
 
         const skins = Array.isArray(data.worldmapskins) ? data.worldmapskins : [];
         lookSkinsById = {};
@@ -897,6 +535,7 @@ async function init() {
             currenciesById,
             constructionById: constructionItemsById,
             equipmentById: equipmentsById,
+            gemsById,
             decorationsById: buildingsById,
             lootBoxesById,
             lookSkinsById,
@@ -911,10 +550,41 @@ async function init() {
           {
             includeCurrency2: true,
             includeLootBox: true,
-            includeUnitLevel: false,
+            includeUnitLevel: true,
             rubyImageUrl: "../../img_base/ruby.png"
           }
         );
+        initRewardDetailModal({
+          getContext: () => ({
+            lang,
+            rewardResolver,
+            currenciesById,
+            equipmentById: equipmentsById,
+            gemsById,
+            constructionById: constructionItemsById,
+            decorationsById: buildingsById,
+            buildingsById,
+            buildings,
+            unitsById,
+            effectsById: effectCtx?.effectDefinitions || {},
+            effectCapsMap: effectCtx?.effectCapsMap || {},
+            percentEffectIDs: effectCtx?.percentEffectIDs || new Set(),
+            lootBoxesById,
+            rewardsById,
+            lootBoxTombolas,
+            unitImageUrlMap,
+            currencyImageUrlMap,
+            lootBoxImageUrlMap,
+            decorationImageUrlMap,
+            constructionImageUrlMap,
+            equipmentImageUrlMap: lookImageUrlMap,
+            equipmentUniqueImageUrlMap,
+            uniqueGemImageUrlMap,
+            equipmentEffects: getArray(data, ["equipment_effects", "equipmentEffects"]),
+            equipmentSlotsById: buildLookup(getArray(data, ["equipment_slots", "equipmentSlots"]), "slotID"),
+            currentLanguage
+          })
+        });
 
         const rewards = Array.isArray(data.rewards) ? data.rewards : [];
         rewardsById = {};

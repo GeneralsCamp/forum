@@ -5,6 +5,7 @@ import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageServ
 import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
 import { revealCard } from "../shared/CardReveal.mjs";
+import { initRewardDetailModal, rewardDetailAttrs } from "../shared/RewardDetailModal.mjs";
 import {
     createRewardResolver,
     normalizeName as sharedNormalizeName,
@@ -26,6 +27,7 @@ let gemsById = {};
 let constructionById = {};
 let decorationsById = {};
 let unitsById = {};
+let lootBoxesById = {};
 let imageUrlMap = {};
 let constructionImageUrlMap = {};
 let equipmentImageUrlMap = {};
@@ -34,6 +36,9 @@ let uniqueGemImageUrlMap = {};
 let lookSkinsById = {};
 let unitImageUrlMap = {};
 let collectableCurrencyImageUrlMap = {};
+let lootBoxImageUrlMap = {};
+let offeringByCurrencyId = {};
+let offeringByCurrencyName = {};
 let ownLang = {};
 let UI_LANG = {};
 let rewardResolver = null;
@@ -185,6 +190,80 @@ function getUnitImageUrl(reward) {
 
 function getCurrencyImageUrl(reward) {
     return rewardResolver ? rewardResolver.getCurrencyImageUrl(reward) : null;
+}
+
+function getLootBoxImageUrl(reward) {
+    return rewardResolver ? rewardResolver.getLootBoxImageUrl(reward) : null;
+}
+
+function parseOfferingTombolas(value) {
+    return String(value || "")
+        .split("#")
+        .map(item => item.trim())
+        .filter(Boolean)
+        .map(item => {
+            const [currencyId, tombolaId] = item.split("+").map(part => part.trim());
+            return currencyId && tombolaId ? { currencyId, tombolaId } : null;
+        })
+        .filter(Boolean);
+}
+
+function getOfferingDisplayName(currency) {
+    if (!currency) return "Offering";
+    const key = `currency_name_${currency.Name}`.toLowerCase();
+    return lang[key] || currency.Name || currency.JSONKey || "Offering";
+}
+
+function buildOfferingLookups(data) {
+    offeringByCurrencyId = {};
+    offeringByCurrencyName = {};
+    getArray(data, ["characters"]).forEach(character => {
+        parseOfferingTombolas(character?.tombolas).forEach(row => {
+            const currency = currenciesById[String(row.currencyId)];
+            const offering = {
+                currencyId: String(row.currencyId),
+                tombolaId: String(row.tombolaId),
+                name: getOfferingDisplayName(currency)
+            };
+            offeringByCurrencyId[offering.currencyId] = offering;
+            [currency?.Name, currency?.assetName, currency?.JSONKey, offering.name]
+                .filter(Boolean)
+                .forEach(value => {
+                    offeringByCurrencyName[normalizeName(value)] = offering;
+                });
+        });
+    });
+}
+
+function getOfferingForReward(reward) {
+    if (reward?.type !== "currency") return null;
+    const id = reward.id !== undefined && reward.id !== null ? String(reward.id) : "";
+    if (id && offeringByCurrencyId[id]) return offeringByCurrencyId[id];
+    const keys = [reward.addKeyName, reward.name].map(normalizeName).filter(Boolean);
+    for (const key of keys) {
+        if (offeringByCurrencyName[key]) return offeringByCurrencyName[key];
+    }
+    return null;
+}
+
+function getRewardDetailMarkup(reward, idText, amountText, imageUrl) {
+    const offering = getOfferingForReward(reward);
+    if (offering) {
+        return rewardDetailAttrs({
+            type: "offering",
+            id: offering.tombolaId,
+            name: reward.name || offering.name,
+            amount: amountText,
+            imageUrl
+        });
+    }
+    return rewardDetailAttrs({
+        type: reward.type,
+        id: idText !== "-" ? idText : "",
+        name: reward.name,
+        amount: amountText,
+        imageUrl
+    });
 }
 
 function getGemImageUrlByRewardValue(gemValue) {
@@ -541,6 +620,8 @@ function renderRewards(rewards, label) {
                 null;
         } else if (reward.type === "unit") {
             imageUrl = getUnitImageUrl(reward);
+        } else if (reward.type === "lootbox") {
+            imageUrl = getLootBoxImageUrl(reward);
         }
         if (!imageUrl) {
             imageUrl = getCurrencyImageUrl(reward);
@@ -555,17 +636,13 @@ function renderRewards(rewards, label) {
         const composeAttrs = composeSource
             ? ` data-compose-asset="1" data-image-url="${composeSource.imageUrl}" data-json-url="${composeSource.jsonUrl}" data-js-url="${composeSource.jsUrl}"`
             : "";
+        const detailAttrs = getRewardDetailMarkup(reward, idText, amountText, imageUrl);
         const imageInner = imageUrl
-            ? `<div class="image-wrapper"><img src="${imageUrl}" class="${imageClass}" loading="lazy" alt=""${composeAttrs}></div>`
-            : `<div class="reward-image-placeholder">img</div>`;
-        let imageBlock = imageInner;
-        if (idText !== "-" && reward.type === "decoration") {
-            imageBlock = `<a class="id-link" data-id="${idText}" href="https://generalscamp.github.io/forum/overviews/decorations#${idText}" target="_blank" rel="noopener">${imageInner}</a>`;
-        } else if (idText !== "-" && reward.type === "construction") {
-            imageBlock = `<a class="id-link" data-id="${idText}" href="https://generalscamp.github.io/forum/overviews/building_items#${idText}" target="_blank" rel="noopener">${imageInner}</a>`;
-        }
+            ? `<div class="image-wrapper" ${detailAttrs}><img src="${imageUrl}" class="${imageClass}" loading="lazy" alt=""${composeAttrs}></div>`
+            : `<div class="reward-image-placeholder" ${detailAttrs}>img</div>`;
+        const imageBlock = imageInner;
         col.innerHTML = `
-      <div class="box flex-fill">
+      <div class="box flex-fill" ${detailAttrs}>
         <div class="box-content">
           <h2 class="ci-title reward-title">${reward.name}</h2>
           <div class="reward-body row g-0 align-items-stretch">
@@ -694,13 +771,15 @@ async function init() {
                 units: true,
                 currencies: true,
                 equipmentUniques: true,
-                uniqueGems: true
+                uniqueGems: true,
+                lootboxes: true
             },
 
             onReady: async ({
                 lang: L,
                 data,
-                imageMaps
+                imageMaps,
+                effectCtx
             }) => {
 
                 lang = L;
@@ -713,6 +792,7 @@ async function init() {
                 uniqueGemImageUrlMap = imageMaps?.uniqueGems ?? {};
                 unitImageUrlMap = imageMaps?.units ?? {};
                 collectableCurrencyImageUrlMap = imageMaps?.currencies ?? {};
+                lootBoxImageUrlMap = imageMaps?.lootboxes ?? {};
 
                 const rewards = getArray(itemsData, ["rewards"]);
                 const currencies = getArray(itemsData, ["currencies"]);
@@ -728,6 +808,7 @@ async function init() {
                 const constructions = getArray(itemsData, ["constructionItems"]);
                 const decorations = getArray(itemsData, ["buildings"]);
                 const units = getArray(itemsData, ["units"]);
+                const lootBoxes = getArray(itemsData, ["lootBoxes", "lootboxes"]);
 
                 rewardsById = buildLookup(rewards, "rewardID");
                 currenciesById = buildLookup(currencies, "currencyID");
@@ -736,6 +817,8 @@ async function init() {
                 constructionById = buildLookup(constructions, "constructionItemID");
                 decorationsById = buildLookup(decorations, "wodID");
                 unitsById = buildLookup(units, "wodID");
+                lootBoxesById = buildLookup(lootBoxes, "lootBoxID");
+                buildOfferingLookups(itemsData);
                 rewardResolver = createRewardResolver(
                     () => ({
                         lang,
@@ -744,7 +827,7 @@ async function init() {
                         constructionById,
                         decorationsById,
                         unitsById,
-                        lootBoxesById: {},
+                        lootBoxesById,
                         lookSkinsById,
                         decorationImageUrlMap: imageUrlMap,
                         constructionImageUrlMap,
@@ -752,14 +835,45 @@ async function init() {
                         equipmentUniqueImageUrlMap,
                         unitImageUrlMap,
                         currencyImageUrlMap: collectableCurrencyImageUrlMap,
-                        lootBoxImageUrlMap: {}
+                        lootBoxImageUrlMap
                     }),
                     {
-                        includeCurrency2: false,
-                        includeLootBox: false,
-                        includeUnitLevel: false
+                        includeCurrency2: true,
+                        includeLootBox: true,
+                        includeUnitLevel: true,
+                        rubyImageUrl: "../../img_base/ruby.png"
                     }
                 );
+                initRewardDetailModal({
+                    getContext: () => ({
+                        lang,
+                        rewardResolver,
+                        currenciesById,
+                        equipmentById,
+                        gemsById,
+                        constructionById,
+                        decorationsById,
+                        buildings: decorations,
+                        unitsById,
+                        effectsById: effectCtx?.effectDefinitions || {},
+                        effectCapsMap: effectCtx?.effectCapsMap || {},
+                        percentEffectIDs: effectCtx?.percentEffectIDs || new Set(),
+                        equipmentEffects: getArray(itemsData, ["equipment_effects", "equipmentEffects"]),
+                        equipmentSlotsById: buildLookup(getArray(itemsData, ["equipment_slots", "equipmentSlots"]), "slotID"),
+                        currentLanguage,
+                        lootBoxesById,
+                        rewardsById,
+                        lootBoxTombolas: getArray(itemsData, ["lootBoxTombolas", "lootboxtombolas"]),
+                        unitImageUrlMap,
+                        currencyImageUrlMap: collectableCurrencyImageUrlMap,
+                        decorationImageUrlMap: imageUrlMap,
+                        constructionImageUrlMap,
+                        equipmentImageUrlMap,
+                        equipmentUniqueImageUrlMap,
+                        uniqueGemImageUrlMap,
+                        lootBoxImageUrlMap
+                    })
+                });
 
                 initLanguageSelector({
                     currentLanguage,

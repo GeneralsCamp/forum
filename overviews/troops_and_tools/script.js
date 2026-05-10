@@ -5,8 +5,8 @@ import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageServ
 import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
 import { getSharedLanguagePack, getSharedText } from "../shared/SharedTextService.mjs";
-import { initCustomModal } from "../shared/ModalService.mjs";
 import { revealCard } from "../shared/CardReveal.mjs";
+import { initRewardDetailModal, rewardDetailAttrs } from "../shared/RewardDetailModal.mjs";
 
 const loader = createLoader();
 let currentLanguage = getInitialLanguage();
@@ -19,7 +19,6 @@ let unitImageUrlMap = {};
 let unitImageEntries = [];
 let collectableCurrencyImageUrlMap = {};
 const composedUnitImageCache = new Map();
-let unitStatsModal = null;
 let currentGameSource = "empire";
 let noMatchMessage = "No match to the current filters.";
 let effectCtx = { effectDefinitions: {}, percentEffectIDs: new Set() };
@@ -646,32 +645,6 @@ function isOneStat(value) {
   return !Number.isNaN(n) && n === 1;
 }
 
-function openUnitStatsModal({ name, stats }) {
-  const modalEl = document.getElementById("unitStatsModal");
-  if (!modalEl) return;
-
-  const titleEl = modalEl.querySelector(".modal-title");
-  const bodyEl = modalEl.querySelector("#unitStatsModalBody");
-  titleEl.textContent = name || "Details";
-
-  const rows = stats.map((s) => `
-    <div class="unit-modal-row">
-      <span class="unit-modal-icon"><img src="${s.iconUrl}" alt="${s.title}" class="stat-icon"></span>
-      <span class="unit-modal-label">${s.title}</span>
-      <span class="unit-modal-value">${s.value}</span>
-    </div>
-  `).join("");
-
-  bodyEl.innerHTML = `
-    <div class="unit-modal-layout">
-      <div class="unit-modal-list">${rows}</div>
-    </div>
-  `;
-
-  void hydrateComposedImages({ root: bodyEl, cache: composedUnitImageCache });
-  unitStatsModal?.open();
-}
-
 function normalizeName(value) {
   return String(value || "").toLowerCase().replace(/[^a-z0-9]/g, "");
 }
@@ -948,6 +921,13 @@ function createUnitCard(group, groupIndex) {
       s.title !== UI_LABELS.recruitmentCost &&
       s.title !== UI_LABELS.recruitmentTime
     );
+    const detailAttrs = rewardDetailAttrs({
+      type: category,
+      id: getUnitId(unit),
+      name: `${name}${level !== "-" ? ` (Lvl.${level})` : ""}`,
+      amount: "",
+      imageUrl: imageUrl || ""
+    });
 
     const rowsForCard = category === "unit"
       ? buildStatGrid(unitStatsCard, { hideEmpty: false })
@@ -967,7 +947,7 @@ function createUnitCard(group, groupIndex) {
         ` : `<span class="level-arrow-spacer"></span>`}
       </div>
       <div class="card-table">
-      <div class="row g-0 unit-grid unit-detail-trigger" data-level-index="${levelIndex}">
+      <div class="row g-0 unit-grid unit-detail-trigger" data-level-index="${levelIndex}" ${detailAttrs}>
         <div class="col-4 d-flex justify-content-center align-items-center unit-image-col">
           <div class="image-wrapper">${imageBlock}</div>
         </div>
@@ -1021,51 +1001,6 @@ function createUnitCard(group, groupIndex) {
 
       const trigger = target.closest(".unit-detail-trigger");
       if (!trigger) return;
-
-      const selectedLevelIndex = Number(trigger.dataset.levelIndex ?? levelIndex);
-      const unit = group.items[selectedLevelIndex] || group.items[levelIndex];
-      const { getStat, getFirstStat, getRecruitmentTimeStat } = createStatHelpers(unit);
-      const modalSupplyInfo = getSupplyInfo(unit, getStat);
-      const supplyValue = modalSupplyInfo.value;
-      const supplyLabel = modalSupplyInfo.label;
-      const supplyIcon = modalSupplyInfo.iconUrl;
-      const recruitmentCostInfo = getRecruitmentCostInfo(unit);
-      const category = getUnitCategory(unit);
-
-      const stats = category === "unit"
-        ? buildUnitStatsAll({
-          getStat,
-          getFirstStat,
-          getRecruitmentTimeStat,
-          supplyInfo: { label: supplyLabel, value: supplyValue, iconUrl: supplyIcon },
-          recruitmentCostInfo
-        }).filter((s) => {
-          const isCombatStat =
-            s.title === UI_LABELS.rangedAttack ||
-            s.title === UI_LABELS.meleeAttack ||
-            s.title === UI_LABELS.rangedDefence ||
-            s.title === UI_LABELS.meleeDefence;
-          if (isCombatStat && (s.value === "-" || s.value === "" || s.value == null || isZeroStat(s.value))) return false;
-          return true;
-        })
-        : (() => {
-          const filtered = buildToolStatsAll({ unit, getStat, getRecruitmentTimeStat, recruitmentCostInfo }).filter((s) => {
-            if (s.value === "-" || s.value === "" || s.value == null) return false;
-            if (isZeroStat(s.value)) return false;
-            if (s.hideIfOne && isOneStat(s.value)) return false;
-            return true;
-          });
-          const speedIndex = filtered.findIndex((s) => s.title === UI_LABELS.speed);
-          if (speedIndex === 0) {
-            filtered.push(filtered.shift());
-          }
-          return filtered;
-        })();
-
-      openUnitStatsModal({
-        name: `${getUnitName(unit)}${getUnitLevel(unit) !== "-" ? ` (Lvl.${getUnitLevel(unit)})` : ""}`,
-        stats
-      });
     });
   }, 0);
 
@@ -1217,7 +1152,6 @@ initAutoHeight({
 
 async function init() {
   try {
-    unitStatsModal = initCustomModal({ modalId: "unitStatsModal" });
     await coreInit({
       loader,
       itemLabel: "units",
@@ -1239,6 +1173,15 @@ async function init() {
         unitImageUrlMap = imageMaps?.units || {};
         unitImageEntries = Object.entries(unitImageUrlMap);
         collectableCurrencyImageUrlMap = imageMaps?.currencies || {};
+        initRewardDetailModal({
+          getContext: () => ({
+            lang,
+            unitsById: Object.fromEntries(allUnits.map((unit) => [getUnitId(unit), unit])),
+            effectsById: effectCtx?.effectDefinitions || {},
+            percentEffectIDs: effectCtx?.percentEffectIDs || new Set(),
+            unitImageUrlMap
+          })
+        });
 
         initLanguageSelector({
           currentLanguage,

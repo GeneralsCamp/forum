@@ -1,0 +1,496 @@
+.reward-detail-placeholder {
+  color: #433120;
+  font-size: 42px;
+  font-weight: 900;
+}
+
+[data-reward-detail] {
+  cursor: pointer;
+}
+
+.loot-reward-clickable {
+  cursor: pointer;
+}
+
+.loot-reward-clickable:focus-visible {
+  outline: 2px solid #f4c74d;
+  outline-offset: 2px;
+}
+
+:root {
+  --rarity-common: rgb(178, 178, 178);
+  --rarity-rare: rgb(160, 217, 72);
+  --rarity-epic: rgb(201, 134, 255);
+  --rarity-legendary: rgb(247, 148, 32);
+}
+
+.lootbox-modal {
+  --gf-modal-width: min(800px, calc(100% - 20px));
+}
+
+.lootbox-modal-body {
+  padding: 0;
+  max-height: 450px;
+  min-height: 450px;
+  overflow-y: auto;
+}
+
+.lootbox-modal-body::-webkit-scrollbar {
+  width: 10px;
+}
+
+.lootbox-modal-body::-webkit-scrollbar-thumb {
+  background-color: #bd9a79;
+  border-radius: 5px;
+}
+
+.lootbox-modal-body::-webkit-scrollbar-track {
+  background-color: #f2d9bb;
+}
+
+.loot-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 130px 100px 1fr;
+  align-items: center;
+  min-height: 72px;
+  background-color: #7b5336;
+  border-bottom: 1px solid #5a3c27;
+}
+
+.loot-row::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+}
+
+.loot-row.rarity-common::before {
+  background-color: var(--rarity-common);
+}
+
+.loot-row.rarity-rare::before {
+  background-color: var(--rarity-rare);
+}
+
+.loot-row.rarity-epic::before {
+  background-color: var(--rarity-epic);
+}
+
+.loot-row.rarity-legendary::before {
+  background-color: var(--rarity-legendary);
+}
+
+.loot-rarity {
+  padding-left: 18px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #f5e6cf;
+  white-space: nowrap;
+}
+
+.loot-chance {
+  text-align: center;
+  font-size: 15px;
+  font-weight: bold;
+  color: #f5e6cf;
+  white-space: nowrap;
+}
+
+.loot-rewards {
+  display: flex;
+  gap: 10px;
+  padding: 8px 14px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.loot-rewards::-webkit-scrollbar {
+  height: 3px;
+}
+
+.loot-rewards::-webkit-scrollbar-thumb {
+  background: #c9ab7a;
+  border-radius: 4px;
+}
+
+.loot-rewards::-webkit-scrollbar-track {
+  background: #6b4a30;
+}
+
+.loot-reward {
+  width: 64px;
+  height: 64px;
+  background-color: #f7edd7;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.loot-reward img,
+.loot-reward canvas {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.loot-reward canvas {
+  width: 40px !important;
+  height: 40px !important;
+}
+
+.loot-amount {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 18px;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom-right-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+
+.loot-amount span {
+  font-size: 13px;
+  font-weight: bold;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+}
+
+.lootbox-modal,
+.lootbox-modal-body {
+  overflow-x: hidden;
+}
+
+.unit-stats-modal {
+  --gf-modal-width: min(560px, calc(100% - 20px));
+}
+
+.reward-info-card-modal {
+  --gf-modal-width: min(650px, calc(100% - 20px));
+}
+
+.reward-info-card-modal-body {
+  padding: 0;
+  max-height: min(78vh, 720px);
+  overflow-y: auto;
+}
+
+.reward-equipment-modal .reward-info-card-modal-body {
+  display: flex;
+  min-height: 190px;
+  max-height: min(58vh, 360px);
+}
+
+.reward-info-card {
+  color: white;
+  min-height: 0;
+  border-radius: 0 0 10px 10px;
+}
+
+.reward-info-card .card-table {
+  color: white;
+  font-size: 14px;
+  text-align: center;
+}
+
+.reward-info-card .card-cell {
+  padding: 2px 0;
+  text-align: center;
+}
+
+.reward-info-card .box-content hr,
+.reward-info-card hr {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid white !important;
+  opacity: 1 !important;
+  margin: 0;
+}
+
+.reward-info-card .border-end {
+  border-right: 1px solid white !important;
+}
+
+.reward-info-card .border-top,
+.reward-info-card .border-bottom {
+  border-color: white !important;
+}
+
+.reward-info-card .card-section {
+  padding: 5px;
+}
+
+.reward-info-card .card-section-title {
+  color: white;
+  font-size: 15px;
+  font-weight: bold;
+  text-align: left;
+}
+
+.reward-info-card .level-selector {
+  background-color: #7b5a3b;
+  border-radius: 8px 8px 0 0;
+  border-bottom: 2px solid #ffffff;
+  color: #f3c24a;
+  font-weight: bold;
+  min-height: 34px;
+  user-select: none;
+  font-size: 1rem;
+  box-shadow: 0 2px 3px -2px rgba(255, 255, 255, .7);
+}
+
+.reward-info-card .effect-icon {
+  width: 20px;
+  height: auto;
+  vertical-align: middle;
+  margin-right: 2px;
+}
+
+.reward-info-card .bi-zoom-in {
+  color: white;
+  font-size: 1.2rem;
+}
+
+.reward-info-card .reward-detail-effects p {
+  margin: 0;
+  font-size: 13px;
+  color: white;
+  font-weight: 500;
+}
+
+.reward-info-card .reward-detail-effects {
+  text-align: left;
+}
+
+.reward-info-card .max-bonus {
+  font-style: italic;
+  color: rgb(234, 224, 224);
+  font-size: 12px;
+}
+
+.reward-equipment-card {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: 86px 1fr;
+  gap: 10px;
+  width: 100%;
+  min-height: 190px;
+  padding: 10px 12px;
+  color: white;
+  align-items: stretch;
+}
+
+.reward-equipment-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+}
+
+.reward-equipment-image {
+  width: 58px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reward-equipment-image img,
+.reward-equipment-image canvas {
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+  border: 2px solid #d44646;
+  border-radius: 2px;
+  background: transparent;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
+}
+
+.reward-equipment-image canvas {
+  width: 54px !important;
+  height: 54px !important;
+}
+
+.reward-equipment-content {
+  min-width: 0;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.reward-equipment-effects {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: white;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.reward-equipment-effects li {
+  margin: 1px 0;
+}
+
+.reward-equipment-effects li::before {
+  content: "\2022";
+  color: #f3c24a;
+  margin-right: 5px;
+  font-weight: 800;
+}
+
+.reward-equipment-sell-value {
+  width: fit-content;
+  margin: 6px 0 0;
+  padding: 2px 7px;
+  border: 1px solid rgba(243, 194, 74, 0.22);
+  border-radius: 999px;
+  background: rgba(67, 51, 38, 0.22);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: rgba(230, 209, 175, 0.86);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.reward-equipment-sell-value img {
+  width: 13px;
+  height: 13px;
+  object-fit: contain;
+}
+
+.unit-stats-modal-head {
+  padding: 0.1rem 0.3rem;
+}
+
+.unit-stats-modal .gf-modal-title {
+  font-weight: 700;
+}
+
+.unit-stats-modal-body {
+  padding: 0;
+}
+
+.unit-modal-list {
+  min-height: 286px;
+  max-height: none;
+  overflow-y: auto;
+  padding-right: 4px;
+  flex: 1;
+}
+
+.unit-modal-layout {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.unit-modal-row {
+  display: grid;
+  grid-template-columns: 26px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 8px 6px;
+}
+
+.unit-modal-row:last-child {
+  border-bottom: 0;
+}
+
+.unit-modal-label {
+  color: #f6d9b0;
+  font-weight: 700;
+}
+
+.unit-modal-value {
+  color: #fff;
+  font-weight: 700;
+}
+
+.stat-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  display: block;
+  flex: 0 0 18px;
+  min-width: 18px;
+  min-height: 18px;
+}
+
+@media (max-width: 768px) {
+  .loot-row {
+    grid-template-columns: 76px 50px 1fr;
+  }
+
+  .loot-rarity {
+    font-size: 12px;
+  }
+
+  .loot-chance {
+    font-size: 12px;
+  }
+
+  .loot-reward {
+    width: 50px;
+    height: 50px;
+    min-width: 50px !important;
+    min-height: 50px !important;
+  }
+
+  .loot-reward img,
+  .loot-reward canvas {
+    width: 36px;
+    height: 36px;
+  }
+
+  .loot-reward canvas {
+    width: 36px !important;
+    height: 36px !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .reward-info-card .reward-info-image-cell {
+    display: none !important;
+  }
+
+  .reward-info-card .reward-info-content-cell {
+    width: 100%;
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .reward-equipment-card {
+    grid-template-columns: 1fr;
+  }
+
+  .reward-equipment-visual {
+    display: none;
+  }
+
+  .unit-modal-layout {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .unit-modal-list {
+    flex: 1;
+    min-width: 0;
+    min-height: 286px;
+    max-height: none;
+  }
+}

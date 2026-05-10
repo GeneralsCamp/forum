@@ -6,13 +6,15 @@ import { getSharedText } from "../shared/SharedTextService.mjs";
 import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
 import { revealCard } from "../shared/CardReveal.mjs";
+import { initRewardDetailModal, rewardDetailAttrs } from "../shared/RewardDetailModal.mjs";
 import {
   normalizeName,
   getArray,
   buildLookup,
   parseCsvIds,
   parseIdAmountToken,
-  parseLootBoxReward
+  parseLootBoxReward,
+  createRewardResolver
 } from "../shared/RewardResolver.mjs";
 
 let lang = {};
@@ -37,6 +39,7 @@ let constructionImageUrlMap = {};
 let equipmentUniqueImageUrlMap = {};
 let uniqueGemImageUrlMap = {};
 let lootBoxImageUrlMap = {};
+let rewardResolver = null;
 let noRewardsMessage = "No Master Blacksmith offers for this selection.";
 let currentLanguage = getInitialLanguage();
 
@@ -547,10 +550,12 @@ function getBuildingImage(item) {
 }
 
 function isDecorationItem(item) {
-  return (
-    /deco|decoration/i.test(String(item?.group || "")) ||
-    /deco|decoration/i.test(String(item?.name || ""))
-  );
+  if (!item) return false;
+  if (String(item.name || "").toLowerCase() !== "deco") return false;
+  const decoPoints = Number(item.decoPoints || 0);
+  if (Number.isFinite(decoPoints) && decoPoints > 0) return true;
+  const fusionLevel = Number(item.initialFusionLevel || 0);
+  return Number.isFinite(fusionLevel) && fusionLevel > 0;
 }
 
 function getConstructionImage(item) {
@@ -1037,18 +1042,6 @@ function renderOffers(items) {
   });
 }
 
-function getRewardLink(reward) {
-  if (!reward?.id) return null;
-  const id = encodeURIComponent(String(reward.id));
-  if (reward.type === "decoration") {
-    return `https://generalscamp.github.io/forum/overviews/decorations#${id}`;
-  }
-  if (reward.type === "constructionItem") {
-    return `https://generalscamp.github.io/forum/overviews/building_items#${id}`;
-  }
-  return null;
-}
-
 function createOfferCard(offer) {
   const reward = offer.reward;
   const shouldCompose =
@@ -1062,10 +1055,16 @@ function createOfferCard(offer) {
   const imageHtml = reward.imageUrl
     ? `<img src="${escapeHtml(reward.imageUrl)}" alt="${escapeHtml(reward.name)}" class="card-image ${reward.type === "currency" ? "currency-image" : ""}" loading="lazy"${composeAttrs}>`
     : `<img src="../../img_base/placeholder.webp" alt="${escapeHtml(reward.name)}" class="card-image" loading="lazy">`;
-  const rewardLink = getRewardLink(reward);
-  const imageBlock = rewardLink
-    ? `<a class="blacksmith-image-link" href="${escapeHtml(rewardLink)}" target="_blank" rel="noopener">${imageHtml}</a>`
-    : imageHtml;
+  const detailAttrs = rewardDetailAttrs({
+    type: reward.type,
+    id: reward.id || "",
+    name: reward.name,
+    amount: reward.quantity,
+    imageUrl: reward.imageUrl || ""
+  });
+  const hasRewardDetail = detailAttrs.trim() !== "";
+  const boxAttrs = hasRewardDetail ? ` ${detailAttrs}` : "";
+  const imageBlock = `<span class="blacksmith-image-link">${imageHtml}</span>`;
   const costIcon = offer.currencyImageUrl
     ? `<img src="${escapeHtml(offer.currencyImageUrl)}" alt="" class="cost-image" loading="lazy">`
     : "";
@@ -1073,7 +1072,7 @@ function createOfferCard(offer) {
 
   return `
     <div class="col-md-6 col-lg-4 col-sm-12 d-flex flex-column blacksmith-card">
-      <div class="box flex-fill">
+      <div class="box flex-fill${hasRewardDetail ? " blacksmith-reward-trigger" : ""}"${boxAttrs}>
         <div class="box-content">
           <h2 class="blacksmith-title">${escapeHtml(reward.name)}</h2>
           <hr>
@@ -1132,7 +1131,7 @@ async function init() {
         uniqueGems: true,
         lootboxes: true
       },
-      onReady: async ({ lang: L, data, imageMaps }) => {
+      onReady: async ({ lang: L, data, imageMaps, effectCtx }) => {
         lang = L;
         currenciesById = buildLookup(getArray(data, ["currencies"]), "currencyID");
         currenciesByName = {};
@@ -1147,8 +1146,12 @@ async function init() {
         gemsById = buildLookup(getArray(data, ["gems"]), "gemID");
         lootBoxesById = buildLookup(getArray(data, ["lootBoxes", "lootboxes"]), "lootBoxID");
         rewardBagsById = buildLookup(getArray(data, ["rewardBags"]), "bagID");
-        lookSkinsById = buildLookup(getArray(data, ["worldmapskins"]), "skinID");
-        void lookSkinsById;
+        lookSkinsById = {};
+        getArray(data, ["worldmapskins"]).forEach((skin) => {
+          if (skin?.skinID !== undefined && skin?.skinID !== null) {
+            lookSkinsById[String(skin.skinID)] = skin.name || skin.Name || "";
+          }
+        });
 
         currencyImageUrlMap = imageMaps?.currencies || {};
         unitImageUrlMap = imageMaps?.units || {};
@@ -1158,6 +1161,61 @@ async function init() {
         equipmentUniqueImageUrlMap = imageMaps?.equipmentUniques || {};
         uniqueGemImageUrlMap = imageMaps?.uniqueGems || {};
         lootBoxImageUrlMap = imageMaps?.lootboxes || {};
+        rewardResolver = createRewardResolver(
+          () => ({
+            lang,
+            currenciesById,
+            equipmentById,
+            constructionById,
+            decorationsById: buildingsById,
+            unitsById,
+            lootBoxesById,
+            lookSkinsById,
+            currencyImageUrlMap,
+            unitImageUrlMap,
+            decorationImageUrlMap,
+            constructionImageUrlMap,
+            equipmentUniqueImageUrlMap,
+            uniqueGemImageUrlMap,
+            lootBoxImageUrlMap
+          }),
+          {
+            includeCurrency2: true,
+            includeLootBox: true,
+            includeUnitLevel: true,
+            rubyImageUrl: "../../img_base/ruby.png"
+          }
+        );
+        initRewardDetailModal({
+          getContext: () => ({
+            lang,
+            rewardResolver,
+            currenciesById,
+            unitsById,
+            buildingsById,
+            decorationsById: buildingsById,
+            constructionById,
+            buildings: getArray(data, ["buildings"]),
+            equipmentById,
+            gemsById,
+            effectsById: effectCtx?.effectDefinitions || {},
+            effectCapsMap: effectCtx?.effectCapsMap || {},
+            percentEffectIDs: effectCtx?.percentEffectIDs || new Set(),
+            equipmentEffects: getArray(data, ["equipment_effects", "equipmentEffects"]),
+            equipmentSlotsById: buildLookup(getArray(data, ["equipment_slots", "equipmentSlots"]), "slotID"),
+            currentLanguage,
+            lootBoxesById,
+            rewardsById: buildLookup(getArray(data, ["rewards"]), "rewardID"),
+            lootBoxTombolas: getArray(data, ["lootBoxTombolas", "lootboxtombolas"]),
+            currencyImageUrlMap,
+            unitImageUrlMap,
+            decorationImageUrlMap,
+            constructionImageUrlMap,
+            equipmentUniqueImageUrlMap,
+            uniqueGemImageUrlMap,
+            lootBoxImageUrlMap
+          })
+        });
 
         initLanguageSelector({
           currentLanguage,

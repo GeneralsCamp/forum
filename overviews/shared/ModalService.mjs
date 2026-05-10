@@ -45,6 +45,8 @@ export function initImageModal() {
     return { open, close };
 }
 
+let customModalZIndex = 1000;
+
 export function initCustomModal({
     modalId,
     cardSelector = ".gf-modal-card",
@@ -63,8 +65,13 @@ export function initCustomModal({
     }
 
     let closeTimer = 0;
+    let openFrame = 0;
 
     function close() {
+        if (openFrame) {
+            window.cancelAnimationFrame(openFrame);
+            openFrame = 0;
+        }
         if (!modal.classList.contains("open")) return;
         modal.classList.remove("open");
         modal.classList.add("closing");
@@ -84,10 +91,25 @@ export function initCustomModal({
             window.clearTimeout(closeTimer);
             closeTimer = 0;
         }
+        if (openFrame) {
+            window.cancelAnimationFrame(openFrame);
+            openFrame = 0;
+        }
+        if (modal.classList.contains("open")) {
+            modal.setAttribute("aria-hidden", "false");
+            document.body.classList.add("gf-modal-open");
+            return;
+        }
         modal.classList.remove("closing");
-        modal.classList.add("open");
+        customModalZIndex += 2;
+        modal.style.zIndex = String(customModalZIndex);
         modal.setAttribute("aria-hidden", "false");
         document.body.classList.add("gf-modal-open");
+        void modal.offsetWidth;
+        openFrame = window.requestAnimationFrame(() => {
+            modal.classList.add("open");
+            openFrame = 0;
+        });
     }
 
     function isOpen() {
