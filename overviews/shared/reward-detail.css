@@ -243,14 +243,20 @@
 
 .reward-info-card .level-selector {
   background-color: #7b5a3b;
-  border-radius: 8px 8px 0 0;
-  border-bottom: 2px solid #ffffff;
+  border-radius: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.65);
   color: #f3c24a;
   font-weight: bold;
-  min-height: 34px;
+  min-height: 30px;
+  padding: 2px 6px;
   user-select: none;
-  font-size: 1rem;
-  box-shadow: 0 2px 3px -2px rgba(255, 255, 255, .7);
+  font-size: 0.9rem;
+  line-height: 1.2;
+  box-shadow: none;
+}
+
+.reward-info-card .level-selector strong {
+  line-height: 1.2;
 }
 
 .reward-info-card .effect-icon {
@@ -495,6 +501,12 @@
 }
 
 @media (max-width: 700px) {
+  .reward-info-card .level-selector {
+    min-height: 26px;
+    padding: 2px 6px;
+    font-size: 12px;
+  }
+
   .reward-info-card .reward-info-image-cell {
     display: flex !important;
     min-height: 118px;
