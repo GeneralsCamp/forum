@@ -1179,7 +1179,8 @@ async function init() {
             unitsById: Object.fromEntries(allUnits.map((unit) => [getUnitId(unit), unit])),
             effectsById: effectCtx?.effectDefinitions || {},
             percentEffectIDs: effectCtx?.percentEffectIDs || new Set(),
-            unitImageUrlMap
+            unitImageUrlMap,
+            currencyImageUrlMap: collectableCurrencyImageUrlMap
           })
         });
 

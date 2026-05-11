@@ -666,7 +666,10 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
             : `
         <div class="col-5 card-cell border-end d-flex justify-content-center align-items-center">
           <div class="image-wrapper">
-            <div class="no-image-text">${UI_LANG.no_image || "no image"}</div>
+            <img src="../../img_base/placeholder.webp"
+                 alt="${UI_LANG.no_image || "no image"}"
+                 class="card-image w-100"
+                 loading="lazy">
           </div>
         </div>`;
 

@@ -1408,7 +1408,8 @@ function getRecruitmentCostInfo(entity, labels) {
 
 function getCurrencyIcon(currencyKey, ctx, fallback = STAT_ICONS.unknown) {
   const key = normalizeName(currencyKey);
-  return ctx.currencyImageUrlMap?.[currencyKey] || ctx.currencyImageUrlMap?.[key] || fallback;
+  const map = ctx.currencyImageUrlMap || ctx.collectableCurrencyImageUrlMap || {};
+  return map?.[currencyKey] || map?.[key] || fallback;
 }
 
 function getCostComponentIcon(index, ctx) {
