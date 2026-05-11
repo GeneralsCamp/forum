@@ -188,6 +188,7 @@
 
 .reward-equipment-modal .reward-info-card-modal-body {
   display: flex;
+  height: min(20vh, 360px);
   min-height: 190px;
   max-height: min(58vh, 360px);
   align-items: stretch;
