@@ -175,17 +175,18 @@
 .piece-sell-value {
   width: fit-content;
   margin: 6px 0 0;
-  padding: 2px 7px;
-  border: 1px solid rgba(243, 194, 74, 0.22);
+  padding: 3px 8px;
+  border: 1px solid rgba(243, 194, 74, 0.45);
   border-radius: 999px;
-  background: rgba(67, 51, 38, 0.22);
+  background: rgba(67, 51, 38, 0.52);
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: rgba(230, 209, 175, 0.86);
-  font-size: 11px;
-  font-weight: 700;
+  color: #fff4dc;
+  font-size: 12px;
+  font-weight: 800;
   line-height: 1.15;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.55);
 }
 
 .piece-sell-value strong {
@@ -211,6 +212,7 @@
 
 .effect-list li {
   margin: 1px 0;
+  font-size: 12px;
 }
 
 .effect-list li::before {
@@ -218,6 +220,14 @@
   color: var(--gold-1);
   margin-right: 5px;
   font-weight: 800;
+}
+
+.effect-list li.reward-effect-row::before {
+  content: "";
+  margin-right: 0;
+  color: transparent;
+  font-weight: 400;
+  background: rgba(245, 230, 207, 0.78);
 }
 
 .bonus-wrap {

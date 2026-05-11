@@ -1048,8 +1048,8 @@ function renderSet(setId) {
   const pieceRowsHtml = pieceRows.map((piece, idx) => {
     const displayName = `${piece.name} (${piece.slotLabel})`;
     const itemEffects = piece.effects.length > 0
-      ? piece.effects.map((line) => `<li>${line}</li>`).join("")
-      : `<li>No effect data</li>`;
+      ? piece.effects.map((line) => `<li class="reward-effect-row">${escapeHtml(line)}</li>`).join("")
+      : `<li class="reward-effect-row">No effect data</li>`;
     const sellRiftShardHtml = hasPositiveNumber(piece.sellRiftShard)
       ? `<div class="piece-sell-value">
           ${getRiftShardImageUrl() ? `<img src="${getRiftShardImageUrl()}" alt="" loading="lazy">` : ""}
@@ -1090,15 +1090,15 @@ function renderSet(setId) {
       const effects = sortEffectTokensByValueDesc(parseEffectTokens(bonus.effects, "set_bonus"))
         .map((entry) => renderEffectLine(entry.id, entry.value, entry.argId, "set_bonus"));
       const effectText = effects.length > 0
-        ? effects.map((x) => `<div>${x}</div>`).join("")
-        : "<div>No effect data</div>";
+        ? effects.map((x) => `<div class="reward-effect-row">${escapeHtml(x)}</div>`).join("")
+        : `<div class="reward-effect-row">No effect data</div>`;
 
       return `
         <div class="bonus-line">
           <span class="bonus-node"></span>
           <article class="bonus-card">
             <h3 class="bonus-threshold">${bonus.neededItems} ${ui("pieces_suffix", "pieces")}</h3>
-            <div class="bonus-effects">${effectText}</div>
+            <div class="bonus-effects reward-effect-list">${effectText}</div>
           </article>
         </div>
       `;

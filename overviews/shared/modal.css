@@ -101,3 +101,21 @@
 .gf-modal-body {
     background: var(--gf-modal-body-bg);
 }
+
+@media (max-width: 700px) {
+    .gf-modal-head {
+        padding: 4px 8px;
+    }
+
+    .gf-modal-title {
+        font-size: 13px;
+        line-height: 1.25;
+        padding: 0 6px;
+    }
+
+    .gf-modal-close {
+        width: 26px;
+        height: 26px;
+        flex: 0 0 26px;
+    }
+}

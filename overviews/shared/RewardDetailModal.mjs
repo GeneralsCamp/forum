@@ -908,7 +908,9 @@ function renderEffectsSection(title, effects) {
   return `
     <div class="card-section card-effects border-top reward-detail-effects">
       <h5 class="card-section-title">${escapeHtml(title)}</h5>
-      <p>${effects.map((effect) => `- ${effect}`).join("<br>")}</p>
+      <div class="reward-effect-list">
+        ${effects.map((effect) => `<div class="reward-effect-row">${effect}</div>`).join("")}
+      </div>
     </div>
   `;
 }
@@ -1069,7 +1071,7 @@ function renderEquipmentGemModal(detail, ctx) {
       </div>
       <div class="reward-equipment-content">
         <ul class="effect-list reward-equipment-effects">
-          ${effects.length ? effects.map((line) => `<li>${escapeHtml(line)}</li>`).join("") : `<li>No effect data</li>`}
+          ${effects.length ? effects.map((line) => `<li class="reward-effect-row">${escapeHtml(line)}</li>`).join("") : `<li class="reward-effect-row">No effect data</li>`}
         </ul>
         ${sellHtml}
       </div>

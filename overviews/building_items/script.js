@@ -610,7 +610,9 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
             effectsHTML = `
         <div class="card-section card-effects border-top">
           <h5 class="card-section-title">${UI_LANG.effects}:</h5>
-          <p>${effects.map(e => `- ${e}`).join("<br>")}</p>
+          <div class="reward-effect-list">
+            ${effects.map(e => `<div class="reward-effect-row">${e}</div>`).join("")}
+          </div>
         </div>`;
         }
 
@@ -633,7 +635,9 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
             commentsHTML = `
         <div class="card-section card-sources border-top">
           <h4 class="card-section-title">${UI_LANG.dev_comments}:</h4>
-          <p>${comments.map(c => `- ${c}`).join("<br>")}</p>
+          <div class="reward-effect-list">
+            ${comments.map(c => `<div class="reward-effect-row">${c}</div>`).join("")}
+          </div>
         </div>`;
         }
 

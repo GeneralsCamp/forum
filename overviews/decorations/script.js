@@ -384,7 +384,9 @@ function createCard(item, imageUrlMap = {}) {
       <hr>
       <div class="card-section card-effects">
         <h5 class="card-section-title">${langData.label_effects}</h5>
-        <p>${effects.map(e => `- ${e}`).join("<br>")}</p>
+        <div class="reward-effect-list">
+          ${effects.map(e => `<div class="reward-effect-row">${e}</div>`).join("")}
+        </div>
       </div>`;
   }
 
@@ -398,7 +400,9 @@ function createCard(item, imageUrlMap = {}) {
       <hr>
       <div class="card-section card-sources">
         <h4 class="card-section-title">${langData.label_developer_comments}</h4>
-        <p>${sources.map(s => `- ${s}`).join("<br>")}</p>
+        <div class="reward-effect-list">
+          ${sources.map(s => `<div class="reward-effect-row">${s}</div>`).join("")}
+        </div>
       </div>`;
   }
 
