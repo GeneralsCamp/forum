@@ -143,7 +143,16 @@
   text-decoration: none;
 }
 
-.patronage-reward-item[href]:hover {
+.patronage-reward-item-button {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.patronage-reward-item-button:hover {
   color: #fff;
   text-decoration: underline;
 }

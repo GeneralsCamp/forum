@@ -619,6 +619,29 @@ function getEntryRarity(entry, rewards) {
   return "common";
 }
 
+function normalizeLootBoxKeyType(value) {
+  const keyType = String(value || "").trim().toLowerCase();
+  if (keyType === "common" || keyType === "1") return "common";
+  if (keyType === "rare" || keyType === "2") return "rare";
+  if (keyType === "epic" || keyType === "3") return "epic";
+  if (keyType === "legendary" || keyType === "4") return "legendary";
+  return "";
+}
+
+function getLootBoxSelectedRarity(detail, ctx) {
+  if (typeof ctx.getLootBoxKeyType === "function") {
+    return normalizeLootBoxKeyType(ctx.getLootBoxKeyType(detail));
+  }
+  return normalizeLootBoxKeyType(detail.keyType || detail.selectedKeyType || ctx.lootBoxKeyType);
+}
+
+function isAllowedByLootBoxKey(cardRarity, selectedRarity) {
+  if (!selectedRarity || selectedRarity === "common") return true;
+  const cardOrder = RARITY_ORDER[cardRarity] || 0;
+  const selectedOrder = RARITY_ORDER[selectedRarity] || 0;
+  return cardOrder >= selectedOrder;
+}
+
 function getRarityLabel(rarity, ctx) {
   const lang = ctx.lang || {};
   const key = `dialog_mysteryBoxSystem_boxRarity_${rarity}`;
@@ -1135,6 +1158,7 @@ function renderRewardPool(detail, ctx) {
     ? getProp(entity, ["lootBoxTombolaID", "lootBoxTombolaId", "lootboxtombolaid"])
     : detail.id;
   const tombolaEntries = getTombolaEntries(tombolaId, ctx);
+  const selectedRarity = type === "lootbox" ? getLootBoxSelectedRarity(detail, ctx) : "";
 
   if (!tombolaEntries.length) return false;
 
@@ -1151,7 +1175,8 @@ function renderRewardPool(detail, ctx) {
       shares: Number(getProp(tombolaEntry, ["shares", "Shares"]) || 0),
       rewards
     };
-  }).filter((card) => card.rewards.length > 0);
+  }).filter((card) => card.rewards.length > 0)
+    .filter((card) => isAllowedByLootBoxKey(card.rarity, selectedRarity));
 
   const cards = cardsRaw
     .map((card) => ({

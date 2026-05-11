@@ -569,6 +569,7 @@ async function init() {
             lootBoxesById,
             rewardsById,
             lootBoxTombolas,
+            getLootBoxKeyType: getSelectedKeyType,
             unitImageUrlMap,
             currencyImageUrlMap,
             lootBoxImageUrlMap,

@@ -10,6 +10,8 @@ import { initAutoHeight } from "../../overviews/shared/ResizeService.mjs";
 import { initLanguageSelector, getInitialLanguage } from "../../overviews/shared/LanguageService.mjs";
 import { initCustomModal } from "../../overviews/shared/ModalService.mjs";
 import { createLoader } from "../../overviews/shared/LoadingService.mjs";
+import { buildEffectContext } from "../../overviews/shared/EffectService.mjs";
+import { initRewardDetailModal, rewardDetailAttrs } from "../../overviews/shared/RewardDetailModal.mjs";
 import {
   createRewardResolver,
   buildLookup,
@@ -32,6 +34,7 @@ let ownLang = {};
 let currentLanguage = getInitialLanguage();
 let lang = {};
 let rewardListModal = null;
+let rewardDetailContext = null;
 const loader = createLoader();
 
 const state = {
@@ -418,55 +421,78 @@ function getRewardLabel(reward) {
   return `${main.name}${main.amount > 1 ? ` x${formatNumber(main.amount)}` : ""}`;
 }
 
-function getRewardNavigationUrl(reward) {
-  const primary = reward?.entries?.[0];
-  return getRewardEntryNavigationUrl(primary);
+function normalizeRewardDetailType(type) {
+  const raw = String(type || "").trim();
+  const lower = raw.toLowerCase();
+  if (lower === "lootbox" || lower === "loot_box") return "lootbox";
+  if (lower === "lootboxoffer" || lower === "offering") return "offering";
+  if (lower === "soldier" || lower === "troop" || lower === "eventunit") return "unit";
+  if (lower === "eventtool" || lower === "tool") return "unit";
+  if (lower === "constructionitem") return "construction";
+  if (lower === "item") return "equipment";
+  return lower;
 }
 
-function getRewardEntryNavigationUrl(primary) {
-  if (!primary?.id || !primary?.type) return null;
-
-  if (primary.type === "decoration") {
-    return `../../overviews/decorations/index.html#${primary.id}`;
-  }
-
-  if (primary.type === "construction") {
-    return `../../overviews/building_items/index.html#${primary.id}`;
-  }
-
-  if (primary.type === "equipment") {
-    return `../../overviews/look_items/index.html#${primary.id}`;
-  }
-
-  return null;
+function canOpenRewardDetail(entry) {
+  return ["lootbox", "offering", "unit", "decoration", "construction", "equipment", "gem"]
+    .includes(normalizeRewardDetailType(entry?.type));
 }
 
-function applyRewardNavigation(card, reward) {
+function getRewardDetail(entry) {
+  if (!entry || !canOpenRewardDetail(entry)) return null;
+  return {
+    type: normalizeRewardDetailType(entry.type),
+    id: entry.id || "",
+    name: entry.name || "",
+    amount: entry.amount || "",
+    imageUrl: getRewardEntryImage(entry)
+  };
+}
+
+function clearRewardDetailAttrs(element) {
+  [
+    "rewardDetail",
+    "rewardType",
+    "rewardId",
+    "rewardName",
+    "rewardAmount",
+    "rewardImage"
+  ].forEach((key) => {
+    delete element.dataset[key];
+  });
+}
+
+function applyRewardDetailTrigger(card, reward) {
   if (!card) return;
-  const url = getRewardNavigationUrl(reward);
+  const detail = getRewardDetail(reward?.entries?.[0]);
 
-  if (url) {
-    card.dataset.rewardUrl = url;
+  clearRewardDetailAttrs(card);
+  if (detail) {
+    card.dataset.rewardDetail = "1";
+    card.dataset.rewardType = detail.type;
+    card.dataset.rewardId = String(detail.id || "");
+    card.dataset.rewardName = String(detail.name || "");
+    card.dataset.rewardAmount = String(detail.amount || "");
+    card.dataset.rewardImage = String(detail.imageUrl || "");
     card.style.cursor = "pointer";
-    card.setAttribute("role", "link");
+    card.setAttribute("role", "button");
     card.setAttribute("tabindex", "0");
   } else {
-    delete card.dataset.rewardUrl;
     card.style.cursor = "";
     card.removeAttribute("role");
     card.removeAttribute("tabindex");
   }
 }
 
-function openRewardNavigation(url) {
-  if (!url) return;
-  window.open(url, "_blank", "noopener,noreferrer");
-}
-
 function getRewardEntryLabel(entry) {
   const rewardLabel = lang?.reward || "Reward";
   if (!entry) return rewardLabel;
   return `${entry.name || rewardLabel}${entry.amount > 1 ? ` x${formatNumber(entry.amount)}` : ""}`;
+}
+
+function getRewardDetailAttrs(entry, imageUrl) {
+  const detail = getRewardDetail(entry);
+  return detail ? rewardDetailAttrs({ ...detail, imageUrl }) : "";
 }
 
 function renderRewardListModal() {
@@ -499,14 +525,14 @@ function renderRewardListModal() {
                         <div class="patronage-reward-items">
                           ${(reward.entries?.length ? reward.entries : [null]).map((entry) => {
                             const label = getRewardEntryLabel(entry);
-                            const url = getRewardEntryNavigationUrl(entry);
                             const imageUrl = getRewardEntryImage(entry);
+                            const detailAttrs = getRewardDetailAttrs(entry, imageUrl);
                             const content = `
                               <img src="${escapeHtml(imageUrl)}" alt="">
                               <span>${escapeHtml(label)}</span>
                             `;
-                            return url
-                              ? `<a class="patronage-reward-item" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${content}</a>`
+                            return detailAttrs
+                              ? `<button class="patronage-reward-item patronage-reward-item-button" type="button" ${detailAttrs}>${content}</button>`
                               : `<div class="patronage-reward-item">${content}</div>`;
                           }).join("")}
                         </div>
@@ -772,12 +798,12 @@ function renderRewardPanel(typeModel) {
 
   if (els.currentRewardCard) {
     els.currentRewardCard.style.display = currentReward ? "" : "none";
-    applyRewardNavigation(els.currentRewardCard, currentReward);
+    applyRewardDetailTrigger(els.currentRewardCard, currentReward);
   }
 
   if (els.nextRewardCard) {
     els.nextRewardCard.style.display = nextReward ? "" : "none";
-    applyRewardNavigation(els.nextRewardCard, nextReward);
+    applyRewardDetailTrigger(els.nextRewardCard, nextReward);
   }
 
   if (els.rewardCardsStack) {
@@ -850,18 +876,12 @@ function bindEvents() {
     updateOptionRow(typeModel, input.dataset.optionId);
   });
 
-  els.rewardCardsStack.addEventListener("click", (event) => {
-    const card = event.target.closest("[data-reward-url]");
-    if (!card?.dataset.rewardUrl) return;
-    openRewardNavigation(card.dataset.rewardUrl);
-  });
-
   els.rewardCardsStack.addEventListener("keydown", (event) => {
-    const card = event.target.closest("[data-reward-url]");
-    if (!card?.dataset.rewardUrl) return;
+    const card = event.target.closest("[data-reward-detail]");
+    if (!card) return;
     if (event.key !== "Enter" && event.key !== " ") return;
     event.preventDefault();
-    openRewardNavigation(card.dataset.rewardUrl);
+    card.click();
   });
 
   els.resetSlidersBtn.addEventListener("click", resetCurrentTypeStaged);
@@ -886,11 +906,13 @@ function bindEvents() {
 }
 
 function buildDonationModel(data, lang, imageMaps) {
+  const effectCtx = buildEffectContext(data, lang);
   const currenciesById = buildLookup(data.currencies || [], "currencyID");
   const rewardsById = buildLookup(data.rewards || [], "rewardID");
   const decorationsById = buildLookup(extractDecorations(data.buildings || []), "wodID");
   const constructionById = buildLookup(getArray(data, ["constructionItems"]), "constructionItemID");
   const equipmentById = buildLookup(getArray(data, ["equipments"]), "equipmentID");
+  const gemsById = buildLookup(getArray(data, ["gems"]), "gemID");
   const unitsById = buildLookup(getArray(data, ["units"]), "wodID");
   const lootBoxesById = buildLookup(getArray(data, ["lootBoxes", "lootboxes"]), "lootBoxID");
   const allianceCoatLayoutsById = buildLookup(getArray(data, ["allianceCoatLayouts"]), "allianceCoatLayoutID");
@@ -901,6 +923,7 @@ function buildDonationModel(data, lang, imageMaps) {
     decorationsById,
     constructionById,
     equipmentById,
+    gemsById,
     unitsById,
     lootBoxesById,
     allianceCoatLayoutsById,
@@ -909,10 +932,41 @@ function buildDonationModel(data, lang, imageMaps) {
     constructionImageUrlMap: imageMaps.constructions || {},
     equipmentImageUrlMap: imageMaps.looks || {},
     equipmentUniqueImageUrlMap: imageMaps.equipmentUniques || {},
+    uniqueGemImageUrlMap: imageMaps.uniqueGems || {},
     unitImageUrlMap: imageMaps.units || {},
     lootBoxImageUrlMap: imageMaps.lootboxes || {},
     allianceLayoutImageUrlMap: imageMaps.allianceLayouts || {}
   }));
+
+  rewardDetailContext = {
+    lang,
+    rewardResolver,
+    currenciesById,
+    decorationsById,
+    buildingsById: decorationsById,
+    buildings: extractDecorations(data.buildings || []),
+    constructionById,
+    equipmentById,
+    gemsById,
+    unitsById,
+    lootBoxesById,
+    rewardsById,
+    lootBoxTombolas: getArray(data, ["lootBoxTombolas", "lootboxtombolas"]),
+    effectsById: effectCtx.effectDefinitions || {},
+    effectCapsMap: effectCtx.effectCapsMap || {},
+    percentEffectIDs: effectCtx.percentEffectIDs || new Set(),
+    equipmentEffects: getArray(data, ["equipment_effects", "equipmentEffects"]),
+    equipmentSlotsById: buildLookup(getArray(data, ["equipment_slots", "equipmentSlots"]), "slotID"),
+    currentLanguage,
+    currencyImageUrlMap: imageMaps.currencies || {},
+    decorationImageUrlMap: imageMaps.decorations || {},
+    constructionImageUrlMap: imageMaps.constructions || {},
+    equipmentImageUrlMap: imageMaps.looks || {},
+    equipmentUniqueImageUrlMap: imageMaps.equipmentUniques || {},
+    uniqueGemImageUrlMap: imageMaps.uniqueGems || {},
+    unitImageUrlMap: imageMaps.units || {},
+    lootBoxImageUrlMap: imageMaps.lootboxes || {}
+  };
 
   const itemsBySetAndType = {};
   const rewardsBySetAndType = {};
@@ -1010,6 +1064,9 @@ function buildDonationModel(data, lang, imageMaps) {
 
 async function init() {
   rewardListModal = initCustomModal({ modalId: "rewardListModal" });
+  initRewardDetailModal({
+    getContext: () => rewardDetailContext || {}
+  });
   readSavedState();
 
   try {
@@ -1031,6 +1088,7 @@ async function init() {
       currencies: true,
       looks: true,
       equipmentUniques: true,
+      uniqueGems: true,
       lootboxes: true,
       allianceLayouts: true,
       normalizeNameFn: normalizeName
