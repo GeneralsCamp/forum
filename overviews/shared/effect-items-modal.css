@@ -111,6 +111,10 @@
 }
 
 @media (max-width: 768px) {
+    .effect-items-modal {
+        --effect-items-modal-height: min(600px, calc(100vh - 16px));
+    }
+
     .effect-items-row {
         grid-template-columns: 48px minmax(0, 1fr);
         gap: 8px;

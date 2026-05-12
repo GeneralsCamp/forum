@@ -35,7 +35,8 @@
 }
 
 .patronage-reward-modal {
-  --gf-modal-width: min(980px, calc(100% - 20px));
+  --gf-modal-width: min(680px, calc(100% - 20px));
+  --patronage-reward-modal-height: min(680px, calc(100vh - 20px));
   --gf-modal-shell-bg: #5b4330;
   --gf-modal-shell-border: #2f2319;
   --gf-modal-head-bg: #815638;
@@ -44,7 +45,10 @@
 }
 
 .patronage-reward-modal-card {
-  max-height: min(760px, calc(100vh - 24px));
+  min-width: var(--gf-modal-width);
+  max-width: var(--gf-modal-width);
+  min-height: var(--patronage-reward-modal-height);
+  max-height: var(--patronage-reward-modal-height);
   display: flex;
   flex-direction: column;
 }
@@ -169,13 +173,15 @@
   overflow-wrap: anywhere;
 }
 
+@media (max-width: 768px) {
+  .patronage-reward-modal {
+    --patronage-reward-modal-height: min(600px, calc(100vh - 16px));
+  }
+}
+
 @media (max-width: 520px) {
   .patronage-reward-modal {
     --gf-modal-width: calc(100% - 10px);
-  }
-
-  .patronage-reward-modal-card {
-    max-height: calc(100dvh - 16px);
   }
 
   .patronage-reward-modal-body {
