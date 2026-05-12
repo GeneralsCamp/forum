@@ -91,6 +91,7 @@ async function applyOwnLang() {
 
   document.querySelector('label[for="filterName"]').textContent = filters.search_name || "Name";
   document.querySelector('label[for="filterID"]').textContent = filters.search_id || "ID";
+  document.querySelector('label[for="filterEffect"]').textContent = filters.search_effect || "Effect";
 
   const sortSelect = document.getElementById('sortSelect');
   if (sortSelect) {
@@ -112,6 +113,7 @@ async function applyOwnLang() {
     const selectedLabels = selectedFilters.map(f => {
       if (f === "name") return filters.search_name || "Name";
       if (f === "id") return filters.search_id || "ID";
+      if (f === "effect") return filters.search_effect || "Effect";
       return f;
     });
     searchInput.placeholder = (filters.search_placeholder_prefix || "Search by: ") + selectedLabels.join(", ");
@@ -146,6 +148,11 @@ function parseEffects(effectsStr) {
     if (override) {
       baseKey = override.key;
       isPercent = !!override.percent;
+    }
+
+    const effectName = String(effectDef?.name || "");
+    if (!isPercent && /boost/i.test(effectName) && !/unboosted/i.test(effectName)) {
+      isPercent = true;
     }
 
     const normalizedKey = baseKey.toLowerCase();
@@ -605,6 +612,10 @@ function applyFiltersAndSorting({ revealId = null, exactId = null } = {}) {
         const wodID = (item.wodID || "").toString().toLowerCase();
         if (wordMatch(wodID)) matchSearch = true;
       }
+      if (selectedFilters.includes("effect")) {
+        const effectsText = parseEffects(item.areaSpecificEffects || "").join(" ").toLowerCase();
+        if (wordMatch(effectsText)) matchSearch = true;
+      }
     }
 
     return matchSearch;
@@ -763,6 +774,7 @@ function setupEventListeners() {
 
     const selectedLabels = selected.map(f => {
       if (f === "name") return filters.search_name || "Name";
+      if (f === "effect") return filters.search_effect || "Effect";
       if (f === "id") return filters.search_id || "ID";
       return f;
     });
@@ -785,7 +797,7 @@ function setupEventListeners() {
     });
   });
 
-  document.querySelectorAll('#filterName, #filterID').forEach(input => {
+  document.querySelectorAll('#filterName, #filterID, #filterEffect').forEach(input => {
     const formCheckDiv = input.closest('.form-check');
     if (!formCheckDiv) return;
 

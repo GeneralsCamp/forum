@@ -27,7 +27,7 @@ export function buildEffectContext(data, lang = {}) {
             `effect_desc_${base}`
         ];
 
-        let isPercent = false;
+        let isPercent = /boost/i.test(effect.name || "");
 
         for (const key of possibleKeys) {
             if (lang[key]?.includes("%")) {
@@ -41,7 +41,7 @@ export function buildEffectContext(data, lang = {}) {
             }
         }
 
-        if (isPercent && !effect.name.includes("Unboosted")) {
+        if (isPercent && !/unboosted/i.test(effect.name || "")) {
             percentEffectIDs.add(effect.effectID);
         }
     });

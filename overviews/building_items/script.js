@@ -317,7 +317,11 @@ function parseEffects(effectsStr) {
         const nameText = loc?.text || `Effect ID ${id}`;
         const mode = loc?.mode || "fallback";
 
-        const suffix = percentEffectIDs.has(id) ? "%" : "";
+        const effectName = String(effectDef?.name || "");
+        const templateHasPercent =
+            String(loc?.text || "").includes("%") ||
+            /percent|percentage|boost/i.test(effectName);
+        const suffix = (percentEffectIDs.has(id) || templateHasPercent) && !/unboosted/i.test(effectName) ? "%" : "";
 
         let maxStr = "";
         if (effectDef && effectDef.capID) {
