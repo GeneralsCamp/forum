@@ -1,0 +1,124 @@
+.effect-items-modal {
+    --gf-modal-width: min(680px, calc(100% - 20px));
+    --effect-items-modal-height: min(680px, calc(100vh - 20px));
+}
+
+.effect-items-modal-card {
+    min-width: var(--gf-modal-width);
+    max-width: var(--gf-modal-width);
+    min-height: var(--effect-items-modal-height);
+    max-height: var(--effect-items-modal-height);
+    display: flex;
+    flex-direction: column;
+}
+
+.effect-items-modal-body {
+    flex: 1 1 auto;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.effect-items-summary {
+    position: sticky;
+    top: -10px;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: -10px -10px 8px;
+    padding: 8px 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, .22);
+    background: #7b5a3b;
+}
+
+.effect-items-summary span,
+.effect-items-kind {
+    display: inline-flex;
+    align-items: center;
+    min-height: 22px;
+    padding: 2px 7px;
+    border: 1px solid rgba(243, 194, 74, .75);
+    border-radius: 6px;
+    background: rgba(67, 51, 38, .32);
+    color: #f3c24a;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.effect-items-list {
+    display: grid;
+    gap: 8px;
+}
+
+.effect-items-row {
+    display: grid;
+    grid-template-columns: 62px minmax(0, 1fr);
+    gap: 10px;
+    align-items: center;
+    padding: 8px;
+    border: 1px solid rgba(255, 255, 255, .28);
+    border-radius: 8px;
+    background: #916241;
+    color: white;
+}
+
+.effect-items-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 58px;
+}
+
+.effect-items-image img {
+    max-width: 58px;
+    max-height: 58px;
+    object-fit: contain;
+}
+
+.effect-items-info {
+    min-width: 0;
+}
+
+.effect-items-topline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 3px;
+}
+
+.effect-items-name {
+    color: #f3c24a;
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+}
+
+.effect-items-effect {
+    color: white;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+.effect-items-empty {
+    padding: 14px;
+    color: white;
+    text-align: center;
+    font-weight: 700;
+}
+
+@media (max-width: 768px) {
+    .effect-items-row {
+        grid-template-columns: 48px minmax(0, 1fr);
+        gap: 8px;
+        padding: 7px;
+    }
+
+    .effect-items-image img {
+        max-width: 46px;
+        max-height: 46px;
+    }
+}

@@ -11,6 +11,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css"
     rel="stylesheet">
   <link rel="stylesheet" href="../shared/shared.css">
+  <link rel="stylesheet" href="../shared/effect-items-modal.css">
   <link rel="stylesheet" href="./building_items.css">
   <link rel="stylesheet" href="../shared/consent.css">
   <meta property="og:title" content="CI's & TCI's Overview | Generals Forum">
@@ -132,7 +133,19 @@
       <div id="modalCaption"></div>
     </div>
   </div>
-  </div>
+
+  <div id="effectItemsModal" class="gf-modal effect-items-modal" aria-hidden="true">
+    <div class="gf-modal-backdrop" data-close-modal="1"></div>
+    <div class="gf-modal-card effect-items-modal-card" role="dialog" aria-modal="true"
+      aria-labelledby="effectItemsModalTitle">
+      <div class="gf-modal-head">
+        <h5 id="effectItemsModalTitle" class="gf-modal-title">Items with this effect</h5>
+        <button type="button" class="gf-modal-close" aria-label="Close">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div id="effectItemsModalBody" class="gf-modal-body effect-items-modal-body"></div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>

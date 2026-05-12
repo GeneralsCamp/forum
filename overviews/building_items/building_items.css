@@ -65,6 +65,7 @@
     font-style:italic;
     color:rgb(234,224,224);
     font-size:12px;
+    cursor:pointer;
 }
 
 @media(max-width:768px){

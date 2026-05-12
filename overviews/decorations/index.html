@@ -11,6 +11,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css"
     rel="stylesheet">
   <link rel="stylesheet" href="../shared/shared.css">
+  <link rel="stylesheet" href="../shared/effect-items-modal.css">
   <link rel="stylesheet" href="./decorations.css">
   <link rel="stylesheet" href="../shared/consent.css">
   <meta property="og:title" content="Decorations Overview | Generals Forum">
@@ -59,13 +60,6 @@
                     <label class="form-check-label" for="filterID">ID</label>
                   </div>
                 </li>
-                <li>
-                  <div class="form-check">
-                    <input class="form-check-input search-filter" type="checkbox" value="effect" id="filterEffect"
-                      checked>
-                    <label class="form-check-label" for="filterEffect">Effect</label>
-                  </div>
-                </li>
               </ul>
             </div>
           </div>
@@ -77,14 +71,7 @@
             </select>
           </div>
 
-          <div class="col-md-6 col-sm-6 col-6">
-            <select id="showFilter" class="form-select custom-select text-center" aria-label="Show filter">
-              <option value="all" selected>Show all decorations</option>
-              <option id="lastCapOption" value="" disabled>Selected effect</option>
-            </select>
-          </div>
-
-          <div class="col-md-6 col-sm-6 col-6">
+          <div class="col-md-6 col-sm-12">
             <div class="dropdown">
               <button class="btn btn-custom dropdown-toggle w-100" type="button" id="sizeDropdown"
                 data-bs-toggle="dropdown" aria-expanded="false">
@@ -92,6 +79,12 @@
               </button>
               <ul class="dropdown-menu dropdown-menu-custom w-100" aria-labelledby="sizeDropdown" id="sizeFilters"></ul>
             </div>
+          </div>
+
+          <div class="col-md-6 col-sm-12">
+            <select id="showFilter" class="form-select custom-select text-center" aria-label="Show filter" disabled>
+              <option value="all" selected>Show all decorations</option>
+            </select>
           </div>
         </div>
       </div>
@@ -109,7 +102,19 @@
       <div id="modalCaption"></div>
     </div>
   </div>
-  </div>
+
+  <div id="effectItemsModal" class="gf-modal effect-items-modal" aria-hidden="true">
+    <div class="gf-modal-backdrop" data-close-modal="1"></div>
+    <div class="gf-modal-card effect-items-modal-card" role="dialog" aria-modal="true"
+      aria-labelledby="effectItemsModalTitle">
+      <div class="gf-modal-head">
+        <h5 id="effectItemsModalTitle" class="gf-modal-title">Items with this effect</h5>
+        <button type="button" class="gf-modal-close" aria-label="Close">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div id="effectItemsModalBody" class="gf-modal-body effect-items-modal-body"></div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>

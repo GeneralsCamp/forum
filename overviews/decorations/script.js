@@ -2,6 +2,7 @@ import { initAutoHeight } from "../shared/ResizeService.mjs";
 import { createLoader } from "../shared/LoadingService.mjs";
 import { coreInit } from "../shared/CoreInit.mjs";
 import { initImageModal } from "../shared/ModalService.mjs";
+import { createEffectItemsModal, getAllianceLayoutName, itemHasEffectID } from "../shared/EffectItemsModal.mjs";
 import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageService.mjs";
 import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
@@ -21,8 +22,12 @@ let lang = {};
 let selectedSizes = new Set();
 let currentSort = "po";
 let allDecorations = [];
+let allConstructionItems = [];
+let allianceCoatLayouts = [];
 let imageUrlMap = {};
-let specialFilter = null;
+let constructionImageUrlMap = {};
+let allianceLayoutImageUrlMap = {};
+let effectItemsModalController = null;
 let noMatchMessage = "No match to the current filters.";
 const composedDecorationImageCache = new Map();
 let sharedLangPack = { filters: {}, ui: {} };
@@ -86,7 +91,6 @@ async function applyOwnLang() {
 
   document.querySelector('label[for="filterName"]').textContent = filters.search_name || "Name";
   document.querySelector('label[for="filterID"]').textContent = filters.search_id || "ID";
-  document.querySelector('label[for="filterEffect"]').textContent = filters.search_effect || "Effect";
 
   const sortSelect = document.getElementById('sortSelect');
   if (sortSelect) {
@@ -95,10 +99,8 @@ async function applyOwnLang() {
   }
 
   const showFilter = document.getElementById('showFilter');
-  if (showFilter) {
-    if (showFilter.options[0]) showFilter.options[0].text = filters.show_all || "Show all decorations";
-    const lastCapOption = document.getElementById('lastCapOption');
-    if (lastCapOption) lastCapOption.text = filters.show_selected_effect || "Selected effect";
+  if (showFilter?.options[0]) {
+    showFilter.options[0].text = filters.show_all || "Show all decorations";
   }
 
   const sizeDropdown = document.getElementById('sizeDropdown');
@@ -110,7 +112,6 @@ async function applyOwnLang() {
     const selectedLabels = selectedFilters.map(f => {
       if (f === "name") return filters.search_name || "Name";
       if (f === "id") return filters.search_id || "ID";
-      if (f === "effect") return filters.search_effect || "Effect";
       return f;
     });
     searchInput.placeholder = (filters.search_placeholder_prefix || "Search by: ") + selectedLabels.join(", ");
@@ -179,7 +180,7 @@ function parseEffects(effectsStr) {
         if (effectDef?.capID) {
           const cap = effectCapsMap[effectDef.capID];
           if (cap?.maxTotalBonus) {
-            maxStr = ` <span class="max-bonus">(Max: ${formatter.format(Number(cap.maxTotalBonus))}${suffix})</span>`;
+            maxStr = ` <span class="max-bonus" role="button" tabindex="0" data-effectid="${id}" data-capid="${effectDef.capID}" title="Show all items with this effect">(Max: ${formatter.format(Number(cap.maxTotalBonus))}${suffix})</span>`;
           }
         }
         results.push(`${localizedName}: ${formatter.format(val)}${suffix}${maxStr}`);
@@ -193,7 +194,7 @@ function parseEffects(effectsStr) {
         if (effectDef?.capID) {
           const cap = effectCapsMap[effectDef.capID];
           if (cap?.maxTotalBonus) {
-            maxStr = ` <span class="max-bonus" data-capid="${effectDef.capID}" style="cursor:pointer">(Max: ${formatter.format(Number(cap.maxTotalBonus))}${suffix})</span>`;
+            maxStr = ` <span class="max-bonus" role="button" tabindex="0" data-effectid="${id}" data-capid="${effectDef.capID}" title="Show all items with this effect">(Max: ${formatter.format(Number(cap.maxTotalBonus))}${suffix})</span>`;
           }
         }
         results.push(`${localizedTemplate}: ${formatter.format(val)}${suffix}${maxStr}`);
@@ -218,6 +219,52 @@ function getName(item) {
 
 function normalizeName(str) {
   return str.toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+function getCIName(item) {
+  const rawName = (item.name || "???").toLowerCase();
+  const prefixes = ["appearance", "primary", "secondary"];
+  const suffixes = ["", "_premium"];
+
+  for (const prefix of prefixes) {
+    for (const suffix of suffixes) {
+      const key = `ci_${prefix}_${rawName}${suffix}`;
+      if (lang[key]) return lang[key];
+    }
+  }
+
+  const keysToTry = [
+    ...suffixes.map(s => `ci_${rawName}${s}`),
+    rawName
+  ];
+
+  for (const key of keysToTry) {
+    if (lang[key]) return lang[key];
+  }
+
+  return item.name || "???";
+}
+
+function getConstructionItemImage(item) {
+  const normalizedName = normalizeName(item.name || "");
+  const urls = constructionImageUrlMap[normalizedName] || {};
+  return urls.placedUrl || urls.iconUrl || "../../img_base/placeholder.webp";
+}
+
+function getConstructionItemType(item) {
+  if (item.duration && Number(item.duration) > 0) return "TCI";
+  return "CI";
+}
+
+function getLocalizedEffectTitle(effectID) {
+  const effectDef = effectDefinitions?.[effectID];
+  if (!effectDef) return `Effect ${effectID}`;
+
+  let key = `effect_name_${effectDef.name}`;
+  const override = effectKeyOverrides[key];
+  if (override?.key) key = override.key;
+
+  return lang[key.toLowerCase()] || effectDef.name;
 }
 
 // --- GET VALUES & CALCULATIONS ---
@@ -534,15 +581,6 @@ function applyFiltersAndSorting({ revealId = null, exactId = null } = {}) {
   const filtered = exactId
     ? allDecorations.filter(item => String(item.wodID || "") === String(exactId))
     : allDecorations.filter(item => {
-    if (specialFilter && specialFilter.startsWith("cap-")) {
-      const capID = specialFilter.slice(4);
-      if (!item.areaSpecificEffects || !item.areaSpecificEffects.split(",").some(eff => {
-        const [id] = eff.split("&");
-        const effectDef = effectDefinitions[id];
-        return effectDef && effectDef.capID === capID;
-      })) return false;
-    }
-
     const size = getSize(item);
     if (!selectedSizes.has(size)) return false;
 
@@ -566,10 +604,6 @@ function applyFiltersAndSorting({ revealId = null, exactId = null } = {}) {
       if (selectedFilters.includes("id")) {
         const wodID = (item.wodID || "").toString().toLowerCase();
         if (wordMatch(wodID)) matchSearch = true;
-      }
-      if (selectedFilters.includes("effect")) {
-        const effectsText = parseEffects(item.areaSpecificEffects || "").join(" ").toLowerCase();
-        if (wordMatch(effectsText)) matchSearch = true;
       }
     }
 
@@ -615,43 +649,62 @@ function applyHashSearch() {
   applyFiltersAndSorting({ revealId: id, exactId: id });
 }
 
-function setupMaxCapClick(root = document) {
-  const langData = {
-    ...(sharedLangPack.filters || {}),
-    ...(ownLang[currentLanguage]?.filters || {})
-  };
-  root.querySelectorAll(".max-bonus").forEach(span => {
-    if (span.dataset.capBound === "1") return;
-    span.dataset.capBound = "1";
-    span.addEventListener("click", () => {
-      const capID = span.dataset.capid;
-      if (!capID) return;
+function getDecorationEffectModalItems(effectID, getPrimaryEffectByID, getEffectValueByID) {
+  return allDecorations
+    .filter(item => itemHasEffectID(item.areaSpecificEffects || "", effectID))
+    .map(item => {
+      const name = getName(item);
+      const cleanedType = normalizeName(item.type || "");
+      const imageUrl =
+        imageUrlMap[cleanedType]?.placedUrl
+        || imageUrlMap[cleanedType]?.iconUrl
+        || "assets/img/unknown.webp";
 
-      specialFilter = `cap-${capID}`;
-
-      const showFilter = document.getElementById("showFilter");
-      if (showFilter) {
-        let lastCapOption = document.getElementById("lastCapOption");
-
-        if (!lastCapOption) {
-          lastCapOption = document.createElement("option");
-          lastCapOption.id = "lastCapOption";
-          lastCapOption.disabled = false;
-          showFilter.appendChild(lastCapOption);
-        }
-
-        lastCapOption.value = `cap-${capID}`;
-        lastCapOption.text = langData.show_selected_effect || "Selected effect";
-        lastCapOption.disabled = false;
-        lastCapOption.selected = true;
-
-        showFilter.dataset.previousValue = lastCapOption.value;
-        showFilter.dataset.previousText = lastCapOption.text;
-      }
-
-      applyFiltersAndSorting();
+      return {
+        kind: "Deco",
+        name,
+        id: item.wodID || "???",
+        imageUrl,
+        effectText: getPrimaryEffectByID(item.areaSpecificEffects || "", effectID),
+        sortValue: getEffectValueByID(item.areaSpecificEffects || "")
+      };
     });
-  });
+}
+
+function getConstructionEffectModalItems(effectID, getPrimaryEffectByID, getEffectValueByID) {
+  const testingRegex = /testing/i;
+
+  return allConstructionItems
+    .filter(item =>
+      !(item.comment1 && testingRegex.test(item.comment1)) &&
+      !(item.comment2 && testingRegex.test(item.comment2)) &&
+      itemHasEffectID(item.effects || "", effectID)
+    )
+    .map(item => ({
+      kind: getConstructionItemType(item),
+      name: getCIName(item),
+      id: item.constructionItemID || "???",
+      imageUrl: getConstructionItemImage(item),
+      effectText: getPrimaryEffectByID(item.effects || "", effectID),
+      sortValue: getEffectValueByID(item.effects || "")
+    }));
+}
+
+function getAllianceEffectModalItems(effectID, getPrimaryEffectByID, getEffectValueByID) {
+  return allianceCoatLayouts
+    .filter(item => itemHasEffectID(item.effects || "", effectID))
+    .map(item => ({
+      kind: "Alliance CoA",
+      name: getAllianceLayoutName({ layout: item, lang }),
+      id: item.allianceCoatLayoutID || "???",
+      imageUrl: allianceLayoutImageUrlMap[String(item.allianceCoatLayoutID || "")] || "../../img_base/placeholder.webp",
+      effectText: getPrimaryEffectByID(item.effects || "", effectID),
+      sortValue: getEffectValueByID(item.effects || "")
+    }));
+}
+
+function setupMaxCapClick(root = document) {
+  effectItemsModalController?.bind(root);
 }
 
 function escapeRegExp(string) {
@@ -667,7 +720,6 @@ function setupEventListeners() {
   const searchButton = document.getElementById("searchButton");
   const sortSelect = document.getElementById("sortSelect");
   const searchFilters = document.querySelectorAll(".search-filter");
-  const showFilter = document.getElementById("showFilter");
 
   function runSearch() {
     if (searchInput.disabled) return;
@@ -711,7 +763,6 @@ function setupEventListeners() {
 
     const selectedLabels = selected.map(f => {
       if (f === "name") return filters.search_name || "Name";
-      if (f === "effect") return filters.search_effect || "Effect";
       if (f === "id") return filters.search_id || "ID";
       return f;
     });
@@ -727,21 +778,6 @@ function setupEventListeners() {
     applyFiltersAndSorting();
   });
 
-  if (showFilter) {
-    showFilter.addEventListener("change", () => {
-      const val = showFilter.value;
-
-      if (val.startsWith("cap-")) {
-        specialFilter = val;
-        applyFiltersAndSorting();
-        return;
-      }
-
-      specialFilter = null;
-      applyFiltersAndSorting();
-    });
-  }
-
   searchFilters.forEach(cb => {
     cb.addEventListener("change", () => {
       updateSearchInputState();
@@ -749,7 +785,7 @@ function setupEventListeners() {
     });
   });
 
-  document.querySelectorAll('#filterName, #filterID, #filterEffect').forEach(input => {
+  document.querySelectorAll('#filterName, #filterID').forEach(input => {
     const formCheckDiv = input.closest('.form-check');
     if (!formCheckDiv) return;
 
@@ -784,6 +820,19 @@ window.addEventListener("DOMContentLoaded", () => {
 async function init() {
   try {
     initImageModal();
+    effectItemsModalController = createEffectItemsModal({
+      getEffectDefinitions: () => effectDefinitions,
+      getEffectCapsMap: () => effectCapsMap,
+      getPercentEffectIDs: () => percentEffectIDs,
+      getLang: () => lang,
+      parseEffectEntry: parseEffects,
+      getLocalizedEffectTitle,
+      getRows: ({ effectID, getPrimaryEffectByID, getEffectValueByID }) => [
+        ...getDecorationEffectModalItems(effectID, getPrimaryEffectByID, getEffectValueByID),
+        ...getConstructionEffectModalItems(effectID, getPrimaryEffectByID, getEffectValueByID),
+        ...getAllianceEffectModalItems(effectID, getPrimaryEffectByID, getEffectValueByID)
+      ]
+    });
 
     await coreInit({
       loader,
@@ -791,7 +840,9 @@ async function init() {
       normalizeNameFn: normalizeName,
 
       assets: {
-        decorations: true
+        decorations: true,
+        constructions: true,
+        allianceLayouts: true
       },
 
       onReady: async ({
@@ -803,6 +854,8 @@ async function init() {
 
         lang = L;
         imageUrlMap = imageMaps.decorations || {};
+        constructionImageUrlMap = imageMaps.constructions || {};
+        allianceLayoutImageUrlMap = imageMaps.allianceLayouts || {};
         effectDefinitions = effectCtx.effectDefinitions;
         effectCapsMap = effectCtx.effectCapsMap;
 
@@ -815,6 +868,8 @@ async function init() {
 
         allDecorations =
           extractDecorations(data.buildings || []);
+        allConstructionItems = data.constructionItems || [];
+        allianceCoatLayouts = data.allianceCoatLayouts || data.alliancecoatlayouts || [];
 
         initLanguageSelector({
           currentLanguage,

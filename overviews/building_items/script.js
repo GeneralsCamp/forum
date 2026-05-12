@@ -2,6 +2,7 @@ import { initAutoHeight } from "../shared/ResizeService.mjs";
 import { createLoader } from "../shared/LoadingService.mjs";
 import { coreInit } from "../shared/CoreInit.mjs";
 import { initImageModal } from "../shared/ModalService.mjs";
+import { createEffectItemsModal, getAllianceLayoutName, itemHasEffectID } from "../shared/EffectItemsModal.mjs";
 import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageService.mjs";
 import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
@@ -13,10 +14,15 @@ import { revealCard } from "../shared/CardReveal.mjs";
 let lang = {};
 let ownLang = {};
 let allItems = [];
+let allDecorations = [];
+let allianceCoatLayouts = [];
 let imageUrlMap = {};
+let decorationImageUrlMap = {};
+let allianceLayoutImageUrlMap = {};
 let typeFilterCheckboxes = [];
 let effectDefinitions = {};
 let effectCapsMap = {};
+let effectItemsModalController = null;
 const percentEffectIDs = new Set();
 const composedConstructionImageCache = new Map();
 let constructionGroupBuildingsMap = new Map();
@@ -37,7 +43,8 @@ const lazyList = createLazyList({
     batchSize: BATCH_SIZE,
     revealBuffer: SEARCH_REVEAL_BUFFER,
     emptyHtml: () => `<div class="col-12 filter-empty-message">${noMatchMessage}</div>`,
-    onRenderBatch: (groups, ctx) => appendGroups(groups, ctx)
+    onRenderBatch: (groups, ctx) => appendGroups(groups, ctx),
+    onAfterBatch: (ctx) => setupMaxCapClick(ctx.container)
 });
 
 function readHomeSetting(key, fallback) {
@@ -316,7 +323,7 @@ function parseEffects(effectsStr) {
         if (effectDef && effectDef.capID) {
             const cap = effectCapsMap[effectDef.capID];
             if (cap && cap.maxTotalBonus) {
-                maxStr = ` <span class="max-bonus">(Max: ${formatter.format(Number(cap.maxTotalBonus))}${suffix})</span>`;
+                maxStr = ` <span class="max-bonus" role="button" tabindex="0" data-effectid="${id}" data-capid="${effectDef.capID}" title="Show all items with this effect">(Max: ${formatter.format(Number(cap.maxTotalBonus))}${suffix})</span>`;
             }
         }
 
@@ -375,8 +382,60 @@ function getCIName(item) {
     return item.name;
 }
 
+function getDecorationName(item) {
+    const type = item.type || "";
+    const keyOriginal = `deco_${type}_name`;
+    const keyLower = `deco_${type.toLowerCase()}_name`;
+    const keyFirstLower = `deco_${type.charAt(0).toLowerCase() + type.slice(1)}_name`;
+
+    return lang[keyOriginal.toLowerCase()] || lang[keyLower.toLowerCase()] || lang[keyFirstLower.toLowerCase()] || type || "???";
+}
+
 function normalizeName(str) {
     return str.toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+function getDecorationImage(item) {
+    const normalizedType = normalizeName(item.type || "");
+    const urls = decorationImageUrlMap[normalizedType] || {};
+    return urls.placedUrl || urls.iconUrl || "assets/img/unknown.webp";
+}
+
+function getConstructionItemImage(item) {
+    const normalizedName = normalizeName(item.name || "");
+    const urls = imageUrlMap[normalizedName] || {};
+    return urls.placedUrl || urls.iconUrl || "../../img_base/placeholder.webp";
+}
+
+function getConstructionItemType(item) {
+    if (item.duration && Number(item.duration) > 0) return "TCI";
+    return "CI";
+}
+
+function getLocalizedEffectTitle(effectID) {
+    const effectDef = effectDefinitions?.[effectID];
+    if (!effectDef) return `Effect ${effectID}`;
+
+    const loc = getLocalizedEffectName(effectDef);
+    const nameText = loc?.text || effectDef.name;
+
+    if (loc?.mode === "template") {
+        return nameText
+            .replace(/\{0\}/g, "")
+            .replace(/[%+\-]/g, "")
+            .replace(/:+/g, "")
+            .trim();
+    }
+
+    return nameText;
+}
+
+function extractDecorations(items) {
+    return (items || []).filter(item =>
+        item.name?.toLowerCase() === "deco" &&
+        (item.decoPoints || item.initialFusionLevel) &&
+        !(item.comment1?.toLowerCase().includes("test") || item.comment2?.toLowerCase().includes("test"))
+    );
 }
 
 function getLocalizedBuildingName(buildingName) {
@@ -744,6 +803,7 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
                 }
             });
             bindEvents();
+            setupMaxCapClick(boxContent);
         }
 
         function bindEvents() {
@@ -913,6 +973,55 @@ function applyFiltersAndSorting({ revealId = null, exactId = null } = {}) {
     resetRenderState(groupedList, { revealIndex });
 }
 
+function getDecorationEffectModalItems(effectID, getPrimaryEffectByID, getEffectValueByID) {
+    return allDecorations
+        .filter(item => itemHasEffectID(item.areaSpecificEffects || "", effectID))
+        .map(item => ({
+            kind: "Deco",
+            name: getDecorationName(item),
+            id: item.wodID || "???",
+            imageUrl: getDecorationImage(item),
+            effectText: getPrimaryEffectByID(item.areaSpecificEffects || "", effectID),
+            sortValue: getEffectValueByID(item.areaSpecificEffects || "")
+        }));
+}
+
+function getConstructionEffectModalItems(effectID, getPrimaryEffectByID, getEffectValueByID) {
+    const testingRegex = /testing/i;
+
+    return allItems
+        .filter(item =>
+            !(item.comment1 && testingRegex.test(item.comment1)) &&
+            !(item.comment2 && testingRegex.test(item.comment2)) &&
+            itemHasEffectID(item.effects || "", effectID)
+        )
+        .map(item => ({
+            kind: getConstructionItemType(item),
+            name: getCIName(item),
+            id: item.constructionItemID || "???",
+            imageUrl: getConstructionItemImage(item),
+            effectText: getPrimaryEffectByID(item.effects || "", effectID),
+            sortValue: getEffectValueByID(item.effects || "")
+        }));
+}
+
+function getAllianceEffectModalItems(effectID, getPrimaryEffectByID, getEffectValueByID) {
+    return allianceCoatLayouts
+        .filter(item => itemHasEffectID(item.effects || "", effectID))
+        .map(item => ({
+            kind: "Alliance CoA",
+            name: getAllianceLayoutName({ layout: item, lang }),
+            id: item.allianceCoatLayoutID || "???",
+            imageUrl: allianceLayoutImageUrlMap[String(item.allianceCoatLayoutID || "")] || "../../img_base/placeholder.webp",
+            effectText: getPrimaryEffectByID(item.effects || "", effectID),
+            sortValue: getEffectValueByID(item.effects || "")
+        }));
+}
+
+function setupMaxCapClick(root = document) {
+    effectItemsModalController?.bind(root);
+}
+
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -1059,6 +1168,19 @@ initAutoHeight({
 async function init() {
     try {
         initImageModal();
+        effectItemsModalController = createEffectItemsModal({
+            getEffectDefinitions: () => effectDefinitions,
+            getEffectCapsMap: () => effectCapsMap,
+            getPercentEffectIDs: () => percentEffectIDs,
+            getLang: () => lang,
+            parseEffectEntry: parseEffects,
+            getLocalizedEffectTitle,
+            getRows: ({ effectID, getPrimaryEffectByID, getEffectValueByID }) => [
+                ...getDecorationEffectModalItems(effectID, getPrimaryEffectByID, getEffectValueByID),
+                ...getConstructionEffectModalItems(effectID, getPrimaryEffectByID, getEffectValueByID),
+                ...getAllianceEffectModalItems(effectID, getPrimaryEffectByID, getEffectValueByID)
+            ]
+        });
 
         await coreInit({
             loader,
@@ -1067,7 +1189,9 @@ async function init() {
             itemLabel: "construction items",
 
             assets: {
-                constructions: true
+                decorations: true,
+                constructions: true,
+                allianceLayouts: true
             },
 
             onReady: async ({
@@ -1079,9 +1203,13 @@ async function init() {
 
                 lang = L;
                 allItems = data.constructionItems || [];
+                allDecorations = extractDecorations(data.buildings || []);
+                allianceCoatLayouts = data.allianceCoatLayouts || data.alliancecoatlayouts || [];
                 constructionGroupBuildingsMap =
                     buildConstructionGroupBuildingsMap(data.buildings || []);
+                decorationImageUrlMap = imageMaps.decorations || {};
                 imageUrlMap = imageMaps.constructions || {};
+                allianceLayoutImageUrlMap = imageMaps.allianceLayouts || {};
 
                 effectDefinitions = effectCtx.effectDefinitions;
                 effectCapsMap = effectCtx.effectCapsMap;
