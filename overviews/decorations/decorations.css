@@ -22,6 +22,11 @@
     border-right: 1px solid white !important;
 }
 
+.card-table>.row>.col-8.card-cell {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
 #sizeFilters {
     min-width: 100% !important;
 }
