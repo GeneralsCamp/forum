@@ -1,4 +1,4 @@
-import { fetchWithFallback } from "./Fetcher.mjs";
+import { fetchFreshWithFallback } from "./Fetcher.mjs";
 import { getSelectedGameSource } from "./GameSettings.mjs";
 import {
     getCachedJson,
@@ -80,7 +80,7 @@ export async function getItemVersion() {
     } catch {}
 
     try {
-        const res = await fetchWithFallback(DATA_URLS.empireItemVersion);
+        const res = await fetchFreshWithFallback(DATA_URLS.empireItemVersion);
         const text = await res.text();
         const match = text.match(/CastleItemXMLVersion=(\d+(?:\.\d+)+)/);
         if (!match) throw new Error("Version not found");
@@ -116,7 +116,7 @@ export async function getLangVersion() {
     } catch {}
 
     try {
-        const res = await fetchWithFallback(DATA_URLS.langMetadata);
+        const res = await fetchFreshWithFallback(DATA_URLS.langMetadata);
         const json = await res.json();
         const version =
             pickString(json, [
@@ -148,7 +148,7 @@ export async function loadLanguage(langCode, version) {
     const cached = await getCachedJson(cacheKey);
     if (cached) return cached;
 
-    const res = await fetchWithFallback(DATA_URLS.lang(langCode), 30000);
+    const res = await fetchFreshWithFallback(DATA_URLS.lang(langCode), 30000);
     const json = await res.json();
     await setCachedJson(cacheKey, json);
     return json;
@@ -174,7 +174,7 @@ export async function loadItems(version) {
     const url = source === "e4k"
         ? DATA_URLS.e4kItems
         : DATA_URLS.empireItems;
-    const res = await fetchWithFallback(url, 60000);
+    const res = await fetchFreshWithFallback(url, 60000);
     const json = normalizeItemsPayload(await res.json());
     await setCachedJson(cacheKey, json);
     return json;
@@ -337,7 +337,7 @@ async function getE4kRemoteInfo() {
 
 async function loadJsonWithMetaFallback(url, metaKey, timeout) {
     try {
-        const res = await fetchWithFallback(url, timeout);
+        const res = await fetchFreshWithFallback(url, timeout);
         const json = await res.json();
         setCachedMeta(metaKey, json);
         return json;

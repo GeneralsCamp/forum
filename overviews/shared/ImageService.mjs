@@ -1,4 +1,4 @@
-import { fetchWithFallback } from "./Fetcher.mjs";
+import { fetchFreshWithFallback } from "./Fetcher.mjs";
 import {
     getCachedText,
     setCachedText,
@@ -20,7 +20,7 @@ async function getDllText() {
 
         dllTextPromise = (async () => {
             const versionRes =
-                await fetchWithFallback(DATA_URLS.empireDllVersion, 10000);
+                await fetchFreshWithFallback(DATA_URLS.empireDllVersion, 10000);
             const versionJson =
                 await versionRes.json();
             const dllVersion =
@@ -51,7 +51,7 @@ async function getDllText() {
             }
 
             const dllRes =
-                await fetchWithFallback(dllUrl);
+                await fetchFreshWithFallback(dllUrl);
 
             const dllText = await dllRes.text();
             await setCachedText(cacheKey, dllText);

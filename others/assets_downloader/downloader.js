@@ -3,7 +3,7 @@ import {
     getLangVersion as getSharedLangVersion,
     loadLanguage
 } from "../../overviews/shared/DataService.mjs";
-import { fetchWithFallback } from "../../overviews/shared/Fetcher.mjs";
+import { fetchFreshWithFallback } from "../../overviews/shared/Fetcher.mjs";
 
 // --- Proxy and global variables ---
 const assetProxy = "https://my-proxy-8u49.onrender.com/";
@@ -209,7 +209,7 @@ async function getAllAssets(usePng) {
     const base = "https://empire-html5.goodgamestudios.com/default/assets/itemassets/";
 
     log("Loading DLL from GitHub raw data cache...");
-    const dllRes = await fetchWithFallback(DATA_URLS.empireDll, 30000);
+    const dllRes = await fetchFreshWithFallback(DATA_URLS.empireDll, 30000);
     const dllText = await dllRes.text();
 
     const regex = /itemassets\/[^\s"'<>]+?--\d+/g;
@@ -327,17 +327,17 @@ async function fetchBlobWithRetry(url, retries = 2) {
 }
 
 async function fetchBlobFromRaw(url) {
-    const res = await fetchWithFallback(url, 30000);
+    const res = await fetchFreshWithFallback(url, 30000);
     return res.blob();
 }
 
 async function fetchJsonFromRaw(url) {
-    const res = await fetchWithFallback(url, 30000);
+    const res = await fetchFreshWithFallback(url, 30000);
     return res.json();
 }
 
 async function fetchTextFromRaw(url) {
-    const res = await fetchWithFallback(url, 30000);
+    const res = await fetchFreshWithFallback(url, 30000);
     return res.text();
 }
 
