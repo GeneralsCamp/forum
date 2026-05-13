@@ -9,6 +9,8 @@ import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
 import { getSharedLanguagePack, getSharedText } from "../shared/SharedTextService.mjs";
 import { createLazyList } from "../shared/LazyList.mjs";
 import { revealCard } from "../shared/CardReveal.mjs";
+import { findNewItemIdsFromPreviousVersions } from "../shared/VersionedItemsDiff.mjs";
+import { getSelectedGameSource } from "../shared/GameSettings.mjs";
 
 // --- GLOBAL VARIABLES ---
 let lang = {};
@@ -16,6 +18,7 @@ let ownLang = {};
 let allItems = [];
 let allDecorations = [];
 let allianceCoatLayouts = [];
+let newItemIds = null;
 let imageUrlMap = {};
 let decorationImageUrlMap = {};
 let allianceLayoutImageUrlMap = {};
@@ -32,6 +35,7 @@ const loader = createLoader();
 let currentLanguage = getInitialLanguage();
 const HOME_SETTINGS_KEY = "gf_home_settings_v1";
 const devCommentsEnabled = readHomeSetting("devCommentsEnabled", true);
+const activeGameSource = getSelectedGameSource();
 const INITIAL_BATCH_SIZE = 40;
 const BATCH_SIZE = 30;
 const SEARCH_REVEAL_BUFFER = 12;
@@ -127,6 +131,14 @@ async function applyOwnLang() {
     if (typeDropdown)
         typeDropdown.textContent =
             filters.type_filter || "Type Filter";
+
+    const showFilter = document.getElementById("showFilter");
+    if (showFilter?.options[0]) {
+        showFilter.options[0].text = filters.show_all || "Show all items";
+    }
+    if (showFilter?.options[1]) {
+        showFilter.options[1].text = filters.show_new || "Show only new items";
+    }
 
     const typeMap = [
         ["filterPermanent", "type_permanent", "Permanent"],
@@ -486,7 +498,30 @@ function getPlacementBuildingNames(item) {
 
 // --- GROUPING AND VALUE CALCULATIONS ---
 function extractConstructionItems(data) {
-    return data.constructionItems || [];
+    const items = data?.constructionItems || [];
+    return Array.isArray(items)
+        ? items
+        : Object.values(items || {});
+}
+
+async function loadNewItemIds(currentVersion) {
+    return findNewItemIdsFromPreviousVersions({
+        currentVersion,
+        currentItems: allItems,
+        extractItems: extractConstructionItems,
+        getId: item => item.constructionItemID,
+        source: activeGameSource,
+        logLabel: "construction item"
+    });
+}
+
+async function prepareNewItemFilter(currentVersion) {
+    const showFilter = document.getElementById("showFilter");
+    if (!showFilter) return;
+
+    showFilter.disabled = true;
+    newItemIds = await loadNewItemIds(currentVersion);
+    showFilter.disabled = false;
 }
 
 function groupItemsByNameEffectsLegacyAppearanceAndDuration(items) {
@@ -904,6 +939,7 @@ function findRevealIndex(groups, search, selectedFilters) {
 
 function applyFiltersAndSorting({ revealId = null, exactId = null } = {}) {
     const search = appliedSearchText.toLowerCase().trim();
+    const showMode = document.getElementById("showFilter")?.value || "all";
     const selectedTypes = Array.from(typeFilterCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
 
     const selectedFilters = Array.from(document.querySelectorAll(".search-filter:checked")).map(cb => cb.value);
@@ -914,6 +950,13 @@ function applyFiltersAndSorting({ revealId = null, exactId = null } = {}) {
     const filtered = exactId
         ? allItems.filter(item => String(item.constructionItemID || "") === String(exactId))
         : allItems.filter(item => {
+        if (showMode === "new") {
+            if (newItemIds === null) return true;
+
+            const id = String(item.constructionItemID || "");
+            if (!newItemIds?.has(id)) return false;
+        }
+
         let matchSearch = true;
 
         if (hasSearchText && hasFilters) {
@@ -1062,6 +1105,7 @@ function formatNumber(num) {
 function setupEventListeners() {
     const searchInput = document.getElementById("searchInput");
     const searchButton = document.getElementById("searchButton");
+    const showFilter = document.getElementById("showFilter");
     typeFilterCheckboxes = document.querySelectorAll(".type-filter");
     const searchFilters = document.querySelectorAll(".search-filter");
     function runSearch() {
@@ -1080,6 +1124,10 @@ function setupEventListeners() {
 
     typeFilterCheckboxes.forEach(cb => {
         cb.addEventListener("change", applyFiltersAndSorting);
+    });
+
+    showFilter?.addEventListener("change", () => {
+        applyFiltersAndSorting();
     });
 
     function updateSearchInputState() {
@@ -1202,7 +1250,8 @@ async function init() {
                 lang: L,
                 data,
                 imageMaps,
-                effectCtx
+                effectCtx,
+                versions
             }) => {
 
                 lang = L;
@@ -1235,6 +1284,7 @@ async function init() {
                 noMatchMessage = await getSharedText("no_match_filters", currentLanguage, noMatchMessage);
 
                 setupEventListeners();
+                await prepareNewItemFilter(versions?.itemVersion);
                 applyFiltersAndSorting();
                 applyHashSearch();
             }

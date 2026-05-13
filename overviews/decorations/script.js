@@ -10,6 +10,7 @@ import { getSharedLanguagePack, getSharedText } from "../shared/SharedTextServic
 import { createLazyList } from "../shared/LazyList.mjs";
 import { getSelectedGameSource } from "../shared/GameSettings.mjs";
 import { revealCard } from "../shared/CardReveal.mjs";
+import { findNewItemIdsFromPreviousVersions } from "../shared/VersionedItemsDiff.mjs";
 
 // --- GLOBAL VARIABLES ---
 const loader = createLoader();
@@ -24,6 +25,7 @@ let currentSort = "po";
 let allDecorations = [];
 let allConstructionItems = [];
 let allianceCoatLayouts = [];
+let newDecorationIds = null;
 let imageUrlMap = {};
 let constructionImageUrlMap = {};
 let allianceLayoutImageUrlMap = {};
@@ -102,6 +104,9 @@ async function applyOwnLang() {
   const showFilter = document.getElementById('showFilter');
   if (showFilter?.options[0]) {
     showFilter.options[0].text = filters.show_all || "Show all decorations";
+  }
+  if (showFilter?.options[1]) {
+    showFilter.options[1].text = filters.show_new || "Show only new decorations";
   }
 
   const sizeDropdown = document.getElementById('sizeDropdown');
@@ -276,12 +281,16 @@ function getLocalizedEffectTitle(effectID) {
 
 // --- GET VALUES & CALCULATIONS ---
 function extractDecorations(items) {
+  const rows = Array.isArray(items)
+    ? items
+    : Object.values(items || {});
+
   if (activeGameSource === "e4k") {
     const e4kExcludedTypes = new Set([
       "TradingDistrictDeco"
     ]);
 
-    return items.filter((b) =>
+    return rows.filter((b) =>
       b.name === "Deco" &&
       !e4kExcludedTypes.has(b.type) &&
       getPO(b) > 0 &&
@@ -292,7 +301,7 @@ function extractDecorations(items) {
     );
   }
 
-  return items.filter(b =>
+  return rows.filter(b =>
     b.name?.toLowerCase() === "deco" &&
     getPO(b) > 0 &&
     !(
@@ -300,6 +309,37 @@ function extractDecorations(items) {
       b.comment2?.toLowerCase().includes("test")
     )
   );
+}
+
+async function loadNewDecorationIds(currentVersion) {
+  return findNewItemIdsFromPreviousVersions({
+    currentVersion,
+    currentItems: allDecorations,
+    extractItems: payload => extractDecorations(payload?.buildings || []),
+    getId: item => item.wodID,
+    source: activeGameSource,
+    logLabel: "decoration"
+  });
+}
+
+async function prepareNewDecorationFilter(currentVersion) {
+  const showFilter = document.getElementById("showFilter");
+  if (!showFilter) return;
+
+  showFilter.disabled = true;
+
+  try {
+    newDecorationIds = await loadNewDecorationIds(currentVersion);
+  } catch (error) {
+    console.warn("New decoration filter unavailable.", error);
+    newDecorationIds = new Set();
+  } finally {
+    showFilter.disabled = false;
+  }
+
+  if (showFilter.value === "new") {
+    applyFiltersAndSorting();
+  }
 }
 
 function getSize(item) {
@@ -579,6 +619,7 @@ function findRevealIndex(items, search, selectedFilters) {
 
 function applyFiltersAndSorting({ revealId = null, exactId = null } = {}) {
   const search = appliedSearchText.toLowerCase().trim();
+  const showMode = document.getElementById("showFilter")?.value || "all";
 
   const selectedFilters = Array.from(document.querySelectorAll(".search-filter:checked")).map(cb => cb.value);
   const hasSearchText = search.length > 0;
@@ -588,38 +629,45 @@ function applyFiltersAndSorting({ revealId = null, exactId = null } = {}) {
   const filtered = exactId
     ? allDecorations.filter(item => String(item.wodID || "") === String(exactId))
     : allDecorations.filter(item => {
-    const size = getSize(item);
-    if (!selectedSizes.has(size)) return false;
+      if (showMode === "new") {
+        if (newDecorationIds === null) return true;
 
-    let matchSearch = true;
-    if (hasSearchText && hasFilters) {
-      matchSearch = false;
-      function wordMatch(text) {
-        if (!text) return false;
-        if (onlyFullWords) {
-          const pattern = new RegExp(`\\b${escapeRegExp(search)}\\b`, 'i');
-          return pattern.test(text);
-        } else {
-          return text.includes(search);
+        const id = String(item.wodID || "");
+        if (!newDecorationIds.has(id)) return false;
+      }
+
+      const size = getSize(item);
+      if (!selectedSizes.has(size)) return false;
+
+      let matchSearch = true;
+      if (hasSearchText && hasFilters) {
+        matchSearch = false;
+        function wordMatch(text) {
+          if (!text) return false;
+          if (onlyFullWords) {
+            const pattern = new RegExp(`\\b${escapeRegExp(search)}\\b`, 'i');
+            return pattern.test(text);
+          } else {
+            return text.includes(search);
+          }
+        }
+
+        if (selectedFilters.includes("name")) {
+          const name = getName(item).toLowerCase();
+          if (wordMatch(name)) matchSearch = true;
+        }
+        if (selectedFilters.includes("id")) {
+          const wodID = (item.wodID || "").toString().toLowerCase();
+          if (wordMatch(wodID)) matchSearch = true;
+        }
+        if (selectedFilters.includes("effect")) {
+          const effectsText = parseEffects(item.areaSpecificEffects || "").join(" ").toLowerCase();
+          if (wordMatch(effectsText)) matchSearch = true;
         }
       }
 
-      if (selectedFilters.includes("name")) {
-        const name = getName(item).toLowerCase();
-        if (wordMatch(name)) matchSearch = true;
-      }
-      if (selectedFilters.includes("id")) {
-        const wodID = (item.wodID || "").toString().toLowerCase();
-        if (wordMatch(wodID)) matchSearch = true;
-      }
-      if (selectedFilters.includes("effect")) {
-        const effectsText = parseEffects(item.areaSpecificEffects || "").join(" ").toLowerCase();
-        if (wordMatch(effectsText)) matchSearch = true;
-      }
-    }
-
-    return matchSearch;
-  });
+      return matchSearch;
+    });
 
   filtered.sort((a, b) => {
     const va = currentSort === "po" ? getPO(a) : getPO(a) / (a.width * a.height);
@@ -730,6 +778,7 @@ function setupEventListeners() {
   const searchInput = document.getElementById("searchInput");
   const searchButton = document.getElementById("searchButton");
   const sortSelect = document.getElementById("sortSelect");
+  const showFilter = document.getElementById("showFilter");
   const searchFilters = document.querySelectorAll(".search-filter");
 
   function runSearch() {
@@ -787,6 +836,10 @@ function setupEventListeners() {
   sortSelect.addEventListener("change", () => {
     const val = sortSelect.value;
     currentSort = val === "pot" ? "pot" : "po";
+    applyFiltersAndSorting();
+  });
+
+  showFilter?.addEventListener("change", () => {
     applyFiltersAndSorting();
   });
 
@@ -861,7 +914,8 @@ async function init() {
         lang: L,
         data,
         imageMaps,
-        effectCtx
+        effectCtx,
+        versions
       }) => {
 
         lang = L;
@@ -896,6 +950,7 @@ async function init() {
 
         renderSizeFilters(allDecorations);
         setupEventListeners();
+        void prepareNewDecorationFilter(versions?.itemVersion);
         applyFiltersAndSorting();
         applyHashSearch();
       }

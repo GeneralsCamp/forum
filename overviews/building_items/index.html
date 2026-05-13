@@ -36,7 +36,7 @@
         </div>
 
         <div class="row note gx-1 gy-1 align-items-center pb-2">
-          <div class="col-md-6 col-sm-12 position-relative">
+          <div class="col-md-4 col-sm-12 position-relative">
             <div class="input-group">
               <input id="searchInput" class="form-control custom-input" type="search"
                 placeholder="Unavailable to search!" aria-label="Search" />
@@ -71,7 +71,7 @@
             </div>
           </div>
 
-          <div class="col-md-6 col-sm-12">
+          <div class="col-md-4 col-sm-12">
             <div class="dropdown">
               <button class="btn btn-custom dropdown-toggle w-100" type="button" id="typeDropdown"
                 data-bs-toggle="dropdown" aria-expanded="false">
@@ -114,6 +114,13 @@
                 </li>
               </ul>
             </div>
+          </div>
+
+          <div class="col-md-4 col-sm-12">
+            <select id="showFilter" class="form-select custom-select text-center" aria-label="Show filter">
+              <option value="all" selected>Show all items</option>
+              <option value="new">Show only new items</option>
+            </select>
           </div>
 
         </div>
