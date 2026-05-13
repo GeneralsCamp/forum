@@ -20,13 +20,3 @@ export function getSelectedGameSource() {
 export function isE4kSelected() {
   return getSelectedGameSource() === "e4k";
 }
-
-export function isE4kDeveloperModeEnabled() {
-  try {
-    const raw = localStorage.getItem(HOME_SETTINGS_KEY);
-    const parsed = JSON.parse(raw || "{}");
-    return getSelectedGameSource() === "e4k" && parsed?.e4kDeveloperModeEnabled === true;
-  } catch {
-    return false;
-  }
-}
