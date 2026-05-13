@@ -54,7 +54,8 @@ const ALLOWED_SHOP_CATEGORY_IDS = new Set([
   "119", // Ruby
   "120", // Rift
   "121", // Legendary Rift
-  "123" // Rift Shard
+  "123", // Rift Shard
+  "124" // Gacha Recycling
 ]);
 const SHOP_CATEGORY_EXTRA = {
   "119": {

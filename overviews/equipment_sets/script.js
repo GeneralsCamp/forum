@@ -212,6 +212,22 @@ function getRiftShardImageUrl() {
   );
 }
 
+function getOfferingShardLabel() {
+  return (
+    lang["currency_name_offeringshard"] ||
+    lang["currency_name_OfferingShard"] ||
+    "Offering Shard"
+  );
+}
+
+function getOfferingShardImageUrl() {
+  return (
+    currencyImageUrlMap.offeringshard ||
+    currencyImageUrlMap[normalizeName("OfferingShard")] ||
+    null
+  );
+}
+
 function formatSellValueText(value, currencyLabel) {
   const amountText = formatLocalizedNumber(value);
   const valueText = `${amountText} ${currencyLabel}`.trim();
@@ -572,7 +588,8 @@ function toPieceRows(setEntry) {
       name: getEquipmentName(item),
       effects: parseEffects(item.effects, "equipment"),
       imageUrl: getEquipmentImageUrl(item) || "../../img_base/equipment.png",
-      sellRiftShard: item.sellRiftShard
+      sellRiftShard: item.sellRiftShard,
+      sellOfferingShard: item.sellOfferingShard
     });
   });
 
@@ -592,7 +609,8 @@ function toPieceRows(setEntry) {
       name: getGemName(item),
       effects: parseEffects(item.effects, "gem"),
       imageUrl: gemImage,
-      sellRiftShard: item.sellRiftShard
+      sellRiftShard: item.sellRiftShard,
+      sellOfferingShard: item.sellOfferingShard
     });
   });
 
@@ -1056,6 +1074,12 @@ function renderSet(setId) {
           <span>${escapeHtml(formatSellValueText(piece.sellRiftShard, getRiftShardLabel()))}</span>
         </div>`
       : "";
+    const sellOfferingShardHtml = hasPositiveNumber(piece.sellOfferingShard)
+      ? `<div class="piece-sell-value">
+          ${getOfferingShardImageUrl() ? `<img src="${getOfferingShardImageUrl()}" alt="" loading="lazy">` : ""}
+          <span>${escapeHtml(formatSellValueText(piece.sellOfferingShard, getOfferingShardLabel()))}</span>
+        </div>`
+      : "";
 
     const composed =
       piece.imageUrl &&
@@ -1080,6 +1104,7 @@ function renderSet(setId) {
           <h3 class="piece-name piece-name-desktop">${displayName}</h3>
           <ul class="effect-list">${itemEffects}</ul>
           ${sellRiftShardHtml}
+          ${sellOfferingShardHtml}
         </div>
       </article>
     `;
