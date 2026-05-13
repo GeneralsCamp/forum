@@ -492,8 +492,16 @@ function getRiftShardImageUrl(ctx) {
   return ctx.currencyImageUrlMap?.riftshard || ctx.currencyImageUrlMap?.[normalizeName("RiftShard")] || null;
 }
 
-function formatSellValueText(value, ctx) {
-  const valueText = `${formatEquipmentNumber(value, ctx)} ${getRiftShardLabel(ctx)}`.trim();
+function getOfferingShardLabel(ctx) {
+  return ctx.lang?.["currency_name_offeringshard"] || ctx.lang?.["currency_name_OfferingShard"] || "Offering Shard";
+}
+
+function getOfferingShardImageUrl(ctx) {
+  return ctx.currencyImageUrlMap?.offeringshard || ctx.currencyImageUrlMap?.[normalizeName("OfferingShard")] || null;
+}
+
+function formatSellValueText(value, ctx, currencyLabel = getRiftShardLabel(ctx)) {
+  const valueText = `${formatEquipmentNumber(value, ctx)} ${currencyLabel}`.trim();
   const template = ctx.lang?.["relicequip_dialog_sellvalue_name"] || ctx.lang?.["relicequip_dialog_sellValue_name"];
   return template ? String(template).replace(/\{0\}/g, valueText).replace(/\s+/g, " ").trim() : `Sell value ${valueText}`;
 }
@@ -1076,12 +1084,26 @@ function renderEquipmentGemModal(detail, ctx) {
     : getEquipmentDetailImageUrl(entity, detail, ctx);
   const effects = parseEquipmentEffects(getProp(entity, ["effects"]) || "", isGem ? "gem" : "equipment", ctx);
   const sellRiftShard = getProp(entity, ["sellRiftShard", "sellriftshard"]);
-  const sellHtml = Number(sellRiftShard) > 0
-    ? `<div class="piece-sell-value reward-equipment-sell-value">
-        ${getRiftShardImageUrl(ctx) ? `<img src="${escapeHtml(getRiftShardImageUrl(ctx))}" alt="" loading="lazy">` : ""}
-        <span>${escapeHtml(formatSellValueText(sellRiftShard, ctx))}</span>
-      </div>`
-    : "";
+  const sellOfferingShard = getProp(entity, ["sellOfferingShard", "sellofferingshard"]);
+  const sellEntries = [
+    {
+      value: sellRiftShard,
+      label: getRiftShardLabel(ctx),
+      imageUrl: getRiftShardImageUrl(ctx)
+    },
+    {
+      value: sellOfferingShard,
+      label: getOfferingShardLabel(ctx),
+      imageUrl: getOfferingShardImageUrl(ctx)
+    }
+  ];
+  const sellHtml = sellEntries
+    .filter((entry) => Number(entry.value) > 0)
+    .map((entry) => `<div class="piece-sell-value reward-equipment-sell-value">
+        ${entry.imageUrl ? `<img src="${escapeHtml(entry.imageUrl)}" alt="" loading="lazy">` : ""}
+        <span>${escapeHtml(formatSellValueText(entry.value, ctx, entry.label))}</span>
+      </div>`)
+    .join("");
   const modalEl = createInfoCardModalElement();
   modalEl.classList.add("reward-equipment-modal");
   modalEl.querySelector(".modal-title").textContent = `${name} (${slotLabel})`;
