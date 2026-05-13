@@ -501,6 +501,7 @@ function createCard(item, imageUrlMap = {}) {
   }
 
   const cleanedType = normalizeName(item.type);
+  const effectStateClass = effects.length > 0 ? "has-effects" : "no-effects";
 
   const imageUrl =
     imageUrlMap[cleanedType]?.placedUrl
@@ -517,7 +518,7 @@ function createCard(item, imageUrlMap = {}) {
 
   return `
   <div class="col-md-6 col-sm-12 d-flex flex-column" data-wod-id="${id}">
-    <div class="box flex-fill">
+    <div class="box flex-fill ${effectStateClass}">
       <div class="box-content">
         <h2 class="deco-title">${name}</h2>
         <hr>
@@ -533,29 +534,35 @@ function createCard(item, imageUrlMap = {}) {
             </div>
             <div class="col-8 card-cell">
               <div class="row g-0">
-                <div class="col-6 card-cell border-end">
-                  <strong>${langData.label_public_order}</strong><br><img src="../../img_base/po.png" class="effect-icon">${formatNumber(po)}
+                <div class="col-6 card-cell border-end stat-cell">
+                  <strong>${langData.label_public_order}</strong>
+                  <span class="stat-value"><img src="../../img_base/po.png" class="effect-icon">${formatNumber(po)}</span>
                 </div>
-                <div class="col-6 card-cell">
-                  <strong>${langData.label_po_per_tile}</strong><br><img src="../../img_base/po.png" class="effect-icon">${poPerTile}
-                </div>
-              </div>
-              <hr>
-              <div class="row g-0">
-                <div class="col-6 card-cell border-end">
-                  <strong>${langData.label_size}</strong><br><img src="../../img_base/size.png" class="effect-icon">${size}
-                </div>
-                <div class="col-6 card-cell">
-                  <strong>${langData.label_might_points}</strong><br><img src="../../img_base/might.png" class="effect-icon">${formatNumber(might)}
+                <div class="col-6 card-cell stat-cell">
+                  <strong>${langData.label_po_per_tile}</strong>
+                  <span class="stat-value"><img src="../../img_base/po.png" class="effect-icon">${poPerTile}</span>
                 </div>
               </div>
               <hr>
               <div class="row g-0">
-                <div class="col-6 card-cell border-end">
-                  <strong>${langData.label_sale_price}</strong><br>${sellPriceDisplay}
+                <div class="col-6 card-cell border-end stat-cell">
+                  <strong>${langData.label_size}</strong>
+                  <span class="stat-value"><img src="../../img_base/size.png" class="effect-icon">${size}</span>
                 </div>
-                <div class="col-6 card-cell">
-                  <strong>${langData.label_fusion}</strong><br>${fusion}
+                <div class="col-6 card-cell stat-cell">
+                  <strong>${langData.label_might_points}</strong>
+                  <span class="stat-value"><img src="../../img_base/might.png" class="effect-icon">${formatNumber(might)}</span>
+                </div>
+              </div>
+              <hr>
+              <div class="row g-0">
+                <div class="col-6 card-cell border-end stat-cell">
+                  <strong>${langData.label_sale_price}</strong>
+                  <span class="stat-value">${sellPriceDisplay}</span>
+                </div>
+                <div class="col-6 card-cell stat-cell">
+                  <strong>${langData.label_fusion}</strong>
+                  <span class="stat-value">${fusion}</span>
                 </div>
               </div>
             </div>
@@ -589,7 +596,6 @@ function appendCards(items, { container, sentinel }) {
       img.dataset.modalSrc = dataUrl;
     }
   });
-
 }
 
 function resetRenderState(decos, { revealIndex = null } = {}) {

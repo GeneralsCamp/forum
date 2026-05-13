@@ -27,6 +27,59 @@
     padding-bottom: 0;
 }
 
+.box-content {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.stat-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+}
+
+.stat-value {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 20px;
+}
+
+@media (min-width: 768px) {
+    #cards>.col-md-6:nth-child(odd):has(.box.has-effects)+.col-md-6 .box.no-effects .card-table,
+    #cards>.col-md-6:nth-child(odd):has(.box.no-effects):has(+ .col-md-6 .box.has-effects) .box.no-effects .card-table {
+        display: flex;
+        flex: 1;
+    }
+
+    #cards>.col-md-6:nth-child(odd):has(.box.has-effects)+.col-md-6 .box.no-effects .card-table>.row,
+    #cards>.col-md-6:nth-child(odd):has(.box.no-effects):has(+ .col-md-6 .box.has-effects) .box.no-effects .card-table>.row {
+        flex: 1;
+    }
+
+    #cards>.col-md-6:nth-child(odd):has(.box.has-effects)+.col-md-6 .box.no-effects .card-table>.row>.card-cell,
+    #cards>.col-md-6:nth-child(odd):has(.box.no-effects):has(+ .col-md-6 .box.has-effects) .box.no-effects .card-table>.row>.card-cell {
+        display: flex;
+    }
+
+    #cards>.col-md-6:nth-child(odd):has(.box.has-effects)+.col-md-6 .box.no-effects .card-table>.row>.col-8.card-cell,
+    #cards>.col-md-6:nth-child(odd):has(.box.no-effects):has(+ .col-md-6 .box.has-effects) .box.no-effects .card-table>.row>.col-8.card-cell {
+        flex-direction: column;
+    }
+
+    #cards>.col-md-6:nth-child(odd):has(.box.has-effects)+.col-md-6 .box.no-effects .card-table>.row>.col-8.card-cell>.row,
+    #cards>.col-md-6:nth-child(odd):has(.box.no-effects):has(+ .col-md-6 .box.has-effects) .box.no-effects .card-table>.row>.col-8.card-cell>.row {
+        flex: 1;
+    }
+
+    #cards>.col-md-6:nth-child(odd):has(.box.has-effects)+.col-md-6 .box.no-effects .card-table>.row>.col-8.card-cell>.row>.card-cell,
+    #cards>.col-md-6:nth-child(odd):has(.box.no-effects):has(+ .col-md-6 .box.has-effects) .box.no-effects .card-table>.row>.col-8.card-cell>.row>.card-cell {
+        justify-content: center;
+    }
+}
+
 #sizeFilters {
     min-width: 100% !important;
 }
