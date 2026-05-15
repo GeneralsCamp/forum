@@ -99,14 +99,15 @@ async function applyOwnLang() {
     };
 
     const map = [
-        ["filterName", "search_name", "Name"],
-        ["filterID", "search_id", "ID"],
-        ["filterEffect", "search_effect", "Effect"]
+        ["filterName", "name"],
+        ["filterID", "id"],
+        ["filterEffect", "effect"],
+        ["filterBuilding", "building"]
     ];
 
-    map.forEach(([id, key, fallback]) => {
+    map.forEach(([id, value]) => {
         const el = document.querySelector(`label[for="${id}"]`);
-        if (el) el.textContent = filters[key] || fallback;
+        if (el) el.textContent = getSearchFilterLabel(value, filters);
     });
 
     const searchInput = document.getElementById("searchInput");
@@ -116,10 +117,7 @@ async function applyOwnLang() {
             .map(cb => cb.value);
 
         const names = selected.map(v => {
-            if (v === "name") return filters.search_name || "Name";
-            if (v === "id") return filters.search_id || "ID";
-            if (v === "effect") return filters.search_effect || "Effect";
-            return v;
+            return getSearchFilterLabel(v, filters);
         });
 
         searchInput.placeholder =
@@ -185,6 +183,14 @@ async function applyOwnLang() {
 
         no_image: ui.no_image || "no image"
     };
+}
+
+function getSearchFilterLabel(value, filters = {}) {
+    if (value === "name") return filters.search_name || "Name";
+    if (value === "id") return filters.search_id || "ID";
+    if (value === "effect") return filters.search_effect || "Effect";
+    if (value === "building") return lang.filters_filter_40 || "Building";
+    return value;
 }
 
 // --- EFFECTS AND LEGACY FIELD HANDLING ---
@@ -987,6 +993,11 @@ function applyFiltersAndSorting({ revealId = null, exactId = null } = {}) {
                 const effectsText = effects.join(" ").toLowerCase();
                 if (wordMatch(effectsText)) matchSearch = true;
             }
+
+            if (selectedFilters.includes("building")) {
+                const placementText = getPlacementBuildingNames(item).join(" ").toLowerCase();
+                if (wordMatch(placementText)) matchSearch = true;
+            }
         }
 
         let matchesType = false;
@@ -1154,16 +1165,7 @@ function setupEventListeners() {
         if (searchButton) searchButton.disabled = false;
 
         const selectedLabels = selected.map(cb => {
-            if (cb.value === "name")
-                return filters.search_name || "Name";
-
-            if (cb.value === "effect")
-                return filters.search_effect || "Effect";
-
-            if (cb.value === "id")
-                return filters.search_id || "ID";
-
-            return cb.value;
+            return getSearchFilterLabel(cb.value, filters);
         });
 
         searchInput.placeholder =
@@ -1179,7 +1181,7 @@ function setupEventListeners() {
         });
     });
 
-    document.querySelectorAll('#filterName, #filterID, #filterEffect').forEach(input => {
+    document.querySelectorAll('#filterName, #filterID, #filterEffect, #filterBuilding').forEach(input => {
         const formCheckDiv = input.closest('.form-check');
         if (!formCheckDiv) return;
 
