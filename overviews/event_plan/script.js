@@ -1,11 +1,11 @@
 const eventSources = {
     empire: {
         label: "Empire (Computer)",
-        url: "https://communityhub.goodgamestudios.com/empire/event-plan/"
+        url: "https://communityhub.goodgamestudios.com/newshubempire/"
     },
     e4k: {
         label: "Empire: Four Kingdoms (Phone)",
-        url: "https://communityhub.goodgamestudios.com/e4k/event-plan/"
+        url: "https://communityhub.goodgamestudios.com/newshube4k/"
     }
 };
 
@@ -14,9 +14,7 @@ const viewOptions = [
     { value: "calendar", label: "Calendar view" }
 ];
 
-const proxyChain = [
-  "https://my-proxy-8u49.onrender.com/"
-];
+const proxyUrl = "https://my-proxy-8u49.onrender.com/";
 const placeholderImage = "";
 
 const customEventImages = [
@@ -34,166 +32,29 @@ const customEventImages = [
     { name: "Rift Raid", url: "../../img_base/event_icons/riftraid.webp", priority: 8, nickname: "" }
 ];
 
+const eventTitleAliases = {
+    "berimond invasion": "Berimond",
+    "berimond": "Berimond",
+    "beyondthehorizon": "Beyond the Horizon",
+    "bladecoast": "The Bladecoast",
+    "bloodcrow": "Bloodcrow Invasion",
+    "grand nobility contest": "LTPE",
+    "grandtournament": "The Grand Tournament",
+    "imperial patronage": "The Imperial Patronage",
+    "ltpe": "LTPE",
+    "nomadinvasion": "Nomad Invasion",
+    "outerrealms": "Outer Realms",
+    "patronage": "The Imperial Patronage",
+    "riftraid": "Rift Raid",
+    "samuraiinvasion": "Samurai Invasion",
+    "grand tournament": "The Grand Tournament",
+    "waroftherealms": "War of the Realms"
+};
+
 const eventCache = {
     empire: null,
     e4k: null
 };
-
-const manualEventFallback = {
-    empire: [
-        {
-            title: "LTPE",
-            dates: [
-                "01/05/2026-16/05/2026",
-                "16/05/2026-01/06/2026"
-            ],
-            dateGroups: [
-                { label: "Current LTPE", dates: ["01/05/2026-16/05/2026"] },
-                { label: "Next LTPE", dates: ["16/05/2026-02/06/2026"] }
-            ],
-            imageUrl: ""
-        },
-        {
-            title: "Nomad Invasion",
-            dates: [
-                "02/05/2026-05/05/2026",
-                "09/05/2026-12/05/2026",
-                "16/05/2026-19/05/2026",
-                "23/05/2026-26/05/2026",
-                "30/05/2026-02/06/2026"
-            ],
-            imageUrl: ""
-        },
-        {
-            title: "War of the Realms",
-            dates: [
-                "05/05/2026-08/05/2026",
-                "19/05/2026-22/05/2026"
-            ],
-            imageUrl: ""
-        },
-        {
-            title: "Bloodcrow Invasion",
-            dates: [
-                "12/05/2026-15/05/2026",
-                "26/05/2026-29/05/2026"
-            ],
-            imageUrl: ""
-        },
-        {
-            title: "Samurai Invasion",
-            dates: [
-                "01/05/2026-02/05/2026",
-                "08/05/2026-09/05/2026",
-                "15/05/2026-16/05/2026",
-                "22/05/2026-23/05/2026",
-                "29/05/2026-30/05/2026"
-            ],
-            imageUrl: ""
-        },
-        {
-            title: "Berimond",
-            dates: [
-                "05/05/2026-08/05/2026",
-                "16/05/2026-19/05/2026",
-                "26/05/2026-29/05/2026"
-            ],
-            dateGroups: [
-                {
-                    label: "Berimond Kingdom",
-                    dates: [
-                        "05/05/2026-08/05/2026",
-                        "26/05/2026-29/05/2026"
-                    ]
-                },
-                {
-                    label: "Berimond Invasion",
-                    dates: ["16/05/2026-19/05/2026"]
-                }
-            ],
-            imageUrl: ""
-        },
-        {
-            title: "The Bladecoast",
-            dates: ["10/05/2026-17/05/2026"],
-            imageUrl: ""
-        },
-        {
-            title: "Beyond the Horizon",
-            dates: [
-                "14/05/2026-18/05/2026",
-                "21/05/2026-25/05/2026"
-            ],
-            imageUrl: ""
-        },
-        {
-            title: "Outer Realms",
-            dates: [
-                "01/05/2026-04/05/2026",
-                "05/05/2026-08/05/2026",
-                "07/05/2026-11/05/2026",
-                "11/05/2026-14/05/2026",
-                "18/05/2026-21/05/2026",
-                "25/05/2026-28/05/2026",
-                "28/05/2026-01/06/2026"
-            ],
-            dateGroups: [
-                {
-                    label: "Heritage",
-                    dates: [
-                        "01/05/2026-04/05/2026",
-                        "07/05/2026-11/05/2026",
-                        "28/05/2026-01/06/2026"
-                    ]
-                },
-                {
-                    label: "Rank Swap",
-                    dates: [
-                        "04/05/2026-07/05/2026",
-                        "18/05/2026-21/05/2026"
-                    ]
-                },
-                {
-                    label: "Might Points",
-                    dates: [
-                        "11/05/2026-14/05/2026",
-                        "25/05/2026-28/05/2026"
-                    ]
-                }
-            ],
-            imageUrl: ""
-        },
-        {
-            title: "The Imperial Patronage",
-            dates: [
-                "01/05/2026-04/05/2026",
-                "16/05/2026-23/05/2026"
-            ],
-            imageUrl: ""
-        },
-        {
-            title: "The Grand Tournament",
-            dates: ["20/05/2026-27/05/2026"],
-            imageUrl: ""
-        },
-        {
-            title: "Rift Raid",
-            dates: ["06/05/2026-13/05/2026"],
-            imageUrl: ""
-        }
-    ],
-    e4k: []
-};
-
-manualEventFallback.e4k = manualEventFallback.empire.map(event => {
-    const cloned = cloneManualFallbackEvent(event);
-    if (cloned.title === "Berimond") {
-        const kingdomGroup = (cloned.dateGroups || []).find(group => group.label === "Berimond Kingdom");
-        cloned.dateGroups = kingdomGroup ? [kingdomGroup] : null;
-        cloned.dates = kingdomGroup ? [...kingdomGroup.dates] : cloned.dates;
-    }
-    return cloned;
-});
 
 const gameIcons = {
     empire: "../../img_base/event_icons/logo-em.webp",
@@ -260,6 +121,12 @@ function renderScheduleHeader(container) {
 
 function normalizeText(text) {
     return String(text || "").replace(/\s+/g, " ").trim();
+}
+
+function canonicalizeEventTitle(title) {
+    const cleaned = normalizeText(title);
+    const alias = eventTitleAliases[cleaned.toLowerCase()];
+    return alias || cleaned;
 }
 
 function extractDateTokens(text) {
@@ -403,16 +270,34 @@ function parseDateRange(text) {
     };
 
     const secondToken = tokens[1] || tokens[0];
+    const currentYear = new Date().getFullYear();
     const fallbackYear =
         readYear(secondToken) ||
         readYear(tokens[0]) ||
-        null;
+        currentYear;
 
     const start = parseWithFallbackYear(tokens[0], fallbackYear);
-    const end = parseWithFallbackYear(secondToken, fallbackYear);
+    let end = parseWithFallbackYear(secondToken, fallbackYear);
     if (!start || !end) return null;
+    if (end.getTime() < start.getTime()) {
+        end = new Date(Date.UTC(end.getUTCFullYear() + 1, end.getUTCMonth(), end.getUTCDate()));
+    }
     return { start, end };
 }
+
+function formatDateForDisplay(date) {
+    const day = String(date.getUTCDate()).padStart(2, "0");
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+    const year = date.getUTCFullYear();
+    return `${day}/${month}/${year}`;
+}
+
+function formatDateRangeForDisplay(text) {
+    const parsed = parseDateRange(text);
+    if (!parsed) return normalizeText(text).replace(/\s*[-\u2013]\s*/g, "-");
+    return `${formatDateForDisplay(parsed.start)}-${formatDateForDisplay(parsed.end)}`;
+}
+
 function normalizeUtcDate(date) {
     if (!date) return null;
     return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
@@ -424,20 +309,6 @@ function rangesOverlap(a, b) {
     const bStart = normalizeUtcDate(b.start).getTime();
     const bEnd = normalizeUtcDate(b.end).getTime();
     return bStart <= aEnd && bEnd >= aStart;
-}
-
-function rangesTouchOrOverlap(a, b) {
-    const dayMs = 24 * 60 * 60 * 1000;
-    const aEnd = normalizeUtcDate(a.end).getTime();
-    const bStart = normalizeUtcDate(b.start).getTime();
-    return bStart <= aEnd + dayMs;
-}
-
-function shouldShareRangeBoundary(a, b) {
-    const dayMs = 24 * 60 * 60 * 1000;
-    const aEnd = normalizeUtcDate(a.end).getTime();
-    const bStart = normalizeUtcDate(b.start).getTime();
-    return bStart === aEnd + dayMs;
 }
 
 function getSortedEvents(events) {
@@ -460,12 +331,18 @@ function getDisplayTitle(title) {
 }
 
 function getContentRoot(doc) {
-    return (
-        doc.querySelector(".entry-content") ||
-        doc.querySelector("article") ||
-        doc.querySelector("main") ||
+    const candidates = [
+        doc.querySelector(".entry-content"),
+        doc.querySelector("article"),
+        doc.querySelector("main"),
         doc.body
-    );
+    ].filter(Boolean);
+
+    return candidates.find(node => {
+        if (node.querySelector(".e-grid.e-con, .elementor-element.e-grid")) return true;
+        return Array.from(node.querySelectorAll("p, h1, h2, h3"))
+            .some(textNode => isKnownEventTitle(normalizeText(textNode.textContent || "")));
+    }) || candidates[0] || doc.body;
 }
 
 function resolveImageUrl(src, baseUrl) {
@@ -477,6 +354,87 @@ function resolveImageUrl(src, baseUrl) {
     }
 }
 
+function getImageSource(img) {
+    if (!img) return "";
+    return (
+        img.getAttribute("data-orig-file") ||
+        img.getAttribute("data-large-file") ||
+        img.currentSrc ||
+        img.getAttribute("src") ||
+        ""
+    );
+}
+
+function isKnownEventTitle(title) {
+    const canonical = canonicalizeEventTitle(title).toLowerCase();
+    return customEventImages.some(entry => entry.name.toLowerCase() === canonical);
+}
+
+function extractElementorEventCards(root, baseUrl) {
+    const upcomingHeading = Array.from(root.querySelectorAll("h1, h2, h3, p"))
+        .find(node => normalizeText(node.textContent || "").toLowerCase() === "upcoming events");
+
+    const sourceContainers = upcomingHeading
+        ? [
+            upcomingHeading.closest(".elementor-element, .e-con")?.nextElementSibling,
+            upcomingHeading.parentElement?.nextElementSibling
+        ].filter(Boolean)
+        : [];
+
+    sourceContainers.push(
+        ...Array.from(root.querySelectorAll(".e-grid.e-con, .elementor-element.e-grid"))
+            .filter(container => container.querySelector(".e-con.e-child img, .e-con-full.e-con img"))
+    );
+
+    if (sourceContainers.length === 0) sourceContainers.push(root);
+
+    const cards = sourceContainers.flatMap(container =>
+        Array.from(container.querySelectorAll(".e-con.e-child, .e-con-full.e-con"))
+    )
+        .filter(card => card.querySelector("img"));
+    const events = [];
+
+    cards.forEach(card => {
+        const img = card.querySelector("img");
+        const textNodes = Array.from(card.querySelectorAll("p, h1, h2, h3"))
+            .map(node => ({
+                node,
+                text: normalizeText(node.textContent || "")
+            }))
+            .filter(entry => entry.text);
+
+        const titleEntry = textNodes.find(entry => isKnownEventTitle(entry.text));
+        const imageTitle = normalizeText(img?.getAttribute("data-image-title") || img?.alt || "");
+        const rawTitle = titleEntry?.text || imageTitle;
+        const title = canonicalizeEventTitle(rawTitle);
+        if (!isKnownEventTitle(title)) return;
+
+        const dateNode = textNodes
+            .filter(entry => entry.node !== titleEntry?.node)
+            .find(entry => lineHasDateToken(entry.text));
+        const dateLines = dateNode ? extractLinesFromNode(dateNode.node) : [];
+        const dateGroups = dateNode ? extractDateGroups(dateLines.join("\n"), title) : null;
+        const dates = dateGroups
+            ? dateGroups.flatMap(group => group.dates)
+            : dateLines.filter(lineHasDateToken);
+        const imageUrl = resolveImageUrl(getImageSource(img), baseUrl);
+
+        if (dates.length === 0 && !imageUrl) return;
+        events.push({ title, dates, dateGroups, imageUrl });
+    });
+
+    const seen = new Set();
+    return events.filter(event => {
+        const groupsKey = (event.dateGroups || [])
+            .map(group => `${group.label || ""}:${(group.dates || []).join("|")}`)
+            .join("||");
+        const key = `${event.title}::${groupsKey || event.dates.join(",")}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+    });
+}
+
 function extractEventFromBlock(block, baseUrl) {
     const img = block.querySelector("img");
     const heading = block.querySelector("h1, h2, h3, h4, strong, b");
@@ -486,7 +444,7 @@ function extractEventFromBlock(block, baseUrl) {
         "";
     const text = normalizeText(block.textContent || "");
     const dates = extractDates(text, title);
-    const imageUrl = resolveImageUrl(img ? img.getAttribute("src") : "", baseUrl);
+    const imageUrl = resolveImageUrl(getImageSource(img), baseUrl);
 
     if (!title && dates.length === 0) return null;
 
@@ -523,7 +481,7 @@ function extractEventFromImage(img, baseUrl) {
     }
 
     const dates = extractDates(text, title);
-    const imageUrl = resolveImageUrl(img.getAttribute("src"), baseUrl);
+    const imageUrl = resolveImageUrl(getImageSource(img), baseUrl);
 
     if (!title && dates.length === 0) return null;
 
@@ -556,7 +514,7 @@ function extractEventsByHeadings(root, baseUrl) {
         while (node && !node.matches(headingSelectors)) {
             const img = node.querySelector && node.querySelector("img");
             if (!imageUrl && img) {
-                imageUrl = resolveImageUrl(img.getAttribute("src"), baseUrl);
+                imageUrl = resolveImageUrl(getImageSource(img), baseUrl);
             }
             if (node.textContent) {
                 textParts.push(node.textContent);
@@ -607,7 +565,7 @@ function extractEventsFromGroups(root, baseUrl) {
                 if (!imageUrl) {
                     const img = node.querySelector && node.querySelector("img");
                     if (img) {
-                        imageUrl = resolveImageUrl(img.getAttribute("src"), baseUrl);
+                        imageUrl = resolveImageUrl(getImageSource(img), baseUrl);
                     }
                 }
                 rawLines.push(...extractLinesFromNode(node));
@@ -646,7 +604,7 @@ function extractEventsFromCardGrid(root, baseUrl) {
             normalizeText(titleNode ? titleNode.textContent : "") ||
             normalizeText(img ? img.alt : "");
 
-        const imageUrl = resolveImageUrl(img ? img.getAttribute("src") : "", baseUrl);
+        const imageUrl = resolveImageUrl(getImageSource(img), baseUrl);
         const dateGroups = [];
 
         let activeLabel = "";
@@ -692,6 +650,11 @@ function extractEventsFromCardGrid(root, baseUrl) {
 
 function extractEvents(doc, baseUrl) {
     const root = getContentRoot(doc);
+    const elementorEvents = extractElementorEventCards(root, baseUrl);
+    if (elementorEvents.length > 0) {
+        return elementorEvents;
+    }
+
     const cardGridEvents = extractEventsFromCardGrid(root, baseUrl);
     if (cardGridEvents.length > 0) {
         return cardGridEvents;
@@ -732,64 +695,14 @@ function extractEvents(doc, baseUrl) {
     });
 }
 
-function isEventPlanSourceUnavailable(doc) {
-    const bodyText = normalizeText(doc?.body?.textContent || "").toLowerCase();
-    return Boolean(
-        doc?.querySelector(".wpcom-coming-soon-main") ||
-        bodyText.includes("coming soon") ||
-        (bodyText.includes("log in") && !doc?.querySelector(".entry-content"))
-    );
-}
-
-function cloneManualFallbackEvent(event) {
-    return {
-        ...event,
-        dates: [...(event.dates || [])],
-        dateGroups: event.dateGroups
-            ? event.dateGroups.map(group => ({
-                ...group,
-                dates: [...(group.dates || [])]
-            }))
-            : null
-    };
-}
-
-function getManualFallbackEvents(sourceKey) {
-    const fallback = manualEventFallback[sourceKey] || [];
-    return fallback.map(cloneManualFallbackEvent);
-}
-
-function resolveEventsForSource(sourceKey, doc, baseUrl) {
-    const events = extractEvents(doc, baseUrl);
-    const manualEvents = getManualFallbackEvents(sourceKey);
-
-    if ((isEventPlanSourceUnavailable(doc) || events.length === 0) && manualEvents.length > 0) {
-        console.warn(`Using manual event plan fallback for ${sourceKey}.`);
-        return manualEvents;
-    }
-
-    return events;
-}
-
 async function fetchWithFallback(url, timeout = 10000) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeout);
 
     try {
-        let lastProxyError = null;
-
-        for (const proxy of proxyChain) {
-            try {
-                const response = await fetch(proxy + url, { signal: controller.signal });
-                if (!response.ok) throw new Error(`${proxy}: bad response`);
-                return response;
-            } catch (err) {
-                lastProxyError = err;
-                console.warn("Proxy error:", err);
-            }
-        }
-
-        throw lastProxyError || new Error("All proxies failed.");
+        const response = await fetch(proxyUrl + url, { signal: controller.signal });
+        if (!response.ok) throw new Error(`${proxyUrl}: bad response`);
+        return response;
     } finally {
         clearTimeout(timer);
     }
@@ -803,12 +716,27 @@ async function fetchEventPlanHtml(url) {
 function setLoadingState(message, show = true) {
     const loadingBox = document.getElementById("loadingBox");
     const loadingStatus = document.getElementById("loadingStatus");
+    const loadingProgress = document.getElementById("loadingProgress");
+    const loadingPercentText = document.getElementById("loadingPercentText");
     const eventGrid = document.getElementById("eventGrid");
 
     if (!loadingBox) return;
     loadingBox.style.display = show ? "flex" : "none";
     if (loadingStatus && message) loadingStatus.textContent = message;
+    if (loadingProgress) loadingProgress.style.width = show ? "0%" : "0%";
+    if (loadingPercentText) loadingPercentText.textContent = show ? "0%" : "";
     if (eventGrid) eventGrid.style.visibility = show ? "hidden" : "visible";
+}
+
+function setLoadingProgress(percent, message) {
+    const loadingStatus = document.getElementById("loadingStatus");
+    const loadingProgress = document.getElementById("loadingProgress");
+    const loadingPercentText = document.getElementById("loadingPercentText");
+    const safePercent = Math.max(0, Math.min(100, Math.round(percent)));
+
+    if (loadingStatus && message) loadingStatus.textContent = message;
+    if (loadingProgress) loadingProgress.style.width = `${safePercent}%`;
+    if (loadingPercentText) loadingPercentText.textContent = `${safePercent}%`;
 }
 
 function ensureEventGrid() {
@@ -841,7 +769,7 @@ function renderEvents(events) {
 
     if (!events || events.length === 0) {
         const empty = document.createElement("div");
-        empty.className = "filter-empty-message";
+        empty.className = "event-card";
         empty.textContent = "No events available.";
         container.appendChild(empty);
         return;
@@ -891,7 +819,7 @@ function renderEvents(events) {
                 groupDates.className = "event-dates event-dates-group";
                 group.dates.forEach(date => {
                     const span = document.createElement("span");
-                    span.textContent = date;
+                    span.textContent = formatDateRangeForDisplay(date);
                     groupDates.appendChild(span);
                 });
                 groupWrap.appendChild(groupDates);
@@ -906,7 +834,7 @@ function renderEvents(events) {
             if (event.dates.length > 0) {
                 event.dates.forEach(date => {
                     const span = document.createElement("span");
-                    span.textContent = date;
+                    span.textContent = formatDateRangeForDisplay(date);
                     dates.appendChild(span);
                 });
             } else {
@@ -934,7 +862,7 @@ function renderCalendar(events) {
 
     if (!events || events.length === 0) {
         const empty = document.createElement("div");
-        empty.className = "filter-empty-message";
+        empty.className = "event-card";
         empty.textContent = "No events available.";
         container.appendChild(empty);
         return;
@@ -973,10 +901,7 @@ function renderCalendar(events) {
         let prev = null;
         let alt = false;
         sortedRanges.forEach(range => {
-            if (prev && rangesTouchOrOverlap(prev, range)) {
-                if (shouldShareRangeBoundary(prev, range)) {
-                    prev.end = new Date(normalizeUtcDate(range.start).getTime());
-                }
+            if (prev && rangesOverlap(prev, range)) {
                 alt = !alt;
             } else {
                 alt = false;
@@ -1028,7 +953,7 @@ function renderCalendar(events) {
     const allRanges = rangesByEvent.flatMap(entry => entry.ranges);
     if (allRanges.length === 0) {
         const empty = document.createElement("div");
-        empty.className = "filter-empty-message";
+        empty.className = "event-card";
         empty.textContent = "No calendar data available.";
         container.appendChild(empty);
         return;
@@ -1175,15 +1100,13 @@ function renderCalendar(events) {
                 const endTime = normalizeUtcDate(range.end).getTime();
                 if (dateTime >= startTime && dateTime <= endTime) {
                     active = true;
+                    activeRangeIndex = rangeIndex;
+                    activeRange = range;
                     if (range.label && range.label.toLowerCase().includes("invasion")) {
                         invasionActive = true;
                     }
                     const isStart = dateTime === startTime;
                     const isEnd = dateTime === endTime;
-                    if (!activeRange || isStart) {
-                        activeRangeIndex = rangeIndex;
-                        activeRange = range;
-                    }
                     const trimmedStart = range.trimmedStart === true;
                     const trimmedEnd = range.trimmedEnd === true;
                     if ((isStart && !trimmedStart) || (isEnd && !trimmedEnd)) {
@@ -1381,7 +1304,7 @@ function buildExportDom(events, gameKey) {
 
                 (group.dates || []).forEach(d => {
                     const line = document.createElement("div");
-                    line.textContent = d;
+                    line.textContent = formatDateRangeForDisplay(d);
                     dates.appendChild(line);
                 });
             });
@@ -1390,7 +1313,7 @@ function buildExportDom(events, gameKey) {
             if (dateList.length > 0) {
                 dateList.forEach(d => {
                     const line = document.createElement("div");
-                    line.textContent = d;
+                    line.textContent = formatDateRangeForDisplay(d);
                     dates.appendChild(line);
                 });
             } else {
@@ -1498,50 +1421,49 @@ async function loadEvents(sourceKey) {
     }
 
     setLoadingState(`Loading: ${source.label}...`, true);
+    setLoadingProgress(0, `Loading: ${source.label}...`);
 
     try {
         const html = await fetchEventPlanHtml(source.url);
         const doc = new DOMParser().parseFromString(html, "text/html");
-        const events = resolveEventsForSource(sourceKey, doc, source.url);
+        const events = extractEvents(doc, source.url);
         eventCache[sourceKey] = events;
         renderCurrentView();
+        setLoadingProgress(100, `Loaded: ${source.label}`);
         setLoadingState("", false);
     } catch (err) {
         console.error("Load error:", err);
-        const manualEvents = getManualFallbackEvents(sourceKey);
-        if (manualEvents.length > 0) {
-            console.warn(`Using manual event plan fallback for ${sourceKey}.`);
-            eventCache[sourceKey] = manualEvents;
-            renderCurrentView();
-            setLoadingState("", false);
-            return;
-        }
-        setLoadingState("", false);
-        const container = ensureEventGrid();
-        if (container) {
-            container.innerHTML = "";
-            const empty = document.createElement("div");
-            empty.className = "filter-empty-message";
-            empty.textContent = "Failed to load event plan data.";
-            container.appendChild(empty);
-        }
+        setLoadingProgress(100, "Failed to load event plan data.");
+        setLoadingState("Failed to load event plan data.", true);
     }
 }
 
 async function preloadAllEvents() {
     setLoadingState("Loading event plans...", true);
-    const keys = Object.keys(eventSources);
-    for (const key of keys) {
-        if (eventCache[key]) continue;
+    setLoadingProgress(0, "Loading event plans...");
+
+    const keys = Object.keys(eventSources).filter(key => !eventCache[key]);
+    if (keys.length === 0) {
+        setLoadingState("", false);
+        return;
+    }
+
+    let completed = 0;
+    await Promise.all(keys.map(async key => {
         try {
             const html = await fetchEventPlanHtml(eventSources[key].url);
             const doc = new DOMParser().parseFromString(html, "text/html");
-            eventCache[key] = resolveEventsForSource(key, doc, eventSources[key].url);
+            eventCache[key] = extractEvents(doc, eventSources[key].url);
         } catch (err) {
             console.error("Preload error:", err);
-            eventCache[key] = getManualFallbackEvents(key);
+            eventCache[key] = [];
+        } finally {
+            completed += 1;
+            setLoadingProgress((completed / keys.length) * 100, "Loading event plans...");
         }
-    }
+    }));
+
+    setLoadingProgress(100, "Loading complete");
     setLoadingState("", false);
 }
 
@@ -1598,11 +1520,6 @@ window.addEventListener("DOMContentLoaded", () => {
     setupSelectors();
     setupDownloadButton();
     preloadAllEvents().then(() => {
-        const hashKey = getGameKeyFromHash();
-        if (hashKey) {
-            const gameSelect = document.getElementById("gameSelect");
-            if (gameSelect) gameSelect.value = hashKey;
-        }
         renderCurrentView();
     });
 });

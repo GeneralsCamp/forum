@@ -49,7 +49,7 @@
 }
 
 .event-dates span {
-    display: inline;
+    display: block;
 }
 
 .event-dates span:not(:last-child)::after {
