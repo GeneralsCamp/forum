@@ -1151,6 +1151,6 @@ body.favorites-reorder-mode #favorites .category-card-shell.is-reorder-active .f
 
     .kofi-inline-actions {
         margin-left: auto;
-        align-self: flex-start;
+        align-self: center;
     }
 }
