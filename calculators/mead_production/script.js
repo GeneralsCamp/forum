@@ -29,6 +29,15 @@ document.getElementById("po").addEventListener("input", () => {
     calculate();
 });
 
+document.getElementById("meadBonus").addEventListener("input", () => {
+    const meadBonusInput = document.getElementById("meadBonus");
+    let meadBonusValue = parseFloat(meadBonusInput.value) || 0;
+    if (meadBonusValue < 0) meadBonusValue = 0;
+    if (meadBonusValue > 50) meadBonusValue = 50;
+    meadBonusInput.value = meadBonusValue;
+    calculate();
+});
+
 /*** MAIN CALCULATION FUNCTION ***/
 function calculate() {
     /*** HONEY CALCULATION ***/
@@ -62,9 +71,10 @@ function calculate() {
     const relicElem = parseInt(document.getElementById("relicElem").value) || 0;
     const stormsTitle = parseFloat(document.getElementById("stormsTitle").value) || 0;
     const cast = parseFloat(document.getElementById("cast").value) || 0;
+    const meadBonus = Math.min(Math.max(parseFloat(document.getElementById("meadBonus").value) || 0, 0), 50) / 100;
     const decoMead = parseInt(document.getElementById("decoMead").value) || 0;
 
-    const percentBonuses = overseer + research + barrel + coat + stormsTitle + (cast/100);
+    const percentBonuses = overseer + research + barrel + coat + stormsTitle + (cast / 100) + meadBonus;
     const baseMeadProd = baseMead[breweryLvl - 1] + baseElem;
 
     let finalMeadValue = Math.floor((workload * baseMeadProd * PObonus * (1 + percentBonuses) + relicElem + decoMead) * 10) / 10;
