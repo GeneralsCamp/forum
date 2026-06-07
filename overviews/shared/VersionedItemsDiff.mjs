@@ -128,7 +128,7 @@ export async function findNewItemIdsFromPreviousVersions({
     if (!previousFiles.length) return new Set();
 
     const currentIds = getItemIdSet(currentRows, getId);
-    let bestNewIds = new Set();
+    let selectedNewIds = new Set();
     let selectedComparisonFile = null;
     let validComparisonCount = 0;
     let unavailableComparisonCount = 0;
@@ -155,9 +155,10 @@ export async function findNewItemIdsFromPreviousVersions({
         );
         validComparisonCount++;
 
-        if (!selectedComparisonFile || newIds.size > bestNewIds.size) {
-          bestNewIds = newIds;
+        if (newIds.size > 0) {
+          selectedNewIds = newIds;
           selectedComparisonFile = file;
+          break;
         }
       } catch (error) {
         unavailableComparisonCount++;
@@ -166,13 +167,13 @@ export async function findNewItemIdsFromPreviousVersions({
     }
 
     if (validComparisonCount === 0) return null;
-    if (bestNewIds.size === 0 && unavailableComparisonCount > 0) return null;
+    if (selectedNewIds.size === 0 && unavailableComparisonCount > 0) return null;
     if (selectedComparisonFile) {
       console.log(
         `New ${logLabel} diff: compared current ${normalizedSource} ${currentVersion} with ${selectedComparisonFile.itemVersion} (${selectedComparisonFile.name})`
       );
     }
-    return bestNewIds.size > 0 ? bestNewIds : new Set();
+    return selectedNewIds.size > 0 ? selectedNewIds : new Set();
   } catch (error) {
     console.warn(`New ${logLabel} comparison unavailable.`, error);
     return null;
