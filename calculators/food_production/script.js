@@ -53,8 +53,7 @@ function LocationModify() {
 // --- MAIN CALCULATOR WRAPPER ---
 function Calculate() {
     CalculateBonuses();
-    const buildings = ["b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10", "b11", "b12"];
-    buildings.forEach(updateBuilding);
+    updateBuildings();
 }
 
 // --- BONUS CALCULATION ---
@@ -495,12 +494,31 @@ function generateRelicOptions() {
 }
 
 // --- PRODUCTION CALCULATIONS ---
+const BUILDING_IDS = ["b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10", "b11", "b12"];
+
 function calculateProduction(level, primaryItem, relicItem, productivity) {
     const baseProduction = level + primaryItem;
     const bonusProduction = baseProduction * percentBonus;
     const totalProduction = ((bonusProduction) * productivity) + relicItem;
 
     return Math.round(totalProduction);
+}
+
+function calculateNetProduction(level, primaryItem, relicItem) {
+    return ((level + primaryItem) * percentBonus) + relicItem;
+}
+
+function getBuildingValues(buildingId) {
+    const levelElement = document.getElementById(`${buildingId}lvl`);
+    const primaryItemElement = document.getElementById(`${buildingId}elem`);
+    const relicItemElement = document.getElementById(`${buildingId}relicElem`);
+
+    return {
+        id: buildingId,
+        level: levelElement ? parseInt(levelElement.value) || 0 : 0,
+        primaryItem: primaryItemElement ? parseInt(primaryItemElement.value) || 0 : 0,
+        relicItem: relicItemElement ? parseInt(relicItemElement.value) || 0 : 0,
+    };
 }
 
 function getWorkArray(location, maxBuildings = 13) {
@@ -527,45 +545,47 @@ function getWorkArray(location, maxBuildings = 13) {
     return work;
 }
 
-function updateBuilding(buildingId) {
-    const levelElement = document.getElementById(`${buildingId}lvl`);
-    const primaryItemElement = document.getElementById(`${buildingId}elem`);
-    const relicItemElement = document.getElementById(`${buildingId}relicElem`);
-
-    const level = levelElement ? parseInt(levelElement.value) || 0 : 0;
-    const primaryItem = primaryItemElement ? parseInt(primaryItemElement.value) || 0 : 0;
-    const relicItem = relicItemElement ? parseInt(relicItemElement.value) || 0 : 0;
-
+function updateBuildings() {
     const selectLocation = document.getElementById('location');
-
     const work = getWorkArray(selectLocation.value);
 
-    const buildingIndex = parseInt(buildingId.replace(/[^\d]/g, ''));
-    const productivity = work[buildingIndex] || 0;
-
-    const production = calculateProduction(level, primaryItem, relicItem, productivity);
-
-    const productionElement = document.getElementById(`${buildingId}prod`);
-    if (productionElement) {
-        productionElement.textContent = `${(productivity * 100).toFixed(0)}%`;
-    }
-
-    const labelElement = document.getElementById(`${buildingId}lbl`);
-    if (labelElement) {
-        labelElement.textContent = `${production.toLocaleString()}/h`;
-    }
-
-    document.getElementById(`${buildingId}lbl`).innerText = production;
-
-    let totalProduction = 0;
-    const buildingIds = ["b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10", "b11", "b12"];
-
-    buildingIds.forEach(id => {
-        const buildingProd = parseInt(document.getElementById(`${id}lbl`).innerText);
-        if (!isNaN(buildingProd)) {
-            totalProduction += buildingProd;
-        }
+    const buildings = BUILDING_IDS.map((buildingId, originalIndex) => {
+        const values = getBuildingValues(buildingId);
+        return {
+            ...values,
+            originalIndex,
+            netProduction: calculateNetProduction(values.level, values.primaryItem, values.relicItem),
+        };
     });
+
+    const rankedBuildings = [...buildings].sort((a, b) => {
+        if (b.netProduction !== a.netProduction) {
+            return b.netProduction - a.netProduction;
+        }
+        return a.originalIndex - b.originalIndex;
+    });
+
+    const productivityByBuilding = {};
+    rankedBuildings.forEach((building, index) => {
+        productivityByBuilding[building.id] = work[index + 1] || 0;
+    });
+
+    const totalProduction = buildings.reduce((total, building) => {
+        const productivity = productivityByBuilding[building.id] || 0;
+        const production = calculateProduction(building.level, building.primaryItem, building.relicItem, productivity);
+
+        const productionElement = document.getElementById(`${building.id}prod`);
+        if (productionElement) {
+            productionElement.textContent = `${(productivity * 100).toFixed(0)}%`;
+        }
+
+        const labelElement = document.getElementById(`${building.id}lbl`);
+        if (labelElement) {
+            labelElement.textContent = `${production.toLocaleString()}/h`;
+        }
+
+        return total + production;
+    }, 0);
 
     let cast = 0;
     var castInput = document.getElementById("cast").value;
@@ -599,6 +619,10 @@ function updateBuilding(buildingId) {
         document.getElementById("finalProduction").innerHTML =
             "TOTAL FOOD PRODUCTION: " + totalProductionWithBonuses.toLocaleString() + " / hour";
     }
+}
+
+function updateBuilding() {
+    updateBuildings();
 }
 
 // --- CACHE HANDLING ---
