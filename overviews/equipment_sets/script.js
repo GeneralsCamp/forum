@@ -30,6 +30,8 @@ const loader = createLoader();
 const composedImageCache = new Map();
 let currentLanguage = getInitialLanguage();
 const DEFAULT_MIN_SET_ID = 1084;
+const HOME_SETTINGS_KEY = "gf_home_settings_v1";
+const devCommentsEnabled = readHomeSetting("devCommentsEnabled", true);
 
 const SLOT_ORDER = {
   "1": 1,
@@ -90,6 +92,16 @@ function escapeHtml(text) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
+}
+
+function readHomeSetting(key, fallback) {
+  try {
+    const raw = localStorage.getItem(HOME_SETTINGS_KEY);
+    const parsed = JSON.parse(raw || "{}");
+    return parsed?.[key] ?? fallback;
+  } catch {
+    return fallback;
+  }
 }
 
 function normalizeSetId(value) {
@@ -1091,6 +1103,9 @@ function renderSet(setId) {
     const composeAttrs = composed
       ? ` data-compose-asset="1" data-image-url="${composed.imageUrl}" data-json-url="${composed.jsonUrl}" data-js-url="${composed.jsUrl}"`
       : "";
+    const pieceIdHtml = devCommentsEnabled && piece.id
+      ? `<div class="piece-dev-id">ID: ${escapeHtml(piece.id)}</div>`
+      : "";
 
     return `
       <article class="piece-row">
@@ -1099,6 +1114,7 @@ function renderSet(setId) {
           <div class="piece-image">
             ${piece.imageUrl ? `<img src="${piece.imageUrl}" alt="" loading="lazy"${composeAttrs}>` : "<span>?</span>"}
           </div>
+          ${pieceIdHtml}
         </div>
         <div class="piece-content">
           <h3 class="piece-name piece-name-desktop">${displayName}</h3>
