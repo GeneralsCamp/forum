@@ -898,6 +898,22 @@ function formatDurationText(secondsValue) {
   return parts.join(" ");
 }
 
+function formatEquipmentDurationCompact(hoursValue) {
+  const totalHours = Number(hoursValue);
+  if (!Number.isFinite(totalHours) || totalHours <= 0) return "";
+  const days = Math.floor(totalHours / 24);
+  const hours = Math.floor(totalHours % 24);
+  const parts = [];
+  if (days) parts.push(`${days}d`);
+  if (hours) parts.push(`${hours}h`);
+  return parts.join(" ");
+}
+
+function getEquipmentGemModalTitle(name, slotLabel, entity) {
+  const duration = formatEquipmentDurationCompact(getProp(entity, ["duration", "Duration"]));
+  return `${name} (${[slotLabel, duration].filter(Boolean).join(", ")})`;
+}
+
 function getConstructionRarityName(entity, labels) {
   const rareness = String(getProp(entity, ["rarenessID", "rarenessid"]) || "");
   if (rareness === "1") return labels.ordinary;
@@ -1106,7 +1122,7 @@ function renderEquipmentGemModal(detail, ctx) {
     .join("");
   const modalEl = createInfoCardModalElement();
   modalEl.classList.add("reward-equipment-modal");
-  modalEl.querySelector(".modal-title").textContent = `${name} (${slotLabel})`;
+  modalEl.querySelector(".modal-title").textContent = getEquipmentGemModalTitle(name, slotLabel, entity);
   modalEl.querySelector("#rewardInfoCardModalBody").innerHTML = `
     <article class="reward-equipment-card box-content">
       <div class="reward-equipment-visual">
