@@ -1,3 +1,7 @@
+import { saveCalculatorData, loadCalculatorData } from "../../overviews/shared/GameSettings.mjs";
+
+const CALC_NAME = "wall_limit";
+
 /*** MAIN CALCULATION FUNCTION ***/
 function calculateDefenders() {
   const towers = parseInt(document.getElementById("towers").value) || 0;
@@ -44,34 +48,28 @@ function calculateDefenders() {
 
 /*** SAVE TO LOCAL STORAGE ***/
 function saveToLocalStorage() {
-  localStorage.setItem("towers", document.getElementById("towers").value);
-  localStorage.setItem("level", document.getElementById("level").value);
-  localStorage.setItem("temp_items", document.getElementById("temp_items").value);
-  localStorage.setItem("constant_items", document.getElementById("constant_items").value);
-  localStorage.setItem("tools", document.getElementById("tools").value);
-  localStorage.setItem("equipment1", document.getElementById("equipment1").value);
-  localStorage.setItem("hol", document.getElementById("hol").value);
-  localStorage.setItem("generals", document.getElementById("generals").value);
-  localStorage.setItem("deco", document.getElementById("deco").value);
+  const data = {};
+  document.querySelectorAll('input, select').forEach(input => {
+    data[input.id] = input.value;
+  });
+  saveCalculatorData(CALC_NAME, data);
 }
 
 function loadFromLocalStorage() {
-  if (localStorage.getItem("towers") !== null) {
-    document.getElementById("towers").value = localStorage.getItem("towers");
-    document.getElementById("level").value = localStorage.getItem("level");
-    document.getElementById("temp_items").value = localStorage.getItem("temp_items");
-    document.getElementById("constant_items").value = localStorage.getItem("constant_items");
-    document.getElementById("tools").value = localStorage.getItem("tools");
-    document.getElementById("equipment1").value = localStorage.getItem("equipment1");
-    document.getElementById("hol").value = localStorage.getItem("hol");
-    document.getElementById("generals").value = localStorage.getItem("generals");
-    document.getElementById("deco").value = localStorage.getItem("deco");
+  const data = loadCalculatorData(CALC_NAME);
+  if (data) {
+    Object.entries(data).forEach(([id, value]) => {
+      const input = document.getElementById(id);
+      if (input) input.value = value;
+    });
   }
 
   calculateDefenders();
 }
 
-window.onload = loadFromLocalStorage;
+window.calculateDefenders = calculateDefenders;
+
+document.addEventListener('DOMContentLoaded', loadFromLocalStorage);
 
 document.querySelectorAll('input, select').forEach(input => {
   input.addEventListener('change', () => {

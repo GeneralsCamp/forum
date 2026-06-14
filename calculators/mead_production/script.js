@@ -1,3 +1,7 @@
+import { saveCalculatorData, loadCalculatorData } from "../../overviews/shared/GameSettings.mjs";
+
+const CALC_NAME = "mead_production";
+
 /*** BASE DATA ***/
 const baseFood = [25000, 50000, 75000, 125000, 175000, 225000, 275000, 300000, 260000, 300000, 320000, 340000, 360000, 285000, 300000, 315000, 330000, 345000, 360000, 375000, 390000, 405000, 420000, 435000, 450000, 465000, 480000, 495000, 510000, 350000];
 const baseHoney = [15000, 30000, 45000, 75000, 105000, 135000, 110000, 120000, 130000, 150000, 160000, 170000, 180000, 95000, 100000, 105000, 110000, 115000, 120000, 125000, 130000, 135000, 140000, 145000, 150000, 155000, 160000, 165000, 170000, 175000];
@@ -97,15 +101,22 @@ function calculate() {
 
 /*** LOCAL STORAGE HANDLING ***/
 function saveToCache() {
-    document.querySelectorAll('input, select').forEach(el => localStorage.setItem(el.id, el.value));
+    const data = {};
+    document.querySelectorAll('input, select').forEach(el => data[el.id] = el.value);
+    saveCalculatorData(CALC_NAME, data);
 }
 
 function loadFromCache() {
-    document.querySelectorAll('input, select').forEach(el => {
-        const value = localStorage.getItem(el.id);
-        if (value !== null) el.value = value;
-    });
+    const data = loadCalculatorData(CALC_NAME);
+    if (data) {
+        Object.entries(data).forEach(([id, value]) => {
+            const input = document.getElementById(id);
+            if (input) input.value = value;
+        });
+    }
 }
+
+window.calculate = calculate;
 
 /*** INITIALIZATION ***/
 document.addEventListener('DOMContentLoaded', () => {

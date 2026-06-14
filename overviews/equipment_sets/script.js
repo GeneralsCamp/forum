@@ -30,7 +30,7 @@ const loader = createLoader();
 const composedImageCache = new Map();
 let currentLanguage = getInitialLanguage();
 const DEFAULT_MIN_SET_ID = 1084;
-const HOME_SETTINGS_KEY = "gf_home_settings_v1";
+const HOME_SETTINGS_KEY = "gf_home_settings";
 const devCommentsEnabled = readHomeSetting("devCommentsEnabled", true);
 
 const SLOT_ORDER = {

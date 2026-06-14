@@ -1,4 +1,4 @@
-const CACHE_NAME = "gf-versioned-data-v1";
+const CACHE_NAME = "gf-versioned-data";
 const memoryCache = new Map();
 const META_PREFIX = "gf-cache-meta:";
 

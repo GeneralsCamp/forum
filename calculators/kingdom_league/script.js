@@ -1,3 +1,7 @@
+import { saveCalculatorData, loadCalculatorData } from "../../overviews/shared/GameSettings.mjs";
+
+const CALC_NAME = "kingdom_league";
+
 const TITLES = [
     "Brawler",
     "Wild brawler",
@@ -145,18 +149,22 @@ function buildMinimumMedalAdvice(pointsNeeded) {
 }
 
 function saveToLocalStorage() {
+    const data = {};
     medalInputs.forEach(({ key, el }) => {
-        localStorage.setItem(`${STORAGE_PREFIX}${key}`, el.value);
+        data[key] = el.value;
     });
+    saveCalculatorData(CALC_NAME, data);
 }
 
 function loadFromLocalStorage() {
-    medalInputs.forEach(({ key, el }) => {
-        const value = localStorage.getItem(`${STORAGE_PREFIX}${key}`);
-        if (value !== null) {
-            el.value = value;
-        }
-    });
+    const data = loadCalculatorData(CALC_NAME);
+    if (data) {
+        medalInputs.forEach(({ key, el }) => {
+            if (data[key] !== undefined) {
+                el.value = data[key];
+            }
+        });
+    }
 }
 
 function calculate() {
@@ -180,3 +188,5 @@ function calculate() {
     nextTitleEl.textContent = `${nextTitle} (Rank ${nextRank})`;
     medalAdviceEl.textContent = buildMinimumMedalAdvice(pointsNeeded);
 }
+
+window.calculate = calculate;

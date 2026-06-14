@@ -1,3 +1,4 @@
+import { saveCalculatorData, loadCalculatorData } from "../../overviews/shared/GameSettings.mjs";
 import {
   getItemVersion,
   loadItems,
@@ -9,6 +10,7 @@ import { createLoader } from "../../overviews/shared/LoadingService.mjs";
 
 let raidBossData = {};
 let langData = {};
+const CALC_NAME = "rift_raid_points";
 const loader = createLoader();
 const MAX_DEFEATED_RESERVE_UNITS = 10000000;
 
@@ -243,37 +245,33 @@ function populateLevelSelectForBoss() {
 }
 
 function saveToLocalStorage() {
+  const data = {};
   ["defeated", "defeatedReserve", "area", "level", "raidBoss"].forEach(id => {
-    localStorage.setItem(id, document.getElementById(id).value);
+    data[id] = document.getElementById(id).value;
   });
+  saveCalculatorData(CALC_NAME, data);
 }
 
 function restoreFromLocalStorage() {
-  const raidBoss = localStorage.getItem("raidBoss");
-  if (raidBoss && raidBossData[raidBoss]) {
-    document.getElementById("raidBoss").value = raidBoss;
+  const data = loadCalculatorData(CALC_NAME);
+  if (!data) {
+    populateLevelSelectForBoss();
+    return;
+  }
+
+  if (data.raidBoss && raidBossData[data.raidBoss]) {
+    document.getElementById("raidBoss").value = data.raidBoss;
   }
 
   populateLevelSelectForBoss();
 
-  const level = localStorage.getItem("level");
-  if (level && raidBossData[getSelectedBossId()]?.levels?.[Number(level)]) {
-    document.getElementById("level").value = level;
+  if (data.level && raidBossData[getSelectedBossId()]?.levels?.[Number(data.level)]) {
+    document.getElementById("level").value = data.level;
   }
-
-  const area = localStorage.getItem("area");
-  if (area === "courtyard" || area === "walls") {
-    document.getElementById("area").value = area;
-  }
-
-  const defeated = localStorage.getItem("defeated");
-  if (defeated !== null) {
-    document.getElementById("defeated").value = defeated;
-  }
-
-  const defeatedReserve = localStorage.getItem("defeatedReserve");
-  if (defeatedReserve !== null) {
-    document.getElementById("defeatedReserve").value = sanitizeDefeatedReserveUnits(defeatedReserve);
+  if (data.area) document.getElementById("area").value = data.area;
+  if (data.defeated) document.getElementById("defeated").value = data.defeated;
+  if (data.defeatedReserve) {
+    document.getElementById("defeatedReserve").value = sanitizeDefeatedReserveUnits(data.defeatedReserve);
   }
 }
 
@@ -336,5 +334,7 @@ async function init() {
     loader.error("Something went wrong...", 30);
   }
 }
+
+window.calculateActivityPoints = calculateActivityPoints;
 
 init();

@@ -19,7 +19,7 @@ import {
   normalizeName
 } from "../../overviews/shared/RewardResolver.mjs";
 
-const STORAGE_KEY = "gf_imperial_patronage_simulator_v1";
+const STORAGE_KEY = "gf_imperial_patronage_simulator";
 const FALLBACK_IMAGE = "../../img_base/placeholder.webp";
 
 initAutoHeight({

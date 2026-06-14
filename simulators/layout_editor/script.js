@@ -1,3 +1,6 @@
+import { saveCalculatorData, loadCalculatorData } from "../../overviews/shared/GameSettings.mjs";
+
+const CALC_NAME = "layout_editor";
 /*** GLOBAL VARIABLES ***/
 let buildingCount = 0;
 let buildingData = [];
@@ -10,8 +13,19 @@ let isTransparentMode = true;
 let originalLeft = 0;
 let originalTop = 0;
 let isCollisionActiveWhileMoving = true;
+let isSnapToGridEnabled = true;
 const defaultBuildingNames = ["The Keep"];
 let NO_MATCH_MESSAGE = "No match to the current filters.";
+
+function getEditorData() {
+    return loadCalculatorData(CALC_NAME) || { layouts: [], settings: {} };
+}
+
+function updateSetting(key, value) {
+    const data = getEditorData();
+    data.settings[key] = value;
+    saveCalculatorData(CALC_NAME, data);
+}
 
 function getPreferredLanguageCode() {
     const saved = localStorage.getItem("selectedLanguage");
@@ -77,7 +91,8 @@ function saveToSlot() {
         };
     });
 
-    let cachedBuildingData = JSON.parse(localStorage.getItem('buildingData') || '[]');
+    const editorData = getEditorData();
+    let cachedBuildingData = editorData.layouts || [];
 
     let slotExists = false;
     cachedBuildingData.forEach(slot => {
@@ -94,7 +109,8 @@ function saveToSlot() {
         gridExpand: gridExpanded
     });
 
-    localStorage.setItem('buildingData', JSON.stringify(cachedBuildingData));
+    editorData.layouts = cachedBuildingData;
+    saveCalculatorData(CALC_NAME, editorData);
 
     updateSaveSlotsUI(slotName);
 
@@ -104,7 +120,7 @@ function saveToSlot() {
 function loadFromSlot(loadBtn) {
     const slotName = loadBtn.parentElement.parentElement.querySelector('.castle-name').textContent;
 
-    const cachedBuildingData = JSON.parse(localStorage.getItem('buildingData') || '[]');
+    const cachedBuildingData = getEditorData().layouts || [];
     const slotData = cachedBuildingData.find(slot => slot.name === slotName);
 
     if (!slotData || !slotData.buildings) {
@@ -125,7 +141,7 @@ function loadFromSlot(loadBtn) {
             gridExpandToggle.classList.remove('expanded');
             gridExpandToggle.textContent = 'OFF';
         }
-        localStorage.setItem('gridExpand', expand.toString());
+        updateSetting('gridExpand', expand);
     }
 
     slotData.buildings.forEach(data => {
@@ -136,10 +152,12 @@ function loadFromSlot(loadBtn) {
 function deleteSlot(deleteBtn) {
     const slotName = deleteBtn.parentElement.parentElement.querySelector('.castle-name').textContent;
 
-    let cachedBuildingData = JSON.parse(localStorage.getItem('buildingData') || '[]');
+    const editorData = getEditorData();
+    let cachedBuildingData = editorData.layouts || [];
     cachedBuildingData = cachedBuildingData.filter(slot => slot.name !== slotName);
 
-    localStorage.setItem('buildingData', JSON.stringify(cachedBuildingData));
+    editorData.layouts = cachedBuildingData;
+    saveCalculatorData(CALC_NAME, editorData);
 
     deleteBtn.parentElement.parentElement.remove();
 }
@@ -159,7 +177,7 @@ function updateSaveSlotsUI(slotName) {
 }
 
 function loadSavedSlotsUI() {
-    const cachedBuildingData = JSON.parse(localStorage.getItem('buildingData') || '[]');
+    const cachedBuildingData = getEditorData().layouts || [];
     const slotsList = document.getElementById('slotsList');
 
     cachedBuildingData.forEach(slot => {
@@ -669,12 +687,11 @@ function placeBuilding(grid, startX, startY, widthCells, heightCells) {
 }
 
 function loadOptimizeStateFromCache() {
-    const cachedOptimizeState = localStorage.getItem('optimizeState');
+    const data = getEditorData();
 
-    if (cachedOptimizeState !== null) {
-        activeOptimize = JSON.parse(cachedOptimizeState);
+    if (data.settings.optimizeState !== undefined) {
+        activeOptimize = data.settings.optimizeState;
         const optimizeBtn = document.getElementById('optimizeBtn');
-
         if (optimizeBtn) {
             optimizeBtn.textContent = activeOptimize ? 'ON' : 'OFF';
         }
@@ -686,7 +703,7 @@ function loadOptimizeStateFromCache() {
 }
 
 function saveOptimizeStateToCache() {
-    localStorage.setItem('optimizeState', JSON.stringify(activeOptimize));
+    updateSetting('optimizeState', activeOptimize);
 }
 
 /*** UI & INTERACTIVITY ***/
@@ -697,7 +714,7 @@ function showAlert(message) {
 function toggleGridExpansion() {
     body.classList.toggle('gridExpand');
     const currentMode = body.classList.contains('gridExpand');
-    localStorage.setItem('gridExpand', currentMode.toString());
+    updateSetting('gridExpand', currentMode);
 
     if (currentMode) {
         gridExpandToggle.classList.add('expanded');
@@ -858,12 +875,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
             this.dataset.active = isTransparentMode.toString();
             this.textContent = `${isTransparentMode ? 'ON' : 'OFF'}`;
-            localStorage.setItem('transparentMode', JSON.stringify(isTransparentMode));
+            updateSetting('transparentMode', isTransparentMode);
         });
 
-        const savedTransparentMode = JSON.parse(localStorage.getItem('transparentMode'));
+        const savedTransparentMode = getEditorData().settings.transparentMode;
         if (savedTransparentMode) {
-            isTransparentMode = true;
+            isTransparentMode = savedTransparentMode;
             transparencyToggle.textContent = 'ON';
             transparencyToggle.dataset.active = 'true';
 
@@ -880,10 +897,10 @@ document.addEventListener('DOMContentLoaded', function () {
         snapToggle.addEventListener('click', function () {
             isSnapToGridEnabled = !isSnapToGridEnabled;
             this.textContent = isSnapToGridEnabled ? 'ON' : 'OFF';
-            localStorage.setItem('snapToGrid', JSON.stringify(isSnapToGridEnabled));
+            updateSetting('snapToGrid', isSnapToGridEnabled);
         });
 
-        const savedSnap = JSON.parse(localStorage.getItem('snapToGrid'));
+        const savedSnap = getEditorData().settings.snapToGrid;
         if (savedSnap !== null) {
             isSnapToGridEnabled = savedSnap;
             snapToggle.textContent = isSnapToGridEnabled ? 'ON' : 'OFF';
@@ -934,7 +951,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById("buildingsModal").addEventListener("show.bs.modal", populateBuildingsModal);
 
     /*** LOAD EXPANSION STATE ***/
-    const savedGridState = localStorage.getItem('gridExpand') === 'true';
+    const savedGridState = getEditorData().settings.gridExpand;
     if (savedGridState) {
         body.classList.add('gridExpand');
         gridExpandToggle.classList.add('expanded');
@@ -958,15 +975,22 @@ document.addEventListener('DOMContentLoaded', function () {
         collisionToggle.addEventListener('click', function () {
             isCollisionActiveWhileMoving = !isCollisionActiveWhileMoving;
             this.textContent = isCollisionActiveWhileMoving ? 'ON' : 'OFF';
-            localStorage.setItem('collisionWhileMoving', JSON.stringify(isCollisionActiveWhileMoving));
+            updateSetting('collisionWhileMoving', isCollisionActiveWhileMoving);
         });
-        const savedCollision = JSON.parse(localStorage.getItem('collisionWhileMoving'));
+        const savedCollision = getEditorData().settings.collisionWhileMoving;
         if (savedCollision !== null) {
             isCollisionActiveWhileMoving = savedCollision;
             collisionToggle.textContent = isCollisionActiveWhileMoving ? 'ON' : 'OFF';
         }
     }
 });
+
+window.moveBuilding = moveBuilding;
+window.stopMovingBuilding = stopMovingBuilding;
+window.removeBuilding = removeBuilding;
+window.saveToSlot = saveToSlot;
+window.loadFromSlot = loadFromSlot;
+window.deleteSlot = deleteSlot;
 
 /*** GENERATE SIZE FILTERS ***/
 function generateSizeFilters() {

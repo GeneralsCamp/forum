@@ -1,3 +1,7 @@
+import { saveCalculatorData, loadCalculatorData } from "../../overviews/shared/GameSettings.mjs";
+
+const CALC_NAME = "food_production";
+
 // --- EVENT LISTENERS (INITIALIZATION) ---
 window.addEventListener('DOMContentLoaded', (event) => {
     LocationModify();
@@ -5,16 +9,19 @@ window.addEventListener('DOMContentLoaded', (event) => {
 });
 
 // --- GLOBAL DOM REFERENCES ---
-selectLocation = document.getElementById("location")
+const selectLocation = document.getElementById("location")
 
-selectMain = document.getElementById("vip-main")
-selectOP = document.getElementById("vip-op")
-selectKingdom = document.getElementById("vip-kingdom")
+const selectMain = document.getElementById("vip-main")
+const selectOP = document.getElementById("vip-op")
+const selectKingdom = document.getElementById("vip-kingdom")
 
-selectHuntGreen = document.getElementById("hunt-green")
-selectHuntKingdom = document.getElementById("hunt-kingdom")
+const selectHuntGreen = document.getElementById("hunt-green")
+const selectHuntKingdom = document.getElementById("hunt-kingdom")
 
-selectVillages = document.getElementById("villages")
+const selectVillages = document.getElementById("villages")
+
+let percentBonus = 0;
+let constBonus = 0;
 
 // --- LOCATION HANDLING ---
 function LocationModify() {
@@ -58,44 +65,34 @@ function Calculate() {
 
 // --- BONUS CALCULATION ---
 function CalculateBonuses() {
-    // Re-fetch elements
-    selectLocation = document.getElementById("location")
-
-    selectMain = document.getElementById("vip-main")
-    selectOP = document.getElementById("vip-op")
-    selectKingdom = document.getElementById("vip-kingdom")
-
-    selectHuntGreen = document.getElementById("hunt-green")
-    selectHuntKingdom = document.getElementById("hunt-kingdom")
-
-    selectVillages = document.getElementById("villages")
-
-    selectedLocation = selectLocation.value;
-    selectBeri = document.getElementById("beri");
+    const selectedLocation = selectLocation.value;
+    const selectBeri = document.getElementById("beri");
 
     // --- Public Order Bonus ---
-    po = document.getElementById("po").value;
+    const po = document.getElementById("po").value;
+    let PObonus = 1;
     if (po > 0) {
         PObonus = 1 + 0.02 * Math.sqrt(po);
     }
     else if (po < 0) {
         PObonus = 1 / (1 + 0.02 * Math.sqrt(- po));
-    } else {
-        PObonus = 1;
     }
 
     // --- Input Values ---
-    coat = document.getElementById("coat").value;
+    const coat = document.getElementById("coat").value;
+    let hunt = 0;
     if (selectedLocation == "kingdom") {
         hunt = document.getElementById("hunt-kingdom").value;
     }
     else {
         hunt = document.getElementById("hunt-green").value;
     }
-    mill = document.getElementById("mill").value;
-    deco2 = document.getElementById("deco2").value / 100;
+    const mill = document.getElementById("mill").value;
+    const deco2 = document.getElementById("deco2").value / 100;
 
     // --- Beri Bonuses ---
+    let beriKingdoms = 0;
+    let beriGreen = 0;
     if (selectBeri.value == "weaponmaster") {
         beriKingdoms = 0.20;
         beriGreen = 0.40;
@@ -108,13 +105,10 @@ function CalculateBonuses() {
         beriKingdoms = 0.20;
         beriGreen = 0;
     }
-    else {
-        beriGreen = 0;
-        beriKingdoms = 0;
-    }
 
     // --- VIP Bonuses ---
-    overseer = document.getElementById("overseer").value;
+    const overseer = document.getElementById("overseer").value;
+    let vip = 0;
     if (selectedLocation == "main") {
         vip = document.getElementById("vip-main").value;
     }
@@ -126,42 +120,28 @@ function CalculateBonuses() {
     }
 
     // --- Villages (Kingdom only) ---
+    let villages = 0;
     if (selectedLocation == "kingdom") {
         villages = document.getElementById("villages").value;
         villages = villages / 100;
     }
 
     // --- Static Bonuses ---
-    res1 = document.getElementById("res1").value;
-    res2 = document.getElementById("res2").value;
-    sub = document.getElementById("sub").value;
+    const res1 = document.getElementById("res1").value;
+    const res2 = document.getElementById("res2").value;
+    const sub = document.getElementById("sub").value;
 
     // --- Castles ---
-    cast = 0;
-    var castInput = document.getElementById("cast").value;
-    if (castInput === "" || isNaN(castInput)) {
-        cast = 0;
-    } else {
-        cast = parseInt(castInput);
-    }
+    const castInput = document.getElementById("cast").value;
+    const cast = (castInput === "" || isNaN(castInput)) ? 0 : parseInt(castInput);
 
     // --- Decoration Bonus ---
-    decobonus = 0;
-    var decoInput = document.getElementById("deco1").value;
-    if (decoInput === "" || isNaN(decoInput)) {
-        decobonus = 0;
-    } else {
-        decobonus = parseInt(decoInput);
-    }
+    const decoInput = document.getElementById("deco1").value;
+    const decobonus = (decoInput === "" || isNaN(decoInput)) ? 0 : parseInt(decoInput);
 
     // --- TCI Bonus ---
-    tcibonus = 0;
-    var tciInput = document.getElementById("foodTCI").value;
-    if (tciInput === "" || isNaN(tciInput)) {
-        tcibonus = 0;
-    } else {
-        tcibonus = parseInt(tciInput);
-    }
+    const tciInput = document.getElementById("foodTCI").value;
+    const tcibonus = (tciInput === "" || isNaN(tciInput)) ? 0 : parseInt(tciInput);
 
     // --- Final Percent & Constant Bonus ---
     if (selectedLocation == "main" || selectedLocation == "op6" || selectedLocation == "op8") {
@@ -621,22 +601,29 @@ function updateBuildings() {
     }
 }
 
-function updateBuilding() {
+export function updateBuilding() {
     updateBuildings();
 }
 
+window.LocationModify = LocationModify;
+window.Calculate = Calculate;
+window.updateBuilding = updateBuilding;
+
 // --- CACHE HANDLING ---
 function saveToCache() {
+    const data = {};
     document.querySelectorAll('input, select').forEach(input => {
-        localStorage.setItem(input.id, input.value);
+        data[input.id] = input.value;
     });
+    saveCalculatorData(CALC_NAME, data);
 }
 
 function loadFromCache() {
-    document.querySelectorAll('input, select').forEach(input => {
-        if (localStorage.getItem(input.id)) {
-            input.value = localStorage.getItem(input.id);
-        }
+    const data = loadCalculatorData(CALC_NAME);
+    if (!data) return;
+    Object.entries(data).forEach(([id, value]) => {
+        const input = document.getElementById(id);
+        if (input) input.value = value;
     });
 }
 

@@ -1,3 +1,7 @@
+import { saveCalculatorData, loadCalculatorData } from "../../overviews/shared/GameSettings.mjs";
+
+const CALC_NAME = "collector_event";
+
 /*** GLOBAL VARIABLES ***/
 const numPoints = document.getElementById("pgge-points");
 const numTime = document.getElementById("pgge-time");
@@ -14,8 +18,23 @@ const TIME_MAX = 7;
 const TIME_MIN = 0;
 
 /*** EVENT LISTENERS ***/
-numPoints.addEventListener("input", calculate);
-numTime.addEventListener("input", calculate);
+
+function saveToCache() {
+    const data = {};
+    document.querySelectorAll('input, select').forEach(el => {
+        data[el.id] = el.value;
+    });
+    saveCalculatorData(CALC_NAME, data);
+}
+
+function loadFromCache() {
+    const data = loadCalculatorData(CALC_NAME);
+    if (!data) return;
+    Object.entries(data).forEach(([id, value]) => {
+        const el = document.getElementById(id);
+        if (el) el.value = value;
+    });
+}
 
 /*** FUNCTIONS ***/
 function calculate() {
@@ -55,3 +74,14 @@ function calculate() {
         "You need <strong>" + targetScore.toLocaleString() +
         "</strong> points now to reach the target at the end.";
 }
+
+window.calculate = calculate;
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadFromCache();
+    calculate();
+
+    document.querySelectorAll('input, select').forEach(el => {
+        el.addEventListener('input', () => { calculate(); saveToCache(); });
+    });
+});

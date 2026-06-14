@@ -1,10 +1,12 @@
 import { loadGoogleAnalytics } from "./overviews/shared/ConsentManager.mjs";
-import { getDefaultGameSource } from "./overviews/shared/GameSettings.mjs";
+import { 
+    getDefaultGameSource, 
+    HOME_SETTINGS_KEY, 
+    FAVORITES_KEY 
+} from "./overviews/shared/GameSettings.mjs";
 import { availableLanguages, getInitialLanguage } from "./overviews/shared/LanguageService.mjs";
 import { initCustomModal } from "./overviews/shared/ModalService.mjs";
-const FAVORITES_KEY = "gf_favorites";
 const MAX_FAVORITES = 12;
-const HOME_SETTINGS_KEY = "gf_home_settings";
 
 const DESKTOP_DND_ENABLED = window.matchMedia?.("(pointer:fine)").matches ?? true;
 let lastAddedFavoriteLink = "";

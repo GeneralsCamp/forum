@@ -1,3 +1,7 @@
+import { saveCalculatorData, loadCalculatorData } from "../../overviews/shared/GameSettings.mjs";
+
+const CALC_NAME = "travel_speed";
+
 const horseBonusTable = {
     1: { Horse: 6, Warhorse: 10, Courser: 16 },
     2: { Horse: 10, Warhorse: 16, Courser: 27 },
@@ -76,7 +80,6 @@ function calculateTroopDetection(rawTimeWithoutHorse, adjustedTime, distance) {
 
     let baseSightRadius = 0.6 * Math.pow(units, 0.4);
     let sightRadius = Math.max(6, baseSightRadius) * (1 + sightBonus / 100);
-    console.log("Sight Radius:", sightRadius);
     let detectTimeSec = rawTimeWithoutHorse * (sightRadius / distance);
 
     earlyDetection = earlyDetection * (1 + sightBonus / 100);
@@ -141,20 +144,27 @@ function saveInputs() {
     inputs.forEach(el => {
         data[el.id] = el.value;
     });
-    localStorage.setItem("travelCalcData", JSON.stringify(data));
+    saveCalculatorData(CALC_NAME, data);
 }
 
 function loadInputs() {
-    const saved = localStorage.getItem("travelCalcData");
-    if (!saved) return;
-    const data = JSON.parse(saved);
-    for (const [id, value] of Object.entries(data)) {
-        const el = document.getElementById(id);
-        if (el) el.value = value;
+    const data = loadCalculatorData(CALC_NAME);
+    if (data) {
+        for (const [id, value] of Object.entries(data)) {
+            const el = document.getElementById(id);
+            if (el) el.value = value;
+        }
     }
 }
 
-document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', render));
+window.render = render;
 
-loadInputs();
-render();
+document.addEventListener('DOMContentLoaded', () => {
+    loadInputs();
+    render();
+
+    document.querySelectorAll('input, select').forEach(el => {
+        el.addEventListener('input', render);
+        el.addEventListener('change', render);
+    });
+});

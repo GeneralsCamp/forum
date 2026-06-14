@@ -1,3 +1,7 @@
+import { saveCalculatorData, loadCalculatorData } from "../../overviews/shared/GameSettings.mjs";
+
+const CALC_NAME = "hol_simulator";
+
 document.addEventListener('DOMContentLoaded', function () {
     loadState();
     calculatePointsPerRow('attack');
@@ -92,14 +96,12 @@ const saveState = () => {
         });
     });
 
-    localStorage.setItem("gameState", JSON.stringify(state));
+    saveCalculatorData(CALC_NAME, state);
 };
 
 const loadState = () => {
-    const savedState = localStorage.getItem("gameState");
-    if (!savedState) return;
-
-    const state = JSON.parse(savedState);
+    const state = loadCalculatorData(CALC_NAME);
+    if (!state) return;
 
     ["attack", "defense"].forEach(stateType => {
         if (state[stateType]) {
@@ -418,5 +420,15 @@ const updateWarnings = () => {
         });
     });
 };
+
+document.addEventListener('DOMContentLoaded', function () {
+    loadState();
+    calculatePointsPerRow('attack');
+    calculatePointsPerRow('defense');
+    updateSlotStates();
+    switchView("attack");
+    updateTotalAllocatedPoints();
+    updateWarnings();
+});
 
 ["attack", "defense"].forEach(state => calculatePointsPerRow(state));

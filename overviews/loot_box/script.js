@@ -368,7 +368,7 @@ function setupViewSelect() {
   const viewSelect = document.getElementById("viewSelect");
   if (!viewSelect || viewSelect.dataset.bound) return;
 
-  const mysteryLabel = "Loot boxes";
+  const mysteryLabel = getUiLabel("dialog_mysteryBoxSystem_mysteryBoxHUB_header", "Mystery boxes");
   const offeringsLabel = getUiLabel("offerings_colon", "Offerings");
 
   const mysteryOpt = viewSelect.querySelector('option[value="mystery_boxes"]');
