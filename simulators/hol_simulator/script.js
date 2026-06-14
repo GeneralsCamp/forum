@@ -1,16 +1,6 @@
-import { saveCalculatorData, loadCalculatorData } from "../../overviews/shared/GameSettings.mjs";
+import { saveSimulatorData, loadSimulatorData } from "../../overviews/shared/GameSettings.mjs";
 
-const CALC_NAME = "hol_simulator";
-
-document.addEventListener('DOMContentLoaded', function () {
-    loadState();
-    calculatePointsPerRow('attack');
-    calculatePointsPerRow('defense');
-    updateSlotStates();
-    switchView("attack");
-    updateTotalAllocatedPoints();
-    updateWarnings();
-});
+const SIM_NAME = "hol";
 
 let selectedSlot = null;
 const skillDescriptions = {
@@ -96,11 +86,11 @@ const saveState = () => {
         });
     });
 
-    saveCalculatorData(CALC_NAME, state);
+    saveSimulatorData(SIM_NAME, state);
 };
 
 const loadState = () => {
-    const state = loadCalculatorData(CALC_NAME);
+    const state = loadSimulatorData(SIM_NAME);
     if (!state) return;
 
     ["attack", "defense"].forEach(stateType => {
@@ -430,5 +420,4 @@ document.addEventListener('DOMContentLoaded', function () {
     updateTotalAllocatedPoints();
     updateWarnings();
 });
-
 ["attack", "defense"].forEach(state => calculatePointsPerRow(state));

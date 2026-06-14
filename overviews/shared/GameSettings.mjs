@@ -7,13 +7,22 @@ export function getStorageKey(name) {
     return `gf_${name}`;
 }
 
-export function saveCalculatorData(name, data) {
-    localStorage.setItem(getStorageKey(`calc_${name}`), JSON.stringify(data));
+export const saveCalculatorData = (name, data) => saveData("calculator", name, data);
+export const loadCalculatorData = (name) => loadData("calculator", name);
+
+export const saveOverviewData = (name, data) => saveData("overview", name, data);
+export const loadOverviewData = (name) => loadData("overview", name);
+
+export const saveSimulatorData = (name, data) => saveData("simulator", name, data);
+export const loadSimulatorData = (name) => loadData("simulator", name);
+
+function saveData(type, name, data) {
+    localStorage.setItem(getStorageKey(`${type}_${name}`), JSON.stringify(data));
 }
 
-export function loadCalculatorData(name) {
+function loadData(type, name) {
     try {
-        const raw = localStorage.getItem(getStorageKey(`calc_${name}`));
+        const raw = localStorage.getItem(getStorageKey(`${type}_${name}`));
         return raw ? JSON.parse(raw) : null;
     } catch { return null; }
 }

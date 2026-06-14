@@ -6,6 +6,7 @@ import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
 import { revealCard } from "../shared/CardReveal.mjs";
 import { initRewardDetailModal } from "../shared/RewardDetailModal.mjs";
+import { saveOverviewData, loadOverviewData } from "../shared/GameSettings.mjs";
 import {
   createRewardResolver,
   normalizeName as sharedNormalizeName,
@@ -14,10 +15,21 @@ import {
 } from "../shared/RewardResolver.mjs";
 
 // --- GLOBAL VARIABLES ---
+const OVERVIEW_NAME = "rift_event";
 const loader = createLoader();
 let currentLanguage = getInitialLanguage();
 const composedRewardImageCache = new Map();
 let ownLang = {};
+
+function getRiftData() {
+  return loadOverviewData(OVERVIEW_NAME) || {};
+}
+
+function updateRiftSetting(key, value) {
+  const data = getRiftData();
+  data[key] = value;
+  saveOverviewData(OVERVIEW_NAME, data);
+}
 
 initAutoHeight({
   contentSelector: "#content",
@@ -830,8 +842,9 @@ function updateBossOverviewFilters() {
   if (!levelSelect || !stageSelect) return;
 
   const levels = getLevelEntriesForBoss(boss);
-  const savedLevelId = localStorage.getItem("rift_rewards_overview_level_id");
-  const savedStageIndex = localStorage.getItem("rift_rewards_overview_stage_id");
+  const savedData = getRiftData();
+  const savedLevelId = savedData.level_id;
+  const savedStageIndex = savedData.stage_id;
   const levelLabel = uiText("level", "Level");
 
   levelSelect.innerHTML = "";
@@ -861,7 +874,7 @@ function updateBossOverviewFilters() {
   populateStageSelect(stageSelect, stages);
 
   if (stages.length === 0) {
-    localStorage.removeItem("rift_rewards_overview_stage_id");
+    updateRiftSetting("stage_id", null);
   } else {
     const parsed = Number(savedStageIndex);
     if (Number.isFinite(parsed) && parsed >= 0 && parsed < stages.length) {
@@ -1213,7 +1226,7 @@ function applyTypeSelection(type) {
   bossLevelWrap.style.display = mode === "boss_overview" ? "" : "none";
   bossStageWrap.style.display = mode === "boss_overview" ? "" : "none";
 
-  localStorage.setItem("rift_rewards_type", mode);
+  updateRiftSetting("type", mode);
   if (mode === "boss_overview") {
     renderBossOverview();
   }
@@ -1228,7 +1241,7 @@ function setupTypeSelector() {
   const typeSelect = document.getElementById("typeSelect");
   if (!typeSelect) return;
   ensureTypeOptions(typeSelect);
-  const saved = localStorage.getItem("rift_rewards_type");
+  const saved = getRiftData().type;
   if (saved === "boss" || saved === "individual" || saved === "boss_overview") {
     typeSelect.value = saved;
   }
@@ -1299,20 +1312,20 @@ function setupBossOverviewSelectors() {
   updateBossOverviewFilters();
 
   levelSelect.addEventListener("change", () => {
-    localStorage.setItem("rift_rewards_overview_level_id", levelSelect.value);
+    updateRiftSetting("level_id", levelSelect.value);
     const stages = getStagesForLevel(levelSelect.value);
     populateStageSelect(stageSelect, stages);
     if (stages.length > 0) {
       stageSelect.value = "0";
-      localStorage.setItem("rift_rewards_overview_stage_id", stageSelect.value);
+      updateRiftSetting("stage_id", stageSelect.value);
     } else {
-      localStorage.removeItem("rift_rewards_overview_stage_id");
+      updateRiftSetting("stage_id", null);
     }
     renderBossOverview();
   });
 
   stageSelect.addEventListener("change", () => {
-    localStorage.setItem("rift_rewards_overview_stage_id", stageSelect.value);
+    updateRiftSetting("stage_id", stageSelect.value);
     renderBossOverview();
   });
 }
@@ -1331,13 +1344,13 @@ function setupRiftSelector() {
     select.appendChild(option);
   });
 
-  const saved = localStorage.getItem("rift_rewards_boss_id");
+  const saved = getRiftData().boss_id;
   if (saved && bosses.some(x => String(x.raidBossID) === String(saved))) {
     select.value = saved;
   }
 
   select.addEventListener("change", () => {
-    localStorage.setItem("rift_rewards_boss_id", select.value);
+    updateRiftSetting("boss_id", select.value);
     updateBossOverviewFilters();
     renderAll();
   });

@@ -13,13 +13,14 @@ import { createLoader } from "../../overviews/shared/LoadingService.mjs";
 import { buildEffectContext } from "../../overviews/shared/EffectService.mjs";
 import { initRewardDetailModal, rewardDetailAttrs } from "../../overviews/shared/RewardDetailModal.mjs";
 import {
-  createRewardResolver,
-  buildLookup,
-  getArray,
-  normalizeName
+    createRewardResolver,
+    buildLookup,
+    getArray,
+    normalizeName
 } from "../../overviews/shared/RewardResolver.mjs";
+import { saveSimulatorData, loadSimulatorData } from "../../overviews/shared/GameSettings.mjs";
 
-const STORAGE_KEY = "gf_imperial_patronage_simulator";
+const SIM_NAME = "imperial_patronage";
 const FALLBACK_IMAGE = "../../img_base/placeholder.webp";
 
 initAutoHeight({
@@ -194,7 +195,7 @@ async function loadOwnLang() {
 
 function readSavedState() {
   try {
-    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    const parsed = loadSimulatorData(SIM_NAME) || {};
     state.selectedSetId = String(parsed.selectedSetId || "");
     state.selectedTypeId = String(parsed.selectedTypeId || "");
     state.progressBySet = parsed.progressBySet && typeof parsed.progressBySet === "object"
@@ -208,7 +209,7 @@ function readSavedState() {
 }
 
 function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  saveSimulatorData(SIM_NAME, state);
 }
 
 function ensureSetProgress(setId, typeIds) {

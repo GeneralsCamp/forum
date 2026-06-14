@@ -1,6 +1,6 @@
-import { saveCalculatorData, loadCalculatorData } from "../../overviews/shared/GameSettings.mjs";
+import { saveSimulatorData, loadSimulatorData } from "../../overviews/shared/GameSettings.mjs";
 
-const CALC_NAME = "layout_editor";
+const SIM_NAME = "layout";
 /*** GLOBAL VARIABLES ***/
 let buildingCount = 0;
 let buildingData = [];
@@ -18,13 +18,13 @@ const defaultBuildingNames = ["The Keep"];
 let NO_MATCH_MESSAGE = "No match to the current filters.";
 
 function getEditorData() {
-    return loadCalculatorData(CALC_NAME) || { layouts: [], settings: {} };
+    return loadSimulatorData(SIM_NAME) || { layouts: [], settings: {} };
 }
 
 function updateSetting(key, value) {
     const data = getEditorData();
     data.settings[key] = value;
-    saveCalculatorData(CALC_NAME, data);
+    saveSimulatorData(SIM_NAME, data);
 }
 
 function getPreferredLanguageCode() {
@@ -110,7 +110,7 @@ function saveToSlot() {
     });
 
     editorData.layouts = cachedBuildingData;
-    saveCalculatorData(CALC_NAME, editorData);
+    saveSimulatorData(SIM_NAME, editorData);
 
     updateSaveSlotsUI(slotName);
 
@@ -157,7 +157,7 @@ function deleteSlot(deleteBtn) {
     cachedBuildingData = cachedBuildingData.filter(slot => slot.name !== slotName);
 
     editorData.layouts = cachedBuildingData;
-    saveCalculatorData(CALC_NAME, editorData);
+    saveSimulatorData(SIM_NAME, editorData);
 
     deleteBtn.parentElement.parentElement.remove();
 }
