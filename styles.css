@@ -813,66 +813,6 @@ body.favorites-reorder-mode #favorites .category-card-shell.is-reorder-active .f
 .contact-note a:hover {
     border-bottom-color: rgba(243, 194, 74, 1);
 }
-
-.kofi-inline-bar {
-    display: none;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
-    gap: 10px;
-    margin: 4px 0 10px;
-    padding: 10px 12px;
-    border: 1px solid rgba(243, 194, 74, 0.55);
-    border-radius: 12px;
-    background: linear-gradient(180deg, rgba(150, 103, 68, 0.95), rgba(126, 87, 58, 0.95));
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 2px 8px rgba(0, 0, 0, 0.18);
-}
-
-.kofi-inline-bar.open {
-    display: flex;
-}
-
-.kofi-inline-text {
-    color: #f2d9bb;
-    font-size: 14px;
-    line-height: 1.3;
-    font-weight: 700;
-}
-
-.kofi-inline-text strong {
-    color: #f3c24a;
-}
-
-.kofi-click-hint {
-    color: #ffe08a;
-    text-decoration: underline;
-    font-weight: 900;
-    white-space: nowrap;
-}
-
-.kofi-inline-actions {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
-}
-
-.kofi-inline-close-btn {
-    width: 34px;
-    height: 34px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    background: rgba(67, 51, 38, 0.6);
-    color: #f2d9bb;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.kofi-inline-close-btn:hover {
-    background: rgba(67, 51, 38, 0.82);
-}
-
 .settings-modal {
     --gf-modal-width: min(420px, calc(100% - 20px));
 }
@@ -1140,17 +1080,4 @@ body.favorites-reorder-mode #favorites .category-card-shell.is-reorder-active .f
         font-size: 11px;
     }
 
-    .kofi-inline-bar {
-        gap: 8px;
-        padding: 9px 10px;
-    }
-
-    .kofi-inline-text {
-        font-size: 13px;
-    }
-
-    .kofi-inline-actions {
-        margin-left: auto;
-        align-self: center;
-    }
 }

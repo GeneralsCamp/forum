@@ -1,14 +1,11 @@
-import { initConsentManager } from "./overviews/shared/ConsentManager.mjs";
+import { loadGoogleAnalytics } from "./overviews/shared/ConsentManager.mjs";
 import { getDefaultGameSource } from "./overviews/shared/GameSettings.mjs";
 import { availableLanguages, getInitialLanguage } from "./overviews/shared/LanguageService.mjs";
 import { initCustomModal } from "./overviews/shared/ModalService.mjs";
-const FAVORITES_KEY = "gf_favorites_v1";
+const FAVORITES_KEY = "gf_favorites";
 const MAX_FAVORITES = 12;
-const HOME_SETTINGS_KEY = "gf_home_settings_v1";
-const KOFI_PROMPT_VERSION = "v2";
-const KOFI_PROMPT_SEEN_KEY = `gf_kofi_prompt_seen_${KOFI_PROMPT_VERSION}`;
-const KOFI_PROMPT_OPTOUT_KEY = `gf_kofi_prompt_optout_${KOFI_PROMPT_VERSION}`;
-const KOFI_URL = "https://ko-fi.com/Y8Y11VBX5C";
+const HOME_SETTINGS_KEY = "gf_home_settings";
+
 const DESKTOP_DND_ENABLED = window.matchMedia?.("(pointer:fine)").matches ?? true;
 let lastAddedFavoriteLink = "";
 let mobileReorderMode = false;
@@ -145,7 +142,7 @@ function getDefaultHomeSettings() {
     return {
         selectedGame: getDefaultGameSource(),
         descriptionsEnabled: true,
-        favoritesEnabled: true,
+        favoritesEnabled: false,
         devCommentsEnabled: true
     };
 }
@@ -926,39 +923,8 @@ function setupBrandEasterEgg() {
     brand.addEventListener("pointerup", registerTap);
 }
 
-function setupKofiPrompt() {
-    const bar = document.getElementById("kofiInlineBar");
-    const closeBtn = document.getElementById("kofiInlineCloseBtn");
-    if (!bar || !closeBtn) return;
-
-    const hasSeen = localStorage.getItem(KOFI_PROMPT_SEEN_KEY) === "1";
-    const optedOut = localStorage.getItem(KOFI_PROMPT_OPTOUT_KEY) === "1";
-    if (hasSeen || optedOut) return;
-
-    const markSeen = () => localStorage.setItem(KOFI_PROMPT_SEEN_KEY, "1");
-
-    bar.classList.add("open");
-
-    bar.addEventListener("click", (event) => {
-        if (event.target.closest("#kofiInlineCloseBtn")) return;
-        markSeen();
-        window.open(KOFI_URL, "_blank", "noopener");
-    });
-
-    closeBtn.addEventListener("click", (event) => {
-        event.stopPropagation();
-        localStorage.setItem(KOFI_PROMPT_OPTOUT_KEY, "1");
-        markSeen();
-        bar.classList.remove("open");
-    });
-}
-
 document.addEventListener("DOMContentLoaded", () => {
-    initConsentManager({
-        measurementId: "G-8TGZRNFGRR",
-        storageKey: "gf_analytics_state_v1",
-        defaultState: "enabled"
-    });
+    loadGoogleAnalytics("G-8TGZRNFGRR");
     setupSettingsModal();
     rerenderMainSections();
     setupFavoriteToggles();
@@ -966,5 +932,4 @@ document.addEventListener("DOMContentLoaded", () => {
     setupMobileFavoritesReorder();
     setupSearch();
     setupBrandEasterEgg();
-    setupKofiPrompt();
 });

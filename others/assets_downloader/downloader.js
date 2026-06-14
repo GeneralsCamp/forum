@@ -1,3 +1,4 @@
+import { loadGoogleAnalytics } from "../../overviews/shared/ConsentManager.mjs";
 import {
     DATA_URLS,
     getLangVersion as getSharedLangVersion,
@@ -11,7 +12,7 @@ const assetProxy = "https://my-proxy-8u49.onrender.com/";
 let folderHandle;
 let stopDownload = false;
 let currentIndex = 0;
-const SITE_CACHE_NAME = "gf-versioned-data-v1";
+const SITE_CACHE_NAME = "gf-versioned-data";
 const SITE_META_PREFIX = "gf-cache-meta:";
 
 // --- Logging ---
@@ -454,6 +455,8 @@ document.getElementById("selectFolder").addEventListener("click", async () => {
 
 // --- File System Access API check ---
 document.addEventListener("DOMContentLoaded", () => {
+    loadGoogleAnalytics("G-8TGZRNFGRR");
+
     if (!window.showDirectoryPicker) {
         log("ERROR: This downloader only works on desktop browsers.");
         document.getElementById("selectFolder").disabled = true;
