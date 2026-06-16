@@ -9,6 +9,7 @@
       "other_effects": "Other effects",
       "select_sets_first": "Select up to 5 sets first.",
       "no_equipment": "No equipment matches the current filters.",
+      "select_sets_for_equipment": "Select sets to see equipment.",
       "no_stats": "Equip items to see stats.",
       "no_sets": "No sets found for this filter.",
       "max_sets": "Maximum 5 selected sets."
@@ -24,6 +25,7 @@
       "other_effects": "Weitere Effekte",
       "select_sets_first": "Wähle zuerst bis zu 5 Sets aus.",
       "no_equipment": "Keine Ausrüstung entspricht den aktuellen Filtern.",
+      "select_sets_for_equipment": "Sets auswählen, um Ausrüstung anzuzeigen.",
       "no_stats": "Lege Ausrüstung an, um Werte zu sehen.",
       "no_sets": "Für diesen Filter wurden keine Sets gefunden.",
       "max_sets": "Maximal 5 Sets auswählbar."
@@ -39,6 +41,7 @@
       "other_effects": "Autres effets",
       "select_sets_first": "Sélectionnez d'abord jusqu'à 5 ensembles.",
       "no_equipment": "Aucun équipement ne correspond aux filtres actuels.",
+      "select_sets_for_equipment": "Sélectionnez des ensembles pour voir l'équipement.",
       "no_stats": "Équipez des objets pour voir les statistiques.",
       "no_sets": "Aucun ensemble trouvé pour ce filtre.",
       "max_sets": "Maximum 5 ensembles sélectionnés."
@@ -54,6 +57,7 @@
       "other_effects": "Inne efekty",
       "select_sets_first": "Najpierw wybierz maksymalnie 5 zestawów.",
       "no_equipment": "Żadne wyposażenie nie pasuje do obecnych filtrów.",
+      "select_sets_for_equipment": "Wybierz zestawy, aby zobaczyć wyposażenie.",
       "no_stats": "Załóż przedmioty, aby zobaczyć statystyki.",
       "no_sets": "Nie znaleziono zestawów dla tego filtra.",
       "max_sets": "Maksymalnie 5 wybranych zestawów."
@@ -69,6 +73,7 @@
       "other_effects": "Egyéb hatások",
       "select_sets_first": "Először válassz ki legfeljebb 5 szettet.",
       "no_equipment": "Nincs a jelenlegi szűrőknek megfelelő felszerelés.",
+      "select_sets_for_equipment": "Válassz szetteket a felszerelések megtekintéséhez.",
       "no_stats": "Szerelj fel tárgyakat a statisztikák megtekintéséhez.",
       "no_sets": "Ehhez a szűrőhöz nem található szett.",
       "max_sets": "Legfeljebb 5 szett választható ki."
@@ -84,6 +89,7 @@
       "other_effects": "Alte efecte",
       "select_sets_first": "Selectează mai întâi până la 5 seturi.",
       "no_equipment": "Niciun echipament nu corespunde filtrelor curente.",
+      "select_sets_for_equipment": "Selectează seturi pentru a vedea echipamentul.",
       "no_stats": "Echipează obiecte pentru a vedea statisticile.",
       "no_sets": "Nu au fost găsite seturi pentru acest filtru.",
       "max_sets": "Maximum 5 seturi selectate."
@@ -99,6 +105,7 @@
       "other_effects": "Otros efectos",
       "select_sets_first": "Selecciona primero hasta 5 conjuntos.",
       "no_equipment": "Ningún equipo coincide con los filtros actuales.",
+      "select_sets_for_equipment": "Selecciona conjuntos para ver el equipo.",
       "no_stats": "Equipa objetos para ver las estadísticas.",
       "no_sets": "No se encontraron conjuntos para este filtro.",
       "max_sets": "Máximo 5 conjuntos seleccionados."
@@ -114,6 +121,7 @@
       "other_effects": "Другие эффекты",
       "select_sets_first": "Сначала выберите до 5 наборов.",
       "no_equipment": "Нет экипировки, соответствующей текущим фильтрам.",
+      "select_sets_for_equipment": "Выберите наборы, чтобы увидеть экипировку.",
       "no_stats": "Наденьте предметы, чтобы увидеть характеристики.",
       "no_sets": "Для этого фильтра наборы не найдены.",
       "max_sets": "Максимум 5 выбранных наборов."
@@ -129,6 +137,7 @@
       "other_effects": "Άλλα εφέ",
       "select_sets_first": "Επιλέξτε πρώτα έως 5 σετ.",
       "no_equipment": "Κανένας εξοπλισμός δεν ταιριάζει στα τρέχοντα φίλτρα.",
+      "select_sets_for_equipment": "Επιλέξτε σετ για να δείτε τον εξοπλισμό.",
       "no_stats": "Εξοπλίστε αντικείμενα για να δείτε τα στατιστικά.",
       "no_sets": "Δεν βρέθηκαν σετ για αυτό το φίλτρο.",
       "max_sets": "Μέγιστο 5 επιλεγμένα σετ."
@@ -144,6 +153,7 @@
       "other_effects": "Overige effecten",
       "select_sets_first": "Selecteer eerst maximaal 5 sets.",
       "no_equipment": "Geen uitrusting komt overeen met de huidige filters.",
+      "select_sets_for_equipment": "Selecteer sets om uitrusting te bekijken.",
       "no_stats": "Rust voorwerpen uit om statistieken te bekijken.",
       "no_sets": "Geen sets gevonden voor dit filter.",
       "max_sets": "Maximaal 5 geselecteerde sets."
@@ -159,6 +169,7 @@
       "other_effects": "Další efekty",
       "select_sets_first": "Nejprve vyberte až 5 sad.",
       "no_equipment": "Žádné vybavení neodpovídá aktuálním filtrům.",
+      "select_sets_for_equipment": "Vyberte sady pro zobrazení vybavení.",
       "no_stats": "Vybavte předměty pro zobrazení statistik.",
       "no_sets": "Pro tento filtr nebyly nalezeny žádné sady.",
       "max_sets": "Maximálně 5 vybraných sad."
@@ -174,6 +185,7 @@
       "other_effects": "تأثيرات أخرى",
       "select_sets_first": "اختر أولاً ما يصل إلى 5 مجموعات.",
       "no_equipment": "لا توجد معدات تطابق عوامل التصفية الحالية.",
+      "select_sets_for_equipment": "اختر المجموعات لعرض المعدات.",
       "no_stats": "قم بتجهيز العناصر لعرض الإحصائيات.",
       "no_sets": "لم يتم العثور على مجموعات لهذا الفلتر.",
       "max_sets": "الحد الأقصى 5 مجموعات محددة."
@@ -189,6 +201,7 @@
       "other_effects": "Altri effetti",
       "select_sets_first": "Seleziona prima fino a 5 set.",
       "no_equipment": "Nessun equipaggiamento corrisponde ai filtri correnti.",
+      "select_sets_for_equipment": "Seleziona i set per visualizzare l'equipaggiamento.",
       "no_stats": "Equipaggia oggetti per visualizzare le statistiche.",
       "no_sets": "Nessun set trovato per questo filtro.",
       "max_sets": "Massimo 5 set selezionati."
@@ -204,6 +217,7 @@
       "other_effects": "その他の効果",
       "select_sets_first": "最初に最大5セットまで選択してください。",
       "no_equipment": "現在のフィルターに一致する装備はありません。",
+      "select_sets_for_equipment": "装備を表示するにはセットを選択してください。",
       "no_stats": "ステータスを見るには装備してください。",
       "no_sets": "このフィルターに一致するセットはありません。",
       "max_sets": "選択できるセットは最大5個です。"
@@ -219,6 +233,7 @@
       "other_effects": "Други ефекти",
       "select_sets_first": "Първо изберете до 5 комплекта.",
       "no_equipment": "Няма екипировка, отговаряща на текущите филтри.",
+      "select_sets_for_equipment": "Изберете комплекти, за да видите екипировката.",
       "no_stats": "Екипирайте предмети, за да видите статистиките.",
       "no_sets": "Не са намерени комплекти за този филтър.",
       "max_sets": "Максимум 5 избрани комплекта."
@@ -234,6 +249,7 @@
       "other_effects": "Outros efeitos",
       "select_sets_first": "Selecione primeiro até 5 conjuntos.",
       "no_equipment": "Nenhum equipamento corresponde aos filtros atuais.",
+      "select_sets_for_equipment": "Selecione conjuntos para ver o equipamento.",
       "no_stats": "Equipe itens para ver as estatísticas.",
       "no_sets": "Nenhum conjunto encontrado para este filtro.",
       "max_sets": "Máximo de 5 conjuntos selecionados."
@@ -249,6 +265,7 @@
       "other_effects": "Andre effekter",
       "select_sets_first": "Vælg først op til 5 sæt.",
       "no_equipment": "Intet udstyr matcher de aktuelle filtre.",
+      "select_sets_for_equipment": "Vælg sæt for at se udstyr.",
       "no_stats": "Udstyr genstande for at se statistikker.",
       "no_sets": "Ingen sæt fundet for dette filter.",
       "max_sets": "Maksimalt 5 valgte sæt."
@@ -264,6 +281,7 @@
       "other_effects": "Muut vaikutukset",
       "select_sets_first": "Valitse ensin enintään 5 settiä.",
       "no_equipment": "Nykyisillä suodattimilla ei löytynyt varusteita.",
+      "select_sets_for_equipment": "Valitse settejä nähdäksesi varusteet.",
       "no_stats": "Varusta esineitä nähdäksesi tilastot.",
       "no_sets": "Tälle suodattimelle ei löytynyt settejä.",
       "max_sets": "Enintään 5 valittua settiä."
@@ -279,6 +297,7 @@
       "other_effects": "기타 효과",
       "select_sets_first": "먼저 최대 5개의 세트를 선택하세요.",
       "no_equipment": "현재 필터와 일치하는 장비가 없습니다.",
+      "select_sets_for_equipment": "장비를 보려면 세트를 선택하세요.",
       "no_stats": "능력치를 보려면 아이템을 장착하세요.",
       "no_sets": "이 필터에 해당하는 세트가 없습니다.",
       "max_sets": "최대 5개의 세트만 선택할 수 있습니다."
@@ -294,6 +313,7 @@
       "other_effects": "Kiti efektai",
       "select_sets_first": "Pirmiausia pasirinkite iki 5 rinkinių.",
       "no_equipment": "Nėra įrangos, atitinkančios dabartinius filtrus.",
+      "select_sets_for_equipment": "Pasirinkite rinkinius, kad matytumėte įrangą.",
       "no_stats": "Aprūpinkite daiktus, kad matytumėte statistiką.",
       "no_sets": "Šiam filtrui rinkinių nerasta.",
       "max_sets": "Daugiausia galima pasirinkti 5 rinkinius."
@@ -309,6 +329,7 @@
       "other_effects": "Andre effekter",
       "select_sets_first": "Velg først opptil 5 sett.",
       "no_equipment": "Ingen utstyr matcher de gjeldende filtrene.",
+      "select_sets_for_equipment": "Velg sett for å se utstyr.",
       "no_stats": "Utstyr gjenstander for å se statistikk.",
       "no_sets": "Ingen sett funnet for dette filteret.",
       "max_sets": "Maksimalt 5 valgte sett."
@@ -324,6 +345,7 @@
       "other_effects": "Andra effekter",
       "select_sets_first": "Välj först upp till 5 set.",
       "no_equipment": "Ingen utrustning matchar de aktuella filtren.",
+      "select_sets_for_equipment": "Välj set för att se utrustning.",
       "no_stats": "Utrusta föremål för att se statistik.",
       "no_sets": "Inga set hittades för detta filter.",
       "max_sets": "Maximalt 5 valda set."
@@ -339,6 +361,7 @@
       "other_effects": "Ďalšie efekty",
       "select_sets_first": "Najprv vyberte až 5 sád.",
       "no_equipment": "Žiadne vybavenie nezodpovedá aktuálnym filtrom.",
+      "select_sets_for_equipment": "Vyberte sady na zobrazenie vybavenia.",
       "no_stats": "Vybavte predmety na zobrazenie štatistík.",
       "no_sets": "Pre tento filter sa nenašli žiadne sady.",
       "max_sets": "Maximálne 5 vybraných sád."
@@ -354,6 +377,7 @@
       "other_effects": "Diğer etkiler",
       "select_sets_first": "Önce en fazla 5 set seçin.",
       "no_equipment": "Mevcut filtrelere uygun ekipman yok.",
+      "select_sets_for_equipment": "Ekipmanları görmek için set seçin.",
       "no_stats": "İstatistikleri görmek için eşya kuşanın.",
       "no_sets": "Bu filtre için set bulunamadı.",
       "max_sets": "En fazla 5 set seçilebilir."

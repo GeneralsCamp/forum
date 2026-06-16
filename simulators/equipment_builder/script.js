@@ -19,6 +19,7 @@ let slotById = {};
 let wearerById = {};
 let unitsById = {};
 let equipmentEffectToEffectId = {};
+let equipmentEffectMetaById = {};
 let equipmentUniqueImageUrlMap = {};
 let uniqueGemImageUrlMap = {};
 let currencyImageUrlMap = {};
@@ -32,6 +33,7 @@ let equipped = {};
 let currentWearerFilter = "all";
 let currentTypeFilter = "all";
 let currentSetSearchText = "";
+let upgradeToggleEnabled = false;
 const statsEffectGroupOpenState = new Map();
 
 const loader = createLoader();
@@ -383,16 +385,30 @@ function normalizeEffectSemanticValue(effectId, value, sourceType = "auto") {
   return numeric;
 }
 
-function parseEffectTokens(raw, sourceType = "auto") {
+function getEquipmentUpgradeBonus(effectId, sourceType = "auto", effectIndex = 0) {
+  if (!upgradeToggleEnabled || sourceType !== "equipment") return 0;
+  const effectMeta = equipmentEffectMetaById[String(effectId || "").trim()];
+  if (!effectMeta) return 0;
+  const rateKey = effectIndex === 0 ? "enchantmentPrimaryBonus" : "enchantmentSecondaryBonus";
+  const rate = Number(effectMeta[rateKey] || 0);
+  if (!Number.isFinite(rate)) return 0;
+  return Math.round(20 * rate);
+}
+
+function parseEffectTokens(raw, sourceType = "auto", item = null) {
   if (!raw) return [];
   return String(raw).split(",")
     .map((x) => x.trim())
     .filter(Boolean)
     .flatMap(splitEffectToken)
-    .map((entry) => ({
+    .map((entry, index) => ({
       ...entry,
       id: String(resolveEffectId(entry.id, sourceType) || entry.id || ""),
-      value: normalizeEffectSemanticValue(entry.id, entry.value, sourceType),
+      value: normalizeEffectSemanticValue(
+        entry.id,
+        Number(entry.value || 0) + getEquipmentUpgradeBonus(entry.id, sourceType, index),
+        sourceType
+      ),
       sourceType
     }));
 }
@@ -733,7 +749,10 @@ function renderEquipmentTiles() {
     `;
   }).join("");
 
-  return rows || (selectedSetIds.length ? `<div class="builder-empty">${escapeHtml(ui("no_equipment", "No equipment matches the current filters."))}</div>` : "");
+  return rows || `<div class="builder-empty">${escapeHtml(selectedSetIds.length
+    ? ui("no_equipment", "No equipment matches the current filters.")
+    : ui("select_sets_for_equipment", "Select sets to see equipment.")
+  )}</div>`;
 }
 
 function openItemDetailModal(item) {
@@ -775,7 +794,7 @@ function buildStats() {
   };
 
   selectedItems.forEach((item) => {
-    parseEffectTokens(item.raw.effects, item.sourceType).forEach(addToken);
+    parseEffectTokens(item.raw.effects, item.sourceType, item).forEach(addToken);
   });
 
   const uniqueItemsBySet = {};
@@ -1027,7 +1046,16 @@ function renderBuilder() {
 
   root.innerHTML = `
     <section class="builder-panel equipment-panel">
-      <div class="panel-head">${escapeHtml(gameText("dialog_equipment_title", "Equipment"))}</div>
+      <div class="panel-head panel-head-with-action">
+        <span>${escapeHtml(gameText("dialog_equipment_title", "Equipment"))}</span>
+        <button type="button"
+          class="panel-icon-button ${upgradeToggleEnabled ? "is-active" : ""}"
+          data-upgrade-toggle
+          aria-pressed="${upgradeToggleEnabled ? "true" : "false"}"
+          aria-label="Toggle upgrade mode">
+          <i class="bi bi-arrow-up-circle"></i>
+        </button>
+      </div>
       <div class="panel-body equipment-board">
         ${renderTypeFilter()}
         <div class="equipment-grid">${renderEquipmentTiles()}</div>
@@ -1250,6 +1278,15 @@ function bindControls() {
       return;
     }
 
+    const upgradeToggle = event.target.closest("[data-upgrade-toggle]");
+    if (upgradeToggle) {
+      upgradeToggleEnabled = !upgradeToggleEnabled;
+      upgradeToggle.classList.toggle("is-active", upgradeToggleEnabled);
+      upgradeToggle.setAttribute("aria-pressed", upgradeToggleEnabled ? "true" : "false");
+      refreshBuilderPanels();
+      return;
+    }
+
     const tile = event.target.closest(".equipment-tile");
     if (tile) {
       const itemKey = String(tile.dataset.itemKey || "");
@@ -1334,6 +1371,7 @@ async function init() {
           const equipmentEffectId = String(row?.equipmentEffectID || "").trim();
           const effectId = String(row?.effectID || "").trim();
           if (equipmentEffectId && effectId) equipmentEffectToEffectId[equipmentEffectId] = effectId;
+          if (equipmentEffectId) equipmentEffectMetaById[equipmentEffectId] = row;
         });
 
         slotById = buildLookup(slots, "slotID");

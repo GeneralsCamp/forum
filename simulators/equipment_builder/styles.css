@@ -97,6 +97,13 @@
   color: var(--builder-gold);
 }
 
+.panel-icon-button.is-active {
+  border-color: var(--builder-gold);
+  background: rgba(243, 194, 74, 0.18);
+  color: var(--builder-gold);
+  box-shadow: 0 0 0 1px rgba(243, 194, 74, 0.24);
+}
+
 .panel-body {
   flex: 1 1 auto;
   min-height: 0;
@@ -467,6 +474,12 @@
   overflow-x: hidden;
   scrollbar-gutter: stable;
   padding: 0;
+}
+
+.equipment-grid .builder-empty {
+  grid-column: 1 / -1;
+  align-self: center;
+  justify-self: center;
 }
 
 .equipment-tile {
