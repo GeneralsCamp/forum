@@ -6,10 +6,12 @@ import { deriveCompanionUrls } from "../../overviews/shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../../overviews/shared/ComposeHydrator.mjs";
 import { normalizeName } from "../../overviews/shared/RewardResolver.mjs";
 import { saveSimulatorData, loadSimulatorData } from "../../overviews/shared/GameSettings.mjs";
+import { getSharedLanguagePack } from "../../overviews/shared/SharedTextService.mjs";
 
 let lang = {};
 let ownLang = {};
 let effectCtx = null;
+let sharedLangPack = { filters: {}, ui: {} };
 let setIndexById = {};
 let equipmentSets = [];
 let slotById = {};
@@ -25,6 +27,8 @@ let equipmentPool = [];
 let equipped = {};
 let currentWearerFilter = "all";
 let currentTypeFilter = "all";
+let currentSetSearchText = "";
+const statsEffectGroupOpenState = new Map();
 
 const loader = createLoader();
 const composedImageCache = new Map();
@@ -35,16 +39,28 @@ const SIMULATOR_NAME = "equipment_builder";
 const SLOT_DEFS = [
   { id: "helmet", type: "helmet", labelKey: "helmet", acceptedSlotIds: ["3"], source: "equipment" },
   { id: "armor", type: "armor", labelKey: "armor", acceptedSlotIds: ["1"], source: "equipment" },
-  { id: "sword", type: "sword", labelKey: "sword", acceptedSlotIds: ["2"], source: "equipment" },
+  { id: "weapon", type: "weapon", labelKey: "weapon", acceptedSlotIds: ["2"], source: "equipment" },
   { id: "artifact", type: "artifact", labelKey: "artifact", acceptedSlotIds: ["4"], source: "equipment" },
   { id: "look", type: "look", labelKey: "look", acceptedSlotIds: ["5"], source: "equipment" },
   { id: "hero", type: "hero", labelKey: "hero", acceptedSlotIds: ["6"], source: "equipment" },
   { id: "gem-1", type: "gem", labelKey: "gem", source: "gem", parentSlotId: "helmet" },
   { id: "gem-2", type: "gem", labelKey: "gem", source: "gem", parentSlotId: "armor" },
-  { id: "gem-3", type: "gem", labelKey: "gem", source: "gem", parentSlotId: "sword" },
+  { id: "gem-3", type: "gem", labelKey: "gem", source: "gem", parentSlotId: "weapon" },
   { id: "gem-4", type: "gem", labelKey: "gem", source: "gem", parentSlotId: "artifact" },
-  { id: "gem-5", type: "gem", labelKey: "gem", source: "gem", parentSlotId: "extra-artifact" }
+  { id: "gem-5", type: "gem", labelKey: "gem", source: "gem", parentSlotId: "look" }
 ];
+
+const SLOT_PLACEHOLDER_IMAGES = {
+  helmet: "../../img_base/eq-helmet.png",
+  armor: "../../img_base/eq-armor.png",
+  weapon: "../../img_base/eq-weapon.png",
+  artifact: "../../img_base/eq-artifact.png",
+  look: "../../img_base/eq-look.png",
+  hero: "../../img_base/eq-hero.png",
+  gem: "../../img_base/eq-gem.png"
+};
+
+const SLOT_PLACEHOLDER_FALLBACK = "../../img_base/placeholder.webp";
 
 async function loadOwnLang() {
   try {
@@ -68,6 +84,17 @@ function lowercaseKeysRecursive(input) {
 
 function ui(key, fallback) {
   return ownLang[currentLanguage?.toLowerCase()]?.ui?.[key] || fallback;
+}
+
+function sharedFilterText(key, fallback) {
+  return sharedLangPack?.filters?.[key] || fallback;
+}
+
+function getSetSearchPlaceholder() {
+  return `${sharedFilterText("search_placeholder_prefix", "Search by: ")}${[
+    sharedFilterText("search_id", "ID"),
+    sharedFilterText("search_name", "Name")
+  ].join(", ")}`;
 }
 
 function gameText(keys, fallback = "") {
@@ -432,6 +459,19 @@ function getSetOptions(wearerFilter = "all") {
     .sort((a, b) => Number(b.id || 0) - Number(a.id || 0));
 }
 
+function getFilteredSetOptions(wearerFilter = "all") {
+  const search = String(currentSetSearchText || "").trim().toLowerCase();
+  const normalizedSearch = normalizeName(search);
+  return getSetOptions(wearerFilter).filter((entry) => {
+    if (!search) return true;
+    const id = String(entry.id || "").toLowerCase();
+    const title = String(entry.title || "");
+    return id.includes(search)
+      || title.toLowerCase().includes(search)
+      || normalizeName(title).includes(normalizedSearch);
+  });
+}
+
 function getSelectedSetEntries() {
   return selectedSetIds.map((id) => setIndexById[String(id)]).filter(Boolean);
 }
@@ -511,6 +551,7 @@ function saveBuilderState() {
   saveSimulatorData(SIMULATOR_NAME, {
     wearer: currentWearerFilter,
     type: currentTypeFilter,
+    setSearch: currentSetSearchText,
     selectedSetIds,
     selectedTileKey,
     equippedBySlot
@@ -533,6 +574,7 @@ function restoreBuilderState() {
   rebuildEquipmentPool();
 
   currentTypeFilter = String(saved.type || "all");
+  currentSetSearchText = String(saved.setSearch || "");
   selectedTileKey = "";
   equipped = {};
 
@@ -596,11 +638,13 @@ function clearLinkedGemSlot(parentSlotId) {
 function equipItemInSlot(item, slot) {
   if (!item || !slot || !isItemAllowedInSlot(item, slot)) return false;
 
-  Object.keys(equipped).forEach((slotId) => {
-    if (equipped[slotId] && getItemKey(equipped[slotId]) === getItemKey(item)) {
-      delete equipped[slotId];
-    }
-  });
+  if (item.kind !== "gem") {
+    Object.keys(equipped).forEach((slotId) => {
+      if (equipped[slotId] && getItemKey(equipped[slotId]) === getItemKey(item)) {
+        delete equipped[slotId];
+      }
+    });
+  }
 
   equipped[slot.id] = item;
 
@@ -615,7 +659,7 @@ function equipItemInSlot(item, slot) {
 }
 
 function isEquipped(key) {
-  return Object.values(equipped).some((item) => item && getItemKey(item) === key);
+  return Object.values(equipped).some((item) => item?.kind !== "gem" && getItemKey(item) === key);
 }
 
 function getFilteredEquipmentPool() {
@@ -642,16 +686,31 @@ function renderItemImage(item) {
   return `<img src="${escapeHtml(src)}" alt="${escapeHtml(item.name)}" loading="lazy"${composeAttrs}>`;
 }
 
+function getSlotPlaceholderImage(slot) {
+  return SLOT_PLACEHOLDER_IMAGES[slot.type] || SLOT_PLACEHOLDER_FALLBACK;
+}
+
+function renderSlotPlaceholder(slot) {
+  const label = getEquipmentSlotTypeLabel(slot.labelKey);
+  return `
+    <img class="slot-placeholder-image"
+      src="${escapeHtml(getSlotPlaceholderImage(slot))}"
+      alt="${escapeHtml(label)}"
+      title="${escapeHtml(label)}"
+      loading="lazy"
+      onerror="this.onerror=null;this.src='${escapeHtml(SLOT_PLACEHOLDER_FALLBACK)}';">
+  `;
+}
+
 function renderSlots() {
   return SLOT_DEFS.map((slot) => {
     const item = equipped[slot.id] || null;
     const selected = selectedTileKey ? equipmentPool.find((x) => getItemKey(x) === selectedTileKey) : null;
     const stateClass = selected && isItemAllowedInSlot(selected, slot) ? "can-place" : "";
     const lockedClass = slot.source === "gem" && !isGemSlotUnlocked(slot) ? "is-locked" : "";
-    const itemHtml = item ? renderItemImage(item) : "";
+    const itemHtml = item ? renderItemImage(item) : renderSlotPlaceholder(slot);
     return `
       <button type="button" class="equip-slot slot-${escapeHtml(slot.id)} ${item ? "has-item" : ""} ${stateClass} ${lockedClass}" data-slot-id="${slot.id}" aria-label="${escapeHtml(getEquipmentSlotTypeLabel(slot.labelKey))}">
-        <span class="slot-label">${escapeHtml(getEquipmentSlotTypeLabel(slot.labelKey))}</span>
         ${itemHtml}
       </button>
     `;
@@ -699,12 +758,14 @@ function buildStats() {
     parseEffectTokens(item.raw.effects, item.sourceType).forEach(addToken);
   });
 
-  const countsBySet = {};
+  const uniqueItemsBySet = {};
   selectedItems.forEach((item) => {
-    countsBySet[item.setId] = (countsBySet[item.setId] || 0) + 1;
+    uniqueItemsBySet[item.setId] ||= new Set();
+    uniqueItemsBySet[item.setId].add(getItemKey(item));
   });
 
-  Object.entries(countsBySet).forEach(([setId, count]) => {
+  Object.entries(uniqueItemsBySet).forEach(([setId, items]) => {
+    const count = items.size;
     const setEntry = setIndexById[String(setId)];
     (setEntry?.bonuses || []).forEach((bonus) => {
       if (Number(bonus.neededItems || 0) <= count) {
@@ -766,6 +827,17 @@ function getEffectGroupKey(entry) {
   return `${typeDef.sortCategory || "other"}:${typeDef.sortGroup || entry.effectTypeID}`;
 }
 
+function getCappedStatValue(entry) {
+  const value = Number(entry?.value || 0);
+  const def = effectCtx?.effectDefinitions?.[String(entry?.id)];
+  const capId = String(def?.capID || "");
+  const cap = Number(effectCtx?.effectCapsMap?.[capId]?.maxTotalBonus);
+  if (!Number.isFinite(cap) || cap <= 0) return value;
+  if (value > cap) return cap;
+  if (value < -cap) return -cap;
+  return value;
+}
+
 function getEffectTypeDef(effectTypeID) {
   const normalized = String(effectTypeID || "").trim();
   return effectCtx?.effectTypes?.find((x) => String(x.effectTypeID) === normalized) || null;
@@ -812,7 +884,7 @@ function renderStats() {
         effectGroups.get(key).push(row);
       });
 
-      const statRows = Array.from(effectGroups.values()).map((groupRows) => {
+      const statRows = Array.from(effectGroups.entries()).map(([effectGroupKey, groupRows]) => {
         if (groupRows.length === 1) {
           const row = groupRows[0];
           return `
@@ -823,9 +895,11 @@ function renderStats() {
         }
 
         const typeDef = getEffectTypeDef(groupRows[0].effectTypeID);
-        const groupValue = groupRows.reduce((sum, row) => sum + Number(row.value || 0), 0);
+        const groupValue = groupRows.reduce((sum, row) => sum + getCappedStatValue(row), 0);
+        const stateKey = `${categoryId}:${effectGroupKey}`;
+        const openAttr = statsEffectGroupOpenState.get(stateKey) === false ? "" : " open";
         return `
-          <details class="stat-effect-group">
+          <details class="stat-effect-group" data-effect-group-key="${escapeHtml(stateKey)}"${openAttr}>
             <summary class="stat-effect-group-title">
               <span>${escapeHtml(getEffectGroupLabel(typeDef, groupValue, true))}</span>
             </summary>
@@ -853,26 +927,11 @@ function renderStats() {
     }).join("");
 }
 
-function renderSetFilters() {
-  const options = getSetOptions(currentWearerFilter);
+function renderSetFilterList() {
+  const options = getFilteredSetOptions(currentWearerFilter);
   const selectedCount = selectedSetIds.length;
 
-  const filteredWearers = wearerOptions.filter((wearer) => {
-    const label = String(wearer.label).toLowerCase();
-    return label.includes("castellan") || label.includes("commander");
-  });
-
   return `
-    <div class="panel-filter-row">
-      <select id="wearerSelect" class="form-select custom-select text-center" aria-label="Wearer selector">
-        ${filteredWearers.map((wearer) => `
-          <option value="${escapeHtml(wearer.value)}" ${wearer.value === currentWearerFilter ? "selected" : ""}>
-            ${escapeHtml(wearer.label)}
-          </option>
-        `).join("")}
-      </select>
-    </div>
-
     <div class="set-filter-list">
       ${options.map((entry) => `
         <label class="set-filter-row">
@@ -888,6 +947,31 @@ function renderSetFilters() {
         </div>
       `}
     </div>
+  `;
+}
+
+function renderSetFilters() {
+  const filteredWearers = wearerOptions.filter((wearer) => {
+    const label = String(wearer.label).toLowerCase();
+    return label.includes("castellan") || label.includes("commander");
+  });
+
+  return `
+    <div class="panel-filter-row set-filter-controls">
+      <select id="wearerSelect" class="form-select custom-select text-center" aria-label="Wearer selector">
+        ${filteredWearers.map((wearer) => `
+          <option value="${escapeHtml(wearer.value)}" ${wearer.value === currentWearerFilter ? "selected" : ""}>
+            ${escapeHtml(wearer.label)}
+          </option>
+        `).join("")}
+      </select>
+      <div class="input-group">
+        <input id="setSearchInput" class="form-control custom-input text-center" type="search"
+          value="${escapeHtml(currentSetSearchText)}"
+          placeholder="${escapeHtml(getSetSearchPlaceholder())}" aria-label="Search sets">
+      </div>
+    </div>
+    ${renderSetFilterList()}
   `;
 }
 
@@ -913,6 +997,7 @@ function renderTypeFilter() {
 function renderBuilder() {
   const root = document.getElementById("builderRoot");
   if (!root) return;
+  captureStatsEffectGroupState(root);
 
   const scrollState = {
     filters: root.querySelector(".filters-panel .panel-body")?.scrollTop || 0,
@@ -929,7 +1014,12 @@ function renderBuilder() {
       </div>
     </section>
     <section class="builder-panel loadout-panel">
-      <div class="panel-head">${escapeHtml(ui("your_set", "Your set"))}</div>
+      <div class="panel-head panel-head-with-action">
+        <span>${escapeHtml(ui("your_set", "Your set"))}</span>
+        <button type="button" class="panel-icon-button" data-clear-loadout>
+          <i class="bi bi-trash"></i>
+        </button>
+      </div>
       <div class="panel-body">
         <div class="slot-board">${renderSlots()}</div>
       </div>
@@ -984,6 +1074,20 @@ function updateSetFilterCheckboxStates() {
   });
 }
 
+function refreshSetFilterList() {
+  const list = document.querySelector(".filters-panel .set-filter-list");
+  if (!list) return;
+  const replacement = document.createElement("div");
+  replacement.innerHTML = renderSetFilterList().trim();
+  list.replaceWith(replacement.firstElementChild);
+}
+
+function captureStatsEffectGroupState(root) {
+  root.querySelectorAll(".stat-effect-group[data-effect-group-key]").forEach((details) => {
+    statsEffectGroupOpenState.set(String(details.dataset.effectGroupKey || ""), details.hasAttribute("open"));
+  });
+}
+
 function setupStatsAccordion(root) {
   [
     [".stat-category", ".stat-category-title", ".stat-category-body"],
@@ -1000,6 +1104,9 @@ function setupStatsAccordion(root) {
 
         const isOpen = details.hasAttribute("open");
         if (isOpen) {
+          if (details.dataset.effectGroupKey) {
+            statsEffectGroupOpenState.set(String(details.dataset.effectGroupKey), false);
+          }
           const startHeight = body.scrollHeight;
           body.style.height = `${startHeight}px`;
           body.offsetHeight;
@@ -1014,6 +1121,9 @@ function setupStatsAccordion(root) {
         }
 
         details.setAttribute("open", "");
+        if (details.dataset.effectGroupKey) {
+          statsEffectGroupOpenState.set(String(details.dataset.effectGroupKey), true);
+        }
         body.style.height = "0px";
         body.offsetHeight;
         body.style.height = `${body.scrollHeight}px`;
@@ -1045,6 +1155,7 @@ function refreshBuilderPanels({ updateFilters = false } = {}) {
   const statsBody = root.querySelector(".stats-panel .panel-body");
   if (statsBody) {
     const statsScroll = statsBody.scrollTop || 0;
+    captureStatsEffectGroupState(statsBody);
     statsBody.innerHTML = renderStats();
     statsBody.scrollTop = statsScroll;
   }
@@ -1109,6 +1220,15 @@ function bindControls() {
       return;
     }
 
+    const clearLoadout = event.target.closest("[data-clear-loadout]");
+    if (clearLoadout) {
+      equipped = {};
+      selectedTileKey = "";
+      saveBuilderState();
+      refreshBuilderPanels();
+      return;
+    }
+
     const tile = event.target.closest(".equipment-tile");
     if (tile) {
       const itemKey = String(tile.dataset.itemKey || "");
@@ -1141,6 +1261,13 @@ function bindControls() {
       refreshBuilderPanels();
     }
   });
+
+  document.addEventListener("input", (event) => {
+    if (event.target?.id !== "setSearchInput") return;
+    currentSetSearchText = String(event.target.value || "");
+    saveBuilderState();
+    refreshSetFilterList();
+  });
 }
 
 initAutoHeight({
@@ -1164,6 +1291,7 @@ async function init() {
         lang = L;
         effectCtx = E;
         await loadOwnLang();
+        sharedLangPack = await getSharedLanguagePack(currentLanguage);
 
         const equipments = getArray(data, ["equipments"]);
         const gems = getArray(data, ["gems"]);

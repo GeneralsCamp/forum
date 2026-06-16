@@ -10,6 +10,7 @@
       "select_sets_first": "Select up to 5 sets first.",
       "no_equipment": "No equipment matches the current filters.",
       "no_stats": "Equip items to see stats.",
+      "no_sets": "No sets found for this filter.",
       "max_sets": "Maximum 5 selected sets."
     }
   }
