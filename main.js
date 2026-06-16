@@ -1,8 +1,8 @@
 import { loadGoogleAnalytics } from "./overviews/shared/ConsentManager.mjs";
-import { 
-    getDefaultGameSource, 
-    HOME_SETTINGS_KEY, 
-    FAVORITES_KEY 
+import {
+    getDefaultGameSource,
+    HOME_SETTINGS_KEY,
+    FAVORITES_KEY
 } from "./overviews/shared/GameSettings.mjs";
 import { availableLanguages, getInitialLanguage } from "./overviews/shared/LanguageService.mjs";
 import { initCustomModal } from "./overviews/shared/ModalService.mjs";
@@ -52,6 +52,7 @@ const categories = {
         { name: "Imperial Patronage Simulator", desc: "Simulate donations, thresholds, and rewards.", icon: "patronage-icon.webp", link: "./simulators/imperial_patronage/index.html", disabled: false },
         { name: "Castle Layout Simulator", desc: "Design and manage your castle layouts.", icon: "main_page/layout-icon.webp", link: "./simulators/layout_editor/index.html", disabled: false },
         { name: "Hall of Legends Simulator", desc: "Try point allocations without spending rubies.", icon: "main_page/hall-of-legends-simulator-icon.webp", link: "./simulators/hol_simulator/index.html", disabled: false },
+        { name: "Equipment Builder", desc: "Build custom commander and castellan equipment sets.", icon: "main_page/equipment-icon.webp", link: "./simulators/equipment_builder/index.html", disabled: true },
     ]
 };
 

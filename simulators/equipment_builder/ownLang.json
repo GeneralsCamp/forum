@@ -1,0 +1,16 @@
+{
+  "en": {
+    "ui": {
+      "all_wearers": "All wearers",
+      "all_types": "All equipment types",
+      "grouped_stats": "Grouped stats",
+      "your_set": "Your set",
+      "select_owned_sets": "Select owned sets",
+      "other_effects": "Other effects",
+      "select_sets_first": "Select up to 5 sets first.",
+      "no_equipment": "No equipment matches the current filters.",
+      "no_stats": "Equip items to see stats.",
+      "max_sets": "Maximum 5 selected sets."
+    }
+  }
+}

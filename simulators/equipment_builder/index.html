@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GGE Equipment Set Builder</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="icon" type="image/webp" href="../../img_base/favicon.ico">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../../overviews/shared/shared.css">
+  <link rel="stylesheet" href="../../overviews/shared/modal.css">
+  <link rel="stylesheet" href="../../overviews/shared/reward-detail.css">
+  <link rel="stylesheet" href="styles.css">
+  <meta property="og:title" content="Equipment Builder | Generals Forum">
+  <meta property="og:description"
+    content="Build custom commander and castellan equipment sets and inspect grouped stats.">
+  <meta property="og:image" content="https://generalscamp.github.io/forum/img_base/main_page/equipment-icon.webp">
+</head>
+
+<body>
+  <div class="container equipment-builder-page">
+    <div class="row">
+      <div class="col-12 mb-2">
+        <div class="col-12 page-title">
+          <h1>GGE EQUIPMENT SET BUILDER</h1>
+        </div>
+
+        <div id="topButtonsContainer">
+          <a href="https://generalscamp.github.io/forum/" class="home-icon-link" aria-label="Home">
+            <div class="home-icon">
+              <i class="bi bi-house"></i>
+            </div>
+          </a>
+        </div>
+
+      </div>
+
+      <main id="content" class="container-fluid">
+        <div id="loadingBox" class="loading-message" style="display:none;"></div>
+        <section id="builderRoot" class="builder-shell"></section>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="script.js"></script>
+  <script type="module" src="../../overviews/shared/ConsentInit.mjs"></script>
+</body>
+
+</html>
