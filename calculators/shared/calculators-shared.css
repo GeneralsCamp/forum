@@ -130,7 +130,11 @@ label {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #f2d9bb;
+  background-color: #a77f5e;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background-color: #8f6748;
 }
 
 .home-icon-link {
