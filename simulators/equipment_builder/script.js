@@ -7,6 +7,7 @@ import { hydrateComposedImages } from "../../overviews/shared/ComposeHydrator.mj
 import { normalizeName } from "../../overviews/shared/RewardResolver.mjs";
 import { saveSimulatorData, loadSimulatorData } from "../../overviews/shared/GameSettings.mjs";
 import { getSharedLanguagePack } from "../../overviews/shared/SharedTextService.mjs";
+import { initRewardDetailModal } from "../../overviews/shared/RewardDetailModal.mjs";
 
 let lang = {};
 let ownLang = {};
@@ -20,6 +21,9 @@ let unitsById = {};
 let equipmentEffectToEffectId = {};
 let equipmentUniqueImageUrlMap = {};
 let uniqueGemImageUrlMap = {};
+let currencyImageUrlMap = {};
+let equipmentById = {};
+let gemsById = {};
 let wearerOptions = [];
 let selectedSetIds = [];
 let selectedTileKey = "";
@@ -732,6 +736,22 @@ function renderEquipmentTiles() {
   return rows || (selectedSetIds.length ? `<div class="builder-empty">${escapeHtml(ui("no_equipment", "No equipment matches the current filters."))}</div>` : "");
 }
 
+function openItemDetailModal(item) {
+  if (!item) return;
+  const trigger = document.createElement("button");
+  trigger.type = "button";
+  trigger.dataset.rewardDetail = "1";
+  trigger.dataset.rewardType = item.kind === "gem" ? "gem" : "equipment";
+  trigger.dataset.rewardId = item.id || "";
+  trigger.dataset.rewardName = item.name || "";
+  trigger.dataset.rewardAmount = "1";
+  trigger.dataset.rewardImage = item.imageUrl || "";
+  trigger.style.display = "none";
+  document.body.appendChild(trigger);
+  trigger.click();
+  trigger.remove();
+}
+
 function buildStats() {
   const totals = new Map();
   const selectedItems = Object.values(equipped).filter(Boolean);
@@ -897,7 +917,7 @@ function renderStats() {
         const typeDef = getEffectTypeDef(groupRows[0].effectTypeID);
         const groupValue = groupRows.reduce((sum, row) => sum + getCappedStatValue(row), 0);
         const stateKey = `${categoryId}:${effectGroupKey}`;
-        const openAttr = statsEffectGroupOpenState.get(stateKey) === false ? "" : " open";
+        const openAttr = statsEffectGroupOpenState.get(stateKey) === true ? " open" : "";
         return `
           <details class="stat-effect-group" data-effect-group-key="${escapeHtml(stateKey)}"${openAttr}>
             <summary class="stat-effect-group-title">
@@ -952,8 +972,8 @@ function renderSetFilterList() {
 
 function renderSetFilters() {
   const filteredWearers = wearerOptions.filter((wearer) => {
-    const label = String(wearer.label).toLowerCase();
-    return label.includes("castellan") || label.includes("commander");
+    const rawName = String(wearer.rawName || "").toLowerCase();
+    return rawName.includes("baron") || rawName.includes("general");
   });
 
   return `
@@ -1171,7 +1191,8 @@ function refreshBuilderPanels({ updateFilters = false } = {}) {
 function populateWearerOptions(wearers) {
   wearerOptions = wearers.map((wearer) => ({
     value: String(wearer.wearerID),
-    label: getLocalizedWearerName(wearer.wearerID)
+    label: getLocalizedWearerName(wearer.wearerID),
+    rawName: String(wearer.name || "")
   }));
 }
 
@@ -1232,6 +1253,11 @@ function bindControls() {
     const tile = event.target.closest(".equipment-tile");
     if (tile) {
       const itemKey = String(tile.dataset.itemKey || "");
+      const item = equipmentPool.find((entry) => getItemKey(entry) === itemKey);
+      if (selectedTileKey === itemKey) {
+        openItemDetailModal(item);
+        return;
+      }
       selectedTileKey = selectedTileKey === itemKey ? "" : itemKey;
       saveBuilderState();
       refreshBuilderPanels();
@@ -1285,7 +1311,8 @@ async function init() {
       normalizeNameFn: normalizeName,
       assets: {
         equipmentUniques: true,
-        uniqueGems: true
+        uniqueGems: true,
+        currencies: true
       },
       onReady: async ({ lang: L, data, imageMaps, effectCtx: E }) => {
         lang = L;
@@ -1310,12 +1337,33 @@ async function init() {
         });
 
         slotById = buildLookup(slots, "slotID");
+        equipmentById = buildLookup(equipments, "equipmentID");
+        gemsById = buildLookup(gems, "gemID");
         wearerById = buildLookup(wearers, "wearerID");
         unitsById = buildLookup(units, "wodID");
         equipmentUniqueImageUrlMap = imageMaps?.equipmentUniques || {};
         uniqueGemImageUrlMap = imageMaps?.uniqueGems || {};
+        currencyImageUrlMap = imageMaps?.currencies || {};
         setIndexById = buildSetIndex({ equipments, gems, setBonuses });
         equipmentSets = Object.values(setIndexById);
+
+        initRewardDetailModal({
+          getContext: () => ({
+            lang,
+            equipmentById,
+            gemsById,
+            effectsById: effectCtx?.effectDefinitions || {},
+            effectCapsMap: effectCtx?.effectCapsMap || {},
+            percentEffectIDs: effectCtx?.percentEffectIDs || new Set(),
+            equipmentEffectToEffectId,
+            equipmentEffects,
+            equipmentSlotsById: slotById,
+            currentLanguage,
+            equipmentUniqueImageUrlMap,
+            uniqueGemImageUrlMap,
+            currencyImageUrlMap
+          })
+        });
 
         initLanguageSelector({
           currentLanguage,
