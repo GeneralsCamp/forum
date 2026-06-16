@@ -33,11 +33,11 @@ const MAX_SELECTED_SETS = 5;
 const SIMULATOR_NAME = "equipment_builder";
 
 const SLOT_DEFS = [
-  { id: "helmet", type: "helmet", labelKey: "helmet", acceptedSlotIds: ["1"], source: "equipment" },
-  { id: "armor", type: "armor", labelKey: "armor", acceptedSlotIds: ["2"], source: "equipment" },
-  { id: "sword", type: "sword", labelKey: "sword", acceptedSlotIds: ["3"], source: "equipment" },
+  { id: "helmet", type: "helmet", labelKey: "helmet", acceptedSlotIds: ["3"], source: "equipment" },
+  { id: "armor", type: "armor", labelKey: "armor", acceptedSlotIds: ["1"], source: "equipment" },
+  { id: "sword", type: "sword", labelKey: "sword", acceptedSlotIds: ["2"], source: "equipment" },
   { id: "artifact", type: "artifact", labelKey: "artifact", acceptedSlotIds: ["4"], source: "equipment" },
-  { id: "extra-artifact", type: "artifact", labelKey: "artifact", acceptedSlotIds: ["5"], source: "equipment" },
+  { id: "look", type: "look", labelKey: "look", acceptedSlotIds: ["5"], source: "equipment" },
   { id: "hero", type: "hero", labelKey: "hero", acceptedSlotIds: ["6"], source: "equipment" },
   { id: "gem-1", type: "gem", labelKey: "gem", source: "gem", parentSlotId: "helmet" },
   { id: "gem-2", type: "gem", labelKey: "gem", source: "gem", parentSlotId: "armor" },
