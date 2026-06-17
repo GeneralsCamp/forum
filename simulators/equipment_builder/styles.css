@@ -130,7 +130,6 @@
 .stats-panel .panel-body {
   overflow-y: auto;
   overflow-x: hidden;
-  scrollbar-gutter: stable;
   padding: 2px;
   display: block;
 }
@@ -372,7 +371,6 @@
   align-content: center;
   min-height: 100%;
   padding: 8px;
-  background: rgba(51, 43, 37, 0.38);
 }
 
 .equip-slot,
@@ -573,6 +571,12 @@
 
   .builder-panel {
     min-height: 0;
+  }
+
+  .builder-shell.mobile-view-build .loadout-panel>.panel-head,
+  .builder-shell.mobile-view-sets .filters-panel>.panel-head,
+  .builder-shell.mobile-view-stats .stats-panel>.panel-head {
+    display: none;
   }
 
   .builder-shell.mobile-view-build .filters-panel,

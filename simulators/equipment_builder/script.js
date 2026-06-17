@@ -1221,9 +1221,20 @@ function applyMobileBuilderViewClass(root = document.getElementById("builderRoot
   root.classList.add(`mobile-view-${currentMobileBuilderView}`);
 }
 
+function getMobileBuilderViewOptions() {
+  return [
+    ["sets", ui("select_owned_sets", "Select owned sets")],
+    ["build", ui("your_set", "Your set")],
+    ["stats", ui("grouped_stats", "Grouped stats")]
+  ];
+}
+
 function updateMobileBuilderViewButtons() {
   const select = document.getElementById("mobileBuilderViewSelect");
-  if (select) select.value = currentMobileBuilderView;
+  if (!select) return;
+  select.innerHTML = getMobileBuilderViewOptions().map(([value, label]) => `
+    <option value="${escapeHtml(value)}" ${value === currentMobileBuilderView ? "selected" : ""}>${escapeHtml(label)}</option>
+  `).join("");
 }
 
 function populateWearerOptions(wearers) {
