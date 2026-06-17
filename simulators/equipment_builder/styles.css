@@ -220,11 +220,7 @@
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
-  list-style: none;
-}
-
-.stat-effect-group-title::-webkit-details-marker {
-  display: none;
+  user-select: none;
 }
 
 .stat-category-title {
@@ -262,10 +258,9 @@
   right: 10px;
   top: 50%;
   transform: translateY(-50%);
-  transition: transform 0.12s ease;
 }
 
-.stat-effect-group[open]>.stat-effect-group-title::after {
+.stat-effect-group-title[aria-expanded="true"]::after {
   transform: translateY(-50%) rotate(90deg);
 }
 
@@ -273,7 +268,6 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  transition: height 0.17s ease;
 }
 
 .stat-category-body {
@@ -283,12 +277,8 @@
 
 .stat-effect-group {
   border-top: 1px solid rgba(67, 51, 38, 0.84);
-  border-bottom: 1px solid transparent;
   background: #ead0aa;
-}
-
-.stat-effect-group[open] {
-  border-bottom-color: rgba(67, 51, 38, 0.78);
+  border-bottom: 0.5px solid rgba(67, 51, 38, 0.84);
 }
 
 .stat-row {

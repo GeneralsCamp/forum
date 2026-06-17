@@ -942,20 +942,28 @@ function renderStats() {
         const typeDef = getEffectTypeDef(groupRows[0].effectTypeID);
         const groupValue = groupRows.reduce((sum, row) => sum + getCappedStatValue(row), 0);
         const stateKey = `${categoryId}:${effectGroupKey}`;
-        const openAttr = statsEffectGroupOpenState.get(stateKey) === true ? " open" : "";
+        const isOpen = statsEffectGroupOpenState.get(stateKey) === true;
+        const collapseId = `stat-collapse-${stateKey.replace(/[^a-z0-9]/gi, '-')}`;
+
         return `
-          <details class="stat-effect-group" data-effect-group-key="${escapeHtml(stateKey)}"${openAttr}>
-            <summary class="stat-effect-group-title">
+          <div class="stat-effect-group" data-effect-group-key="${escapeHtml(stateKey)}">
+            <div class="stat-effect-group-title" 
+                 data-bs-toggle="collapse" 
+                 data-bs-target="#${collapseId}" 
+                 aria-expanded="${isOpen}" 
+                 role="button">
               <span>${escapeHtml(getEffectGroupLabel(typeDef, groupValue, true))}</span>
-            </summary>
-            <div class="stat-effect-group-body">
+            </div>
+            <div id="${collapseId}" class="collapse ${isOpen ? 'show' : ''}">
+              <div class="stat-effect-group-body">
               ${groupRows.map((row) => `
                 <div class="stat-row stat-row-child">
                   <span>${escapeHtml(getEffectText(row.id, row.value, row.argId))}</span>
                 </div>
               `).join("")}
+              </div>
             </div>
-          </details>
+          </div>
         `;
       }).join("");
 
@@ -1101,7 +1109,6 @@ function renderBuilder() {
   if (filtersBody) filtersBody.scrollTop = scrollState.filters;
   if (equipmentGrid) equipmentGrid.scrollTop = scrollState.equipment;
   if (statsBody) statsBody.scrollTop = scrollState.stats;
-  setupStatsAccordion(root);
   updateMobileBuilderViewButtons();
 }
 
@@ -1139,48 +1146,11 @@ function refreshSetFilterList() {
 }
 
 function captureStatsEffectGroupState(root) {
-  root.querySelectorAll(".stat-effect-group[data-effect-group-key]").forEach((details) => {
-    statsEffectGroupOpenState.set(String(details.dataset.effectGroupKey || ""), details.hasAttribute("open"));
-  });
-}
-
-function setupStatsAccordion(root) {
-  root.querySelectorAll(".stat-effect-group").forEach((details) => {
-    const summary = details.querySelector(".stat-effect-group-title");
-    const body = details.querySelector(".stat-effect-group-body");
-    if (!summary || !body || summary.dataset.accordionBound) return;
-    summary.dataset.accordionBound = "1";
-
-    summary.addEventListener("click", (event) => {
-      event.preventDefault();
-
-      const isOpen = details.hasAttribute("open");
-      if (isOpen) {
-        statsEffectGroupOpenState.set(String(details.dataset.effectGroupKey || ""), false);
-        const startHeight = body.scrollHeight;
-        body.style.height = `${startHeight}px`;
-        details.classList.add("is-closing");
-        requestAnimationFrame(() => {
-          body.style.height = "0px";
-        });
-        body.addEventListener("transitionend", () => {
-          details.removeAttribute("open");
-          details.classList.remove("is-closing");
-          body.style.height = "";
-        }, { once: true });
-        return;
-      }
-
-      details.setAttribute("open", "");
-      statsEffectGroupOpenState.set(String(details.dataset.effectGroupKey || ""), true);
-      body.style.height = "0px";
-      requestAnimationFrame(() => {
-        body.style.height = `${body.scrollHeight}px`;
-      });
-      body.addEventListener("transitionend", () => {
-        body.style.height = "";
-      }, { once: true });
-    });
+  root.querySelectorAll(".stat-effect-group").forEach((group) => {
+    const title = group.querySelector(".stat-effect-group-title");
+    if (title) {
+      statsEffectGroupOpenState.set(String(group.dataset.effectGroupKey || ""), title.getAttribute("aria-expanded") === "true");
+    }
   });
 }
 
@@ -1214,7 +1184,6 @@ function refreshBuilderPanels({ updateFilters = false } = {}) {
   }
 
   hydrateBuilderImages(root);
-  setupStatsAccordion(root);
 }
 
 function applyMobileBuilderViewClass(root = document.getElementById("builderRoot")) {
