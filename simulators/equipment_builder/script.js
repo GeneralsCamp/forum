@@ -819,7 +819,7 @@ function buildStats() {
     });
   });
 
-  const dedupedByRenderedText = new Map();
+  const dedupedByEffectAndRenderedText = new Map();
   Array.from(totals.values())
     .filter((entry) => Number(entry.value || 0) !== 0)
     .forEach((entry) => {
@@ -827,12 +827,13 @@ function buildStats() {
         .replace(/\s+/g, " ")
         .trim()
         .toLowerCase();
-      if (!dedupedByRenderedText.has(renderedText)) {
-        dedupedByRenderedText.set(renderedText, entry);
+      const dedupeKey = `${entry.id}::${renderedText}`;
+      if (!dedupedByEffectAndRenderedText.has(dedupeKey)) {
+        dedupedByEffectAndRenderedText.set(dedupeKey, entry);
       }
     });
 
-  return Array.from(dedupedByRenderedText.values());
+  return Array.from(dedupedByEffectAndRenderedText.values());
 }
 
 function getEffectTypeLabel(effectTypeID) {

@@ -42,7 +42,7 @@
   flex-direction: column;
   background: radial-gradient(circle at top right, #956544 0%, #7a5437 42%, #6a472d 100%);
   border: 1px solid rgba(255, 255, 255, 0.58);
-  border-radius: 12px;
+  border-radius: 6px;
   overflow: hidden;
 }
 
@@ -144,7 +144,7 @@
 .set-filter-controls {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 4px;
+  gap: 0;
   padding: 0;
 }
 
@@ -153,6 +153,21 @@
 .set-filter-controls .form-control,
 .set-filter-controls .btn {
   min-height: 0;
+}
+
+.builder-panel .custom-select,
+.builder-panel .custom-input {
+  border-radius: 0;
+  border-width: 1px;
+}
+
+.filters-panel .panel-body {
+  background: rgba(42, 31, 23, 0.38);
+}
+
+.filters-panel .panel-filter-row {
+  background: #96663f;
+  border-bottom: 1px solid rgba(67, 51, 38, 0.84);
 }
 
 .equipment-panel .panel-filter-row {
@@ -309,13 +324,11 @@
   display: grid;
   grid-auto-rows: 30px;
   align-content: start;
-  gap: 3px;
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  scrollbar-gutter: stable;
-  padding: 6px;
+  padding: 0;
 }
 
 .set-filter-row {
@@ -327,7 +340,7 @@
   padding: 5px 7px;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 0;
-  background: rgba(67, 51, 38, 0.38);
+  background: rgba(177, 123, 79, 0.38);
   color: var(--builder-cream);
   font-size: 12px;
   font-weight: 700;
@@ -358,8 +371,9 @@
   grid-template-columns: repeat(6, minmax(50px, 72px));
   grid-template-rows: repeat(2, minmax(54px, 76px));
   gap: 8px;
-  justify-content: center;
-  align-content: center;
+  place-content: center;
+  place-items: center;
+  height: 100%;
   min-height: 100%;
   padding: 8px;
 }
@@ -483,7 +497,6 @@
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  scrollbar-gutter: stable;
   padding: 0;
 }
 
@@ -533,6 +546,11 @@
 }
 
 @media (max-width: 992px) {
+  .equipment-builder-page *::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
   #content {
     overflow: hidden;
   }
@@ -564,7 +582,10 @@
     min-height: 0;
   }
 
-  .stats-panel {
+  .stats-panel,
+  .filters-panel,
+  .equipment-panel,
+  .loadout-panel {
     border-radius: 0;
   }
 
@@ -628,10 +649,6 @@
   .slot-board {
     grid-template-columns: repeat(6, minmax(42px, 66px));
     grid-template-rows: repeat(2, minmax(46px, 72px));
-    gap: 6px;
-  }
-
-  .panel-body {
-    padding: 4px;
+    gap: 3px;
   }
 }
