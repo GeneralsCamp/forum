@@ -580,7 +580,9 @@ function saveBuilderState() {
     setSearch: currentSetSearchText,
     selectedSetIds,
     selectedTileKey,
-    equippedBySlot
+    equippedBySlot,
+    upgradeToggleEnabled,
+    mobileBuilderView: currentMobileBuilderView
   });
 }
 
@@ -601,6 +603,10 @@ function restoreBuilderState() {
 
   currentTypeFilter = String(saved.type || "all");
   currentSetSearchText = String(saved.setSearch || "");
+  upgradeToggleEnabled = saved.upgradeToggleEnabled === true;
+  currentMobileBuilderView = ["build", "sets", "stats"].includes(String(saved.mobileBuilderView || ""))
+    ? String(saved.mobileBuilderView)
+    : currentMobileBuilderView;
   selectedTileKey = "";
   equipped = {};
 
@@ -1276,6 +1282,7 @@ function bindControls() {
       upgradeToggleEnabled = !upgradeToggleEnabled;
       upgradeToggle.classList.toggle("is-active", upgradeToggleEnabled);
       upgradeToggle.setAttribute("aria-pressed", upgradeToggleEnabled ? "true" : "false");
+      saveBuilderState();
       refreshBuilderPanels();
       return;
     }
@@ -1306,6 +1313,7 @@ function bindControls() {
     if (event.target?.id === "mobileBuilderViewSelect") {
       currentMobileBuilderView = String(event.target.value || "build");
       applyMobileBuilderViewClass();
+      saveBuilderState();
       handleAutoHeight(AUTO_HEIGHT_OPTIONS);
       return;
     }
