@@ -1162,13 +1162,20 @@ function renderTypeFilter() {
   });
 
   if (!seen.has(currentTypeFilter)) currentTypeFilter = "all";
+  const technicusLabel = gameText("event_title_46", "Technicus");
+  const inactiveLabel = gameText("status_inactive", "Inactive").toLowerCase();
+  const activeLabel = gameText("status_active", "Active").toLowerCase();
 
   return `
-    <div class="panel-filter-row">
+    <div class="panel-filter-row equipment-filter-controls">
       <select id="typeFilter" class="form-select custom-select text-center" aria-label="Equipment type filter">
         ${Array.from(seen.entries()).map(([value, label]) => `
           <option value="${escapeHtml(value)}" ${value === currentTypeFilter ? "selected" : ""}>${escapeHtml(label)}</option>
         `).join("")}
+      </select>
+      <select id="technicusSelect" class="form-select custom-select text-center" aria-label="Technicus selector">
+        <option value="inactive" ${upgradeToggleEnabled ? "" : "selected"}>${escapeHtml(`${technicusLabel} ${inactiveLabel}`)}</option>
+        <option value="active" ${upgradeToggleEnabled ? "selected" : ""}>${escapeHtml(`${technicusLabel} ${activeLabel}`)}</option>
       </select>
     </div>
   `;
@@ -1188,15 +1195,8 @@ function renderBuilder() {
 
   root.innerHTML = `
     <section class="builder-panel equipment-panel">
-      <div class="panel-head panel-head-with-action">
+      <div class="panel-head">
         <span>${escapeHtml(gameText("dialog_equipment_title", "Equipment"))}</span>
-        <button type="button"
-          class="panel-icon-button panel-text-button ${upgradeToggleEnabled ? "is-active" : ""}"
-          data-upgrade-toggle
-          aria-pressed="${upgradeToggleEnabled ? "true" : "false"}"
-          aria-label="Toggle upgrade mode">
-          ${escapeHtml(gameText("event_title_46", "Technicus"))}
-        </button>
       </div>
       <div class="panel-body equipment-board">
         ${renderTypeFilter()}
@@ -1414,16 +1414,6 @@ function bindControls() {
       return;
     }
 
-    const upgradeToggle = event.target.closest("[data-upgrade-toggle]");
-    if (upgradeToggle) {
-      upgradeToggleEnabled = !upgradeToggleEnabled;
-      upgradeToggle.classList.toggle("is-active", upgradeToggleEnabled);
-      upgradeToggle.setAttribute("aria-pressed", upgradeToggleEnabled ? "true" : "false");
-      saveBuilderState();
-      refreshBuilderPanels();
-      return;
-    }
-
     const tile = event.target.closest(".equipment-tile");
     if (tile) {
       const itemKey = String(tile.dataset.itemKey || "");
@@ -1465,6 +1455,13 @@ function bindControls() {
     if (event.target?.id === "typeFilter") {
       currentTypeFilter = String(event.target.value || "all");
       selectedTileKey = "";
+      saveBuilderState();
+      refreshBuilderPanels();
+      return;
+    }
+
+    if (event.target?.id === "technicusSelect") {
+      upgradeToggleEnabled = String(event.target.value || "inactive") === "active";
       saveBuilderState();
       refreshBuilderPanels();
     }
