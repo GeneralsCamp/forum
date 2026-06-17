@@ -1,4 +1,4 @@
-import { initAutoHeight } from "../../overviews/shared/ResizeService.mjs";
+import { handleAutoHeight, initAutoHeight } from "../../overviews/shared/ResizeService.mjs";
 import { createLoader } from "../../overviews/shared/LoadingService.mjs";
 import { coreInit } from "../../overviews/shared/CoreInit.mjs";
 import { initLanguageSelector, getInitialLanguage } from "../../overviews/shared/LanguageService.mjs";
@@ -34,6 +34,7 @@ let currentWearerFilter = "all";
 let currentTypeFilter = "all";
 let currentSetSearchText = "";
 let upgradeToggleEnabled = false;
+let currentMobileBuilderView = "sets";
 const statsEffectGroupOpenState = new Map();
 
 const loader = createLoader();
@@ -41,6 +42,11 @@ const composedImageCache = new Map();
 const currentLanguage = getInitialLanguage();
 const MAX_SELECTED_SETS = 5;
 const SIMULATOR_NAME = "equipment_builder";
+const AUTO_HEIGHT_OPTIONS = {
+  contentSelector: "#content",
+  subtractSelectors: [".page-title", ".mobile-builder-view-switch"],
+  extraOffset: 18
+};
 
 const SLOT_DEFS = [
   { id: "helmet", type: "helmet", labelKey: "helmet", acceptedSlotIds: ["3"], source: "equipment" },
@@ -954,14 +960,14 @@ function renderStats() {
       }).join("");
 
       return `
-        <details class="stat-category stat-category-${escapeHtml(categoryId)}" open>
-          <summary class="stat-category-title">
+        <section class="stat-category stat-category-${escapeHtml(categoryId)}">
+          <div class="stat-category-title">
             <span>${escapeHtml(getEffectCategoryLabel(categoryId))}</span>
-          </summary>
+          </div>
           <div class="stat-category-body">
             ${statRows}
           </div>
-        </details>
+        </section>
       `;
     }).join("");
 }
@@ -1037,6 +1043,7 @@ function renderBuilder() {
   const root = document.getElementById("builderRoot");
   if (!root) return;
   captureStatsEffectGroupState(root);
+  applyMobileBuilderViewClass(root);
 
   const scrollState = {
     filters: root.querySelector(".filters-panel .panel-body")?.scrollTop || 0,
@@ -1049,11 +1056,11 @@ function renderBuilder() {
       <div class="panel-head panel-head-with-action">
         <span>${escapeHtml(gameText("dialog_equipment_title", "Equipment"))}</span>
         <button type="button"
-          class="panel-icon-button ${upgradeToggleEnabled ? "is-active" : ""}"
+          class="panel-icon-button panel-text-button ${upgradeToggleEnabled ? "is-active" : ""}"
           data-upgrade-toggle
           aria-pressed="${upgradeToggleEnabled ? "true" : "false"}"
           aria-label="Toggle upgrade mode">
-          <i class="bi bi-arrow-up-circle"></i>
+          ${escapeHtml(gameText("event_title_46", "Technicus"))}
         </button>
       </div>
       <div class="panel-body equipment-board">
@@ -1095,6 +1102,7 @@ function renderBuilder() {
   if (equipmentGrid) equipmentGrid.scrollTop = scrollState.equipment;
   if (statsBody) statsBody.scrollTop = scrollState.stats;
   setupStatsAccordion(root);
+  updateMobileBuilderViewButtons();
 }
 
 function hydrateBuilderImages(root) {
@@ -1137,48 +1145,39 @@ function captureStatsEffectGroupState(root) {
 }
 
 function setupStatsAccordion(root) {
-  [
-    [".stat-category", ".stat-category-title", ".stat-category-body"],
-    [".stat-effect-group", ".stat-effect-group-title", ".stat-effect-group-body"]
-  ].forEach(([detailsSelector, summarySelector, bodySelector]) => {
-    root.querySelectorAll(detailsSelector).forEach((details) => {
-      const summary = details.querySelector(summarySelector);
-      const body = details.querySelector(bodySelector);
-      if (!summary || !body || summary.dataset.accordionBound) return;
-      summary.dataset.accordionBound = "1";
+  root.querySelectorAll(".stat-effect-group").forEach((details) => {
+    const summary = details.querySelector(".stat-effect-group-title");
+    const body = details.querySelector(".stat-effect-group-body");
+    if (!summary || !body || summary.dataset.accordionBound) return;
+    summary.dataset.accordionBound = "1";
 
-      summary.addEventListener("click", (event) => {
-        event.preventDefault();
+    summary.addEventListener("click", (event) => {
+      event.preventDefault();
 
-        const isOpen = details.hasAttribute("open");
-        if (isOpen) {
-          if (details.dataset.effectGroupKey) {
-            statsEffectGroupOpenState.set(String(details.dataset.effectGroupKey), false);
-          }
-          const startHeight = body.scrollHeight;
-          body.style.height = `${startHeight}px`;
-          body.offsetHeight;
-          body.style.height = "0px";
-          details.classList.add("is-closing");
-          window.setTimeout(() => {
-            details.removeAttribute("open");
-            details.classList.remove("is-closing");
-            body.style.height = "";
-          }, 170);
-          return;
-        }
-
-        details.setAttribute("open", "");
-        if (details.dataset.effectGroupKey) {
-          statsEffectGroupOpenState.set(String(details.dataset.effectGroupKey), true);
-        }
-        body.style.height = "0px";
+      const isOpen = details.hasAttribute("open");
+      if (isOpen) {
+        statsEffectGroupOpenState.set(String(details.dataset.effectGroupKey || ""), false);
+        const startHeight = body.scrollHeight;
+        body.style.height = `${startHeight}px`;
         body.offsetHeight;
-        body.style.height = `${body.scrollHeight}px`;
+        body.style.height = "0px";
+        details.classList.add("is-closing");
         window.setTimeout(() => {
+          details.removeAttribute("open");
+          details.classList.remove("is-closing");
           body.style.height = "";
         }, 170);
-      });
+        return;
+      }
+
+      details.setAttribute("open", "");
+      statsEffectGroupOpenState.set(String(details.dataset.effectGroupKey || ""), true);
+      body.style.height = "0px";
+      body.offsetHeight;
+      body.style.height = `${body.scrollHeight}px`;
+      window.setTimeout(() => {
+        body.style.height = "";
+      }, 170);
     });
   });
 }
@@ -1214,6 +1213,17 @@ function refreshBuilderPanels({ updateFilters = false } = {}) {
 
   hydrateBuilderImages(root);
   setupStatsAccordion(root);
+}
+
+function applyMobileBuilderViewClass(root = document.getElementById("builderRoot")) {
+  if (!root) return;
+  root.classList.remove("mobile-view-build", "mobile-view-sets", "mobile-view-stats");
+  root.classList.add(`mobile-view-${currentMobileBuilderView}`);
+}
+
+function updateMobileBuilderViewButtons() {
+  const select = document.getElementById("mobileBuilderViewSelect");
+  if (select) select.value = currentMobileBuilderView;
 }
 
 function populateWearerOptions(wearers) {
@@ -1310,6 +1320,13 @@ function bindControls() {
   });
 
   document.addEventListener("change", (event) => {
+    if (event.target?.id === "mobileBuilderViewSelect") {
+      currentMobileBuilderView = String(event.target.value || "build");
+      applyMobileBuilderViewClass();
+      handleAutoHeight(AUTO_HEIGHT_OPTIONS);
+      return;
+    }
+
     if (event.target?.id === "wearerSelect") {
       currentWearerFilter = String(event.target.value || "all");
       selectedTileKey = "";
@@ -1333,11 +1350,7 @@ function bindControls() {
   });
 }
 
-initAutoHeight({
-  contentSelector: "#content",
-  subtractSelectors: [".page-title"],
-  extraOffset: 18
-});
+initAutoHeight(AUTO_HEIGHT_OPTIONS);
 
 async function init() {
   try {
