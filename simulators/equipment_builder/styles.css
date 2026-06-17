@@ -84,6 +84,20 @@
   gap: 8px;
 }
 
+.panel-head-with-action>span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.panel-actions {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 4px;
+}
+
 .panel-icon-button {
   display: inline-flex;
   align-items: center;
@@ -96,6 +110,15 @@
   background: rgba(67, 51, 38, 0.42);
   color: var(--builder-cream);
   cursor: pointer;
+}
+
+.loadout-slot-button {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
 }
 
 .panel-icon-button:hover {
@@ -594,7 +617,6 @@
     padding: 0;
   }
 
-  .builder-shell.mobile-view-build .loadout-panel>.panel-head,
   .builder-shell.mobile-view-sets .filters-panel>.panel-head,
   .builder-shell.mobile-view-stats .stats-panel>.panel-head {
     display: none;

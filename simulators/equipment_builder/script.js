@@ -35,6 +35,8 @@ let currentTypeFilter = "all";
 let currentSetSearchText = "";
 let upgradeToggleEnabled = false;
 let currentMobileBuilderView = "sets";
+let activeLoadoutSlotByRole = { castellan: "1", commander: "1" };
+let loadoutProfiles = { castellan: {}, commander: {} };
 const statsEffectGroupOpenState = new Map();
 
 const loader = createLoader();
@@ -42,6 +44,7 @@ const composedImageCache = new Map();
 const currentLanguage = getInitialLanguage();
 const MAX_SELECTED_SETS = 5;
 const SIMULATOR_NAME = "equipment_builder";
+const LOADOUT_SLOT_IDS = ["1", "2", "3"];
 const AUTO_HEIGHT_OPTIONS = {
   contentSelector: "#content",
   subtractSelectors: [".page-title", ".mobile-builder-view-switch"],
@@ -568,50 +571,87 @@ function rebuildEquipmentPool() {
   });
 }
 
-function saveBuilderState() {
+function getWearerRole(wearerId = currentWearerFilter) {
+  const raw = String(wearerById[String(wearerId)]?.name || wearerOptions.find((wearer) => wearer.value === String(wearerId))?.rawName || "").toLowerCase();
+  if (raw.includes("general")) return "commander";
+  return "castellan";
+}
+
+function getFilteredWearerOptions() {
+  return wearerOptions.filter((wearer) => {
+    const rawName = String(wearer.rawName || "").toLowerCase();
+    return rawName.includes("baron") || rawName.includes("general");
+  });
+}
+
+function ensureWearerFilter() {
+  const filteredWearers = getFilteredWearerOptions();
+  if (!filteredWearers.some((wearer) => wearer.value === currentWearerFilter)) {
+    currentWearerFilter = filteredWearers[0]?.value || currentWearerFilter;
+  }
+}
+
+function getActiveLoadoutSlot(role = getWearerRole()) {
+  const slotId = String(activeLoadoutSlotByRole[role] || "1");
+  return LOADOUT_SLOT_IDS.includes(slotId) ? slotId : "1";
+}
+
+function getEmptyLoadoutProfile() {
+  return {
+    type: "all",
+    setSearch: "",
+    selectedSetIds: [],
+    selectedTileKey: "",
+    equippedBySlot: {},
+    upgradeToggleEnabled: false
+  };
+}
+
+function captureCurrentLoadoutProfile() {
   const equippedBySlot = {};
   Object.entries(equipped).forEach(([slotId, item]) => {
     if (item) equippedBySlot[slotId] = getItemKey(item);
   });
 
-  saveSimulatorData(SIMULATOR_NAME, {
-    wearer: currentWearerFilter,
+  return {
     type: currentTypeFilter,
     setSearch: currentSetSearchText,
-    selectedSetIds,
+    selectedSetIds: [...selectedSetIds],
     selectedTileKey,
     equippedBySlot,
-    upgradeToggleEnabled,
-    mobileBuilderView: currentMobileBuilderView
-  });
+    upgradeToggleEnabled
+  };
 }
 
-function restoreBuilderState() {
-  const saved = loadSimulatorData(SIMULATOR_NAME) || {};
+function storeCurrentLoadoutProfile() {
+  const role = getWearerRole();
+  const slotId = getActiveLoadoutSlot(role);
+  loadoutProfiles[role] ||= {};
+  loadoutProfiles[role][slotId] = captureCurrentLoadoutProfile();
+}
 
-  const savedWearer = String(saved.wearer || currentWearerFilter || "all");
-  if (savedWearer && (savedWearer === "all" || wearerOptions.some((wearer) => wearer.value === savedWearer))) {
-    currentWearerFilter = savedWearer;
-  }
+function getCurrentStoredLoadoutProfile() {
+  const role = getWearerRole();
+  const slotId = getActiveLoadoutSlot(role);
+  return loadoutProfiles?.[role]?.[slotId] || getEmptyLoadoutProfile();
+}
 
+function applyLoadoutProfile(profile = getEmptyLoadoutProfile()) {
   const allowedSetIds = new Set(getSetOptions(currentWearerFilter).map((entry) => String(entry.id)));
-  selectedSetIds = Array.isArray(saved.selectedSetIds)
-    ? saved.selectedSetIds.map(String).filter((id) => allowedSetIds.has(id)).slice(0, MAX_SELECTED_SETS)
+  selectedSetIds = Array.isArray(profile.selectedSetIds)
+    ? profile.selectedSetIds.map(String).filter((id) => allowedSetIds.has(id)).slice(0, MAX_SELECTED_SETS)
     : [];
 
   rebuildEquipmentPool();
 
-  currentTypeFilter = String(saved.type || "all");
-  currentSetSearchText = String(saved.setSearch || "");
-  upgradeToggleEnabled = saved.upgradeToggleEnabled === true;
-  currentMobileBuilderView = ["build", "sets", "stats"].includes(String(saved.mobileBuilderView || ""))
-    ? String(saved.mobileBuilderView)
-    : currentMobileBuilderView;
+  currentTypeFilter = String(profile.type || "all");
+  currentSetSearchText = String(profile.setSearch || "");
+  upgradeToggleEnabled = profile.upgradeToggleEnabled === true;
   selectedTileKey = "";
   equipped = {};
 
-  const equippedBySlot = saved.equippedBySlot && typeof saved.equippedBySlot === "object"
-    ? saved.equippedBySlot
+  const equippedBySlot = profile.equippedBySlot && typeof profile.equippedBySlot === "object"
+    ? profile.equippedBySlot
     : {};
 
   ["equipment", "gem"].forEach((source) => {
@@ -630,7 +670,7 @@ function restoreBuilderState() {
     }
   });
 
-  const savedSelectedTileKey = String(saved.selectedTileKey || "");
+  const savedSelectedTileKey = String(profile.selectedTileKey || "");
   if (equipmentPool.some((entry) => getItemKey(entry) === savedSelectedTileKey)) {
     selectedTileKey = savedSelectedTileKey;
   }
@@ -639,6 +679,66 @@ function restoreBuilderState() {
     selectedSetIds = [];
     equipped = {};
   }
+}
+
+function saveBuilderState() {
+  storeCurrentLoadoutProfile();
+
+  saveSimulatorData(SIMULATOR_NAME, {
+    wearer: currentWearerFilter,
+    activeLoadoutSlotByRole,
+    loadoutProfiles,
+    mobileBuilderView: currentMobileBuilderView
+  });
+}
+
+function restoreBuilderState() {
+  const saved = loadSimulatorData(SIMULATOR_NAME) || {};
+
+  const savedWearer = String(saved.wearer || currentWearerFilter || "all");
+  if (savedWearer && (savedWearer === "all" || wearerOptions.some((wearer) => wearer.value === savedWearer))) {
+    currentWearerFilter = savedWearer;
+  }
+  ensureWearerFilter();
+
+  currentMobileBuilderView = ["build", "sets", "stats"].includes(String(saved.mobileBuilderView || ""))
+    ? String(saved.mobileBuilderView)
+    : currentMobileBuilderView;
+
+  if (saved.activeLoadoutSlotByRole && typeof saved.activeLoadoutSlotByRole === "object") {
+    activeLoadoutSlotByRole = {
+      castellan: LOADOUT_SLOT_IDS.includes(String(saved.activeLoadoutSlotByRole.castellan || "")) ? String(saved.activeLoadoutSlotByRole.castellan) : "1",
+      commander: LOADOUT_SLOT_IDS.includes(String(saved.activeLoadoutSlotByRole.commander || "")) ? String(saved.activeLoadoutSlotByRole.commander) : "1"
+    };
+  }
+
+  if (saved.loadoutProfiles && typeof saved.loadoutProfiles === "object") {
+    loadoutProfiles = {
+      castellan: saved.loadoutProfiles.castellan && typeof saved.loadoutProfiles.castellan === "object" ? saved.loadoutProfiles.castellan : {},
+      commander: saved.loadoutProfiles.commander && typeof saved.loadoutProfiles.commander === "object" ? saved.loadoutProfiles.commander : {}
+    };
+    ["castellan", "commander"].forEach((role) => {
+      Object.values(loadoutProfiles[role]).forEach((profile) => {
+        if (profile && typeof profile === "object" && profile.upgradeToggleEnabled === undefined) {
+          profile.upgradeToggleEnabled = saved.upgradeToggleEnabled === true;
+        }
+      });
+    });
+  } else if (Array.isArray(saved.selectedSetIds) || saved.equippedBySlot) {
+    const migratedRole = getWearerRole(currentWearerFilter);
+    activeLoadoutSlotByRole[migratedRole] = "1";
+    loadoutProfiles[migratedRole] ||= {};
+    loadoutProfiles[migratedRole]["1"] = {
+      type: String(saved.type || "all"),
+      setSearch: String(saved.setSearch || ""),
+      selectedSetIds: Array.isArray(saved.selectedSetIds) ? saved.selectedSetIds.map(String) : [],
+      selectedTileKey: String(saved.selectedTileKey || ""),
+      equippedBySlot: saved.equippedBySlot && typeof saved.equippedBySlot === "object" ? saved.equippedBySlot : {},
+      upgradeToggleEnabled: saved.upgradeToggleEnabled === true
+    };
+  }
+
+  applyLoadoutProfile(getCurrentStoredLoadoutProfile());
 }
 
 function isItemAllowedInSlot(item, slot) {
@@ -1011,10 +1111,7 @@ function renderSetFilterList() {
 }
 
 function renderSetFilters() {
-  const filteredWearers = wearerOptions.filter((wearer) => {
-    const rawName = String(wearer.rawName || "").toLowerCase();
-    return rawName.includes("baron") || rawName.includes("general");
-  });
+  const filteredWearers = getFilteredWearerOptions();
 
   return `
     <div class="panel-filter-row set-filter-controls">
@@ -1033,6 +1130,29 @@ function renderSetFilters() {
     </div>
     ${renderSetFilterList()}
   `;
+}
+
+function getLoadoutTitle() {
+  const roleLabel = getLocalizedWearerName(currentWearerFilter);
+  const base = ui("your_set", "Your set");
+  const parts = String(base).trim().split(/\s+/);
+  if (parts.length >= 2) {
+    return `${parts[0]} ${roleLabel} ${parts.slice(1).join(" ")}`.toUpperCase();
+  }
+  return `${base} ${roleLabel}`.toUpperCase();
+}
+
+function renderLoadoutSlotButtons() {
+  const activeSlot = getActiveLoadoutSlot();
+  return LOADOUT_SLOT_IDS.map((slotId) => `
+    <button type="button"
+      class="panel-icon-button loadout-slot-button ${slotId === activeSlot ? "is-active" : ""}"
+      data-loadout-slot="${escapeHtml(slotId)}"
+      aria-pressed="${slotId === activeSlot ? "true" : "false"}"
+      aria-label="${escapeHtml(`${getLoadoutTitle()} ${slotId}`)}">
+      ${escapeHtml(slotId)}
+    </button>
+  `).join("");
 }
 
 function renderTypeFilter() {
@@ -1085,10 +1205,13 @@ function renderBuilder() {
     </section>
     <section class="builder-panel loadout-panel">
       <div class="panel-head panel-head-with-action">
-        <span>${escapeHtml(ui("your_set", "Your set"))}</span>
-        <button type="button" class="panel-icon-button" data-clear-loadout>
-          <i class="bi bi-trash"></i>
-        </button>
+        <span>${escapeHtml(getLoadoutTitle())}</span>
+        <div class="panel-actions">
+          ${renderLoadoutSlotButtons()}
+          <button type="button" class="panel-icon-button" data-clear-loadout>
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
       </div>
       <div class="panel-body">
         <div class="slot-board">${renderSlots()}</div>
@@ -1224,11 +1347,8 @@ function populateWearerOptions(wearers) {
 }
 
 function applyWearerFilter() {
-  const visibleOptions = getSetOptions(currentWearerFilter);
-  const allowedIds = new Set(visibleOptions.map((entry) => String(entry.id)));
-  selectedSetIds = selectedSetIds.filter((id) => allowedIds.has(String(id)));
-  equipped = Object.fromEntries(Object.entries(equipped).filter(([, item]) => selectedSetIds.includes(String(item?.setId))));
-  rebuildEquipmentPool();
+  ensureWearerFilter();
+  applyLoadoutProfile(getCurrentStoredLoadoutProfile());
   saveBuilderState();
   renderBuilder();
 }
@@ -1271,9 +1391,26 @@ function bindControls() {
     const clearLoadout = event.target.closest("[data-clear-loadout]");
     if (clearLoadout) {
       equipped = {};
+      selectedSetIds = [];
+      selectedTileKey = "";
+      currentTypeFilter = "all";
+      currentSetSearchText = "";
+      rebuildEquipmentPool();
+      saveBuilderState();
+      renderBuilder();
+      return;
+    }
+
+    const loadoutSlot = event.target.closest("[data-loadout-slot]");
+    if (loadoutSlot) {
+      const slotId = String(loadoutSlot.dataset.loadoutSlot || "1");
+      if (!LOADOUT_SLOT_IDS.includes(slotId)) return;
+      storeCurrentLoadoutProfile();
+      activeLoadoutSlotByRole[getWearerRole()] = slotId;
+      applyLoadoutProfile(getCurrentStoredLoadoutProfile());
       selectedTileKey = "";
       saveBuilderState();
-      refreshBuilderPanels();
+      renderBuilder();
       return;
     }
 
@@ -1319,8 +1456,8 @@ function bindControls() {
     }
 
     if (event.target?.id === "wearerSelect") {
+      storeCurrentLoadoutProfile();
       currentWearerFilter = String(event.target.value || "all");
-      selectedTileKey = "";
       applyWearerFilter();
       return;
     }
