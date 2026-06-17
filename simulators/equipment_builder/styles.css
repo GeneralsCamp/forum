@@ -635,7 +635,7 @@
 
   .builder-shell.mobile-view-build .loadout-panel {
     order: 1;
-    flex: 0 0 188px;
+    flex: 0 0 218px;
   }
 
   .builder-shell.mobile-view-build .equipment-panel {
@@ -668,6 +668,10 @@
 }
 
 @media (max-width: 520px) {
+  .builder-shell.mobile-view-build .loadout-panel {
+    flex-basis: 188px;
+  }
+
   .slot-board {
     grid-template-columns: repeat(6, minmax(42px, 66px));
     grid-template-rows: repeat(2, minmax(46px, 72px));
