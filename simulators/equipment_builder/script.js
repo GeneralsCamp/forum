@@ -1159,25 +1159,27 @@ function setupStatsAccordion(root) {
         statsEffectGroupOpenState.set(String(details.dataset.effectGroupKey || ""), false);
         const startHeight = body.scrollHeight;
         body.style.height = `${startHeight}px`;
-        body.offsetHeight;
-        body.style.height = "0px";
         details.classList.add("is-closing");
-        window.setTimeout(() => {
+        requestAnimationFrame(() => {
+          body.style.height = "0px";
+        });
+        body.addEventListener("transitionend", () => {
           details.removeAttribute("open");
           details.classList.remove("is-closing");
           body.style.height = "";
-        }, 170);
+        }, { once: true });
         return;
       }
 
       details.setAttribute("open", "");
       statsEffectGroupOpenState.set(String(details.dataset.effectGroupKey || ""), true);
       body.style.height = "0px";
-      body.offsetHeight;
-      body.style.height = `${body.scrollHeight}px`;
-      window.setTimeout(() => {
+      requestAnimationFrame(() => {
+        body.style.height = `${body.scrollHeight}px`;
+      });
+      body.addEventListener("transitionend", () => {
         body.style.height = "";
-      }, 170);
+      }, { once: true });
     });
   });
 }
