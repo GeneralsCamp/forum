@@ -35,6 +35,12 @@
   border-top-right-radius: 0;
 }
 
+@media (max-width: 1400px) and (max-height: 950px) and (orientation: landscape) {
+  .equipment-builder-page .page-title {
+    display: none;
+  }
+}
+
 .builder-panel {
   min-width: 0;
   min-height: 0;
@@ -67,7 +73,7 @@
 }
 
 .panel-head {
-  padding: 8px 12px;
+  padding: 4px 6px;
   border-bottom: 1px solid var(--builder-line);
   background: rgba(67, 51, 38, 0.88);
   color: var(--builder-gold);
