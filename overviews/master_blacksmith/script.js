@@ -55,7 +55,8 @@ const ALLOWED_SHOP_CATEGORY_IDS = new Set([
   "120", // Rift
   "121", // Legendary Rift
   "123", // Rift Shard
-  "124" // Gacha Recycling
+  "124", // Gacha Recycling
+  "125" // Imperial Ducat
 ]);
 const SHOP_CATEGORY_EXTRA = {
   "119": {
@@ -68,6 +69,11 @@ const SHOP_CATEGORY_EXTRA = {
     costField: "costLegendaryRiftCoin",
     currencyName: "LegendaryRiftCoin",
     sortOrder: 121
+  },
+  "125": {
+    costField: "costImperialDucat",
+    currencyName: "ImperialDucat",
+    sortOrder: 125
   }
 };
 
