@@ -242,6 +242,19 @@ function getEventFilterValue() {
     return String(el?.value || "gt");
 }
 
+function getEventFilterValueFromHash() {
+    const hash = window.location.hash.replace("#", "").trim().toLowerCase();
+    if (hash === GT_QUEST_EVENT_ID || hash === "gt") return "gt";
+    if (hash === RIFT_QUEST_EVENT_ID || hash === "rift") return "rift";
+    return null;
+}
+
+function updateHashForEventFilter(value) {
+    const eventId = value === "rift" ? RIFT_QUEST_EVENT_ID : GT_QUEST_EVENT_ID;
+    if (window.location.hash.replace("#", "") === eventId) return;
+    window.location.hash = eventId;
+}
+
 function getQuestTypeLabel(typeRaw) {
     const key = String(typeRaw || "").toLowerCase().replace(/[^a-z0-9]/g, "");
     const labels = {
@@ -288,7 +301,7 @@ function populateEventFilterOptions() {
     const eventFilter = document.getElementById("eventFilter");
     if (!eventFilter) return;
 
-    const selected = String(eventFilter.value || "gt");
+    const selected = getEventFilterValueFromHash() || String(eventFilter.value || "gt");
     eventFilter.innerHTML = "";
 
     [
@@ -490,6 +503,7 @@ function setupFilters() {
 
     if (!eventFilter.dataset.bound) {
         eventFilter.addEventListener("change", () => {
+            updateHashForEventFilter(eventFilter.value);
             populateLevelFilterOptions();
             populateTypeFilterOptions();
             renderQuests();
@@ -509,6 +523,8 @@ function setupFilters() {
         typeFilter.addEventListener("change", renderQuests);
         typeFilter.dataset.bound = "1";
     }
+
+    updateHashForEventFilter(eventFilter.value);
 }
 
 initAutoHeight({
