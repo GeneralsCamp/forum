@@ -458,7 +458,9 @@ function createCard(item, imageUrlMap = {}) {
     sellPriceDisplay = parts.join("<br>");
   } else {
     const sellPriceRaw = item.sellC1 || "0";
-    if (Number(sellPriceRaw) === 0 && item.sellSoldierBiscuit) {
+    if (Number(sellPriceRaw) === 0 && item.sellRiftShard) {
+      sellPriceDisplay = `<img src="../../img_base/rift-shard.png" class="effect-icon">x${formatNumber(item.sellRiftShard)}`;
+    } else if (Number(sellPriceRaw) === 0 && item.sellSoldierBiscuit) {
       sellPriceDisplay = `<img src="../../img_base/biscuit.png" class="effect-icon">x${formatNumber(item.sellSoldierBiscuit)}`;
     } else {
       sellPriceDisplay = `<img src="../../img_base/coin.png" class="effect-icon">x${formatNumber(sellPriceRaw)}`;
