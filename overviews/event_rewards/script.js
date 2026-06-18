@@ -1455,7 +1455,9 @@ async function init() {
                         constructionImageUrlMap,
                         equipmentImageUrlMap,
                         equipmentUniqueImageUrlMap,
-                        uniqueGemImageUrlMap
+                        uniqueGemImageUrlMap,
+                        allianceCoatLayoutsById,
+                        allianceLayoutImageUrlMap
                     })
                 });
                 difficultyByEvent = {};

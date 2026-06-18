@@ -572,10 +572,36 @@ function getConstructionImage(item) {
   return entry?.iconUrl || entry?.placedUrl || null;
 }
 
+function getUnitImageLookupKeys(item) {
+  const rawName = String(item?.name || item?.Name || "").trim();
+  const rawType = String(item?.type || item?.Type || "").trim();
+  const names = rawName ? [rawName] : [];
+  const types = rawType ? [rawType] : [];
+  const typeWithoutTier = rawType.replace(/\d+$/, "");
+
+  if (normalizeName(rawName) === "eventtool") {
+    names.push("Elitetool");
+  }
+
+  if (typeWithoutTier && typeWithoutTier !== rawType) {
+    types.push(typeWithoutTier);
+  }
+
+  return names.flatMap(name =>
+    types.flatMap(type => [
+      normalizeName(`${name}_unit_${type}`),
+      normalizeName(`${type}_unit_${name}`),
+      normalizeName(type)
+    ])
+  );
+}
+
 function getUnitImage(item) {
   if (!item) return null;
-  const key = normalizeName(`${item.name || ""}_unit_${item.type || ""}`);
-  return unitImageUrlMap[key] || null;
+  for (const key of getUnitImageLookupKeys(item)) {
+    if (unitImageUrlMap[key]) return unitImageUrlMap[key];
+  }
+  return null;
 }
 
 function getLootBoxImage(box) {

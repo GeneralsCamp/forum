@@ -70,6 +70,7 @@ function normalizeType(type) {
   if (lower === "eventtool") return "unit";
   if (lower === "constructionitem") return "construction";
   if (lower === "item") return "equipment";
+  if (lower === "alliance_layout" || lower === "alliancelayout" || lower === "alliancecoatlayout") return "alliance_layout";
   return lower;
 }
 
@@ -227,6 +228,7 @@ function findEntity(type, id, ctx) {
   if (type === "lootbox") return ctx.lootBoxesById?.[key] || null;
   if (type === "currency") return ctx.currenciesById?.[key] || null;
   if (type === "offering") return { tombolaID: key };
+  if (type === "alliance_layout") return ctx.allianceCoatLayoutsById?.[key] || null;
   return null;
 }
 
@@ -260,6 +262,7 @@ function getEntryImageUrl(entry, ctx) {
   if (entry.type === "construction") return resolver.getConstructionImageUrl(entry);
   if (entry.type === "equipment") return resolver.getEquipmentImageUrl(entry) || "../../img_base/equipment.png";
   if (entry.type === "lootbox") return resolver.getLootBoxImageUrl(entry);
+  if (entry.type === "alliance_layout") return resolver.getAllianceLayoutImageUrl(entry);
   return null;
 }
 
@@ -980,6 +983,7 @@ function renderDecorationModal(detail, ctx) {
   const effects = parseDetailEffects(getProp(entity, ["areaSpecificEffects", "areaspecificeffects"]) || "", ctx);
   const modalEl = createInfoCardModalElement();
   modalEl.classList.remove("reward-equipment-modal");
+  modalEl.classList.remove("reward-alliance-layout-modal");
   modalEl.querySelector(".modal-title").textContent = name;
   modalEl.querySelector("#rewardInfoCardModalBody").innerHTML = `
     <div class="reward-info-card box-content">
@@ -1049,6 +1053,7 @@ function renderConstructionModal(detail, ctx) {
   const placement = getPlacementBuildingNames(entity, ctx);
   const modalEl = createInfoCardModalElement();
   modalEl.classList.remove("reward-equipment-modal");
+  modalEl.classList.remove("reward-alliance-layout-modal");
   modalEl.querySelector(".modal-title").textContent = name;
   modalEl.querySelector("#rewardInfoCardModalBody").innerHTML = `
     <div class="reward-info-card box-content">
@@ -1126,6 +1131,7 @@ function renderEquipmentGemModal(detail, ctx) {
     .join("");
   const modalEl = createInfoCardModalElement();
   modalEl.classList.add("reward-equipment-modal");
+  modalEl.classList.remove("reward-alliance-layout-modal");
   modalEl.querySelector(".modal-title").textContent = getEquipmentGemModalTitle(name, slotLabel, entity);
   modalEl.querySelector("#rewardInfoCardModalBody").innerHTML = `
     <article class="reward-equipment-card box-content">
@@ -1148,6 +1154,64 @@ function renderEquipmentGemModal(detail, ctx) {
     selector: 'img[data-compose-equipment="1"]:not([data-compose-ready])',
     cache: composedRewardImageCache
   });
+  return true;
+}
+
+function formatAllianceLayoutDuration(seconds) {
+  const total = Number(seconds || 0);
+  if (!Number.isFinite(total) || total <= 0) return "";
+  const days = Math.floor(total / 86400);
+  const hours = Math.floor((total % 86400) / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  const parts = [];
+  if (days > 0) parts.push(`${days}d`);
+  if (hours > 0) parts.push(`${hours}h`);
+  if (minutes > 0 && days === 0) parts.push(`${minutes}m`);
+  return parts.join(" ") || "0m";
+}
+
+function getAllianceLayoutDetailName(layout, detail, ctx) {
+  if (detail.name) return detail.name;
+  const id = String(getProp(layout, ["allianceCoatLayoutID", "allianceCoatLayoutId", "alliancecoatlayoutid", "alliancecoatlayoutID"]) || detail.id || "");
+  const localized = ctx.lang?.[`alliancecoat_layout_name_${id}`];
+  const comment = getProp(layout, ["comment1", "comment2", "name", "Name"]);
+  return localized || comment || `Alliance CoA ${id || ""}`.trim();
+}
+
+function getAllianceLayoutImageUrl(layout, detail, ctx) {
+  if (detail.imageUrl) return detail.imageUrl;
+  const id = String(getProp(layout, ["allianceCoatLayoutID", "allianceCoatLayoutId", "alliancecoatlayoutid", "alliancecoatlayoutID"]) || detail.id || "");
+  return ctx.allianceLayoutImageUrlMap?.[id] || null;
+}
+
+function renderAllianceLayoutModal(detail, ctx) {
+  const layout = findEntity("alliance_layout", detail.id, ctx);
+  if (!layout) return false;
+
+  const name = getAllianceLayoutDetailName(layout, detail, ctx);
+  const imageUrl = getAllianceLayoutImageUrl(layout, detail, ctx);
+  const effectsRaw = getProp(layout, ["effects", "Effects"]) || "";
+  const effects = parseEquipmentEffects(effectsRaw, "alliance_layout", ctx);
+  const modalEl = createInfoCardModalElement();
+
+  modalEl.classList.add("reward-equipment-modal");
+  modalEl.classList.add("reward-alliance-layout-modal");
+  modalEl.querySelector(".modal-title").textContent = name;
+  modalEl.querySelector("#rewardInfoCardModalBody").innerHTML = `
+    <article class="reward-equipment-card box-content">
+      <div class="reward-equipment-visual">
+        <div class="reward-equipment-image">
+          ${imageUrl ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(name)}" loading="lazy">` : "<span>?</span>"}
+        </div>
+      </div>
+      <div class="reward-equipment-content">
+        <ul class="effect-list reward-equipment-effects">
+          ${effects.length ? effects.map((line) => `<li class="reward-effect-row">${escapeHtml(line)}</li>`).join("") : `<li class="reward-effect-row">No effect data</li>`}
+        </ul>
+      </div>
+    </article>
+  `;
+  getInfoCardModal().open();
   return true;
 }
 
@@ -1797,6 +1861,12 @@ export function initRewardDetailModal({ getContext }) {
       return;
     }
 
+    if (type === "alliance_layout" && renderAllianceLayoutModal(detail, ctx)) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+
     if ((type === "lootbox" || type === "offering") && renderRewardPool(detail, ctx)) {
       event.preventDefault();
       event.stopPropagation();
@@ -1809,7 +1879,7 @@ export function initRewardDetailModal({ getContext }) {
 
 export function rewardDetailAttrs({ type, id, name, amount, imageUrl }) {
   const normalizedType = normalizeType(type);
-  if (!["lootbox", "offering", "unit", "tool", "decoration", "construction", "equipment", "gem"].includes(normalizedType)) return "";
+  if (!["lootbox", "offering", "unit", "tool", "decoration", "construction", "equipment", "gem", "alliance_layout"].includes(normalizedType)) return "";
   return [
     `data-reward-detail="1"`,
     `data-reward-type="${escapeHtml(normalizedType || "")}"`,

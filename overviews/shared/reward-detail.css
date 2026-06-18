@@ -360,6 +360,12 @@
   height: 54px !important;
 }
 
+.reward-alliance-layout-modal .reward-equipment-image img,
+.reward-alliance-layout-modal .reward-equipment-image canvas {
+  border: 0;
+  box-shadow: none;
+}
+
 .reward-equipment-content {
   min-width: 0;
   min-height: 0;
