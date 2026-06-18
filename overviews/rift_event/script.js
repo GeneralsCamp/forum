@@ -738,52 +738,6 @@ function normalizeBossName(rawName, bossId) {
   return base || `Rift ${bossId}`;
 }
 
-function pickIndividualRewardSetForBoss(boss) {
-  const leagueTypeId = String(boss?.leaguetypeID || "");
-  const eventIds = new Set(state.raidEvents.map(e => String(e.eventID)));
-
-  let rows = state.leaguetypeEvents.filter(row =>
-    eventIds.has(String(row.eventID)) &&
-    (!leagueTypeId || String(row.leaguetypeID) === leagueTypeId)
-  );
-
-  if (rows.length === 0) {
-    rows = state.leaguetypeEvents.filter(row => eventIds.has(String(row.eventID)));
-  }
-
-  if (rows.length === 0) return null;
-
-  rows.sort((a, b) => Number(b.rewardSetID || 0) - Number(a.rewardSetID || 0));
-  return rows[0];
-}
-
-function buildIndividualRows(boss) {
-  const source = pickIndividualRewardSetForBoss(boss);
-  if (!source) return [];
-
-  const points = csv(source.neededPointsForRewards);
-  const rewardIds = csv(source.rewardIDs);
-  const len = Math.min(points.length, rewardIds.length);
-  const rows = [];
-
-  for (let i = 0; i < len; i++) {
-    const rewardId = rewardIds[i];
-    const reward = state.rewardsById[String(rewardId)];
-    const parsedEntries = mapRewardToEntries(reward);
-    if (parsedEntries.length === 0) continue;
-    const pointsLabelTemplate =
-      langValue("dialog_are_activityreward_points") || "Collect {0} points";
-    const pointsLabel = formatLangTemplate(pointsLabelTemplate, formatNumber(points[i]));
-    rows.push({
-      title: pointsLabel,
-      meta: "",
-      items: parsedEntries
-    });
-  }
-
-  return rows;
-}
-
 function buildBossRows(boss) {
   const levels = state.raidBossLevels
     .filter(row => String(row.raidBossID) === String(boss?.raidBossID || ""))
@@ -1193,25 +1147,20 @@ function renderCardRows(containerId, rows, emptyText) {
 
 function renderAll() {
   const boss = selectedRift();
-  const noIndividualRewards = ownText("no_individual_rewards", "No individual rewards found");
   const noBossRewards = ownText("no_boss_rewards", "No boss rewards found");
   if (!boss) {
-    renderCardRows("individualRows", [], noIndividualRewards);
     renderCardRows("bossRows", [], noBossRewards);
     renderBossOverview();
     return;
   }
 
-  const individualRows = buildIndividualRows(boss);
   const bossRows = buildBossRows(boss);
-  renderCardRows("individualRows", individualRows, noIndividualRewards);
   renderCardRows("bossRows", bossRows, noBossRewards);
   renderBossOverview();
 }
 
 // --- SELECTORS ---
 function applyTypeSelection(type) {
-  const individualSection = document.getElementById("individualSection");
   const bossSection = document.getElementById("bossSection");
   const bossOverviewSection = document.getElementById("bossOverviewSection");
   const bossLevelWrap = document.getElementById("bossLevelFilterWrap");
@@ -1219,8 +1168,7 @@ function applyTypeSelection(type) {
   const mode =
     type === "boss_overview"
       ? "boss_overview"
-      : (type === "boss" ? "boss" : "individual");
-  individualSection.style.display = mode === "individual" ? "" : "none";
+      : "boss";
   bossSection.style.display = mode === "boss" ? "" : "none";
   bossOverviewSection.style.display = mode === "boss_overview" ? "" : "none";
   bossLevelWrap.style.display = mode === "boss_overview" ? "" : "none";
@@ -1242,11 +1190,11 @@ function setupTypeSelector() {
   if (!typeSelect) return;
   ensureTypeOptions(typeSelect);
   const saved = getRiftData().type;
-  if (saved === "boss" || saved === "individual" || saved === "boss_overview") {
+  if (saved === "boss" || saved === "boss_overview") {
     typeSelect.value = saved;
   }
-  if (typeSelect.value !== "boss" && typeSelect.value !== "individual" && typeSelect.value !== "boss_overview") {
-    typeSelect.value = "individual";
+  if (typeSelect.value !== "boss" && typeSelect.value !== "boss_overview") {
+    typeSelect.value = "boss_overview";
   }
   applyTypeSelection(typeSelect.value);
   typeSelect.disabled = false;
@@ -1257,24 +1205,19 @@ function setupTypeSelector() {
 }
 
 function ensureTypeOptions(typeSelect) {
-  const hasIndividual = Array.from(typeSelect.options).some(opt => opt.value === "individual");
   const hasBoss = Array.from(typeSelect.options).some(opt => opt.value === "boss");
   const hasBossOverview = Array.from(typeSelect.options).some(opt => opt.value === "boss_overview");
-  if (hasIndividual && hasBoss && hasBossOverview) return;
+  if (hasBoss && hasBossOverview && typeSelect.options.length === 2) return;
 
   typeSelect.innerHTML = "";
-  const individual = document.createElement("option");
-  individual.value = "individual";
-  individual.textContent = ownText("activity_rewards", "Activity rewards");
-  const boss = document.createElement("option");
-  boss.value = "boss";
-  boss.textContent = ownText("boss_defeat_reward", "Boss defeat reward");
   const bossOverview = document.createElement("option");
   bossOverview.value = "boss_overview";
   bossOverview.textContent = ownText("boss_overview", "Boss overview");
-  typeSelect.appendChild(individual);
-  typeSelect.appendChild(boss);
+  const boss = document.createElement("option");
+  boss.value = "boss";
+  boss.textContent = ownText("boss_defeat_reward", "Boss defeat reward");
   typeSelect.appendChild(bossOverview);
+  typeSelect.appendChild(boss);
 }
 
 function applyTypeLabelsFromLang() {
@@ -1282,14 +1225,9 @@ function applyTypeLabelsFromLang() {
   if (!typeSelect) return;
   ensureTypeOptions(typeSelect);
 
-  const activityLabel =
-    langValue("dialog_are_activityreward_title") || ownText("activity_rewards", "Activity rewards");
   const bossLabel =
     langValue("dialog_are_bossdefeatreward_title") || ownText("boss_defeat_reward", "Boss defeat reward");
 
-  const individualOption = Array.from(typeSelect.options).find(
-    opt => opt.value === "individual"
-  );
   const bossOption = Array.from(typeSelect.options).find(
     opt => opt.value === "boss"
   );
@@ -1297,7 +1235,6 @@ function applyTypeLabelsFromLang() {
     opt => opt.value === "boss_overview"
   );
 
-  if (individualOption) individualOption.textContent = activityLabel;
   if (bossOption) bossOption.textContent = bossLabel;
   if (bossOverviewOption) {
     bossOverviewOption.textContent = ownText("boss_overview", "Boss overview");
