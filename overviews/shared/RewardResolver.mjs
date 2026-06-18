@@ -81,14 +81,28 @@ export function parseIdAmountToken(token) {
 }
 
 export function parseUnitReward(value) {
-  if (!value) return null;
-  const [idPart, amountPart] = String(value).split("+");
-  const unitId = Number(idPart);
-  const amount = Number(amountPart);
-  return {
-    unitId: Number.isNaN(unitId) ? null : unitId,
-    amount: Number.isNaN(amount) ? null : amount,
+  return parseUnitRewards(value)[0] || {
+    unitId: null,
+    amount: null,
   };
+}
+
+export function parseUnitRewards(value) {
+  if (!value) return [];
+  return String(value)
+    .split(/[#,]/)
+    .map((token) => token.trim())
+    .filter(Boolean)
+    .map((token) => {
+      const [idPart, amountPart] = token.split("+");
+      const unitId = Number(idPart);
+      const amount = Number(amountPart);
+      return {
+        unitId: Number.isNaN(unitId) ? null : unitId,
+        amount: Number.isNaN(amount) ? null : amount,
+      };
+    })
+    .filter((parsed) => parsed.unitId !== null);
 }
 
 export function parseLootBoxReward(value) {
@@ -111,6 +125,43 @@ export function parseAllianceCoatLayoutReward(value) {
     layoutId: layoutId || null,
     duration: Number.isNaN(duration) ? null : duration,
   };
+}
+
+const DECORATION_REWARD_ID_KEYS = [
+  "decoWODID",
+  "decoWodID",
+  "decowodid",
+  "buildingWodID",
+  "buildingWODID",
+  "buildingwodid"
+];
+
+function parseDecorationRewardIds(reward) {
+  const value = getProp(reward, DECORATION_REWARD_ID_KEYS);
+  if (!value) return [];
+  return parseCsvIds(value).flatMap((token) => parseIdAmountToken(token));
+}
+
+function getUnitImageLookupKeys(rawName, rawType) {
+  const names = [rawName].filter(Boolean);
+  if (normalizeName(rawName) === "eventtool") {
+    names.push("Elitetool");
+  }
+
+  const types = [rawType].filter(Boolean);
+  const typeWithoutTier = rawType ? String(rawType).replace(/\d+$/, "") : "";
+  if (typeWithoutTier && typeWithoutTier !== rawType) {
+    types.push(typeWithoutTier);
+  }
+
+  const keys = [];
+  names.forEach((name) => {
+    types.forEach((type) => {
+      keys.push(normalizeName(`${name}_unit_${type}`));
+      keys.push(normalizeName(`${type}_unit_${name}`));
+    });
+  });
+  return [...new Set(keys.filter(Boolean))];
 }
 
 function formatDurationCompact(seconds) {
@@ -334,8 +385,9 @@ export function createRewardResolver(getContext, options = {}) {
       return id != null ? getEquipmentDisplayName(lang, item, id) : null;
     }
 
-    const decoId = getProp(reward, ["decoWODID", "decoWodID", "decowodid"]);
-    if (decoId) {
+    const decoIds = parseDecorationRewardIds(reward);
+    const decoId = decoIds[0]?.id;
+    if (decoId !== undefined && decoId !== null) {
       const item = c.decorationsById?.[String(decoId)];
       return getDecorationName(lang, item) || "Decoration";
     }
@@ -374,8 +426,8 @@ export function createRewardResolver(getContext, options = {}) {
       const ids = parseCsvIds(equipmentIds);
       if (ids.length > 0) return ids[0];
     }
-    const decoId = getProp(reward, ["decoWODID", "decoWodID", "decowodid"]);
-    if (decoId) return decoId;
+    const decoIds = parseDecorationRewardIds(reward);
+    if (decoIds.length > 0) return decoIds[0].id;
     return fallbackId;
   };
 
@@ -394,7 +446,7 @@ export function createRewardResolver(getContext, options = {}) {
     const equipmentId = getProp(reward, ["equipmentID", "equipmentId", "equipmentid"]);
     const equipmentIds = getProp(reward, ["equipmentIDs", "equipmentIds", "equipmentids"]);
     if (equipmentId || equipmentIds) return "equipment";
-    if (getProp(reward, ["decoWODID", "decoWodID", "decowodid"])) return "decoration";
+    if (parseDecorationRewardIds(reward).length > 0) return "decoration";
     return null;
   };
 
@@ -438,8 +490,7 @@ export function createRewardResolver(getContext, options = {}) {
     }
 
     if (reward.units) {
-      const parsed = parseUnitReward(reward.units);
-      if (parsed?.unitId !== null) {
+      parseUnitRewards(reward.units).forEach((parsed) => {
         const unit = c.unitsById?.[String(parsed.unitId)];
         entries.push({
           name: getUnitDisplayName(lang, unit, opts.includeUnitLevel),
@@ -447,7 +498,7 @@ export function createRewardResolver(getContext, options = {}) {
           id: parsed.unitId,
           type: "unit",
         });
-      }
+      });
     }
 
     const addKeys = Object.keys(reward).filter((k) => k.toLowerCase().startsWith("add"));
@@ -515,11 +566,15 @@ export function createRewardResolver(getContext, options = {}) {
       });
     }
 
-    const decoId = getProp(reward, ["decoWODID", "decoWodID", "decowodid"]);
-    if (decoId) {
-      const item = c.decorationsById?.[String(decoId)];
-      entries.push({ name: getDecorationName(lang, item) || "Decoration", amount: 1, id: decoId, type: "decoration" });
-    }
+    parseDecorationRewardIds(reward).forEach((parsed) => {
+      const item = c.decorationsById?.[String(parsed.id)];
+      entries.push({
+        name: getDecorationName(lang, item) || "Decoration",
+        amount: parsed.amount,
+        id: parsed.id,
+        type: "decoration"
+      });
+    });
 
     return entries;
   };
@@ -632,8 +687,10 @@ export function createRewardResolver(getContext, options = {}) {
     const rawName = unit ? unit.name || unit.Name : "";
     const rawType = unit ? unit.type || unit.Type : "";
     if (!rawName || !rawType) return null;
-    const key = normalizeName(`${rawName}_unit_${rawType}`);
-    return c.unitImageUrlMap?.[key] || null;
+    for (const key of getUnitImageLookupKeys(rawName, rawType)) {
+      if (c.unitImageUrlMap?.[key]) return c.unitImageUrlMap[key];
+    }
+    return null;
   };
 
   api.getCurrencyImageUrl = (reward) => {

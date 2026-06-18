@@ -473,16 +473,37 @@ function isBerimondRedEntry(entry) {
 }
 
 function getLevelLabel(eventId, leagueTypeId) {
-    if (isAllianceMobilizationEvent(eventId)) {
-        const labels = {
-            1: "Copper",
-            2: "Glass",
-            3: "Bronze",
-            4: "Silver",
-            5: "Gold"
+    if (isAllianceDivisionEvent(eventId)) {
+        const fallbackLabelsByEvent = {
+            129: {
+                1: "Copper",
+                2: "Glass",
+                3: "Bronze",
+                4: "Silver",
+                5: "Gold"
+            },
+            137: {
+                1: "Copper",
+                2: "Glass",
+                3: "Bronze",
+                4: "Silver",
+                5: "Gold",
+                6: "Diamond"
+            }
         };
-        const langKey = `popup_ame_rewards_division_name_${leagueTypeId}`.toLowerCase();
-        return lang[langKey] || labels[String(leagueTypeId)] || `League ${leagueTypeId}`;
+        const langKeys = isRiftEvent(eventId)
+            ? [
+                `popup_are_rewards_division_name_${leagueTypeId}`.toLowerCase(),
+                `popup_ame_rewards_division_name_${leagueTypeId}`.toLowerCase()
+            ]
+            : [
+                `popup_ame_rewards_division_name_${leagueTypeId}`.toLowerCase(),
+                `popup_are_rewards_division_name_${leagueTypeId}`.toLowerCase()
+            ];
+        for (const langKey of langKeys) {
+            if (lang[langKey]) return lang[langKey];
+        }
+        return fallbackLabelsByEvent[String(eventId)]?.[String(leagueTypeId)] || `Division ${leagueTypeId}`;
     }
 
     const leagueTypes = getArray(itemsData, ["leaguetypes"]);
@@ -553,8 +574,16 @@ function isAllianceMobilizationEvent(eventId) {
     return String(eventId) === "129";
 }
 
+function isRiftEvent(eventId) {
+    return String(eventId) === "137";
+}
+
+function isAllianceDivisionEvent(eventId) {
+    return isAllianceMobilizationEvent(eventId) || isRiftEvent(eventId);
+}
+
 function hasDifficultyFilter(eventId) {
-    return String(eventId) !== "3" && !isAllianceMobilizationEvent(eventId);
+    return String(eventId) !== "3" && !isAllianceDivisionEvent(eventId);
 }
 
 function shouldRenderTopRewards(eventId) {
@@ -678,8 +707,8 @@ function getLeaderboardRewardSetId(eventId) {
     return Math.min(...setIds);
 }
 
-function pushAllianceMobilizationTopRewards(rewards, eventId, leagueId) {
-    if (!isAllianceMobilizationEvent(eventId)) return;
+function pushAllianceDivisionTopRewards(rewards, eventId, leagueId) {
+    if (!isAllianceDivisionEvent(eventId)) return;
 
     const rewardSetId = getLeaderboardRewardSetId(eventId);
     if (rewardSetId === null) return;
@@ -736,7 +765,8 @@ function setupSelectors() {
         { id: "72", fallback: "Nomad Invasion" },
         { id: "80", fallback: "Samurai Invasion" },
         { id: "103", fallback: "Event 103" },
-        { id: "129", fallback: "Grand Tournament" }
+        { id: "129", fallback: "Grand Tournament" },
+        { id: "137", fallback: "Rift" }
     ].filter(ev => leagueEntries.some(e => String(getProp(e, ["eventID", "eventId", "eventid"])) === ev.id));
 
     eventSelect.innerHTML = "";
@@ -1135,7 +1165,7 @@ function renderRewardsForSelection() {
                 const pointsText = Number.isNaN(pointsValue) ? String(neededPoints[i]) : formatNumber(pointsValue);
                 const requirementText = pointsText;
                 const modeText = mode === "alliance"
-                    ? (isAllianceMobilizationEvent(eventId) ? UI_LANG.activity : UI_LANG.alliance_rewards)
+                    ? (isAllianceDivisionEvent(eventId) ? UI_LANG.activity : UI_LANG.alliance_rewards)
                     : (scenario.difficultyId ? (difficultyLabelById[String(scenario.difficultyId)] || String(scenario.difficultyId)) : "-");
                 pushResolvedReward(rewards, rewardIds[i], {
                     requirementText,
@@ -1166,14 +1196,14 @@ function renderRewardsForSelection() {
         }
     });
 
-    pushAllianceMobilizationTopRewards(rewards, eventId, levelId);
+    pushAllianceDivisionTopRewards(rewards, eventId, levelId);
 
     const selectedView = viewSelect?.value || "detailed";
     let outputRewards = rewards;
     if (selectedView === "summary_activity") {
         outputRewards = summarizeRewards(rewards, false);
     } else if (selectedView === "summary_all") {
-        const summarySource = isAllianceMobilizationEvent(eventId)
+        const summarySource = isAllianceDivisionEvent(eventId)
             ? getAllianceMobilizationSummaryRewards(rewards)
             : rewards;
         outputRewards = summarizeRewards(summarySource, true);
