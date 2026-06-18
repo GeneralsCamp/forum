@@ -137,7 +137,7 @@ function applyOwnLang() {
         activity: pick({
             ownKey: "activity",
             fallback: "Activity",
-            langKeys: ["dialog_are_activityRewards_title"]
+            langKeys: []
         }),
 
         no_rewards: pick({ ownKey: "no_rewards", fallback: "No rewards for this selection.", langKeys: [] }),

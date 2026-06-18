@@ -10,7 +10,8 @@
       "type_defeat_target": "Defeat Target",
       "type_obtain_currencies_or_resources": "Obtain Currencies Or Resources",
       "type_obtain_units": "Obtain Units",
-      "type_spend_currencies_or_resources": "Spend Currencies Or Resources"
+      "type_spend_currencies_or_resources": "Spend Currencies Or Resources",
+      "level_filter_unavailable": "Level filter unavailable"
     }
   },
   "ar": {
@@ -24,7 +25,8 @@
       "type_defeat_target": "اهزم الهدف",
       "type_obtain_currencies_or_resources": "احصل على عملات أو موارد",
       "type_obtain_units": "احصل على وحدات",
-      "type_spend_currencies_or_resources": "أنفق عملات أو موارد"
+      "type_spend_currencies_or_resources": "أنفق عملات أو موارد",
+      "level_filter_unavailable": "فلتر المستوى غير متاح"
     }
   },
   "es": {
@@ -38,7 +40,8 @@
       "type_defeat_target": "Derrotar objetivo",
       "type_obtain_currencies_or_resources": "Obtener monedas o recursos",
       "type_obtain_units": "Obtener unidades",
-      "type_spend_currencies_or_resources": "Gastar monedas o recursos"
+      "type_spend_currencies_or_resources": "Gastar monedas o recursos",
+      "level_filter_unavailable": "Filtro de nivel no disponible"
     }
   },
   "bg": {
@@ -52,7 +55,8 @@
       "type_defeat_target": "Победи цел",
       "type_obtain_currencies_or_resources": "Получи валути или ресурси",
       "type_obtain_units": "Получи единици",
-      "type_spend_currencies_or_resources": "Изхарчи валути или ресурси"
+      "type_spend_currencies_or_resources": "Изхарчи валути или ресурси",
+      "level_filter_unavailable": "Филтърът за ниво не е наличен"
     }
   },
   "pt": {
@@ -66,7 +70,8 @@
       "type_defeat_target": "Derrotar alvo",
       "type_obtain_currencies_or_resources": "Obter moedas ou recursos",
       "type_obtain_units": "Obter unidades",
-      "type_spend_currencies_or_resources": "Gastar moedas ou recursos"
+      "type_spend_currencies_or_resources": "Gastar moedas ou recursos",
+      "level_filter_unavailable": "Filtro de nível indisponível"
     }
   },
   "cs": {
@@ -80,7 +85,8 @@
       "type_defeat_target": "Porazit cíl",
       "type_obtain_currencies_or_resources": "Získat měny nebo suroviny",
       "type_obtain_units": "Získat jednotky",
-      "type_spend_currencies_or_resources": "Utratit měny nebo suroviny"
+      "type_spend_currencies_or_resources": "Utratit měny nebo suroviny",
+      "level_filter_unavailable": "Filtr úrovně není dostupný"
     }
   },
   "de": {
@@ -94,7 +100,8 @@
       "type_defeat_target": "Ziel besiegen",
       "type_obtain_currencies_or_resources": "Währungen oder Ressourcen erhalten",
       "type_obtain_units": "Einheiten erhalten",
-      "type_spend_currencies_or_resources": "Währungen oder Ressourcen ausgeben"
+      "type_spend_currencies_or_resources": "Währungen oder Ressourcen ausgeben",
+      "level_filter_unavailable": "Stufenfilter nicht verfügbar"
     }
   },
   "da": {
@@ -108,7 +115,8 @@
       "type_defeat_target": "Nedkæmp mål",
       "type_obtain_currencies_or_resources": "Få valuta eller ressourcer",
       "type_obtain_units": "Få enheder",
-      "type_spend_currencies_or_resources": "Brug valuta eller ressourcer"
+      "type_spend_currencies_or_resources": "Brug valuta eller ressourcer",
+      "level_filter_unavailable": "Niveaufilter ikke tilgængeligt"
     }
   },
   "fi": {
@@ -122,7 +130,8 @@
       "type_defeat_target": "Kukista kohde",
       "type_obtain_currencies_or_resources": "Hanki valuuttaa tai resursseja",
       "type_obtain_units": "Hanki yksiköitä",
-      "type_spend_currencies_or_resources": "Käytä valuuttaa tai resursseja"
+      "type_spend_currencies_or_resources": "Käytä valuuttaa tai resursseja",
+      "level_filter_unavailable": "Tasosuodatin ei ole käytettävissä"
     }
   },
   "fr": {
@@ -136,7 +145,8 @@
       "type_defeat_target": "Vaincre une cible",
       "type_obtain_currencies_or_resources": "Obtenir des monnaies ou des ressources",
       "type_obtain_units": "Obtenir des unités",
-      "type_spend_currencies_or_resources": "Dépenser des monnaies ou des ressources"
+      "type_spend_currencies_or_resources": "Dépenser des monnaies ou des ressources",
+      "level_filter_unavailable": "Filtre de niveau indisponible"
     }
   },
   "el": {
@@ -150,7 +160,8 @@
       "type_defeat_target": "Νίκησε στόχο",
       "type_obtain_currencies_or_resources": "Απόκτησε νομίσματα ή πόρους",
       "type_obtain_units": "Απόκτησε μονάδες",
-      "type_spend_currencies_or_resources": "Ξόδεψε νομίσματα ή πόρους"
+      "type_spend_currencies_or_resources": "Ξόδεψε νομίσματα ή πόρους",
+      "level_filter_unavailable": "Το φίλτρο επιπέδου δεν είναι διαθέσιμο"
     }
   },
   "hu": {
@@ -164,7 +175,8 @@
       "type_defeat_target": "Célpont legyőzése",
       "type_obtain_currencies_or_resources": "Valuták vagy erőforrások szerzése",
       "type_obtain_units": "Egységek szerzése",
-      "type_spend_currencies_or_resources": "Valuták vagy erőforrások elköltése"
+      "type_spend_currencies_or_resources": "Valuták vagy erőforrások elköltése",
+      "level_filter_unavailable": "A szintszűrő nem érhető el"
     }
   },
   "it": {
@@ -178,7 +190,8 @@
       "type_defeat_target": "Sconfiggi bersaglio",
       "type_obtain_currencies_or_resources": "Ottieni valute o risorse",
       "type_obtain_units": "Ottieni unità",
-      "type_spend_currencies_or_resources": "Spendi valute o risorse"
+      "type_spend_currencies_or_resources": "Spendi valute o risorse",
+      "level_filter_unavailable": "Filtro livello non disponibile"
     }
   },
   "ja": {
@@ -192,7 +205,8 @@
       "type_defeat_target": "目標を撃破",
       "type_obtain_currencies_or_resources": "通貨または資源を獲得",
       "type_obtain_units": "ユニットを獲得",
-      "type_spend_currencies_or_resources": "通貨または資源を消費"
+      "type_spend_currencies_or_resources": "通貨または資源を消費",
+      "level_filter_unavailable": "レベルフィルターは利用できません"
     }
   },
   "ko": {
@@ -206,7 +220,8 @@
       "type_defeat_target": "목표 처치",
       "type_obtain_currencies_or_resources": "화폐 또는 자원 획득",
       "type_obtain_units": "유닛 획득",
-      "type_spend_currencies_or_resources": "화폐 또는 자원 사용"
+      "type_spend_currencies_or_resources": "화폐 또는 자원 사용",
+      "level_filter_unavailable": "레벨 필터를 사용할 수 없습니다"
     }
   },
   "lt": {
@@ -220,7 +235,8 @@
       "type_defeat_target": "Nugalėk taikinį",
       "type_obtain_currencies_or_resources": "Gauk valiutą arba išteklius",
       "type_obtain_units": "Gauk vienetų",
-      "type_spend_currencies_or_resources": "Išleisk valiutą arba išteklius"
+      "type_spend_currencies_or_resources": "Išleisk valiutą arba išteklius",
+      "level_filter_unavailable": "Lygio filtras nepasiekiamas"
     }
   },
   "nl": {
@@ -234,7 +250,8 @@
       "type_defeat_target": "Doel verslaan",
       "type_obtain_currencies_or_resources": "Valuta of grondstoffen verkrijgen",
       "type_obtain_units": "Eenheden verkrijgen",
-      "type_spend_currencies_or_resources": "Valuta of grondstoffen uitgeven"
+      "type_spend_currencies_or_resources": "Valuta of grondstoffen uitgeven",
+      "level_filter_unavailable": "Niveaufilter niet beschikbaar"
     }
   },
   "no": {
@@ -248,7 +265,8 @@
       "type_defeat_target": "Bekjemp mål",
       "type_obtain_currencies_or_resources": "Skaff valuta eller ressurser",
       "type_obtain_units": "Skaff enheter",
-      "type_spend_currencies_or_resources": "Bruk valuta eller ressurser"
+      "type_spend_currencies_or_resources": "Bruk valuta eller ressurser",
+      "level_filter_unavailable": "Nivåfilter utilgjengelig"
     }
   },
   "pl": {
@@ -262,7 +280,8 @@
       "type_defeat_target": "Pokonaj cel",
       "type_obtain_currencies_or_resources": "Zdobądź waluty lub surowce",
       "type_obtain_units": "Zdobądź jednostki",
-      "type_spend_currencies_or_resources": "Wydaj waluty lub surowce"
+      "type_spend_currencies_or_resources": "Wydaj waluty lub surowce",
+      "level_filter_unavailable": "Filtr poziomu niedostępny"
     }
   },
   "ro": {
@@ -276,7 +295,8 @@
       "type_defeat_target": "Învinge ținta",
       "type_obtain_currencies_or_resources": "Obține valute sau resurse",
       "type_obtain_units": "Obține unități",
-      "type_spend_currencies_or_resources": "Cheltuie valute sau resurse"
+      "type_spend_currencies_or_resources": "Cheltuie valute sau resurse",
+      "level_filter_unavailable": "Filtrul de nivel nu este disponibil"
     }
   },
   "ru": {
@@ -290,7 +310,8 @@
       "type_defeat_target": "Победить цель",
       "type_obtain_currencies_or_resources": "Получить валюту или ресурсы",
       "type_obtain_units": "Получить юнитов",
-      "type_spend_currencies_or_resources": "Потратить валюту или ресурсы"
+      "type_spend_currencies_or_resources": "Потратить валюту или ресурсы",
+      "level_filter_unavailable": "Фильтр уровня недоступен"
     }
   },
   "sv": {
@@ -304,7 +325,8 @@
       "type_defeat_target": "Besegra mål",
       "type_obtain_currencies_or_resources": "Skaffa valutor eller resurser",
       "type_obtain_units": "Skaffa enheter",
-      "type_spend_currencies_or_resources": "Spendera valutor eller resurser"
+      "type_spend_currencies_or_resources": "Spendera valutor eller resurser",
+      "level_filter_unavailable": "Nivåfilter är inte tillgängligt"
     }
   },
   "sk": {
@@ -318,7 +340,8 @@
       "type_defeat_target": "Poraziť cieľ",
       "type_obtain_currencies_or_resources": "Získať meny alebo suroviny",
       "type_obtain_units": "Získať jednotky",
-      "type_spend_currencies_or_resources": "Minúť meny alebo suroviny"
+      "type_spend_currencies_or_resources": "Minúť meny alebo suroviny",
+      "level_filter_unavailable": "Filter úrovne nie je dostupný"
     }
   },
   "tr": {
@@ -332,7 +355,8 @@
       "type_defeat_target": "Hedefi yen",
       "type_obtain_currencies_or_resources": "Para birimi veya kaynak kazan",
       "type_obtain_units": "Birim kazan",
-      "type_spend_currencies_or_resources": "Para birimi veya kaynak harca"
+      "type_spend_currencies_or_resources": "Para birimi veya kaynak harca",
+      "level_filter_unavailable": "Seviye filtresi kullanılamıyor"
     }
   }
 }

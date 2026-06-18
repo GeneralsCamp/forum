@@ -14,9 +14,10 @@ let quests = [];
 let questsById = {};
 let currenciesById = {};
 let unitsById = {};
-let totalQuestChance = 0;
 
 const loader = createLoader();
+const GT_QUEST_EVENT_ID = "129";
+const RIFT_QUEST_EVENT_ID = "133";
 
 function lowercaseKeysRecursive(input) {
     if (!input || typeof input !== "object") return input;
@@ -41,8 +42,9 @@ function applyOwnLang() {
     const L = ownLang[currentLanguage?.toLowerCase()]?.ui || ownLang.en?.ui || {};
     UI_LANG = {
         no_quests: L.no_quests || "No quests match the current filters.",
-        search_placeholder: L.search_placeholder || "Search by title or requirement...",
         chance: L.chance || "Chance",
+        level: getLangValue(["level"], "Level"),
+        level_filter_unavailable: L.level_filter_unavailable || "Level filter unavailable",
         type_all: L.type_all || "All quest types",
         type_defeat_target: L.type_defeat_target || "Defeat Target",
         type_obtain_currencies_or_resources: L.type_obtain_currencies_or_resources || "Obtain Currencies Or Resources",
@@ -78,7 +80,19 @@ function parseCondition(condition) {
 }
 
 function resolveQuestTitle(quest) {
-    return getLangValue([`popup_ame_quest_title_${quest.allianceQuestId}`], capitalizeWords(quest.parsed.type));
+    const title = getLangValue([`popup_ame_quest_title_${quest.allianceQuestId}`], capitalizeWords(quest.parsed.type));
+    const levelLabel = getQuestLevelLabel(quest);
+    return levelLabel ? `${title} (${levelLabel})` : title;
+}
+
+function getQuestLevelLabel(quest) {
+    if (quest?.eventKey !== "rift") return "";
+
+    const minLevel = Number(quest.minRaidBossLevel || 0);
+    const maxLevel = Number(quest.maxRaidBossLevel || 0);
+    if (!minLevel && !maxLevel) return "";
+    if (!maxLevel || minLevel === maxLevel) return `lvl.${minLevel || maxLevel}`;
+    return `lvl.${minLevel}-${maxLevel}`;
 }
 
 function formatLargeNumbersInText(text) {
@@ -91,9 +105,8 @@ function formatLargeNumbersInText(text) {
 function resolveQuestDescription(quest) {
     const req = getLangValue([`popup_ame_quest_requirement_${quest.allianceQuestId}`]);
     if (req) return formatLargeNumbersInText(req);
-    const typeLabel = capitalizeWords(quest.parsed.type);
     const conditionRaw = String(quest.condition || "").replace(/\+/g, " + ");
-    return formatLargeNumbersInText(`${typeLabel}: ${conditionRaw}`);
+    return formatLargeNumbersInText(conditionRaw);
 }
 
 function getRequirementLabel() {
@@ -127,9 +140,25 @@ function parseChanceValue(value) {
 }
 
 function formatQuestChancePercent(chanceValue) {
-    if (!totalQuestChance || totalQuestChance <= 0) return "-";
-    const percent = (chanceValue / totalQuestChance) * 100;
+    const chanceTotal = getCurrentQuestChanceTotal();
+    if (!chanceTotal || chanceTotal <= 0) return "-";
+    const percent = (chanceValue / chanceTotal) * 100;
     return `${percent.toFixed(2)}%`;
+}
+
+function getEventLabel(eventId, fallback = "Event") {
+    const titleName = getLangValue([`event_title_${eventId}`]);
+    if (titleName) return titleName;
+
+    const events = Array.isArray(itemsData?.events) ? itemsData.events : [];
+    const event = events.find(e => String(e.eventid) === String(eventId));
+    if (!event) return fallback;
+
+    const tooltipName = event.eventtype
+        ? getLangValue([`tooltip_gachaName_${event.eventtype}`])
+        : null;
+
+    return tooltipName || event.comment1 || event.comment2 || fallback;
 }
 
 function createInfoCell(label, value, extraClass = "") {
@@ -183,27 +212,34 @@ function buildQuestData() {
             return {
                 allianceQuestId: String(q.alliancequestid || ""),
                 questId: qId,
+                eventId: String(q.eventid || ""),
+                eventKey: String(q.eventid || "") === RIFT_QUEST_EVENT_ID ? "rift" : "gt",
                 tier: String(q.comment2 || "").trim(),
                 questType: String(q.questtype || ""),
                 condition,
                 parsed: parseCondition(condition),
                 rewardPoints: Number(q.rewardpoints || 0),
                 duration: Number(q.duration || 0),
+                minRaidBossLevel: Number(q.minraidbosslevel || 0),
+                maxRaidBossLevel: Number(q.maxraidbosslevel || 0),
                 chanceValue
             };
         });
-
-    totalQuestChance = quests.reduce((sum, q) => sum + q.chanceValue, 0);
-}
-
-function getSearchQuery() {
-    const el = document.getElementById("searchInput");
-    return String(el?.value || "").trim().toLowerCase();
 }
 
 function getTypeFilterValue() {
     const el = document.getElementById("typeFilter");
     return String(el?.value || "all");
+}
+
+function getLevelFilterValue() {
+    const el = document.getElementById("levelFilter");
+    return String(el?.value || "");
+}
+
+function getEventFilterValue() {
+    const el = document.getElementById("eventFilter");
+    return String(el?.value || "gt");
 }
 
 function getQuestTypeLabel(typeRaw) {
@@ -225,7 +261,7 @@ function populateTypeFilterOptions() {
 
     const selected = String(typeFilter.value || "all");
     const types = [...new Set(
-        quests
+        getLevelFilteredQuests()
             .map(q => String(q.questType || "").trim())
             .filter(Boolean)
     )].sort((a, b) => a.localeCompare(b));
@@ -248,18 +284,104 @@ function populateTypeFilterOptions() {
     typeFilter.value = hasSelected ? selected : "all";
 }
 
+function populateEventFilterOptions() {
+    const eventFilter = document.getElementById("eventFilter");
+    if (!eventFilter) return;
+
+    const selected = String(eventFilter.value || "gt");
+    eventFilter.innerHTML = "";
+
+    [
+        ["gt", getEventLabel(GT_QUEST_EVENT_ID, "Grand Tournament")],
+        ["rift", getEventLabel(RIFT_QUEST_EVENT_ID, "Rift Raid")]
+    ].forEach(([value, label]) => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = label;
+        eventFilter.appendChild(option);
+    });
+
+    const hasSelected = [...eventFilter.options].some(o => o.value === selected);
+    eventFilter.value = hasSelected ? selected : "gt";
+}
+
+function getAvailableRiftLevels() {
+    const levels = new Set();
+    quests
+        .filter(q => q.eventKey === "rift")
+        .forEach(q => {
+            const minLevel = Number(q.minRaidBossLevel || 0);
+            const maxLevel = Number(q.maxRaidBossLevel || minLevel || 0);
+            if (!minLevel && !maxLevel) return;
+            const start = minLevel || maxLevel;
+            const end = maxLevel || minLevel;
+            for (let level = start; level <= end; level += 1) {
+                levels.add(level);
+            }
+        });
+
+    return [...levels].sort((a, b) => a - b);
+}
+
+function populateLevelFilterOptions() {
+    const levelFilter = document.getElementById("levelFilter");
+    if (!levelFilter) return;
+
+    const isRift = getEventFilterValue() === "rift";
+    const selected = String(levelFilter.value || "");
+    levelFilter.innerHTML = "";
+
+    if (!isRift) {
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = UI_LANG.level_filter_unavailable;
+        levelFilter.appendChild(option);
+        levelFilter.disabled = true;
+        return;
+    }
+
+    const levels = getAvailableRiftLevels();
+    levels.forEach(level => {
+        const option = document.createElement("option");
+        option.value = String(level);
+        option.textContent = `${UI_LANG.level} ${level}`;
+        levelFilter.appendChild(option);
+    });
+
+    levelFilter.disabled = levels.length === 0;
+    const hasSelected = [...levelFilter.options].some(o => o.value === selected);
+    levelFilter.value = hasSelected ? selected : String(levels[0] || "");
+}
+
+function getEventFilteredQuests() {
+    const eventValue = getEventFilterValue();
+    if (eventValue === "rift") return quests.filter(q => q.eventKey === "rift");
+    return quests.filter(q => q.eventKey === "gt");
+}
+
+function matchesSelectedLevel(quest) {
+    const selectedLevel = Number(getLevelFilterValue() || 0);
+    if (quest?.eventKey !== "rift" || !selectedLevel) return true;
+
+    const minLevel = Number(quest.minRaidBossLevel || 0);
+    const maxLevel = Number(quest.maxRaidBossLevel || minLevel || 0);
+    return selectedLevel >= (minLevel || maxLevel) && selectedLevel <= (maxLevel || minLevel);
+}
+
+function getLevelFilteredQuests() {
+    return getEventFilteredQuests().filter(matchesSelectedLevel);
+}
+
+function getCurrentQuestChanceTotal() {
+    return getLevelFilteredQuests().reduce((sum, q) => sum + Number(q.chanceValue || 0), 0);
+}
+
 function getFilteredQuests() {
-    const searchQuery = getSearchQuery();
     const typeValue = getTypeFilterValue();
 
-    return quests.filter(q => {
+    return getLevelFilteredQuests().filter(q => {
         if (typeValue !== "all" && String(q.questType || "") !== typeValue) return false;
-
-        if (!searchQuery) return true;
-
-        const title = resolveQuestTitle(q).toLowerCase();
-        const requirement = resolveQuestDescription(q).toLowerCase();
-        return title.includes(searchQuery) || requirement.includes(searchQuery);
+        return true;
     });
 }
 
@@ -336,34 +458,51 @@ function renderQuests() {
 }
 
 function setFiltersLoadingState(isLoading) {
-    const searchInput = document.getElementById("searchInput");
+    const eventFilter = document.getElementById("eventFilter");
+    const levelFilter = document.getElementById("levelFilter");
     const typeFilter = document.getElementById("typeFilter");
-    if (!searchInput || !typeFilter) return;
+    if (!eventFilter || !levelFilter || !typeFilter) return;
 
     if (isLoading) {
-        searchInput.disabled = true;
-        searchInput.placeholder = "Loading search filter...";
+        eventFilter.innerHTML = `<option value="gt" selected>Loading quest events...</option>`;
+        eventFilter.disabled = true;
+        levelFilter.innerHTML = `<option value="" selected>Loading levels...</option>`;
+        levelFilter.disabled = true;
         typeFilter.innerHTML = `<option value="all" selected>Loading quest types...</option>`;
         typeFilter.disabled = true;
         return;
     }
 
-    searchInput.disabled = false;
+    eventFilter.disabled = false;
     typeFilter.disabled = false;
 }
 
 function setupFilters() {
-    const searchInput = document.getElementById("searchInput");
+    const eventFilter = document.getElementById("eventFilter");
+    const levelFilter = document.getElementById("levelFilter");
     const typeFilter = document.getElementById("typeFilter");
-    if (!searchInput || !typeFilter) return;
+    if (!eventFilter || !levelFilter || !typeFilter) return;
 
     setFiltersLoadingState(false);
+    populateEventFilterOptions();
+    populateLevelFilterOptions();
     populateTypeFilterOptions();
-    searchInput.placeholder = UI_LANG.search_placeholder;
 
-    if (!searchInput.dataset.bound) {
-        searchInput.addEventListener("input", renderQuests);
-        searchInput.dataset.bound = "1";
+    if (!eventFilter.dataset.bound) {
+        eventFilter.addEventListener("change", () => {
+            populateLevelFilterOptions();
+            populateTypeFilterOptions();
+            renderQuests();
+        });
+        eventFilter.dataset.bound = "1";
+    }
+
+    if (!levelFilter.dataset.bound) {
+        levelFilter.addEventListener("change", () => {
+            populateTypeFilterOptions();
+            renderQuests();
+        });
+        levelFilter.dataset.bound = "1";
     }
 
     if (!typeFilter.dataset.bound) {
@@ -384,7 +523,7 @@ async function init() {
 
         await coreInit({
             loader,
-            itemLabel: "gt quests",
+            itemLabel: "quests",
             langCode: currentLanguage,
             normalizeNameFn: s => String(s || "").toLowerCase(),
             onReady: async ({ lang: loadedLang, data }) => {
