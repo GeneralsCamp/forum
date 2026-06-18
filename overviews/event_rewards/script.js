@@ -493,6 +493,7 @@ function getLevelLabel(eventId, leagueTypeId) {
         };
         const langKeys = isRiftEvent(eventId)
             ? [
+                `popup_arme_rewards_division_name_${leagueTypeId}`.toLowerCase(),
                 `popup_are_rewards_division_name_${leagueTypeId}`.toLowerCase(),
                 `popup_ame_rewards_division_name_${leagueTypeId}`.toLowerCase()
             ]

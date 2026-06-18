@@ -14,6 +14,7 @@ let quests = [];
 let questsById = {};
 let currenciesById = {};
 let unitsById = {};
+let lootBoxesById = {};
 
 const loader = createLoader();
 const GT_QUEST_EVENT_ID = "129";
@@ -72,17 +73,31 @@ function getLangValue(keys, fallback = null) {
 
 function parseCondition(condition) {
     const parts = String(condition || "").split("+");
+    const targetParts = String(parts[2] || "").split("|");
     return {
         type: parts[0] || "unknown",
         amount: parts[1] || "",
-        targetId: parts[2] || ""
+        targetId: parts[2] || "",
+        level: targetParts[0] || "",
+        itemId: targetParts[1] || targetParts[0] || ""
     };
 }
 
 function resolveQuestTitle(quest) {
-    const title = getLangValue([`popup_ame_quest_title_${quest.allianceQuestId}`], capitalizeWords(quest.parsed.type));
+    const title = quest.eventKey === "rift"
+        ? resolveRiftQuestTitle(quest)
+        : getLangValue([`popup_ame_quest_title_${quest.allianceQuestId}`], capitalizeWords(quest.parsed.type));
     const levelLabel = getQuestLevelLabel(quest);
     return levelLabel ? `${title} (${levelLabel})` : title;
+}
+
+function resolveRiftQuestTitle(quest) {
+    const template = getLangValue([`popup_arme_quest_title_${quest.parsed.type}`]);
+    if (!template) return capitalizeWords(quest.parsed.type);
+    return String(template)
+        .replace(/\{[^}]+\}/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
 }
 
 function getQuestLevelLabel(quest) {
@@ -103,10 +118,86 @@ function formatLargeNumbersInText(text) {
 }
 
 function resolveQuestDescription(quest) {
+    if (quest.eventKey === "rift") {
+        const resolved = resolveRiftQuestDescription(quest);
+        if (resolved) return resolved;
+    }
+
     const req = getLangValue([`popup_ame_quest_requirement_${quest.allianceQuestId}`]);
     if (req) return formatLargeNumbersInText(req);
     const conditionRaw = String(quest.condition || "").replace(/\+/g, " + ");
     return formatLargeNumbersInText(conditionRaw);
+}
+
+function formatLangTemplate(template, values = []) {
+    return String(template || "").replace(/\{(\d+)\}/g, (match, index) =>
+        values[index] !== undefined && values[index] !== null ? String(values[index]) : match
+    );
+}
+
+function formatQuestNumber(value) {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed.toLocaleString(currentLanguage) : String(value || "");
+}
+
+function getCurrencyName(currencyId) {
+    const currency = currenciesById[String(currencyId)];
+    if (!currency) return `Currency ${currencyId}`;
+    const rawName = currency.name || currency.jsonkey || currency.assetname || "";
+    return getLangValue([`currency_name_${rawName}`], rawName || `Currency ${currencyId}`);
+}
+
+function getUnitName(wodId) {
+    const unit = unitsById[String(wodId)];
+    if (!unit) return `Unit ${wodId}`;
+    const rawType = unit.type || unit.name || "";
+    return getLangValue([`${rawType}_name`], unit.comment1 || rawType || `Unit ${wodId}`);
+}
+
+function getLootBoxName(lootBoxId) {
+    const lootBox = lootBoxesById[String(lootBoxId)];
+    if (!lootBox) return `Loot box ${lootBoxId}`;
+    return getLangValue(
+        [`mysterybox_boxname_${lootBox.name}_${lootBox.rarity}`],
+        lootBox.name || `Loot box ${lootBoxId}`
+    );
+}
+
+function getRiftQuestTemplateValues(quest) {
+    const parsed = quest.parsed || {};
+    const amount = formatQuestNumber(parsed.amount);
+    const level = formatQuestNumber(parsed.level || quest.minRaidBossLevel || 0);
+    const type = String(parsed.type || "");
+
+    if (type === "collectCurrency" || type === "spendCurrency" || type === "buyCurrency") {
+        return [amount, getCurrencyName(parsed.itemId)];
+    }
+
+    if (type === "openLootBox") {
+        return [amount, getLootBoxName(parsed.itemId)];
+    }
+
+    if (type === "killWallUnits" || type === "killCourtyardUnits" || type === "consumeTool") {
+        return [amount, getUnitName(parsed.itemId), level];
+    }
+
+    if (type === "killWallUnitsAny" || type === "killCourtyardUnitsAny" ||
+        type === "obtainRiftPointsWall" || type === "obtainRiftPointsCourtyard") {
+        return [amount, level];
+    }
+
+    if (type === "offMeleeUnits" || type === "offRangeUnits" ||
+        type === "defMeleeUnits" || type === "defRangeUnits") {
+        return [amount, formatQuestNumber(parsed.itemId)];
+    }
+
+    return [amount, parsed.itemId, level];
+}
+
+function resolveRiftQuestDescription(quest) {
+    const template = getLangValue([`popup_arme_quest_requirement_${quest.parsed.type}`]);
+    if (!template) return null;
+    return formatLargeNumbersInText(formatLangTemplate(template, getRiftQuestTemplateValues(quest)));
 }
 
 function getRequirementLabel() {
@@ -202,6 +293,7 @@ function buildQuestData() {
     questsById = Object.fromEntries(questsArr.map(q => [String(q.questid), q]));
     currenciesById = Object.fromEntries((itemsData.currencies || []).map(c => [String(c.currencyid), c]));
     unitsById = Object.fromEntries((itemsData.units || []).map(u => [String(u.wodid), u]));
+    lootBoxesById = Object.fromEntries((itemsData.lootboxes || []).map(box => [String(box.lootboxid), box]));
 
     quests = allianceQuests
         .map(q => {
@@ -232,6 +324,12 @@ function getTypeFilterValue() {
     return String(el?.value || "all");
 }
 
+function getQuestTypeFilterKey(quest) {
+    return quest?.eventKey === "rift"
+        ? String(quest.parsed?.type || quest.questType || "")
+        : String(quest.questType || "");
+}
+
 function getLevelFilterValue() {
     const el = document.getElementById("levelFilter");
     return String(el?.value || "");
@@ -256,16 +354,32 @@ function updateHashForEventFilter(value) {
 }
 
 function getQuestTypeLabel(typeRaw) {
-    const key = String(typeRaw || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-    const labels = {
-        defeattarget: UI_LANG.type_defeat_target,
-        obtaincurrenciesorresources: UI_LANG.type_obtain_currencies_or_resources,
-        obtainunits: UI_LANG.type_obtain_units,
-        spendcurrenciesorresources: UI_LANG.type_spend_currencies_or_resources,
-        samuraiinvasion: getLangValue(["event_title_80"], "Samurai Invasion"),
-        nomadinvasion: getLangValue(["event_title_72"], "Nomad Invasion")
-    };
-    return labels[key] || capitalizeWords(typeRaw);
+    if (getEventFilterValue() !== "rift") {
+        const key = String(typeRaw || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+        const labels = {
+            defeattarget: UI_LANG.type_defeat_target,
+            obtaincurrenciesorresources: UI_LANG.type_obtain_currencies_or_resources,
+            obtainunits: UI_LANG.type_obtain_units,
+            spendcurrenciesorresources: UI_LANG.type_spend_currencies_or_resources,
+            samuraiinvasion: getLangValue(["event_title_80"], "Samurai Invasion"),
+            nomadinvasion: getLangValue(["event_title_72"], "Nomad Invasion")
+        };
+        return labels[key] || capitalizeWords(typeRaw);
+    }
+
+    const matchingQuests = getLevelFilteredQuests().filter(q => getQuestTypeFilterKey(q) === String(typeRaw || ""));
+    const labels = [...new Set(
+        matchingQuests
+            .map(q => q.eventKey === "rift" ? resolveRiftQuestTitle(q) : resolveQuestTitle(q))
+            .map(label => String(label || "").replace(/\s*\([^)]*\)\s*$/, "").trim())
+            .filter(Boolean)
+    )];
+
+    if (labels.length === 1) return labels[0];
+    if (labels.length > 1) return labels.slice(0, 3).join(" / ");
+
+    const eventLabel = getLangValue([`event_title_${typeRaw}`]);
+    return eventLabel || capitalizeWords(typeRaw);
 }
 
 function populateTypeFilterOptions() {
@@ -275,7 +389,7 @@ function populateTypeFilterOptions() {
     const selected = String(typeFilter.value || "all");
     const types = [...new Set(
         getLevelFilteredQuests()
-            .map(q => String(q.questType || "").trim())
+            .map(q => getQuestTypeFilterKey(q).trim())
             .filter(Boolean)
     )].sort((a, b) => a.localeCompare(b));
 
@@ -393,7 +507,7 @@ function getFilteredQuests() {
     const typeValue = getTypeFilterValue();
 
     return getLevelFilteredQuests().filter(q => {
-        if (typeValue !== "all" && String(q.questType || "") !== typeValue) return false;
+        if (typeValue !== "all" && getQuestTypeFilterKey(q) !== typeValue) return false;
         return true;
     });
 }
