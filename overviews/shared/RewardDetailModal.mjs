@@ -777,7 +777,11 @@ function getDecorationSellPriceHtml(entity) {
     return parts.join("<br>");
   }
   const sellC1 = getProp(entity, ["sellC1", "sellc1"]) || "0";
+  const riftShard = getProp(entity, ["sellRiftShard", "sellriftshard"]);
   const biscuit = getProp(entity, ["sellSoldierBiscuit", "sellsoldierbiscuit"]);
+  if (Number(sellC1) === 0 && riftShard) {
+    return `<img src="../../img_base/rift-shard.png" class="effect-icon" alt="">x${escapeHtml(formatNumber(riftShard))}`;
+  }
   if (Number(sellC1) === 0 && biscuit) {
     return `<img src="../../img_base/biscuit.png" class="effect-icon" alt="">x${escapeHtml(formatNumber(biscuit))}`;
   }
