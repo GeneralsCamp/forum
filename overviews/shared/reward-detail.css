@@ -507,6 +507,15 @@
 }
 
 @media (max-width: 700px) {
+  .reward-equipment-modal .reward-info-card-modal-card {
+    min-height: 270px;
+  }
+
+  .reward-equipment-modal .reward-info-card-modal-body,
+  .reward-equipment-modal .reward-equipment-card.box-content {
+    min-height: 230px;
+  }
+
   .reward-info-card .level-selector {
     min-height: 26px;
     padding: 2px 6px;

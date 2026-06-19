@@ -1563,6 +1563,35 @@ function cleanupEffectTitle(text) {
   return out ? out.charAt(0).toUpperCase() + out.slice(1) : "";
 }
 
+function getEffectDisplayNameLangKeys(effectName) {
+  const key = String(effectName || "").toLowerCase();
+  if (!key) return [];
+  const keyWithoutToolPrefix = key.startsWith("tool") ? key.slice(4) : "";
+  return [
+    `equip_effect_description_${key}`,
+    keyWithoutToolPrefix ? `equip_effect_description_${keyWithoutToolPrefix}` : null,
+    `effect_name_${key}`,
+    keyWithoutToolPrefix ? `effect_name_${keyWithoutToolPrefix}` : null,
+    key,
+    keyWithoutToolPrefix,
+    `ci_effect_${key}`,
+    keyWithoutToolPrefix ? `ci_effect_${keyWithoutToolPrefix}` : null,
+    `effect_description_${key}`
+  ].filter(Boolean);
+}
+
+function hasLocalizedEffectDisplayName(effectName, ctx) {
+  const lang = ctx.lang || {};
+  return getEffectDisplayNameLangKeys(effectName).some((langKey) => Boolean(lang[langKey]));
+}
+
+function shouldShowEffectArgName(effectName, title, template, ctx) {
+  const effectKey = String(effectName || "").toLowerCase();
+  const titleKey = String(title || "").toLowerCase();
+  if (effectKey.includes("kill") || titleKey.includes("kill")) return true;
+  return !template && !hasLocalizedEffectDisplayName(effectName, ctx);
+}
+
 function getEffectDisplayName(effectName, effectId, ctx) {
   const lang = ctx.lang || {};
   const key = String(effectName || "").toLowerCase();
@@ -1573,14 +1602,7 @@ function getEffectDisplayName(effectName, effectId, ctx) {
   if (key === "difficultyscalingdefenseboostyard" || key === "bonusyarddefensepower") {
     return lang["effect_name_difficultyscalingdefenseboostyard"] || "Strength in courtyard when defending";
   }
-  const candidates = [
-    `equip_effect_description_${key}`,
-    `effect_name_${key}`,
-    key,
-    `ci_effect_${key}`,
-    `effect_description_${key}`
-  ];
-  for (const langKey of candidates) {
+  for (const langKey of getEffectDisplayNameLangKeys(effectName)) {
     const label = lang[langKey];
     if (label) return cleanupEffectTitle(String(label));
   }
@@ -1616,7 +1638,14 @@ function getEffectTemplate(effectName, ctx) {
   const lang = ctx.lang || {};
   const key = String(effectName || "").toLowerCase();
   if (!key) return "";
-  return String(lang[`equip_effect_description_${key}`] || lang[`effect_description_${key}`] || "").trim();
+  const keyWithoutToolPrefix = key.startsWith("tool") ? key.slice(4) : "";
+  return String(
+    lang[`equip_effect_description_${key}`] ||
+    (keyWithoutToolPrefix ? lang[`equip_effect_description_${keyWithoutToolPrefix}`] : "") ||
+    lang[`effect_description_${key}`] ||
+    (keyWithoutToolPrefix ? lang[`effect_description_${keyWithoutToolPrefix}`] : "") ||
+    ""
+  ).trim();
 }
 
 function resolveEffectArgName(argId, ctx) {
@@ -1663,7 +1692,7 @@ function buildToolDynamicEffects(entity, ctx) {
     if (effectNameLc.includes("attackunitamount")) {
       title = getUnitModalLabels(ctx).toolLimit;
     }
-    if (argId) {
+    if (argId && shouldShowEffectArgName(effectName, title, template, ctx)) {
       const argName = resolveEffectArgName(argId, ctx);
       if (argName && !title.toLowerCase().includes(argName.toLowerCase())) {
         title = `${title} (${argName})`;
