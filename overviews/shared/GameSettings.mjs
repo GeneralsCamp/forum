@@ -42,6 +42,22 @@ export function getSelectedGameSource() {
   }
 }
 
+export function setSelectedGameSource(source) {
+  const value = String(source || "").toLowerCase();
+  if (!VALID_GAME_SOURCES.has(value)) return getSelectedGameSource();
+  try {
+    const raw = localStorage.getItem(HOME_SETTINGS_KEY);
+    const parsed = JSON.parse(raw || "{}");
+    localStorage.setItem(HOME_SETTINGS_KEY, JSON.stringify({
+      ...parsed,
+      selectedGame: value
+    }));
+  } catch {
+    localStorage.setItem(HOME_SETTINGS_KEY, JSON.stringify({ selectedGame: value }));
+  }
+  return value;
+}
+
 export function isE4kSelected() {
   return getSelectedGameSource() === "e4k";
 }

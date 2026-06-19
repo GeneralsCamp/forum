@@ -7,7 +7,10 @@
       "total_used": "Total used",
       "latest_version": "Latest version",
       "version": "Version",
-      "patronage_reward_list": "Patronage Reward List"
+      "patronage_reward_list": "Patronage Reward List",
+      "game_choice_title": "Choose game",
+      "game_choice_text": "EM (computer) and E4K (mobile) games may use different data. Choose your game.",
+      "continue": "Continue"
     }
   },
   "ar": {
@@ -18,7 +21,10 @@
       "total_used": "إجمالي المستخدم",
       "latest_version": "أحدث إصدار",
       "version": "الإصدار",
-      "patronage_reward_list": "قائمة مكافآت الرعاية الإمبراطورية"
+      "patronage_reward_list": "قائمة مكافآت الرعاية الإمبراطورية",
+      "game_choice_title": "اختر اللعبة",
+      "game_choice_text": "قد تستخدم ألعاب EM (الكمبيوتر) وE4K (الجوال) بيانات مختلفة. اختر لعبتك.",
+      "continue": "متابعة"
     }
   },
   "es": {
@@ -29,7 +35,10 @@
       "total_used": "Total usado",
       "latest_version": "Última versión",
       "version": "Versión",
-      "patronage_reward_list": "Lista de recompensas del patronazgo"
+      "patronage_reward_list": "Lista de recompensas del patronazgo",
+      "game_choice_title": "Elegir juego",
+      "game_choice_text": "Los juegos EM (ordenador) y E4K (móvil) pueden usar datos diferentes. Elige tu juego.",
+      "continue": "Continuar"
     }
   },
   "bg": {
@@ -40,7 +49,10 @@
       "total_used": "Общо използвано",
       "latest_version": "Последна версия",
       "version": "Версия",
-      "patronage_reward_list": "Списък с награди от покровителството"
+      "patronage_reward_list": "Списък с награди от покровителството",
+      "game_choice_title": "Изберете игра",
+      "game_choice_text": "Игрите EM (компютър) и E4K (мобилна) може да използват различни данни. Изберете вашата игра.",
+      "continue": "Продължи"
     }
   },
   "pt": {
@@ -51,7 +63,10 @@
       "total_used": "Total usado",
       "latest_version": "Versão mais recente",
       "version": "Versão",
-      "patronage_reward_list": "Lista de recompensas do patrocínio"
+      "patronage_reward_list": "Lista de recompensas do patrocínio",
+      "game_choice_title": "Escolher jogo",
+      "game_choice_text": "Os jogos EM (computador) e E4K (mobile) podem usar dados diferentes. Escolha seu jogo.",
+      "continue": "Continuar"
     }
   },
   "cs": {
@@ -62,7 +77,10 @@
       "total_used": "Celkem použito",
       "latest_version": "Nejnovější verze",
       "version": "Verze",
-      "patronage_reward_list": "Seznam odměn patronátu"
+      "patronage_reward_list": "Seznam odměn patronátu",
+      "game_choice_title": "Vyberte hru",
+      "game_choice_text": "Hry EM (počítač) a E4K (mobil) mohou používat odlišná data. Vyberte svou hru.",
+      "continue": "Pokračovat"
     }
   },
   "de": {
@@ -73,7 +91,10 @@
       "total_used": "Insgesamt genutzt",
       "latest_version": "Neueste Version",
       "version": "Version",
-      "patronage_reward_list": "Patronage-Belohnungsliste"
+      "patronage_reward_list": "Patronage-Belohnungsliste",
+      "game_choice_title": "Spiel auswählen",
+      "game_choice_text": "EM- (Computer) und E4K-Spiele (Mobilgerät) können unterschiedliche Daten verwenden. Wähle dein Spiel.",
+      "continue": "Fortfahren"
     }
   },
   "da": {
@@ -84,7 +105,10 @@
       "total_used": "Samlet brugt",
       "latest_version": "Seneste version",
       "version": "Version",
-      "patronage_reward_list": "Liste over patronagebelønninger"
+      "patronage_reward_list": "Liste over patronagebelønninger",
+      "game_choice_title": "Vælg spil",
+      "game_choice_text": "EM-spil (computer) og E4K-spil (mobil) kan bruge forskellige data. Vælg dit spil.",
+      "continue": "Fortsæt"
     }
   },
   "fi": {
@@ -95,7 +119,10 @@
       "total_used": "Käytetty yhteensä",
       "latest_version": "Uusin versio",
       "version": "Versio",
-      "patronage_reward_list": "Suojeluksen palkintolista"
+      "patronage_reward_list": "Suojeluksen palkintolista",
+      "game_choice_title": "Valitse peli",
+      "game_choice_text": "EM- (tietokone) ja E4K-pelit (mobiili) voivat käyttää eri tietoja. Valitse pelisi.",
+      "continue": "Jatka"
     }
   },
   "fr": {
@@ -106,7 +133,10 @@
       "total_used": "Total utilisé",
       "latest_version": "Dernière version",
       "version": "Version",
-      "patronage_reward_list": "Liste des récompenses du patronage"
+      "patronage_reward_list": "Liste des récompenses du patronage",
+      "game_choice_title": "Choisir le jeu",
+      "game_choice_text": "Les jeux EM (ordinateur) et E4K (mobile) peuvent utiliser des données différentes. Choisissez votre jeu.",
+      "continue": "Continuer"
     }
   },
   "el": {
@@ -117,7 +147,10 @@
       "total_used": "Συνολικά χρησιμοποιημένα",
       "latest_version": "Τελευταία έκδοση",
       "version": "Έκδοση",
-      "patronage_reward_list": "Λίστα ανταμοιβών προστασίας"
+      "patronage_reward_list": "Λίστα ανταμοιβών προστασίας",
+      "game_choice_title": "Επιλογή παιχνιδιού",
+      "game_choice_text": "Τα παιχνίδια EM (υπολογιστής) και E4K (κινητό) ενδέχεται να χρησιμοποιούν διαφορετικά δεδομένα. Επιλέξτε το παιχνίδι σας.",
+      "continue": "Συνέχεια"
     }
   },
   "hu": {
@@ -128,7 +161,10 @@
       "total_used": "Összesen felhasználva",
       "latest_version": "Legfrissebb verzió",
       "version": "Verzió",
-      "patronage_reward_list": "Patrónusi jutalmak listája"
+      "patronage_reward_list": "Patrónusi jutalmak listája",
+      "game_choice_title": "Játék kiválasztása",
+      "game_choice_text": "Az EM (számítógépes) és az E4K (mobilos) játékok eltérő adatokat használhatnak. Válaszd ki a játékodat.",
+      "continue": "Folytatás"
     }
   },
   "it": {
@@ -139,7 +175,10 @@
       "total_used": "Totale utilizzato",
       "latest_version": "Versione più recente",
       "version": "Versione",
-      "patronage_reward_list": "Elenco ricompense patronato"
+      "patronage_reward_list": "Elenco ricompense patronato",
+      "game_choice_title": "Scegli gioco",
+      "game_choice_text": "I giochi EM (computer) ed E4K (mobile) possono usare dati diversi. Scegli il tuo gioco.",
+      "continue": "Continua"
     }
   },
   "ja": {
@@ -150,7 +189,10 @@
       "total_used": "合計使用量",
       "latest_version": "最新バージョン",
       "version": "バージョン",
-      "patronage_reward_list": "後援報酬リスト"
+      "patronage_reward_list": "後援報酬リスト",
+      "game_choice_title": "ゲームを選択",
+      "game_choice_text": "EM（コンピューター）とE4K（モバイル）のゲームでは異なるデータが使用される場合があります。ゲームを選択してください。",
+      "continue": "続行"
     }
   },
   "ko": {
@@ -161,7 +203,10 @@
       "total_used": "총 사용량",
       "latest_version": "최신 버전",
       "version": "버전",
-      "patronage_reward_list": "후원 보상 목록"
+      "patronage_reward_list": "후원 보상 목록",
+      "game_choice_title": "게임 선택",
+      "game_choice_text": "EM(컴퓨터) 및 E4K(모바일) 게임은 서로 다른 데이터를 사용할 수 있습니다. 게임을 선택하세요.",
+      "continue": "계속"
     }
   },
   "lt": {
@@ -172,7 +217,10 @@
       "total_used": "Iš viso panaudota",
       "latest_version": "Naujausia versija",
       "version": "Versija",
-      "patronage_reward_list": "Patronažo apdovanojimų sąrašas"
+      "patronage_reward_list": "Patronažo apdovanojimų sąrašas",
+      "game_choice_title": "Pasirinkite žaidimą",
+      "game_choice_text": "EM (kompiuterio) ir E4K (mobilieji) žaidimai gali naudoti skirtingus duomenis. Pasirinkite savo žaidimą.",
+      "continue": "Tęsti"
     }
   },
   "nl": {
@@ -183,7 +231,10 @@
       "total_used": "Totaal gebruikt",
       "latest_version": "Nieuwste versie",
       "version": "Versie",
-      "patronage_reward_list": "Lijst met patronagebeloningen"
+      "patronage_reward_list": "Lijst met patronagebeloningen",
+      "game_choice_title": "Kies spel",
+      "game_choice_text": "EM- (computer) en E4K-spellen (mobiel) kunnen verschillende gegevens gebruiken. Kies je spel.",
+      "continue": "Doorgaan"
     }
   },
   "no": {
@@ -194,7 +245,10 @@
       "total_used": "Totalt brukt",
       "latest_version": "Nyeste versjon",
       "version": "Versjon",
-      "patronage_reward_list": "Liste over patronasjebelønninger"
+      "patronage_reward_list": "Liste over patronasjebelønninger",
+      "game_choice_title": "Velg spill",
+      "game_choice_text": "EM- (datamaskin) og E4K-spill (mobil) kan bruke forskjellige data. Velg spillet ditt.",
+      "continue": "Fortsett"
     }
   },
   "pl": {
@@ -205,7 +259,10 @@
       "total_used": "Łącznie wykorzystano",
       "latest_version": "Najnowsza wersja",
       "version": "Wersja",
-      "patronage_reward_list": "Lista nagród patronatu"
+      "patronage_reward_list": "Lista nagród patronatu",
+      "game_choice_title": "Wybierz grę",
+      "game_choice_text": "Gry EM (komputer) i E4K (mobile) mogą używać różnych danych. Wybierz swoją grę.",
+      "continue": "Kontynuuj"
     }
   },
   "ro": {
@@ -216,7 +273,10 @@
       "total_used": "Total folosit",
       "latest_version": "Cea mai nouă versiune",
       "version": "Versiune",
-      "patronage_reward_list": "Lista recompenselor de patronaj"
+      "patronage_reward_list": "Lista recompenselor de patronaj",
+      "game_choice_title": "Alege jocul",
+      "game_choice_text": "Jocurile EM (computer) și E4K (mobil) pot folosi date diferite. Alege jocul tău.",
+      "continue": "Continuă"
     }
   },
   "ru": {
@@ -227,7 +287,10 @@
       "total_used": "Всего использовано",
       "latest_version": "Последняя версия",
       "version": "Версия",
-      "patronage_reward_list": "Список наград покровительства"
+      "patronage_reward_list": "Список наград покровительства",
+      "game_choice_title": "Выберите игру",
+      "game_choice_text": "Игры EM (компьютер) и E4K (мобильная версия) могут использовать разные данные. Выберите свою игру.",
+      "continue": "Продолжить"
     }
   },
   "sv": {
@@ -238,7 +301,10 @@
       "total_used": "Totalt använt",
       "latest_version": "Senaste version",
       "version": "Version",
-      "patronage_reward_list": "Lista över patronagebelöningar"
+      "patronage_reward_list": "Lista över patronagebelöningar",
+      "game_choice_title": "Välj spel",
+      "game_choice_text": "EM- (dator) och E4K-spel (mobil) kan använda olika data. Välj ditt spel.",
+      "continue": "Fortsätt"
     }
   },
   "sk": {
@@ -249,7 +315,10 @@
       "total_used": "Celkovo použité",
       "latest_version": "Najnovšia verzia",
       "version": "Verzia",
-      "patronage_reward_list": "Zoznam odmien patronátu"
+      "patronage_reward_list": "Zoznam odmien patronátu",
+      "game_choice_title": "Vyberte hru",
+      "game_choice_text": "Hry EM (počítač) a E4K (mobil) môžu používať odlišné údaje. Vyberte svoju hru.",
+      "continue": "Pokračovať"
     }
   },
   "tr": {
@@ -260,7 +329,10 @@
       "total_used": "Toplam kullanılan",
       "latest_version": "En son sürüm",
       "version": "Sürüm",
-      "patronage_reward_list": "Himaye ödülleri listesi"
+      "patronage_reward_list": "Himaye ödülleri listesi",
+      "game_choice_title": "Oyun seç",
+      "game_choice_text": "EM (bilgisayar) ve E4K (mobil) oyunları farklı veriler kullanabilir. Oyununu seç.",
+      "continue": "Devam et"
     }
   }
 }

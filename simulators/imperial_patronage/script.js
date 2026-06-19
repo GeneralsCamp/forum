@@ -18,7 +18,12 @@ import {
     getArray,
     normalizeName
 } from "../../overviews/shared/RewardResolver.mjs";
-import { saveSimulatorData, loadSimulatorData } from "../../overviews/shared/GameSettings.mjs";
+import {
+  getSelectedGameSource,
+  saveSimulatorData,
+  loadSimulatorData,
+  setSelectedGameSource
+} from "../../overviews/shared/GameSettings.mjs";
 
 const SIM_NAME = "imperial_patronage";
 const FALLBACK_IMAGE = "../../img_base/placeholder.webp";
@@ -41,6 +46,7 @@ const loader = createLoader();
 const state = {
   selectedSetId: "",
   selectedTypeId: "",
+  gameChoiceSeen: false,
   progressBySet: {}
 };
 
@@ -198,18 +204,97 @@ function readSavedState() {
     const parsed = loadSimulatorData(SIM_NAME) || {};
     state.selectedSetId = String(parsed.selectedSetId || "");
     state.selectedTypeId = String(parsed.selectedTypeId || "");
+    state.gameChoiceSeen = Boolean(parsed.gameChoiceSeen);
     state.progressBySet = parsed.progressBySet && typeof parsed.progressBySet === "object"
       ? parsed.progressBySet
       : {};
   } catch {
     state.selectedSetId = "";
     state.selectedTypeId = "";
+    state.gameChoiceSeen = false;
     state.progressBySet = {};
   }
 }
 
 function saveState() {
   saveSimulatorData(SIM_NAME, state);
+}
+
+function applyGameChoiceLanguage() {
+  const title = document.getElementById("patronageGameChoiceTitle");
+  const text = document.getElementById("patronageGameChoiceText");
+  const continueBtn = document.getElementById("patronageGameChoiceContinue");
+  if (title) title.textContent = ui("game_choice_title", "Choose game");
+  if (text) {
+    text.textContent = ui(
+      "game_choice_text",
+      "E4K and EM games may use different data. Please choose your game."
+    );
+  }
+  if (continueBtn) continueBtn.textContent = ui("continue", "Continue");
+}
+
+function syncGameChoiceOptionLabels(select) {
+  if (!select) return;
+  const empireOption = select.querySelector('option[value="empire"]');
+  const e4kOption = select.querySelector('option[value="e4k"]');
+  const isMobile = window.matchMedia("(max-width: 700px)").matches;
+  if (empireOption) empireOption.textContent = isMobile ? "EM (Browser)" : "Empire (Browser)";
+  if (e4kOption) e4kOption.textContent = isMobile ? "E4K (Mobile)" : "Empire: Four Kingdoms (Mobile)";
+}
+
+function showInitialGameChoiceIfNeeded() {
+  if (state.gameChoiceSeen) return Promise.resolve();
+  const modalEl = document.getElementById("patronageGameChoiceModal");
+  const select = document.getElementById("patronageGameChoiceSelect");
+  const continueBtn = document.getElementById("patronageGameChoiceContinue");
+  if (!modalEl || !select || !continueBtn) {
+    state.gameChoiceSeen = true;
+    saveState();
+    return Promise.resolve();
+  }
+
+  applyGameChoiceLanguage();
+  syncGameChoiceOptionLabels(select);
+  select.value = getSelectedGameSource();
+
+  const gameChoiceModal = {
+    open() {
+      modalEl.setAttribute("aria-hidden", "false");
+      modalEl.classList.remove("closing");
+      modalEl.classList.add("open");
+      document.body.classList.add("gf-modal-open");
+    },
+    close() {
+      modalEl.classList.remove("open");
+      modalEl.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("gf-modal-open");
+    }
+  };
+
+  return new Promise((resolve) => {
+    const finish = ({ reload = false } = {}) => {
+      state.gameChoiceSeen = true;
+      saveState();
+      if (reload) {
+        window.location.reload();
+        return;
+      }
+      gameChoiceModal?.close?.();
+      resolve();
+    };
+
+    const handleSelectChange = () => {
+      const previousGame = getSelectedGameSource();
+      const nextGame = setSelectedGameSource(select.value);
+      finish({ reload: nextGame !== previousGame });
+    };
+
+    select.addEventListener("change", handleSelectChange, { once: true });
+    continueBtn.addEventListener("click", () => finish(), { once: true });
+    window.addEventListener("resize", () => syncGameChoiceOptionLabels(select));
+    gameChoiceModal?.open?.();
+  });
 }
 
 function ensureSetProgress(setId, typeIds) {
@@ -1071,8 +1156,9 @@ async function init() {
   readSavedState();
 
   try {
-    const [itemVersion, langVersion] = await Promise.all([getItemVersion(), getLangVersion()]);
     await loadOwnLang();
+    await showInitialGameChoiceIfNeeded();
+    const [itemVersion, langVersion] = await Promise.all([getItemVersion(), getLangVersion()]);
     await logResolvedDataUrls({
       langCode: currentLanguage,
       itemVersion,

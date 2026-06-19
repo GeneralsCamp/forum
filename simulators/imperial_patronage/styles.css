@@ -173,6 +173,42 @@
   overflow-wrap: anywhere;
 }
 
+.patronage-game-choice-modal {
+  --gf-modal-width: min(430px, calc(100% - 20px));
+  --gf-modal-shell-bg: #5b4330;
+  --gf-modal-shell-border: #2f2319;
+  --gf-modal-head-bg: #815638;
+  --gf-modal-head-border: #3a2b1f;
+  --gf-modal-body-bg: #9a6a45;
+}
+
+.patronage-game-choice-modal-card {
+  min-width: var(--gf-modal-width);
+  max-width: var(--gf-modal-width);
+}
+
+.patronage-game-choice-modal .gf-modal-title {
+  text-transform: uppercase;
+}
+
+.patronage-game-choice-modal-body {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+.patronage-game-choice-text {
+  margin: 0;
+  color: #fff4de;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.patronage-game-choice-select,
+.patronage-game-choice-continue {
+  width: 100%;
+}
+
 @media (max-width: 768px) {
   .patronage-reward-modal {
     --patronage-reward-modal-height: min(600px, calc(100vh - 16px));

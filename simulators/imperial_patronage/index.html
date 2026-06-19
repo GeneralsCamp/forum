@@ -145,6 +145,28 @@
     </div>
   </div>
 
+  <div id="patronageGameChoiceModal" class="gf-modal patronage-game-choice-modal" aria-hidden="true">
+    <div class="gf-modal-backdrop"></div>
+    <div class="gf-modal-card patronage-game-choice-modal-card" role="dialog" aria-modal="true"
+      aria-labelledby="patronageGameChoiceTitle">
+      <div class="gf-modal-head patronage-game-choice-modal-head">
+        <h2 id="patronageGameChoiceTitle" class="gf-modal-title">Choose game</h2>
+      </div>
+      <div class="gf-modal-body patronage-game-choice-modal-body">
+        <p id="patronageGameChoiceText" class="patronage-game-choice-text">
+          E4K and EM games may use different data. Choose your game.
+        </p>
+        <select id="patronageGameChoiceSelect" class="form-select custom-select patronage-game-choice-select"
+          aria-label="Choose game">
+          <option value="empire">Empire (Browser)</option>
+          <option value="e4k">Empire: Four Kingdoms (Mobile)</option>
+        </select>
+        <button id="patronageGameChoiceContinue" class="action-button primary patronage-game-choice-continue"
+          type="button">Continue</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
   <script type="module" src="script.js"></script>
   <script type="module" src="../../overviews/shared/ConsentInit.mjs"></script>
