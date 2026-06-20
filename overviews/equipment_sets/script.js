@@ -30,6 +30,7 @@ const loader = createLoader();
 const composedImageCache = new Map();
 let currentLanguage = getInitialLanguage();
 const DEFAULT_MIN_SET_ID = 1084;
+const EXCLUDED_SET_IDS = new Set(["104"]);
 const HOME_SETTINGS_KEY = "gf_home_settings";
 const devCommentsEnabled = readHomeSetting("devCommentsEnabled", true);
 
@@ -468,6 +469,16 @@ function getLocalizedWearerName(wearerId) {
 function getLocalizedSlotName(slotId) {
   const slot = slotById[String(slotId)];
   const raw = String(slot?.name || "").toLowerCase();
+  const byRawToSlotTypeKey = {
+    helmet: "equipment_slottype_helmet",
+    armor: "equipment_slottype_armor",
+    weapon: "equipment_slottype_weapon",
+    artifact: "equipment_slottype_artifact",
+    look: "equipment_slottype_skin",
+    skin: "equipment_slottype_skin",
+    hero: "equipment_slottype_hero",
+    heroes: "equipment_slottype_hero"
+  };
   const byRawToFilterKey = {
     helmet: "filters_subfilter_1",
     armor: "filters_subfilter_2",
@@ -478,6 +489,8 @@ function getLocalizedSlotName(slotId) {
     hero: "filters_subfilter_6",
     heroes: "filters_subfilter_6"
   };
+  const slotTypeKey = byRawToSlotTypeKey[raw];
+  if (slotTypeKey && lang[slotTypeKey]) return lang[slotTypeKey];
   const mappedKey = byRawToFilterKey[raw];
   if (mappedKey && lang[mappedKey]) return lang[mappedKey];
   if (!raw) return `Slot ${slotId}`;
@@ -507,6 +520,17 @@ function getUnitNameById(unitId) {
   }
 
   return unit.comment2 || unit.name || unit.type || unitId;
+}
+
+function formatEquipmentDurationCompact(hoursValue) {
+  const totalHours = Number(hoursValue);
+  if (!Number.isFinite(totalHours) || totalHours <= 0) return "";
+  const days = Math.floor(totalHours / 24);
+  const hours = Math.floor(totalHours % 24);
+  const parts = [];
+  if (days) parts.push(`${days}d`);
+  if (hours) parts.push(`${hours}h`);
+  return parts.join(" ");
 }
 
 function getEquipmentName(item) {
@@ -543,12 +567,12 @@ function getEquipmentImageUrl(item) {
   const ownId = String(item.equipmentID || "");
   const reuseId = String(item.reuseAssetOfEquipmentID || "");
 
-  if (ownId && equipmentUniqueImageUrlMap[ownId]) {
-    return equipmentUniqueImageUrlMap[ownId];
-  }
-
   if (reuseId && equipmentUniqueImageUrlMap[reuseId]) {
     return equipmentUniqueImageUrlMap[reuseId];
+  }
+
+  if (ownId && equipmentUniqueImageUrlMap[ownId]) {
+    return equipmentUniqueImageUrlMap[ownId];
   }
 
   return null;
@@ -598,6 +622,7 @@ function toPieceRows(setEntry) {
       slotLabel: getLocalizedSlotName(item.slotID),
       wearerLabel: getLocalizedWearerName(item.wearerID),
       name: getEquipmentName(item),
+      duration: item.duration,
       effects: parseEffects(item.effects, "equipment"),
       imageUrl: getEquipmentImageUrl(item) || "../../img_base/equipment.png",
       sellRiftShard: item.sellRiftShard,
@@ -619,6 +644,7 @@ function toPieceRows(setEntry) {
       slotLabel: gemSlotLabel,
       wearerLabel: getLocalizedWearerName(item.wearerID),
       name: getGemName(item),
+      duration: item.duration,
       effects: parseEffects(item.effects, "gem"),
       imageUrl: gemImage,
       sellRiftShard: item.sellRiftShard,
@@ -725,6 +751,7 @@ function getSetOptions(wearerFilter = "all") {
     if (!Array.isArray(setEntry.equipments) || setEntry.equipments.length === 0) {
       return;
     }
+    if (EXCLUDED_SET_IDS.has(String(setEntry.id))) return;
 
     const title = getSetTitle(setEntry);
 
@@ -761,7 +788,9 @@ function getRequestedSetIdFromHash() {
   }
 
   const requestedId = decodedHash.replace(/^id=/i, "").trim();
-  return Object.prototype.hasOwnProperty.call(setIndexById, requestedId) ? requestedId : "";
+  return Object.prototype.hasOwnProperty.call(setIndexById, requestedId) && !EXCLUDED_SET_IDS.has(requestedId)
+    ? requestedId
+    : "";
 }
 
 function renderEmpty(message) {
@@ -1091,7 +1120,8 @@ function renderSet(setId) {
   const title = getSetTitle(setEntry);
 
   const pieceRowsHtml = pieceRows.map((piece, idx) => {
-    const displayName = `${piece.name} (${piece.slotLabel})`;
+    const duration = formatEquipmentDurationCompact(piece.duration);
+    const displayName = `${piece.name} (${[piece.slotLabel, duration].filter(Boolean).join(", ")})`;
     const itemEffects = piece.effects.length > 0
       ? piece.effects.map((line) => `<li class="reward-effect-row">${escapeHtml(line)}</li>`).join("")
       : `<li class="reward-effect-row">No effect data</li>`;

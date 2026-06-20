@@ -467,15 +467,16 @@ function getEquipmentSlotLabel(item, ctx) {
   const slotId = String(getProp(item, ["slotID", "slotId", "slotid"]) || "");
   const rawBySlot = { "1": "armor", "2": "weapon", "3": "helmet", "4": "artifact", "5": "look", "6": "hero" };
   const raw = String(getProp(ctx.equipmentSlotsById?.[slotId], ["name", "Name"]) || rawBySlot[slotId] || "").toLowerCase();
+  const slotTypeKey = { helmet: "equipment_slottype_helmet", armor: "equipment_slottype_armor", weapon: "equipment_slottype_weapon", artifact: "equipment_slottype_artifact", look: "equipment_slottype_skin", skin: "equipment_slottype_skin", hero: "equipment_slottype_hero", heroes: "equipment_slottype_hero" }[raw];
   const filterKey = { helmet: "filters_subfilter_1", armor: "filters_subfilter_2", weapon: "filters_subfilter_3", artifact: "filters_subfilter_4", look: "filters_subfilter_5", skin: "filters_subfilter_5", hero: "filters_subfilter_6" }[raw];
-  return (filterKey && ctx.lang?.[filterKey]) || ctx.lang?.[`equipmentslot_name_${raw}`] || ctx.lang?.[`dialog_equipment_slot_${raw}`] || raw || "Equipment";
+  return (slotTypeKey && ctx.lang?.[slotTypeKey]) || (filterKey && ctx.lang?.[filterKey]) || ctx.lang?.[`equipmentslot_name_${raw}`] || ctx.lang?.[`dialog_equipment_slot_${raw}`] || raw || "Equipment";
 }
 
 function getEquipmentDetailImageUrl(item, detail, ctx) {
   const id = String(getProp(item, ["equipmentID", "equipmentId", "equipmentid"]) || detail.id || "");
   const reuseId = String(getProp(item, ["reuseAssetOfEquipmentID", "reuseAssetOfEquipmentId", "reuseassetofequipmentid"]) || "");
-  return ctx.equipmentUniqueImageUrlMap?.[id]
-    || (reuseId ? ctx.equipmentUniqueImageUrlMap?.[reuseId] : null)
+  return (reuseId ? ctx.equipmentUniqueImageUrlMap?.[reuseId] : null)
+    || ctx.equipmentUniqueImageUrlMap?.[id]
     || detail.imageUrl
     || "../../img_base/equipment.png";
 }

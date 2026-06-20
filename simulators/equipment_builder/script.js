@@ -43,6 +43,7 @@ const loader = createLoader();
 const composedImageCache = new Map();
 const currentLanguage = getInitialLanguage();
 const MAX_SELECTED_SETS = 5;
+const EXCLUDED_SET_IDS = new Set(["104"]);
 const SIMULATOR_NAME = "equipment_builder";
 const LOADOUT_SLOT_IDS = ["1", "2", "3"];
 const AUTO_HEIGHT_OPTIONS = {
@@ -307,7 +308,7 @@ function getGemName(item) {
 function getEquipmentImageUrl(item) {
   const ownId = String(item?.equipmentID || "");
   const reuseId = String(item?.reuseAssetOfEquipmentID || "");
-  return equipmentUniqueImageUrlMap[ownId] || (reuseId ? equipmentUniqueImageUrlMap[reuseId] : null) || "../../img_base/equipment.png";
+  return (reuseId ? equipmentUniqueImageUrlMap[reuseId] : null) || equipmentUniqueImageUrlMap[ownId] || "../../img_base/equipment.png";
 }
 
 function getGemImageUrl(item) {
@@ -483,6 +484,7 @@ function compareSortOrder(a, b) {
 function getSetOptions(wearerFilter = "all") {
   return Object.values(setIndexById)
     .filter((entry) => entry.equipments.length > 0)
+    .filter((entry) => !EXCLUDED_SET_IDS.has(String(entry.id)))
     .filter((entry) => wearerFilter === "all" || entry.equipments.some((item) => String(item.wearerID) === String(wearerFilter)))
     .map((entry) => ({ id: entry.id, title: getSetTitle(entry) }))
     .sort((a, b) => Number(b.id || 0) - Number(a.id || 0));
