@@ -749,6 +749,21 @@ function getSetOptions(wearerFilter = "all") {
   return options;
 }
 
+function getRequestedSetIdFromHash() {
+  const rawHash = String(window.location.hash || "").replace(/^#/, "").trim();
+  if (!rawHash) return "";
+
+  let decodedHash = rawHash;
+  try {
+    decodedHash = decodeURIComponent(rawHash);
+  } catch {
+    // Keep the raw hash when it contains malformed escape sequences.
+  }
+
+  const requestedId = decodedHash.replace(/^id=/i, "").trim();
+  return Object.prototype.hasOwnProperty.call(setIndexById, requestedId) ? requestedId : "";
+}
+
 function renderEmpty(message) {
   const root = document.getElementById("setOverview");
   if (!root) return;
@@ -1454,6 +1469,14 @@ async function init() {
         bindControls();
         lastMobileMode = isMobileLayout();
         setupWearerOptions(wearers);
+
+        const requestedSetId = getRequestedSetIdFromHash();
+        if (requestedSetId) {
+          showAllSetOptions = showAllSetOptions || !isDefaultSetId(requestedSetId);
+          const setSelect = document.getElementById("setSelect");
+          if (setSelect) setSelect.dataset.lastSetValue = requestedSetId;
+        }
+
         setupSetOptions("all");
 
         if (equipmentSets.length === 0) {

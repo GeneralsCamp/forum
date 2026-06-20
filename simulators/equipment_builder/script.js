@@ -767,6 +767,17 @@ function clearLinkedGemSlot(parentSlotId) {
   if (gemSlot) delete equipped[gemSlot.id];
 }
 
+function unequipSlot(slotId) {
+  if (!equipped[slotId]) return false;
+
+  delete equipped[slotId];
+  clearLinkedGemSlot(slotId);
+  selectedTileKey = "";
+  saveBuilderState();
+  refreshBuilderPanels();
+  return true;
+}
+
 function equipItemInSlot(item, slot) {
   if (!item || !slot || !isItemAllowedInSlot(item, slot)) return false;
 
@@ -1094,13 +1105,21 @@ function renderSetFilterList() {
   return `
     <div class="set-filter-list">
       ${options.map((entry) => `
-        <label class="set-filter-row">
+        <div class="set-filter-row">
           <span>${escapeHtml(`#${entry.id} - ${entry.title}`)}</span>
+          <a class="set-preview-link"
+            href="../../overviews/equipment_sets/index.html#${encodeURIComponent(entry.id)}"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="${escapeHtml(`Preview set: ${entry.title}`)}">
+            <i class="bi bi-eye" aria-hidden="true"></i>
+          </a>
           <input type="checkbox"
+            aria-label="${escapeHtml(`Select set: ${entry.title}`)}"
             ${selectedSetIds.includes(String(entry.id)) ? "checked" : ""}
             ${!selectedSetIds.includes(String(entry.id)) && selectedCount >= MAX_SELECTED_SETS ? "disabled" : ""}
             data-toggle-set="${escapeHtml(entry.id)}">
-        </label>
+        </div>
       `).join("") || `
         <div class="builder-empty">
           ${escapeHtml(ui("no_sets", "No sets found for this filter."))}
@@ -1354,17 +1373,35 @@ function applyWearerFilter() {
 }
 
 function bindControls() {
+  document.addEventListener("contextmenu", (event) => {
+    const tile = event.target.closest(".equipment-tile");
+    if (tile) {
+      const itemKey = String(tile.dataset.itemKey || "");
+      const item = equipmentPool.find((entry) => getItemKey(entry) === itemKey);
+      if (!item) return;
+
+      event.preventDefault();
+      openItemDetailModal(item);
+      return;
+    }
+
+    const slotBtn = event.target.closest(".equip-slot");
+    if (!slotBtn) return;
+
+    const slotId = String(slotBtn.dataset.slotId || "");
+    if (!equipped[slotId]) return;
+
+    event.preventDefault();
+    unequipSlot(slotId);
+  });
+
   document.addEventListener("dblclick", (event) => {
     const slotBtn = event.target.closest(".equip-slot");
     if (slotBtn) {
       const slotId = String(slotBtn.dataset.slotId || "");
       if (!equipped[slotId]) return;
       event.preventDefault();
-      delete equipped[slotId];
-      clearLinkedGemSlot(slotId);
-      selectedTileKey = "";
-      saveBuilderState();
-      refreshBuilderPanels();
+      unequipSlot(slotId);
       return;
     }
   });

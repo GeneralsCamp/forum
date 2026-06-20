@@ -373,7 +373,7 @@
 
 .set-filter-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   gap: 6px;
   align-items: center;
   height: 30px;
@@ -398,6 +398,28 @@
   width: 18px;
   height: 18px;
   accent-color: var(--builder-gold);
+  cursor: pointer;
+}
+
+.set-filter-row input:disabled {
+  cursor: not-allowed;
+}
+
+.set-preview-link {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 3px;
+  color: var(--builder-cream);
+  font-size: 15px;
+  text-decoration: none;
+}
+
+.set-preview-link:hover,
+.set-preview-link:focus-visible {
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--builder-gold);
 }
 
 .equipment-board {
