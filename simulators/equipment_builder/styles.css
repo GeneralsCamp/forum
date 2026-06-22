@@ -360,6 +360,20 @@
   background: #e2bc95;
 }
 
+.stat-common-cap {
+  padding: 7px 12px 3px;
+  border-top: 1px solid rgba(67, 51, 38, 0.84);
+  background: #e2bc95;
+  color: #3b2b20;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.stat-row-common-cap {
+  padding-left: 30px;
+}
+
 .set-filter-list {
   display: grid;
   grid-auto-rows: 30px;

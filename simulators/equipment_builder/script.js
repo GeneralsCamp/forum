@@ -436,7 +436,7 @@ function formatEffectValue(effectId, value) {
   return `${sign}${formatLocalizedNumber(value)}${isPercent ? "%" : ""}`;
 }
 
-function getEffectText(effectId, value, argId = null) {
+function getEffectText(effectId, value, argId = null, { includeCap = true } = {}) {
   const template = getEffectLabel(effectId);
   const valueText = formatEffectValue(effectId, value);
 
@@ -462,7 +462,7 @@ function getEffectText(effectId, value, argId = null) {
 
   const cap = effectCtx?.effectCapsMap?.[capId];
 
-  if (cap?.maxTotalBonus !== undefined) {
+  if (includeCap && cap?.maxTotalBonus !== undefined) {
     text += ` (Max: ${formatLocalizedNumber(cap.maxTotalBonus)}%)`;
   }
 
@@ -992,15 +992,77 @@ function getEffectGroupKey(entry) {
   return `${typeDef.sortCategory || "other"}:${typeDef.sortGroup || entry.effectTypeID}`;
 }
 
-function getCappedStatValue(entry) {
-  const value = Number(entry?.value || 0);
+function getStatCapInfo(entry) {
   const def = effectCtx?.effectDefinitions?.[String(entry?.id)];
   const capId = String(def?.capID || "");
   const cap = Number(effectCtx?.effectCapsMap?.[capId]?.maxTotalBonus);
-  if (!Number.isFinite(cap) || cap <= 0) return value;
-  if (value > cap) return cap;
-  if (value < -cap) return -cap;
-  return value;
+  return capId && Number.isFinite(cap) && cap > 0 ? { capId, cap } : null;
+}
+
+function clampStatValue(value, cap) {
+  const numeric = Number(value || 0);
+  if (!Number.isFinite(cap) || cap <= 0) return numeric;
+  return Math.max(-cap, Math.min(cap, numeric));
+}
+
+function getCappedEffectGroupValue(rows) {
+  const capBuckets = new Map();
+  let uncappedTotal = 0;
+
+  rows.forEach((row) => {
+    const capInfo = getStatCapInfo(row);
+    if (!capInfo) {
+      uncappedTotal += Number(row?.value || 0);
+      return;
+    }
+    capBuckets.set(capInfo.capId, {
+      cap: capInfo.cap,
+      value: Number(capBuckets.get(capInfo.capId)?.value || 0) + Number(row?.value || 0)
+    });
+  });
+
+  return Array.from(capBuckets.values()).reduce(
+    (total, bucket) => total + clampStatValue(bucket.value, bucket.cap),
+    uncappedTotal
+  );
+}
+
+function getCommonEffectCapText(cap) {
+  const template = gameText(
+    "effect_category_commonEffectCap",
+    "Common effect group cap: max {0}%"
+  );
+  return String(template).replace(/\{0\}/g, formatLocalizedNumber(cap));
+}
+
+function renderEffectGroupChildren(groupRows) {
+  const capRowCounts = new Map();
+  const capLastRowIndex = new Map();
+  groupRows.forEach((row, index) => {
+    const capInfo = getStatCapInfo(row);
+    if (capInfo) {
+      capRowCounts.set(capInfo.capId, Number(capRowCounts.get(capInfo.capId) || 0) + 1);
+      capLastRowIndex.set(capInfo.capId, index);
+    }
+  });
+
+  const renderedCommonCaps = new Set();
+  return groupRows.map((row, index) => {
+    const capInfo = getStatCapInfo(row);
+    const hasCommonCap = Boolean(capInfo && Number(capRowCounts.get(capInfo.capId) || 0) > 1);
+    const isLastCommonCapRow = Boolean(hasCommonCap && capLastRowIndex.get(capInfo.capId) === index);
+    const commonCapHtml = hasCommonCap && !renderedCommonCaps.has(capInfo.capId)
+      ? `<div class="stat-common-cap">${escapeHtml(getCommonEffectCapText(capInfo.cap))}</div>`
+      : "";
+    if (hasCommonCap) renderedCommonCaps.add(capInfo.capId);
+
+    return `
+      ${commonCapHtml}
+      <div class="stat-row stat-row-child ${hasCommonCap ? "stat-row-common-cap" : ""} ${isLastCommonCapRow ? "stat-row-common-cap-last" : ""}">
+        <span>${escapeHtml(getEffectText(row.id, row.value, row.argId, { includeCap: !hasCommonCap }))}</span>
+      </div>
+    `;
+  }).join("");
 }
 
 function getEffectTypeDef(effectTypeID) {
@@ -1060,7 +1122,7 @@ function renderStats() {
         }
 
         const typeDef = getEffectTypeDef(groupRows[0].effectTypeID);
-        const groupValue = groupRows.reduce((sum, row) => sum + getCappedStatValue(row), 0);
+        const groupValue = getCappedEffectGroupValue(groupRows);
         const stateKey = `${categoryId}:${effectGroupKey}`;
         const isOpen = statsEffectGroupOpenState.get(stateKey) === true;
         const collapseId = `stat-collapse-${stateKey.replace(/[^a-z0-9]/gi, '-')}`;
@@ -1076,11 +1138,7 @@ function renderStats() {
             </div>
             <div id="${collapseId}" class="collapse ${isOpen ? 'show' : ''}">
               <div class="stat-effect-group-body">
-              ${groupRows.map((row) => `
-                <div class="stat-row stat-row-child">
-                  <span>${escapeHtml(getEffectText(row.id, row.value, row.argId))}</span>
-                </div>
-              `).join("")}
+                ${renderEffectGroupChildren(groupRows)}
               </div>
             </div>
           </div>
