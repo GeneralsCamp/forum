@@ -148,12 +148,23 @@ function sanitizeDefeatedReserveUnits(value) {
   return Math.max(0, Math.min(Math.floor(n), MAX_DEFEATED_RESERVE_UNITS));
 }
 
-function calculateActivityPoints() {
+function sanitizeRiftPointBonus(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return 0;
+  return Math.max(0, Math.floor(n));
+}
+
+function calculateRiftPoints() {
   const defeated = Number(document.getElementById("defeated").value) || 0;
   const defeatedReserveInput = document.getElementById("defeatedReserve");
   const defeatedReserve = sanitizeDefeatedReserveUnits(defeatedReserveInput?.value);
+  const riftPointBonusInput = document.getElementById("riftPointBonus");
+  const riftPointBonus = sanitizeRiftPointBonus(riftPointBonusInput?.value);
   if (defeatedReserveInput && Number(defeatedReserveInput.value) !== defeatedReserve) {
     defeatedReserveInput.value = String(defeatedReserve);
+  }
+  if (riftPointBonusInput && Number(riftPointBonusInput.value) !== riftPointBonus) {
+    riftPointBonusInput.value = String(riftPointBonus);
   }
   const area = getSelectedArea();
   const levelData = getLevelData();
@@ -181,7 +192,8 @@ function calculateActivityPoints() {
   }
 
   const ratio = Math.min(totalDefeated / troopsForArea, 1);
-  const points = Math.ceil(ratio * pointFactor + Number.EPSILON);
+  const basePoints = Math.ceil(ratio * pointFactor + Number.EPSILON);
+  const points = Math.ceil(basePoints * (1 + riftPointBonus / 100) + Number.EPSILON);
   document.getElementById("points").innerHTML = points;
 }
 
@@ -214,6 +226,11 @@ function populateLevelSelectForBoss() {
     .map(Number)
     .filter(Number.isFinite)
     .sort((a, b) => a - b);
+  const pointFactors = levels.map(level => {
+    const levelData = raidBossData[bossId].levels[level];
+    return `${Number(levelData.wallPointFactor) || 0}:${Number(levelData.courtyardPointFactor) || 0}`;
+  });
+  const hasLevelPointMultiplier = new Set(pointFactors).size > 1;
 
   const previousLevel = levelSelect.value;
   levelSelect.innerHTML = "";
@@ -223,7 +240,9 @@ function populateLevelSelectForBoss() {
     const multiplierText = wallFactor ? `x${Math.round(wallFactor / 100)}` : "-";
     const option = document.createElement("option");
     option.value = String(level);
-    option.textContent = `Level ${level} (${multiplierText})`;
+    option.textContent = hasLevelPointMultiplier
+      ? `Level ${level} (${multiplierText})`
+      : `Level ${level}`;
     levelSelect.appendChild(option);
   });
 
@@ -246,8 +265,9 @@ function populateLevelSelectForBoss() {
 
 function saveToLocalStorage() {
   const data = {};
-  ["defeated", "defeatedReserve", "area", "level", "raidBoss"].forEach(id => {
-    data[id] = document.getElementById(id).value;
+  ["defeated", "defeatedReserve", "riftPointBonus", "area", "level", "raidBoss"].forEach(id => {
+    const value = document.getElementById(id).value;
+    data[id] = id === "riftPointBonus" ? String(sanitizeRiftPointBonus(value)) : value;
   });
   saveCalculatorData(CALC_NAME, data);
 }
@@ -273,6 +293,9 @@ function restoreFromLocalStorage() {
   if (data.defeatedReserve) {
     document.getElementById("defeatedReserve").value = sanitizeDefeatedReserveUnits(data.defeatedReserve);
   }
+  if (data.riftPointBonus) {
+    document.getElementById("riftPointBonus").value = sanitizeRiftPointBonus(data.riftPointBonus);
+  }
 }
 
 function bindUI() {
@@ -281,14 +304,14 @@ function bindUI() {
   raidBossSelect.addEventListener("change", () => {
     populateLevelSelectForBoss();
     saveToLocalStorage();
-    calculateActivityPoints();
+    calculateRiftPoints();
   });
 
   document.querySelectorAll("input, select").forEach(el => {
     if (el.id === "raidBoss") return;
     el.addEventListener("change", () => {
       saveToLocalStorage();
-      calculateActivityPoints();
+      calculateRiftPoints();
     });
   });
 }
@@ -327,7 +350,7 @@ async function init() {
     populateRaidBossSelect();
     restoreFromLocalStorage();
     bindUI();
-    calculateActivityPoints();
+    calculateRiftPoints();
     setSectionsVisible(true);
   } catch (err) {
     console.error("Rift raid live data load failed:", err);
@@ -335,6 +358,6 @@ async function init() {
   }
 }
 
-window.calculateActivityPoints = calculateActivityPoints;
+window.calculateRiftPoints = calculateRiftPoints;
 
 init();

@@ -44,7 +44,7 @@ const categories = {
         { name: "Wall Limit Calculator", desc: "Calculate your wall unit limit with absolute accuracy.", icon: "main_page/wall-icon.webp", link: "./calculators/wall_limit/index.html", disabled: false },
         { name: "Collector Event Calculator", desc: "Calculate that how many points you need to reach your goal.", icon: "main_page/collector-icon.webp", link: "./calculators/collector_event/index.html", disabled: false },
         { name: "Detection Time Calculator", desc: "Calculate the exact land time, and detection time of an attack.", icon: "main_page/detection-icon.webp", link: "./calculators/travel_speed/index.html", disabled: false },
-        { name: "Rift Raid Point Calculator", desc: "Calculate Rift Raid event activity points", icon: "main_page/rift-raid-points-icon.webp", link: "./calculators/rift_raid_points/index.html", disabled: false },
+        { name: "Rift Raid Point Calculator", desc: "Calculate Rift Points, bonuses, and boss reward eligibility", icon: "main_page/rift-raid-points-icon.webp", link: "./calculators/rift_raid_points/index.html", disabled: false },
         { name: "Kingdom League Calculator", desc: "Calculate your Kingdom League points, title, and next rank requirements.", icon: "main_page/leauge-icon.webp", link: "./calculators/kingdom_league/index.html", disabled: false }
     ],
 

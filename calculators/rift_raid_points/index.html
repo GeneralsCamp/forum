@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="styles.css">
   <meta property="og:title" content="Rift Raid Point Calculator | Generals Forum">
   <meta property="og:description"
-    content="Calculate Activity Points based on defeated/faced troops, area, and boss level.">
+    content="Calculate Rift Points based on defeated troops, area, boss level, and Rift Point bonus.">
   <meta property="og:image"
     content="https://generalscamp.github.io/forum/img_base/main_page/rift-raid-points-icon.webp">
 </head>
@@ -80,7 +80,10 @@
               <input type="number" id="defeatedReserve" class="form-control" min="0" max="10000000" value="0">
             </div>
 
-            <div class="d-none d-lg-block col-lg-4 form-group"></div>
+            <div class="col-12 col-md-6 col-lg-4 form-group">
+              <label for="riftPointBonus">Rift Point bonus (%)</label>
+              <input type="number" id="riftPointBonus" class="form-control" min="0" step="10" value="0">
+            </div>
           </form>
         </div>
 
@@ -92,7 +95,7 @@
           <span class="header-title">RESULTS</span>
         </h2>
         <div class="collapse show results">
-          <p>ACTIVITY POINTS: <span id="points">0</span></p>
+          <p>RIFT POINTS: <span id="points">0</span></p>
         </div>
       </div>
 
