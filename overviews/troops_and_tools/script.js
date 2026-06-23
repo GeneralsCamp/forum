@@ -653,10 +653,6 @@ function getTypeAliases(rawType) {
   const type = String(rawType || "").trim();
   const typeLc = type.toLowerCase();
   const aliases = [type];
-  const typeWithoutTier = type.replace(/\d+$/, "");
-  if (typeWithoutTier && typeWithoutTier !== type) {
-    aliases.push(typeWithoutTier);
-  }
 
   if (/^nomadcoinboost(?:wood|stone)$/i.test(type)) {
     aliases.push("NomadCoinBoost", "NomadCoinBoostStone");

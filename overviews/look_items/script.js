@@ -7,6 +7,7 @@ import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
 import { getSharedLanguagePack, getSharedText } from "../shared/SharedTextService.mjs";
 import { revealCards } from "../shared/CardReveal.mjs";
+import { resolveEquipmentName } from "../shared/RewardResolver.mjs";
 
 // --- GLOBAL VARIABLES ---
 let lang = {};
@@ -97,15 +98,13 @@ function normalizeName(str) {
 function getLookName(item) {
 
     if (item.equipmentID) {
-        const key = `equipment_unique_${item.equipmentID}`;
-        if (lang[key]) return lang[key];
+        return resolveEquipmentName(lang, item, item.equipmentID);
     }
 
     if (item.skinName)
         return item.skinName;
 
-    return item.comment2 ||
-        `LookItem ${item.equipmentID || item.skinID || "???"}`;
+    return `LookItem ${item.skinID || "???"}`;
 }
 
 function extractLookItems(data) {

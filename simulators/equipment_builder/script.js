@@ -4,7 +4,7 @@ import { coreInit } from "../../overviews/shared/CoreInit.mjs";
 import { initLanguageSelector, getInitialLanguage } from "../../overviews/shared/LanguageService.mjs";
 import { deriveCompanionUrls } from "../../overviews/shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../../overviews/shared/ComposeHydrator.mjs";
-import { normalizeName } from "../../overviews/shared/RewardResolver.mjs";
+import { normalizeName, resolveEquipmentName } from "../../overviews/shared/RewardResolver.mjs";
 import { saveSimulatorData, loadSimulatorData } from "../../overviews/shared/GameSettings.mjs";
 import { getSharedLanguagePack } from "../../overviews/shared/SharedTextService.mjs";
 import { initRewardDetailModal } from "../../overviews/shared/RewardDetailModal.mjs";
@@ -288,18 +288,6 @@ function getSetTitle(setEntry) {
   return `Set #${setId}`;
 }
 
-function getEquipmentName(item) {
-  const id = String(item?.equipmentID || "");
-  const langKey = `equipment_unique_${id}`.toLowerCase();
-  if (lang[langKey]) return lang[langKey];
-  const candidates = [item?.comment2, item?.comment1, item?.name, item?.Name];
-  const specific = candidates.find((value) => {
-    const normalized = normalizeName(value);
-    return normalized && !["equipment", "commander", "general", "baron", "castellan"].includes(normalized) && !normalized.includes("placeholder");
-  });
-  return specific || `Equipment ${id}`;
-}
-
 function getGemName(item) {
   const id = String(item?.gemID || "");
   return gameText(`gem_unique_${id}`, item?.comment2 || item?.comment1 || `Gem ${id}`);
@@ -540,7 +528,7 @@ function normalizeEquipmentItem(item, setEntry) {
     kind: "equipment",
     id: String(item.equipmentID || ""),
     setId: String(setEntry.id),
-    name: getEquipmentName(item),
+    name: resolveEquipmentName(lang, item),
     slotId,
     type: getEquipmentTypeFromSlotId(slotId),
     typeLabel: getEquipmentTypeLabelFromSlotId(slotId),
@@ -1625,6 +1613,7 @@ async function init() {
             lang,
             equipmentById,
             gemsById,
+            unitsById,
             effectsById: effectCtx?.effectDefinitions || {},
             effectCapsMap: effectCtx?.effectCapsMap || {},
             percentEffectIDs: effectCtx?.percentEffectIDs || new Set(),

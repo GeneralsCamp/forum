@@ -5,7 +5,7 @@ import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageServ
 import { getSharedText } from "../shared/SharedTextService.mjs";
 import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
-import { normalizeName } from "../shared/RewardResolver.mjs";
+import { normalizeName, resolveEquipmentName } from "../shared/RewardResolver.mjs";
 
 let lang = {};
 let effectCtx = null;
@@ -533,35 +533,6 @@ function formatEquipmentDurationCompact(hoursValue) {
   return parts.join(" ");
 }
 
-function getEquipmentName(item) {
-  if (!item) return "Equipment";
-  const id = String(item.equipmentID || "");
-  const langKey = `equipment_unique_${id}`.toLowerCase();
-  if (lang[langKey]) return lang[langKey];
-
-  const areSetName = String(item.comment1 || "").match(/^9 piece ARE set\s*-?\s*(.+?)\s+\d+$/i);
-  if (areSetName?.[1]) {
-    const slotName = String(item.slotID || "") === "6" ? "Commander" : "";
-    return [areSetName[1].trim(), slotName].filter(Boolean).join(" ");
-  }
-
-  const candidates = [item.comment2, item.comment1, item.name, item.Name];
-  const specific = candidates.find((value) => {
-    const normalized = normalizeName(value);
-    return (
-      normalized &&
-      normalized !== "equipment" &&
-      normalized !== "commander" &&
-      normalized !== "general" &&
-      normalized !== "baron" &&
-      normalized !== "castellan" &&
-      !normalized.includes("placeholder")
-    );
-  });
-
-  return specific || `Equipment ${id}`;
-}
-
 function getEquipmentImageUrl(item) {
   if (!item) return null;
   const ownId = String(item.equipmentID || "");
@@ -621,7 +592,7 @@ function toPieceRows(setEntry) {
       slotId: String(item.slotID || ""),
       slotLabel: getLocalizedSlotName(item.slotID),
       wearerLabel: getLocalizedWearerName(item.wearerID),
-      name: getEquipmentName(item),
+      name: resolveEquipmentName(lang, item),
       duration: item.duration,
       effects: parseEffects(item.effects, "equipment"),
       imageUrl: getEquipmentImageUrl(item) || "../../img_base/equipment.png",

@@ -80,6 +80,18 @@ export function parseIdAmountToken(token) {
   return results;
 }
 
+function parseEnchantedEquipmentIds(value) {
+  return parseCsvIds(value).map((token) => {
+    const [idPart, levelPart] = String(token || "").split("+");
+    const id = String(idPart || "").trim();
+    const enchantmentLevel = Number(levelPart);
+    return {
+      id,
+      enchantmentLevel: Number.isFinite(enchantmentLevel) ? enchantmentLevel : null
+    };
+  }).filter((entry) => entry.id);
+}
+
 export function parseUnitReward(value) {
   return parseUnitRewards(value)[0] || {
     unitId: null,
@@ -149,10 +161,6 @@ function getUnitImageLookupKeys(rawName, rawType) {
   }
 
   const types = [rawType].filter(Boolean);
-  const typeWithoutTier = rawType ? String(rawType).replace(/\d+$/, "") : "";
-  if (typeWithoutTier && typeWithoutTier !== rawType) {
-    types.push(typeWithoutTier);
-  }
 
   const keys = [];
   names.forEach((name) => {
@@ -256,43 +264,16 @@ function getUnitDisplayName(lang, unit, includeLevel) {
   return `${baseName} (lvl.${levelRaw})`;
 }
 
-function isGenericEquipmentName(value) {
-  const normalized = normalizeName(value);
-  return (
-    !normalized ||
-    normalized === "equipment" ||
-    normalized === "commander" ||
-    normalized === "general" ||
-    normalized === "baron" ||
-    normalized === "castellan" ||
-    normalized.includes("placeholder")
-  );
-}
-
-function getEquipmentDisplayName(lang, item, id) {
-  const equipmentId = String(id || item?.equipmentID || "").trim();
-  const langKey = equipmentId ? `equipment_unique_${equipmentId}`.toLowerCase() : null;
-  if (langKey && lang?.[langKey]) return lang[langKey];
-
-  const areSetName = String(item?.comment1 || "").match(/^9 piece ARE set\s*-?\s*(.+?)\s+\d+$/i);
-  if (areSetName?.[1]) {
-    const slot = String(item?.slotID || "").trim();
-    const slotName =
-      slot === "6"
-        ? "Commander"
-        : "";
-    return [areSetName[1].trim(), slotName].filter(Boolean).join(" ");
-  }
-
-  const candidates = [
-    item?.comment2,
-    item?.comment1,
-    item?.name,
-    item?.Name
-  ];
-
-  const specific = candidates.find((value) => !isGenericEquipmentName(value));
-  return specific || (equipmentId ? `Equipment ${equipmentId}` : "Equipment");
+export function resolveEquipmentName(lang, item, id = null) {
+  const equipmentId = String(
+    id || getProp(item, ["equipmentID", "equipmentId", "equipmentid"]) || ""
+  ).trim();
+  const langKeys = equipmentId
+    ? [`hero_unique_${equipmentId}`, `equipment_unique_${equipmentId}`]
+    : [];
+  const localizedName = langKeys.map(key => lang?.[key.toLowerCase()]).find(Boolean);
+  if (localizedName) return localizedName;
+  return equipmentId ? `Equipment ${equipmentId}` : "Equipment";
 }
 
 export function createRewardResolver(getContext, options = {}) {
@@ -372,9 +353,10 @@ export function createRewardResolver(getContext, options = {}) {
 
     const equipmentId = getProp(reward, ["equipmentID", "equipmentId", "equipmentid"]);
     const equipmentIds = getProp(reward, ["equipmentIDs", "equipmentIds", "equipmentids"]);
+    const enchantedEquipmentIds = getProp(reward, ["enchantedEquipmentIDs", "enchantedEquipmentIds", "enchantedequipmentids"]);
     if (equipmentId) {
       const item = c.equipmentById?.[String(equipmentId)];
-      return getEquipmentDisplayName(lang, item, equipmentId);
+      return resolveEquipmentName(lang, item, equipmentId);
     }
     if (equipmentIds) {
       const ids = parseCsvIds(equipmentIds);
@@ -382,7 +364,12 @@ export function createRewardResolver(getContext, options = {}) {
       const parsed = firstId ? parseIdAmountToken(firstId)[0] : null;
       const id = parsed?.id ?? firstId;
       const item = id != null ? c.equipmentById?.[String(id)] : null;
-      return id != null ? getEquipmentDisplayName(lang, item, id) : null;
+      return id != null ? resolveEquipmentName(lang, item, id) : null;
+    }
+    if (enchantedEquipmentIds) {
+      const parsed = parseEnchantedEquipmentIds(enchantedEquipmentIds)[0];
+      const item = parsed?.id ? c.equipmentById?.[String(parsed.id)] : null;
+      return parsed?.id ? resolveEquipmentName(lang, item, parsed.id) : null;
     }
 
     const decoIds = parseDecorationRewardIds(reward);
@@ -426,6 +413,10 @@ export function createRewardResolver(getContext, options = {}) {
       const ids = parseCsvIds(equipmentIds);
       if (ids.length > 0) return ids[0];
     }
+    const enchantedEquipmentIds = getProp(reward, ["enchantedEquipmentIDs", "enchantedEquipmentIds", "enchantedequipmentids"]);
+    if (enchantedEquipmentIds) {
+      return parseEnchantedEquipmentIds(enchantedEquipmentIds)[0]?.id || fallbackId;
+    }
     const decoIds = parseDecorationRewardIds(reward);
     if (decoIds.length > 0) return decoIds[0].id;
     return fallbackId;
@@ -445,7 +436,8 @@ export function createRewardResolver(getContext, options = {}) {
     if (constructionId || constructionIds) return "construction";
     const equipmentId = getProp(reward, ["equipmentID", "equipmentId", "equipmentid"]);
     const equipmentIds = getProp(reward, ["equipmentIDs", "equipmentIds", "equipmentids"]);
-    if (equipmentId || equipmentIds) return "equipment";
+    const enchantedEquipmentIds = getProp(reward, ["enchantedEquipmentIDs", "enchantedEquipmentIds", "enchantedequipmentids"]);
+    if (equipmentId || equipmentIds || enchantedEquipmentIds) return "equipment";
     if (parseDecorationRewardIds(reward).length > 0) return "decoration";
     return null;
   };
@@ -544,7 +536,7 @@ export function createRewardResolver(getContext, options = {}) {
     if (equipmentId) {
       const item = c.equipmentById?.[String(equipmentId)];
       entries.push({
-        name: getEquipmentDisplayName(lang, item, equipmentId),
+        name: resolveEquipmentName(lang, item, equipmentId),
         amount: 1,
         id: equipmentId,
         type: "equipment",
@@ -557,11 +549,25 @@ export function createRewardResolver(getContext, options = {}) {
         parseIdAmountToken(token).forEach((parsed) => {
           const item = c.equipmentById?.[String(parsed.id)];
           entries.push({
-            name: getEquipmentDisplayName(lang, item, parsed.id),
+            name: resolveEquipmentName(lang, item, parsed.id),
             amount: parsed.amount,
             id: parsed.id,
             type: "equipment"
           });
+        });
+      });
+    }
+
+    const enchantedEquipmentIds = getProp(reward, ["enchantedEquipmentIDs", "enchantedEquipmentIds", "enchantedequipmentids"]);
+    if (enchantedEquipmentIds) {
+      parseEnchantedEquipmentIds(enchantedEquipmentIds).forEach((parsed) => {
+        const item = c.equipmentById?.[String(parsed.id)];
+        entries.push({
+          name: resolveEquipmentName(lang, item, parsed.id),
+          amount: 1,
+          id: parsed.id,
+          type: "equipment",
+          enchantmentLevel: parsed.enchantmentLevel
         });
       });
     }
@@ -674,8 +680,11 @@ export function createRewardResolver(getContext, options = {}) {
     const c = ctx();
     const equipId = reward?.id != null ? String(reward.id) : String(api.resolveRewardIdStrict(reward) || "");
     if (!equipId) return null;
-
-    return c.equipmentUniqueImageUrlMap?.[equipId] || null;
+    const item = c.equipmentById?.[equipId];
+    const reuseId = getProp(item, ["reuseAssetOfEquipmentID", "reuseAssetOfEquipmentId", "reuseassetofequipmentid"]);
+    return (reuseId ? c.equipmentUniqueImageUrlMap?.[String(reuseId)] : null)
+      || c.equipmentUniqueImageUrlMap?.[equipId]
+      || null;
   };
 
   api.getUnitImageUrl = (reward) => {

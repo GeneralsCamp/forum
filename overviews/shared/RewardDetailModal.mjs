@@ -1,5 +1,5 @@
 import { initCustomModal } from "./ModalService.mjs";
-import { getProp, normalizeName } from "./RewardResolver.mjs";
+import { getProp, normalizeName, resolveEquipmentName } from "./RewardResolver.mjs";
 import { deriveCompanionUrls } from "./AssetComposer.mjs";
 import { hydrateComposedImages } from "./ComposeHydrator.mjs";
 
@@ -211,7 +211,7 @@ function getDisplayName(type, entity, detail, ctx) {
     return getProp(entity, ["Name", "name", "assetName"]) || "Currency";
   }
 
-  if (type === "equipment") return getEquipmentDetailName(entity, ctx);
+  if (type === "equipment") return resolveEquipmentName(ctx.lang, entity);
   if (type === "gem") return getGemDetailName(entity, ctx);
 
   return getProp(entity, ["name", "Name", "comment1", "comment2"]) || "Reward";
@@ -439,23 +439,6 @@ function parseEquipmentEffects(raw, sourceType, ctx) {
     .map((entry) => renderEquipmentEffectLine(entry.id, entry.value, entry.argId, sourceType, ctx));
 }
 
-function getEquipmentDetailName(item, ctx) {
-  if (!item) return "Equipment";
-  const id = String(getProp(item, ["equipmentID", "equipmentId", "equipmentid"]) || "");
-  const langKey = `equipment_unique_${id}`.toLowerCase();
-  if (ctx.lang?.[langKey]) return ctx.lang[langKey];
-  const candidates = [
-    getProp(item, ["comment2"]),
-    getProp(item, ["comment1"]),
-    getProp(item, ["name", "Name"])
-  ];
-  const specific = candidates.find((value) => {
-    const normalized = normalizeName(value);
-    return normalized && !["equipment", "commander", "general", "baron", "castellan"].includes(normalized) && !normalized.includes("placeholder");
-  });
-  return specific || `Equipment ${id}`;
-}
-
 function getGemDetailName(item, ctx) {
   if (!item) return "Gem";
   const id = String(getProp(item, ["gemID", "gemId", "gemid"]) || "");
@@ -586,15 +569,6 @@ function getRewardEntries(reward, ctx) {
       name: ctx.lang?.["relic_equipment"] || "Relic",
       amount: 1,
       imageUrl: "../../img_base/relic.png"
-    });
-  }
-
-  if (getProp(reward, ["enchantedEquipmentIDs", "enchantedEquipmentIds", "enchantedequipmentids"])) {
-    resolvedEntries.push({
-      type: "enchantedEquipment",
-      name: ctx.lang?.["enchanted_equipment"] || "Enchanted Equipment",
-      amount: 1,
-      imageUrl: "../../img_base/placeholder.webp"
     });
   }
 
@@ -1101,7 +1075,7 @@ function renderEquipmentGemModal(detail, ctx) {
   if (!entity) return false;
 
   const isGem = type === "gem";
-  const name = isGem ? getGemDetailName(entity, ctx) : getEquipmentDetailName(entity, ctx);
+  const name = isGem ? getGemDetailName(entity, ctx) : resolveEquipmentName(ctx.lang, entity, detail.id);
   const slotLabel = isGem
     ? (ctx.lang?.["gem_name"] || ctx.lang?.["gem_slottype_all"] || "Gem")
     : getEquipmentSlotLabel(entity, ctx);

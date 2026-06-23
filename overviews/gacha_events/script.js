@@ -8,6 +8,7 @@ import { revealCard } from "../shared/CardReveal.mjs";
 import { initRewardDetailModal, rewardDetailAttrs } from "../shared/RewardDetailModal.mjs";
 import {
     createRewardResolver,
+    resolveEquipmentName,
     normalizeName as sharedNormalizeName,
     getArray as sharedGetArray,
     getProp as sharedGetProp,
@@ -304,9 +305,9 @@ function explodeRewardForDisplay(reward, fallbackId = null) {
     if (reward?.enchantedEquipmentIDs) {
         parseCsvIds(reward.enchantedEquipmentIDs).forEach(token => {
             parseIdAmountToken(token).forEach(parsed => {
-                const key = `equipment_unique_${parsed.id}`.toLowerCase();
+                const item = equipmentById[String(parsed.id)];
                 entries.push({
-                    name: lang[key] || lang["enchanted_equipment"] || "Enchanted Equipment",
+                    name: resolveEquipmentName(lang, item, parsed.id),
                     amount: parsed.amount,
                     id: parsed.id,
                     type: "equipment"

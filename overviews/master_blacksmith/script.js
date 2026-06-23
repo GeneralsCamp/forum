@@ -14,6 +14,7 @@ import {
   parseCsvIds,
   parseIdAmountToken,
   parseLootBoxReward,
+  resolveEquipmentName,
   createRewardResolver
 } from "../shared/RewardResolver.mjs";
 
@@ -315,34 +316,6 @@ function getBuildingName(item) {
   return item.comment2 || item.comment1 || item.type || item.name || null;
 }
 
-function isGenericEquipmentName(value) {
-  const normalized = normalizeName(value);
-  return (
-    !normalized ||
-    normalized === "equipment" ||
-    normalized === "commander" ||
-    normalized === "general" ||
-    normalized === "baron" ||
-    normalized === "castellan" ||
-    normalized.includes("placeholder")
-  );
-}
-
-function getEquipmentName(item, id, fallback = null) {
-  const key = `equipment_unique_${id}`.toLowerCase();
-  if (lang[key]) return lang[key];
-
-  const candidates = [
-    fallback,
-    item?.comment2,
-    item?.comment1,
-    item?.name,
-    item?.Name
-  ];
-  const specific = candidates.find((value) => !isGenericEquipmentName(value));
-  return specific || `Equipment ${id}`;
-}
-
 function getGemName(item, id) {
   const key = `gem_unique_${id}`.toLowerCase();
   return lang[key] || item?.comment2 || item?.comment1 || `Gem ${id}`;
@@ -577,14 +550,9 @@ function getUnitImageLookupKeys(item) {
   const rawType = String(item?.type || item?.Type || "").trim();
   const names = rawName ? [rawName] : [];
   const types = rawType ? [rawType] : [];
-  const typeWithoutTier = rawType.replace(/\d+$/, "");
 
   if (normalizeName(rawName) === "eventtool") {
     names.push("Elitetool");
-  }
-
-  if (typeWithoutTier && typeWithoutTier !== rawType) {
-    types.push(typeWithoutTier);
   }
 
   return names.flatMap(name =>
@@ -655,7 +623,7 @@ function resolvePrimaryReward(pkg) {
     return {
       type: "item",
       id,
-      name: getEquipmentName(item, id, pkg.comment2),
+      name: resolveEquipmentName(lang, item, id),
       quantity: pkg.equipmentAmount || parsed?.amount || "1",
       imageUrl: equipmentUniqueImageUrlMap[String(item?.reuseAssetOfEquipmentID || id)] || "../../img_base/equipment.png"
     };
