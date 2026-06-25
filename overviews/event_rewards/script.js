@@ -110,7 +110,7 @@ function applyOwnLang() {
     
     UI_LANG = {
         amount: pick({ ownKey: "amount", fallback: "Amount", langKeys: ["amount"] }),
-        requirement: pick({ ownKey: "requirement", fallback: "Requirement", langKeys: ["generic_points"] }),
+        requirement: pick({ ownKey: "requirement", fallback: "Requirement", langKeys: ["judgement_requirements", "generic_points"] }),
         id: pick({ ownKey: "id", fallback: "ID", langKeys: ["id"] }),
         mode: pick({ ownKey: "mode", fallback: "Mode", langKeys: ["gameMode_placeholder"] }),
         individual: pick({ ownKey: "individual", fallback: "Individual", langKeys: ["individual"] }),
@@ -146,8 +146,10 @@ function applyOwnLang() {
         no_levels: pick({ ownKey: "no_levels", fallback: "No levels", langKeys: [] }),
         no_difficulties: pick({ ownKey: "no_difficulties", fallback: "No difficulties", langKeys: [] }),
         no_difficulty_for_event: pick({ ownKey: "no_difficulty_for_event", fallback: "No difficulty for this event", langKeys: [] }),
+        no_top_rewards: pick({ ownKey: "no_top_rewards", fallback: "No TOP rewards", langKeys: [] }),
 
-        top: pick({ ownKey: "top", fallback: "TOP", langKeys: ["top"] })
+        top: pick({ ownKey: "top", fallback: "TOP", langKeys: ["top"] }),
+        points_format: lang.points || "{0} points"
     };
 }
 
@@ -296,6 +298,12 @@ function getAddKeyName(reward) {
 
 function formatNumber(value) {
     return Number(value).toLocaleString();
+}
+
+function formatPointsRequirement(pointsText) {
+    const pattern = String(UI_LANG.points_format || "{0} points");
+    if (pattern.includes("{0}")) return pattern.replace("{0}", pointsText);
+    return `${pointsText} ${pattern}`.trim();
 }
 
 function getDecorationImageUrl(reward) {
@@ -587,6 +595,10 @@ function hasDifficultyFilter(eventId) {
     return String(eventId) !== "3" && !isAllianceDivisionEvent(eventId);
 }
 
+function hasTopRewardFilter(eventId) {
+    return isAllianceDivisionEvent(eventId);
+}
+
 function shouldRenderTopRewards(eventId) {
     return true;
 }
@@ -698,23 +710,28 @@ function pushResolvedReward(rewards, rewardId, { requirementText, modeText, isTo
     });
 }
 
-function getLeaderboardRewardSetId(eventId) {
+function getLeaderboardRewardSetId(eventId, leagueId = null) {
     const setIds = leaderboardRewardEntries
-        .filter(row => String(getProp(row, ["eventTypeID", "eventTypeId", "eventtypeid"])) === String(eventId))
+        .filter(row => {
+            const eventMatches = String(getProp(row, ["eventTypeID", "eventTypeId", "eventtypeid"])) === String(eventId);
+            if (!eventMatches) return false;
+            if (leagueId === null || leagueId === undefined || String(leagueId).trim() === "") return true;
+            return String(getProp(row, ["leagueID", "leagueId", "leagueid"])) === String(leagueId);
+        })
         .map(row => Number(getProp(row, ["leaderboardRewardSetID", "leaderboardRewardSetId", "leaderboardrewardsetid"])))
         .filter(value => Number.isFinite(value));
 
     if (setIds.length === 0) return null;
-    return Math.min(...setIds);
+    return Math.max(...setIds);
 }
 
-function pushAllianceDivisionTopRewards(rewards, eventId, leagueId) {
-    if (!isAllianceDivisionEvent(eventId)) return;
+function getAllianceDivisionTopRows(eventId, leagueId) {
+    if (!isAllianceDivisionEvent(eventId)) return [];
 
-    const rewardSetId = getLeaderboardRewardSetId(eventId);
-    if (rewardSetId === null) return;
+    const rewardSetId = getLeaderboardRewardSetId(eventId, leagueId);
+    if (rewardSetId === null) return [];
 
-    const rows = leaderboardRewardEntries
+    return leaderboardRewardEntries
         .filter(row =>
             String(getProp(row, ["eventTypeID", "eventTypeId", "eventtypeid"])) === String(eventId) &&
             String(getProp(row, ["leagueID", "leagueId", "leagueid"])) === String(leagueId) &&
@@ -722,6 +739,11 @@ function pushAllianceDivisionTopRewards(rewards, eventId, leagueId) {
         .sort((a, b) =>
             Number(getProp(a, ["maxRank", "maxrank"])) -
             Number(getProp(b, ["maxRank", "maxrank"])));
+}
+
+function getAllianceDivisionTopRanks(eventId, leagueId) {
+    const rows = getAllianceDivisionTopRows(eventId, leagueId);
+    const ranks = [];
 
     let previousMaxRank = 0;
     rows.forEach(row => {
@@ -729,9 +751,40 @@ function pushAllianceDivisionTopRewards(rewards, eventId, leagueId) {
         if (!Number.isFinite(maxRank)) return;
 
         const startRank = previousMaxRank + 1;
-        const requirementText = startRank === maxRank
-            ? `${UI_LANG.top}${maxRank}`
-            : `${UI_LANG.top}${startRank}-${maxRank}`;
+        for (let rank = startRank; rank <= maxRank; rank++) {
+            ranks.push(rank);
+        }
+
+        previousMaxRank = maxRank;
+    });
+
+    return ranks;
+}
+
+function getSelectedTopRank(value) {
+    const raw = String(value || "");
+    if (!raw.startsWith("top:")) return null;
+    const rank = Number(raw.slice(4));
+    return Number.isFinite(rank) && rank > 0 ? rank : null;
+}
+
+function pushAllianceDivisionTopRewards(rewards, eventId, leagueId, selectedTopRank = null) {
+    if (!selectedTopRank) return;
+
+    const rows = getAllianceDivisionTopRows(eventId, leagueId);
+
+    let previousMaxRank = 0;
+    rows.forEach(row => {
+        const maxRank = Number(getProp(row, ["maxRank", "maxrank"]));
+        if (!Number.isFinite(maxRank)) return;
+
+        const startRank = previousMaxRank + 1;
+        if (selectedTopRank < startRank || selectedTopRank > maxRank) {
+            previousMaxRank = maxRank;
+            return;
+        }
+
+        const requirementText = `${UI_LANG.top}${selectedTopRank}`;
         const modeText = getLevelLabel(eventId, leagueId);
 
         parseCsvIds(getProp(row, ["rewardIDs", "rewardIds", "rewardids"])).forEach(rewardId => {
@@ -891,13 +944,6 @@ function summarizeRewards(rewards, includeTopRewards = true) {
     return summarized;
 }
 
-function getAllianceMobilizationSummaryRewards(rewards) {
-    const topOneText = `${UI_LANG.top}1`;
-    return rewards.filter(reward =>
-        !reward.isTopReward || String(reward.chanceText || "") === topOneText
-    );
-}
-
 function updateModeOptions() {
     const eventSelect = document.getElementById("eventSelect");
     const modeSelect = document.getElementById("modeSelect");
@@ -1000,6 +1046,28 @@ function updateDifficultyOptions() {
     const mode = modeSelect.value;
     const levelId = levelSelect.value;
 
+    if (hasTopRewardFilter(eventId)) {
+        const topRanks = getAllianceDivisionTopRanks(eventId, levelId);
+
+        difficultySelect.innerHTML = "";
+
+        const noTopOption = document.createElement("option");
+        noTopOption.value = "top:none";
+        noTopOption.textContent = UI_LANG.no_top_rewards;
+        difficultySelect.appendChild(noTopOption);
+
+        topRanks.forEach(rank => {
+            const option = document.createElement("option");
+            option.value = `top:${rank}`;
+            option.textContent = `${UI_LANG.top}${rank}`;
+            difficultySelect.appendChild(option);
+        });
+
+        difficultySelect.value = topRanks.includes(1) ? "top:1" : "top:none";
+        difficultySelect.disabled = topRanks.length === 0;
+        return;
+    }
+
     if (!hasDifficultyFilter(eventId)) {
         difficultySelect.innerHTML = "";
         const option = document.createElement("option");
@@ -1067,6 +1135,7 @@ function renderRewardsForSelection() {
     const mode = modeSelect.value;
     const levelId = levelSelect.value;
     const difficultyRaw = difficultySelect.value;
+    const selectedTopRank = hasTopRewardFilter(eventId) ? getSelectedTopRank(difficultyRaw) : null;
     const difficulty = hasDifficultyFilter(eventId) ? difficultyRaw : "all";
 
     if (!eventId || !mode || !levelId || (hasDifficultyFilter(eventId) && !difficultyRaw)) {
@@ -1164,7 +1233,7 @@ function renderRewardsForSelection() {
             for (let i = 0; i < milestoneCount && i < neededPoints.length; i++) {
                 const pointsValue = Number(neededPoints[i]);
                 const pointsText = Number.isNaN(pointsValue) ? String(neededPoints[i]) : formatNumber(pointsValue);
-                const requirementText = pointsText;
+                const requirementText = formatPointsRequirement(pointsText);
                 const modeText = mode === "alliance"
                     ? (isAllianceDivisionEvent(eventId) ? UI_LANG.activity : UI_LANG.alliance_rewards)
                     : (scenario.difficultyId ? (difficultyLabelById[String(scenario.difficultyId)] || String(scenario.difficultyId)) : "-");
@@ -1176,14 +1245,16 @@ function renderRewardsForSelection() {
             }
         });
 
-        const rankingPairs = getTopRewardPairsForEntry({
-            entry,
-            eventId,
-            baseRewardIds,
-            baseNeededPoints,
-            scalingRewards,
-            topValues
-        });
+        const rankingPairs = isAllianceDivisionEvent(eventId)
+            ? []
+            : getTopRewardPairsForEntry({
+                entry,
+                eventId,
+                baseRewardIds,
+                baseNeededPoints,
+                scalingRewards,
+                topValues
+            });
         if (rankingPairs.length > 0) {
             rankingPairs.forEach(pair => {
                 const requirementText = `${UI_LANG.top}${pair.tier}`;
@@ -1197,17 +1268,14 @@ function renderRewardsForSelection() {
         }
     });
 
-    pushAllianceDivisionTopRewards(rewards, eventId, levelId);
+    pushAllianceDivisionTopRewards(rewards, eventId, levelId, selectedTopRank);
 
     const selectedView = viewSelect?.value || "detailed";
     let outputRewards = rewards;
     if (selectedView === "summary_activity") {
         outputRewards = summarizeRewards(rewards, false);
     } else if (selectedView === "summary_all") {
-        const summarySource = isAllianceDivisionEvent(eventId)
-            ? getAllianceMobilizationSummaryRewards(rewards)
-            : rewards;
-        outputRewards = summarizeRewards(summarySource, true);
+        outputRewards = summarizeRewards(rewards, true);
     }
 
     renderRewards(outputRewards, UI_LANG.requirement);
