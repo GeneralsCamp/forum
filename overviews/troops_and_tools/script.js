@@ -7,6 +7,7 @@ import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
 import { getSharedLanguagePack, getSharedText } from "../shared/SharedTextService.mjs";
 import { revealCard } from "../shared/CardReveal.mjs";
 import { initRewardDetailModal, rewardDetailAttrs } from "../shared/RewardDetailModal.mjs";
+import { HOME_SETTINGS_KEY } from "../shared/GameSettings.mjs";
 
 const loader = createLoader();
 let currentLanguage = getInitialLanguage();
@@ -23,12 +24,23 @@ let currentGameSource = "empire";
 let noMatchMessage = "No match to the current filters.";
 let effectCtx = { effectDefinitions: {}, percentEffectIDs: new Set() };
 let sharedLangPack = { ui: {}, filters: {} };
+const devCommentsEnabled = readHomeSetting("devCommentsEnabled", true);
 const FORCE_PLUS_PERCENT_EFFECT_NAMES = new Set([
   "bonuswallcapacity",
   "bonusdefencepower",
   "bonusyarddefensepower",
   "difficultyscalingdefenseboostyard"
 ]);
+
+function readHomeSetting(key, fallback) {
+  try {
+    const raw = localStorage.getItem(HOME_SETTINGS_KEY);
+    const parsed = JSON.parse(raw || "{}");
+    return parsed?.[key] ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
 
 const STAT_ICONS = {
   supplyFood: "../../img_base/foodwastage.png",
@@ -928,6 +940,10 @@ function createUnitCard(group, groupIndex) {
       amount: "",
       imageUrl: imageUrl || ""
     });
+    const unitId = getUnitId(unit);
+    const devIdHtml = devCommentsEnabled && unitId !== "-"
+      ? `<div class="unit-dev-id">#${unitId}</div>`
+      : "";
 
     const rowsForCard = category === "unit"
       ? buildStatGrid(unitStatsCard, { hideEmpty: false })
@@ -950,6 +966,7 @@ function createUnitCard(group, groupIndex) {
       <div class="row g-0 unit-grid unit-detail-trigger" data-level-index="${levelIndex}" ${detailAttrs}>
         <div class="col-4 d-flex justify-content-center align-items-center unit-image-col">
           <div class="image-wrapper">${imageBlock}</div>
+          ${devIdHtml}
         </div>
         <div class="col-8 d-flex flex-column">
           ${rowsForCard}
