@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GGE Currencies Overview</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <link rel="icon" type="image/webp" href="../../img_base/favicon.ico">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../shared/shared.css">
+  <link rel="stylesheet" href="./currencies.css">
+  <meta property="og:title" content="Currencies Overview | Generals Forum">
+  <meta property="og:description" content="This page loads all in-game currencies automatically!">
+  <meta property="og:image" content="https://generalscamp.github.io/forum/img_base/coin.png">
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-12 mb-2">
+        <div class="col-12 page-title">
+          <h1>GGE CURRENCIES</h1>
+        </div>
+
+        <div id="topButtonsContainer">
+          <a id="homeLink" href="https://generalscamp.github.io/forum/" class="home-icon-link" aria-label="Home">
+            <div class="home-icon">
+              <i class="bi bi-house"></i>
+            </div>
+          </a>
+        </div>
+
+        <div class="row note gx-1 gy-1 align-items-center pb-2">
+          <div class="col-md-6 col-sm-12 position-relative">
+            <div class="input-group">
+              <input id="searchInput" class="form-control custom-input" type="search"
+                placeholder="Search by name or ID..." aria-label="Search currencies" autocomplete="off">
+              <button id="searchButton" class="btn custom-button" type="button" aria-label="Search">
+                <i class="bi bi-search"></i>
+              </button>
+              <button id="searchFilterButton" class="btn custom-button dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                aria-expanded="false" aria-label="Search filters">
+                <i class="bi bi-funnel"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-custom">
+                <li>
+                  <div class="form-check">
+                    <input class="form-check-input search-filter" type="checkbox" value="name" id="filterName" checked>
+                    <label class="form-check-label" for="filterName">Name</label>
+                  </div>
+                </li>
+                <li>
+                  <div class="form-check">
+                    <input class="form-check-input search-filter" type="checkbox" value="id" id="filterID" checked>
+                    <label class="form-check-label" for="filterID">ID</label>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="col-md-6 col-sm-12">
+            <select id="sortSelect" class="form-select custom-select text-center" aria-label="Sort currencies">
+              <option value="idAsc" selected>Sort by ID (ascending)</option>
+              <option value="nameAsc">Sort by name (ascending)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <main id="content" class="container-fluid">
+        <div id="loadingBox" class="loading-message">
+          <h3>Loading currencies...</h3>
+        </div>
+
+        <div id="tableWrap" class="currency-table-wrap" hidden>
+          <table class="currency-table">
+            <thead>
+              <tr>
+                <th id="headerID" scope="col">ID</th>
+                <th id="headerName" scope="col">Name</th>
+                <th id="headerSoftCap" scope="col">Soft cap</th>
+                <th id="headerHardCap" scope="col">Hard cap</th>
+              </tr>
+            </thead>
+            <tbody id="currencyRows"></tbody>
+          </table>
+          <p id="emptyState" class="filter-empty-message" hidden>No currencies found.</p>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+  <script type="module" src="./script.js"></script>
+  <script type="module" src="../shared/ConsentInit.mjs"></script>
+</body>
+
+</html>

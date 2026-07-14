@@ -1,0 +1,314 @@
+{
+  "en": {
+    "ui": {
+      "soft_cap": "Soft cap",
+      "hard_cap": "Hard cap",
+      "sort_id_asc": "Sort by ID (ascending)",
+      "sort_name_asc": "Sort by name (ascending)",
+      "load_error": "Could not load currencies.",
+      "search_aria": "Search currencies",
+      "search_filters_aria": "Search filters",
+      "sort_aria": "Sort currencies",
+      "home_aria": "Home"
+    }
+  },
+  "ar": {
+    "ui": {
+      "soft_cap": "الحد المرن",
+      "hard_cap": "الحد الأقصى",
+      "sort_id_asc": "ترتيب حسب المعرّف (تصاعدي)",
+      "sort_name_asc": "ترتيب حسب الاسم (تصاعدي)",
+      "load_error": "تعذر تحميل العملات.",
+      "search_aria": "البحث في العملات",
+      "search_filters_aria": "مرشحات البحث",
+      "sort_aria": "ترتيب العملات",
+      "home_aria": "الرئيسية"
+    }
+  },
+  "es": {
+    "ui": {
+      "soft_cap": "Límite flexible",
+      "hard_cap": "Límite máximo",
+      "sort_id_asc": "Ordenar por ID (ascendente)",
+      "sort_name_asc": "Ordenar por nombre (ascendente)",
+      "load_error": "No se pudieron cargar las monedas.",
+      "search_aria": "Buscar monedas",
+      "search_filters_aria": "Filtros de búsqueda",
+      "sort_aria": "Ordenar monedas",
+      "home_aria": "Inicio"
+    }
+  },
+  "bg": {
+    "ui": {
+      "soft_cap": "Мек лимит",
+      "hard_cap": "Твърд лимит",
+      "sort_id_asc": "Сортиране по ID (възходящо)",
+      "sort_name_asc": "Сортиране по име (възходящо)",
+      "load_error": "Валутите не можаха да се заредят.",
+      "search_aria": "Търсене на валути",
+      "search_filters_aria": "Филтри за търсене",
+      "sort_aria": "Сортиране на валути",
+      "home_aria": "Начало"
+    }
+  },
+  "pt": {
+    "ui": {
+      "soft_cap": "Limite flexível",
+      "hard_cap": "Limite máximo",
+      "sort_id_asc": "Ordenar por ID (crescente)",
+      "sort_name_asc": "Ordenar por nome (crescente)",
+      "load_error": "Não foi possível carregar as moedas.",
+      "search_aria": "Pesquisar moedas",
+      "search_filters_aria": "Filtros de pesquisa",
+      "sort_aria": "Ordenar moedas",
+      "home_aria": "Início"
+    }
+  },
+  "cs": {
+    "ui": {
+      "soft_cap": "Měkký limit",
+      "hard_cap": "Pevný limit",
+      "sort_id_asc": "Řadit podle ID (vzestupně)",
+      "sort_name_asc": "Řadit podle názvu (vzestupně)",
+      "load_error": "Měny se nepodařilo načíst.",
+      "search_aria": "Hledat měny",
+      "search_filters_aria": "Filtry vyhledávání",
+      "sort_aria": "Řadit měny",
+      "home_aria": "Domů"
+    }
+  },
+  "de": {
+    "ui": {
+      "soft_cap": "Weiches Limit",
+      "hard_cap": "Hartes Limit",
+      "sort_id_asc": "Nach ID sortieren (aufsteigend)",
+      "sort_name_asc": "Nach Name sortieren (aufsteigend)",
+      "load_error": "Währungen konnten nicht geladen werden.",
+      "search_aria": "Währungen suchen",
+      "search_filters_aria": "Suchfilter",
+      "sort_aria": "Währungen sortieren",
+      "home_aria": "Startseite"
+    }
+  },
+  "da": {
+    "ui": {
+      "soft_cap": "Blød grænse",
+      "hard_cap": "Hård grænse",
+      "sort_id_asc": "Sortér efter ID (stigende)",
+      "sort_name_asc": "Sortér efter navn (stigende)",
+      "load_error": "Valutaerne kunne ikke indlæses.",
+      "search_aria": "Søg i valutaer",
+      "search_filters_aria": "Søgefiltre",
+      "sort_aria": "Sortér valutaer",
+      "home_aria": "Forside"
+    }
+  },
+  "fi": {
+    "ui": {
+      "soft_cap": "Pehmeä raja",
+      "hard_cap": "Kova raja",
+      "sort_id_asc": "Lajittele ID:n mukaan (nouseva)",
+      "sort_name_asc": "Lajittele nimen mukaan (nouseva)",
+      "load_error": "Valuuttojen lataaminen epäonnistui.",
+      "search_aria": "Hae valuuttoja",
+      "search_filters_aria": "Hakusuodattimet",
+      "sort_aria": "Lajittele valuutat",
+      "home_aria": "Etusivu"
+    }
+  },
+  "fr": {
+    "ui": {
+      "soft_cap": "Limite souple",
+      "hard_cap": "Limite stricte",
+      "sort_id_asc": "Trier par ID (croissant)",
+      "sort_name_asc": "Trier par nom (croissant)",
+      "load_error": "Impossible de charger les monnaies.",
+      "search_aria": "Rechercher des monnaies",
+      "search_filters_aria": "Filtres de recherche",
+      "sort_aria": "Trier les monnaies",
+      "home_aria": "Accueil"
+    }
+  },
+  "el": {
+    "ui": {
+      "soft_cap": "Ήπιο όριο",
+      "hard_cap": "Απόλυτο όριο",
+      "sort_id_asc": "Ταξινόμηση κατά ID (αύξουσα)",
+      "sort_name_asc": "Ταξινόμηση κατά όνομα (αύξουσα)",
+      "load_error": "Δεν ήταν δυνατή η φόρτωση των νομισμάτων.",
+      "search_aria": "Αναζήτηση νομισμάτων",
+      "search_filters_aria": "Φίλτρα αναζήτησης",
+      "sort_aria": "Ταξινόμηση νομισμάτων",
+      "home_aria": "Αρχική"
+    }
+  },
+  "hu": {
+    "ui": {
+      "soft_cap": "Puha korlát",
+      "hard_cap": "Kemény korlát",
+      "sort_id_asc": "Rendezés ID szerint (növekvő)",
+      "sort_name_asc": "Rendezés név szerint (növekvő)",
+      "load_error": "A valutákat nem sikerült betölteni.",
+      "search_aria": "Valuták keresése",
+      "search_filters_aria": "Keresési szűrők",
+      "sort_aria": "Valuták rendezése",
+      "home_aria": "Kezdőlap"
+    }
+  },
+  "it": {
+    "ui": {
+      "soft_cap": "Limite flessibile",
+      "hard_cap": "Limite massimo",
+      "sort_id_asc": "Ordina per ID (crescente)",
+      "sort_name_asc": "Ordina per nome (crescente)",
+      "load_error": "Impossibile caricare le valute.",
+      "search_aria": "Cerca valute",
+      "search_filters_aria": "Filtri di ricerca",
+      "sort_aria": "Ordina valute",
+      "home_aria": "Home"
+    }
+  },
+  "ja": {
+    "ui": {
+      "soft_cap": "ソフト上限",
+      "hard_cap": "ハード上限",
+      "sort_id_asc": "ID順（昇順）",
+      "sort_name_asc": "名前順（昇順）",
+      "load_error": "通貨を読み込めませんでした。",
+      "search_aria": "通貨を検索",
+      "search_filters_aria": "検索フィルター",
+      "sort_aria": "通貨を並べ替え",
+      "home_aria": "ホーム"
+    }
+  },
+  "ko": {
+    "ui": {
+      "soft_cap": "소프트 한도",
+      "hard_cap": "하드 한도",
+      "sort_id_asc": "ID순 정렬 (오름차순)",
+      "sort_name_asc": "이름순 정렬 (오름차순)",
+      "load_error": "화폐를 불러올 수 없습니다.",
+      "search_aria": "화폐 검색",
+      "search_filters_aria": "검색 필터",
+      "sort_aria": "화폐 정렬",
+      "home_aria": "홈"
+    }
+  },
+  "lt": {
+    "ui": {
+      "soft_cap": "Lankstus limitas",
+      "hard_cap": "Griežtas limitas",
+      "sort_id_asc": "Rikiuoti pagal ID (didėjančiai)",
+      "sort_name_asc": "Rikiuoti pagal pavadinimą (didėjančiai)",
+      "load_error": "Nepavyko įkelti valiutų.",
+      "search_aria": "Ieškoti valiutų",
+      "search_filters_aria": "Paieškos filtrai",
+      "sort_aria": "Rikiuoti valiutas",
+      "home_aria": "Pradžia"
+    }
+  },
+  "nl": {
+    "ui": {
+      "soft_cap": "Zachte limiet",
+      "hard_cap": "Harde limiet",
+      "sort_id_asc": "Sorteren op ID (oplopend)",
+      "sort_name_asc": "Sorteren op naam (oplopend)",
+      "load_error": "De valuta's konden niet worden geladen.",
+      "search_aria": "Valuta's zoeken",
+      "search_filters_aria": "Zoekfilters",
+      "sort_aria": "Valuta's sorteren",
+      "home_aria": "Startpagina"
+    }
+  },
+  "no": {
+    "ui": {
+      "soft_cap": "Myk grense",
+      "hard_cap": "Hard grense",
+      "sort_id_asc": "Sorter etter ID (stigende)",
+      "sort_name_asc": "Sorter etter navn (stigende)",
+      "load_error": "Kunne ikke laste valutaene.",
+      "search_aria": "Søk etter valutaer",
+      "search_filters_aria": "Søkefiltre",
+      "sort_aria": "Sorter valutaer",
+      "home_aria": "Hjem"
+    }
+  },
+  "pl": {
+    "ui": {
+      "soft_cap": "Miękki limit",
+      "hard_cap": "Twardy limit",
+      "sort_id_asc": "Sortuj według ID (rosnąco)",
+      "sort_name_asc": "Sortuj według nazwy (rosnąco)",
+      "load_error": "Nie udało się załadować walut.",
+      "search_aria": "Szukaj walut",
+      "search_filters_aria": "Filtry wyszukiwania",
+      "sort_aria": "Sortuj waluty",
+      "home_aria": "Strona główna"
+    }
+  },
+  "ro": {
+    "ui": {
+      "soft_cap": "Limit flexibil",
+      "hard_cap": "Limit strict",
+      "sort_id_asc": "Sortare după ID (crescător)",
+      "sort_name_asc": "Sortare după nume (crescător)",
+      "load_error": "Monedele nu au putut fi încărcate.",
+      "search_aria": "Caută monede",
+      "search_filters_aria": "Filtre de căutare",
+      "sort_aria": "Sortează monedele",
+      "home_aria": "Acasă"
+    }
+  },
+  "ru": {
+    "ui": {
+      "soft_cap": "Мягкий лимит",
+      "hard_cap": "Жёсткий лимит",
+      "sort_id_asc": "Сортировать по ID (по возрастанию)",
+      "sort_name_asc": "Сортировать по названию (по возрастанию)",
+      "load_error": "Не удалось загрузить валюты.",
+      "search_aria": "Поиск валют",
+      "search_filters_aria": "Фильтры поиска",
+      "sort_aria": "Сортировка валют",
+      "home_aria": "Главная"
+    }
+  },
+  "sv": {
+    "ui": {
+      "soft_cap": "Mjuk gräns",
+      "hard_cap": "Hård gräns",
+      "sort_id_asc": "Sortera efter ID (stigande)",
+      "sort_name_asc": "Sortera efter namn (stigande)",
+      "load_error": "Det gick inte att läsa in valutorna.",
+      "search_aria": "Sök valutor",
+      "search_filters_aria": "Sökfilter",
+      "sort_aria": "Sortera valutor",
+      "home_aria": "Startsida"
+    }
+  },
+  "sk": {
+    "ui": {
+      "soft_cap": "Mäkký limit",
+      "hard_cap": "Pevný limit",
+      "sort_id_asc": "Zoradiť podľa ID (vzostupne)",
+      "sort_name_asc": "Zoradiť podľa názvu (vzostupne)",
+      "load_error": "Meny sa nepodarilo načítať.",
+      "search_aria": "Hľadať meny",
+      "search_filters_aria": "Filtre vyhľadávania",
+      "sort_aria": "Zoradiť meny",
+      "home_aria": "Domov"
+    }
+  },
+  "tr": {
+    "ui": {
+      "soft_cap": "Esnek sınır",
+      "hard_cap": "Kesin sınır",
+      "sort_id_asc": "ID'ye göre sırala (artan)",
+      "sort_name_asc": "Ada göre sırala (artan)",
+      "load_error": "Para birimleri yüklenemedi.",
+      "search_aria": "Para birimi ara",
+      "search_filters_aria": "Arama filtreleri",
+      "sort_aria": "Para birimlerini sırala",
+      "home_aria": "Ana sayfa"
+    }
+  }
+}
