@@ -1,4 +1,8 @@
 import { initCustomModal } from "./ModalService.mjs";
+import { deriveCompanionUrls } from "./AssetComposer.mjs";
+import { hydrateComposedImages } from "./ComposeHydrator.mjs";
+
+const composedEffectItemImageCache = new Map();
 
 export function escapeHtml(value) {
     return String(value ?? "")
@@ -104,21 +108,63 @@ export function createEffectItemsModal({
             .replace(/\s*<span class="max-bonus"[^>]*>\(Max:[\s\S]*?<\/span>/g, "");
     }
 
-    function createRow({ kind, name, id, imageUrl, effectText }) {
+    function createRow({ kind, name, id, imageUrl, effectText, composeImage = false }) {
+        const shouldCompose = composeImage
+            && typeof imageUrl === "string"
+            && imageUrl.startsWith("https://empire-html5.goodgamestudios.com/default/assets/itemassets/")
+            && /\.(webp|png)$/i.test(imageUrl);
+        const companion = shouldCompose ? deriveCompanionUrls(imageUrl) : null;
+        const composeAttrs = companion
+            ? ` data-compose-asset="1" data-image-url="${escapeHtml(companion.imageUrl)}" data-json-url="${escapeHtml(companion.jsonUrl)}" data-js-url="${escapeHtml(companion.jsUrl)}"`
+            : "";
+
         return `
     <div class="effect-items-row">
-      <div class="effect-items-image">
-        <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(name)}" loading="lazy">
+      <div class="effect-items-image" role="button" tabindex="0" data-copy-item-id="${escapeHtml(id)}" aria-label="Copy item ID ${escapeHtml(id)}">
+        <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(name)}" loading="lazy"${composeAttrs}>
+        <span class="effect-items-id">#${escapeHtml(id)}</span>
       </div>
       <div class="effect-items-info">
-        <div class="effect-items-topline">
-          <span class="effect-items-kind">${escapeHtml(kind)}</span>
-          <span class="effect-items-kind effect-items-id">ID: ${escapeHtml(id)}</span>
+        <div class="effect-items-name">
+          ${escapeHtml(name)} <span class="effect-items-kind">(${escapeHtml(kind)})</span>
         </div>
-        <div class="effect-items-name">${escapeHtml(name)}</div>
         <div class="effect-items-effect">${effectText}</div>
       </div>
     </div>`;
+    }
+
+    async function copyItemId(imageBox) {
+        const id = imageBox.dataset.copyItemId;
+        if (!id) return;
+
+        try {
+            await navigator.clipboard.writeText(id);
+        } catch {
+            const input = document.createElement("textarea");
+            input.value = id;
+            input.style.position = "fixed";
+            input.style.opacity = "0";
+            document.body.appendChild(input);
+            input.select();
+            document.execCommand("copy");
+            input.remove();
+        }
+
+        imageBox.classList.remove("is-copied");
+        void imageBox.offsetWidth;
+        imageBox.classList.add("is-copied");
+        window.setTimeout(() => imageBox.classList.remove("is-copied"), 700);
+    }
+
+    function bindItemIdCopy(body) {
+        body.querySelectorAll("[data-copy-item-id]").forEach(imageBox => {
+            imageBox.addEventListener("click", () => copyItemId(imageBox));
+            imageBox.addEventListener("keydown", event => {
+                if (event.key !== "Enter" && event.key !== " ") return;
+                event.preventDefault();
+                copyItemId(imageBox);
+            });
+        });
     }
 
     function open({ effectID, capID }) {
@@ -152,6 +198,13 @@ export function createEffectItemsModal({
         ${rows.map(createRow).join("")}
       </div>`
             : `<div class="effect-items-empty">No matching items.</div>`;
+
+        bindItemIdCopy(body);
+
+        void hydrateComposedImages({
+            root: body,
+            cache: composedEffectItemImageCache
+        });
 
         modal.open();
     }

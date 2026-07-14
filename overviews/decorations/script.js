@@ -732,6 +732,7 @@ function getDecorationEffectModalItems(effectID, getPrimaryEffectByID, getEffect
         name,
         id: item.wodID || "???",
         imageUrl,
+        composeImage: true,
         effectText: getPrimaryEffectByID(item.areaSpecificEffects || "", effectID),
         sortValue: getEffectValueByID(item.areaSpecificEffects || "")
       };

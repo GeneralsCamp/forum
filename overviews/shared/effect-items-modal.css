@@ -21,18 +21,17 @@
 .effect-items-summary {
     position: sticky;
     top: -10px;
-    z-index: 2;
+    z-index: 10;
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
-    margin: -10px -10px 8px;
+    margin: -10px -10px 0;
     padding: 8px 10px;
     border-bottom: 1px solid rgba(255, 255, 255, .22);
     background: #7b5a3b;
 }
 
-.effect-items-summary span,
-.effect-items-kind {
+.effect-items-summary span {
     display: inline-flex;
     align-items: center;
     min-height: 22px;
@@ -47,26 +46,58 @@
 
 .effect-items-list {
     display: grid;
-    gap: 8px;
+    gap: 0;
+    margin: 0 -10px -10px;
 }
 
 .effect-items-row {
+    --effect-items-row-padding-x: 10px;
+    --effect-items-image-column: 62px;
+    --effect-items-column-gap: 10px;
+    position: relative;
     display: grid;
-    grid-template-columns: 62px minmax(0, 1fr);
-    gap: 10px;
+    grid-template-columns: var(--effect-items-image-column) minmax(0, 1fr);
+    gap: var(--effect-items-column-gap);
     align-items: center;
-    padding: 8px;
-    border: 1px solid rgba(255, 255, 255, .28);
-    border-radius: 8px;
+    padding: 8px 10px;
+    border: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, .28);
+    border-radius: 0;
     background: #916241;
     color: white;
 }
 
+.effect-items-row::after {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: calc(var(--effect-items-row-padding-x) + var(--effect-items-image-column) + var(--effect-items-column-gap));
+    width: 1px;
+    background: rgba(255, 255, 255, .4);
+    pointer-events: none;
+}
+
+.effect-items-row:last-child {
+    border-bottom: 0;
+}
+
 .effect-items-image {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: 58px;
+    cursor: pointer;
+}
+
+.effect-items-image:focus-visible {
+    outline: 1px solid #f3c24a;
+    outline-offset: 2px;
+}
+
+.effect-items-image.is-copied .effect-items-id {
+    background: rgba(93, 93, 93, 0.9);
+    color: #fff;
 }
 
 .effect-items-image img {
@@ -77,22 +108,41 @@
 
 .effect-items-info {
     min-width: 0;
+    padding-inline-start: var(--effect-items-column-gap);
 }
 
-.effect-items-topline {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    align-items: center;
-    margin-bottom: 3px;
+.effect-items-id {
+    position: absolute;
+    right: 1px;
+    bottom: 1px;
+    z-index: 2;
+    padding: 1px 3px;
+    border-radius: 3px;
+    background: rgba(35, 25, 18, .58);
+    color: rgba(255, 244, 220, .92);
+    font-size: 10px;
+    font-weight: 650;
+    line-height: 1;
+    letter-spacing: .02em;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, .45);
+    pointer-events: none;
 }
 
 .effect-items-name {
+    min-width: 0;
+    margin-bottom: 4px;
     color: #f3c24a;
     font-size: 15px;
     font-weight: 800;
     line-height: 1.25;
     overflow-wrap: anywhere;
+}
+
+.effect-items-kind {
+    color: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    white-space: nowrap;
 }
 
 .effect-items-effect {
@@ -116,8 +166,9 @@
     }
 
     .effect-items-row {
-        grid-template-columns: 48px minmax(0, 1fr);
-        gap: 8px;
+        --effect-items-row-padding-x: 7px;
+        --effect-items-image-column: 48px;
+        --effect-items-column-gap: 8px;
         padding: 7px;
     }
 
