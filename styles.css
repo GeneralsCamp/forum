@@ -40,6 +40,7 @@ textarea {
 }
 
 @media only screen and (max-width: 1399.98px) {
+
     .container,
     .container-sm,
     .container-md,
@@ -631,6 +632,7 @@ html {
 .contact-note a:hover {
     border-bottom-color: rgba(243, 194, 74, 1);
 }
+
 .settings-modal {
     --gf-modal-width: min(420px, calc(100% - 20px));
     --gf-modal-shell-bg: #4f3625;
@@ -840,32 +842,38 @@ html {
     }
 
     .main-nav {
-        position: fixed;
+        position: absolute;
         left: 0;
         right: 0;
         bottom: 0;
         top: auto;
+
         width: 100%;
         margin-inline: 0;
+
         padding: 8px;
         gap: 8px;
+
         border-bottom: none;
         border-top: 1px solid rgba(215, 155, 66, 0.48);
+
         z-index: 300;
     }
 
     .container {
+        position: relative;
         padding-top: 6px;
-        padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
-        height: auto;
+        padding-bottom: 55px;
+        height: 100vh;
         min-height: 100vh;
-        overflow-y: auto;
+        overflow: hidden;
     }
 
     .main-scroll {
-        flex: 0 0 auto;
-        min-height: auto;
-        overflow: visible;
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
     }
 
     .main-nav-left {
@@ -920,15 +928,10 @@ html {
     }
 
     .contact-note {
-        margin: 0;
-        padding: 9px;
-        font-size: 12px;
-        flex-wrap: wrap;
-        gap: 3px 7px;
+        display: none;
     }
 
-    .contact-note-email {
-        font-size: 11px;
+    .category-wrapper {
+        padding: 6px 0px 14px;
     }
-
 }
