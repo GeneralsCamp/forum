@@ -26,6 +26,9 @@ textarea {
     body {
         margin: 0 !important;
         background-attachment: scroll;
+        height: auto;
+        min-height: 100vh;
+        overflow: auto;
     }
 }
 
@@ -256,7 +259,9 @@ textarea {
 }
 
 .container {
-    background-color: rgba(32, 23, 17, 0.22);
+    background-color: rgba(32, 23, 17, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     display: flex;
     flex-direction: column;
     height: 100vh;
@@ -278,14 +283,13 @@ textarea {
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
-    overflow-y: scroll;
+    overflow-y: auto;
     overscroll-behavior: contain;
-    scrollbar-gutter: stable;
 }
 
 .gf-modal-open .main-scroll {
     pointer-events: none;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 p {
@@ -852,7 +856,16 @@ html {
 
     .container {
         padding-top: 6px;
-        padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+        padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+        height: auto;
+        min-height: 100vh;
+        overflow-y: auto;
+    }
+
+    .main-scroll {
+        flex: 0 0 auto;
+        min-height: auto;
+        overflow: visible;
     }
 
     .main-nav-left {
