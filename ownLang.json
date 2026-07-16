@@ -24,10 +24,10 @@
         "name": "CI's & TCI's Overview"
       },
       "look_items": {
-        "name": "Look-items Overview"
+        "name": "Look-Items Overview"
       },
       "equipment_sets": {
-        "name": "Unique Set Overview"
+        "name": "Unique Sets Overview"
       },
       "generals": {
         "name": "Generals Overview"
@@ -87,7 +87,7 @@
         "name": "Imperial Patronage Simulator"
       },
       "equipment_builder": {
-        "name": "Equipment Builder"
+        "name": "Equipment Set Builder"
       },
       "castle_layout": {
         "name": "Castle Layout Simulator"
@@ -125,7 +125,7 @@
         "name": "نظرة عامة على العناصر"
       },
       "equipment_sets": {
-        "name": "نظرة عامة على المجموعة الفريدة"
+        "name": "نظرة عامة على المجموعات الفريدة"
       },
       "generals": {
         "name": "نظرة عامة على الجنرالات"
@@ -185,13 +185,13 @@
         "name": "محاكي الرعاية الإمبراطورية"
       },
       "equipment_builder": {
-        "name": "منشئ المعدات"
+        "name": "منشئ مجموعات المعدات"
       },
       "castle_layout": {
-        "name": "محاكاة تخطيط القلعة"
+        "name": "محاكي تخطيط القلعة"
       },
       "hall_of_legends": {
-        "name": "قاعة محاكاة الأساطير"
+        "name": "محاكي قاعة الأساطير"
       }
     }
   },
@@ -214,82 +214,82 @@
     },
     "cards": {
       "decorations": {
-        "name": "Descripción general de las decoraciones"
+        "name": "Descripción General De Las Decoraciones"
       },
       "building_items": {
-        "name": "Descripción general de CI y TCI"
+        "name": "Descripción General De CI Y TCI"
       },
       "look_items": {
-        "name": "Descripción general de los elementos de apariencia"
+        "name": "Descripción General De Los Elementos De Apariencia"
       },
       "equipment_sets": {
-        "name": "Descripción general del conjunto único"
+        "name": "Descripción General De Conjuntos Únicos"
       },
       "generals": {
-        "name": "Resumen general"
+        "name": "Resumen General"
       },
       "event_rewards": {
-        "name": "Descripción general de las recompensas del evento"
+        "name": "Descripción General De Las Recompensas Del Evento"
       },
       "gacha": {
-        "name": "Descripción general de Gacha"
+        "name": "Descripción General De Gacha"
       },
       "loot_boxes": {
-        "name": "Descripción general de las cajas de botín"
+        "name": "Descripción General De Las Cajas De Botín"
       },
       "offerings": {
-        "name": "Descripción general de las ofertas"
+        "name": "Descripción General De Las Ofertas"
       },
       "master_blacksmith": {
-        "name": "Descripción general del maestro herrero"
+        "name": "Descripción General Del Maestro Herrero"
       },
       "troops": {
-        "name": "Resumen de tropas"
+        "name": "Resumen De Tropas"
       },
       "tools": {
-        "name": "Descripción general de las herramientas"
+        "name": "Descripción General De Las Herramientas"
       },
       "rift_event": {
-        "name": "Descripción general del evento de ruptura"
+        "name": "Descripción General Del Evento De Ruptura"
       },
       "quests": {
-        "name": "Resumen de misiones"
+        "name": "Resumen De Misiones"
       },
       "event_plan": {
-        "name": "Descripción general del plan de eventos"
+        "name": "Descripción General Del Plan De Eventos"
       },
       "food_production": {
-        "name": "Calculadora de producción de alimentos"
+        "name": "Calculadora De Producción De Alimentos"
       },
       "mead_production": {
-        "name": "Calculadora de producción de hidromiel"
+        "name": "Calculadora De Producción De Hidromiel"
       },
       "wall_limit": {
-        "name": "Calculadora de límite de pared"
+        "name": "Calculadora De Límite De Pared"
       },
       "collector_event": {
-        "name": "Calculadora de eventos de coleccionista"
+        "name": "Calculadora De Eventos De Coleccionista"
       },
       "detection_time": {
-        "name": "Calculadora de tiempo de detección"
+        "name": "Calculadora De Tiempo De Detección"
       },
       "rift_points": {
-        "name": "Calculadora de puntos de incursión de Rift"
+        "name": "Calculadora De Puntos De Incursión De Rift"
       },
       "kingdom_league": {
-        "name": "Calculadora de la Liga del Reino"
+        "name": "Calculadora De La Liga Del Reino"
       },
       "imperial_patronage": {
-        "name": "Simulador de Patrocinio Imperial"
+        "name": "Simulador De Patrocinio Imperial"
       },
       "equipment_builder": {
-        "name": "Constructor de equipos"
+        "name": "Constructor De Conjuntos De Equipamiento"
       },
       "castle_layout": {
-        "name": "Simulador de diseño de castillo"
+        "name": "Simulador De Diseño De Castillos"
       },
       "hall_of_legends": {
-        "name": "Simulador de Salón de Leyendas"
+        "name": "Simulador Del Salón De Las Leyendas"
       }
     }
   },
@@ -312,82 +312,82 @@
     },
     "cards": {
       "decorations": {
-        "name": "Преглед на декорациите"
+        "name": "Преглед На Декорациите"
       },
       "building_items": {
-        "name": "Преглед на CI и TCI"
+        "name": "Преглед На CI И TCI"
       },
       "look_items": {
-        "name": "Общ преглед на артикули"
+        "name": "Общ Преглед На Артикули"
       },
       "equipment_sets": {
-        "name": "Преглед на уникален комплект"
+        "name": "Преглед На Уникални Комплекти"
       },
       "generals": {
-        "name": "Общ преглед"
+        "name": "Общ Преглед"
       },
       "event_rewards": {
-        "name": "Преглед на наградите за събитието"
+        "name": "Преглед На Наградите За Събитието"
       },
       "gacha": {
-        "name": "Общ преглед на Gacha"
+        "name": "Общ Преглед На Gacha"
       },
       "loot_boxes": {
-        "name": "Общ преглед на кутии за плячка"
+        "name": "Общ Преглед На Кутии За Плячка"
       },
       "offerings": {
-        "name": "Преглед на предложенията"
+        "name": "Преглед На Предложенията"
       },
       "master_blacksmith": {
-        "name": "Преглед на майстор ковач"
+        "name": "Преглед На Майстор Ковач"
       },
       "troops": {
-        "name": "Преглед на войските"
+        "name": "Преглед На Войските"
       },
       "tools": {
-        "name": "Общ преглед на инструментите"
+        "name": "Общ Преглед На Инструментите"
       },
       "rift_event": {
-        "name": "Преглед на събитието Rift"
+        "name": "Преглед На Събитието Rift"
       },
       "quests": {
-        "name": "Преглед на мисии"
+        "name": "Преглед На Мисии"
       },
       "event_plan": {
-        "name": "Преглед на плана за събитието"
+        "name": "Преглед На Плана За Събитието"
       },
       "food_production": {
-        "name": "Калкулатор за производство на храна"
+        "name": "Калкулатор За Производство На Храна"
       },
       "mead_production": {
-        "name": "Калкулатор за производство на медовина"
+        "name": "Калкулатор За Производство На Медовина"
       },
       "wall_limit": {
-        "name": "Калкулатор за ограничаване на стените"
+        "name": "Калкулатор За Ограничаване На Стените"
       },
       "collector_event": {
-        "name": "Калкулатор на събития за събиране"
+        "name": "Калкулатор На Събития За Събиране"
       },
       "detection_time": {
-        "name": "Калкулатор за време за откриване"
+        "name": "Калкулатор За Време За Откриване"
       },
       "rift_points": {
-        "name": "Калкулатор на точка за нападение на Rift"
+        "name": "Калкулатор На Точка За Нападение На Rift"
       },
       "kingdom_league": {
-        "name": "Калкулатор на кралската лига"
+        "name": "Калкулатор На Кралската Лига"
       },
       "imperial_patronage": {
-        "name": "Симулатор на императорско покровителство"
+        "name": "Симулатор На Императорското Покровителство"
       },
       "equipment_builder": {
-        "name": "Конструктор на оборудване"
+        "name": "Конструктор На Комплекти Оборудване"
       },
       "castle_layout": {
-        "name": "Симулатор на оформление на замъка"
+        "name": "Симулатор На Оформлението На Замъка"
       },
       "hall_of_legends": {
-        "name": "Симулатор на Hall of Legends"
+        "name": "Симулатор На Залата На Легендите"
       }
     }
   },
@@ -410,82 +410,82 @@
     },
     "cards": {
       "decorations": {
-        "name": "Visão geral das decorações"
+        "name": "Visão Geral Das Decorações"
       },
       "building_items": {
-        "name": "Visão geral de CI e TCI"
+        "name": "Visão Geral De CI E TCI"
       },
       "look_items": {
-        "name": "Visão geral dos itens de aparência"
+        "name": "Visão Geral Dos Itens De Aparência"
       },
       "equipment_sets": {
-        "name": "Visão geral do conjunto exclusivo"
+        "name": "Visão Geral Dos Conjuntos Exclusivos"
       },
       "generals": {
-        "name": "Visão geral dos generais"
+        "name": "Visão Geral Dos Generais"
       },
       "event_rewards": {
-        "name": "Visão geral das recompensas do evento"
+        "name": "Visão Geral Das Recompensas Do Evento"
       },
       "gacha": {
-        "name": "Visão geral do Gacha"
+        "name": "Visão Geral Do Gacha"
       },
       "loot_boxes": {
-        "name": "Visão geral das caixas de saque"
+        "name": "Visão Geral Das Caixas De Saque"
       },
       "offerings": {
-        "name": "Visão geral das ofertas"
+        "name": "Visão Geral Das Ofertas"
       },
       "master_blacksmith": {
-        "name": "Visão geral do mestre ferreiro"
+        "name": "Visão Geral Do Mestre Ferreiro"
       },
       "troops": {
-        "name": "Visão geral das tropas"
+        "name": "Visão Geral Das Tropas"
       },
       "tools": {
-        "name": "Visão geral das ferramentas"
+        "name": "Visão Geral Das Ferramentas"
       },
       "rift_event": {
-        "name": "Visão geral do evento Rift"
+        "name": "Visão Geral Do Evento Rift"
       },
       "quests": {
-        "name": "Visão geral das missões"
+        "name": "Visão Geral Das Missões"
       },
       "event_plan": {
-        "name": "Visão geral do plano de evento"
+        "name": "Visão Geral Do Plano De Evento"
       },
       "food_production": {
-        "name": "Calculadora de produção de alimentos"
+        "name": "Calculadora De Produção De Alimentos"
       },
       "mead_production": {
-        "name": "Calculadora de produção de hidromel"
+        "name": "Calculadora De Produção De Hidromel"
       },
       "wall_limit": {
-        "name": "Calculadora de limite de parede"
+        "name": "Calculadora De Limite De Parede"
       },
       "collector_event": {
-        "name": "Calculadora de eventos de coletor"
+        "name": "Calculadora De Eventos De Coletor"
       },
       "detection_time": {
-        "name": "Calculadora de tempo de detecção"
+        "name": "Calculadora De Tempo De Detecção"
       },
       "rift_points": {
-        "name": "Calculadora de pontos de ataque em Rift"
+        "name": "Calculadora De Pontos De Ataque Em Rift"
       },
       "kingdom_league": {
-        "name": "Calculadora da Liga do Reino"
+        "name": "Calculadora Da Liga Do Reino"
       },
       "imperial_patronage": {
-        "name": "Simulador de Patrocínio Imperial"
+        "name": "Simulador De Patrocínio Imperial"
       },
       "equipment_builder": {
-        "name": "Construtor de equipamentos"
+        "name": "Criador De Conjuntos De Equipamentos"
       },
       "castle_layout": {
-        "name": "Simulador de layout de castelo"
+        "name": "Simulador De Layout De Castelo"
       },
       "hall_of_legends": {
-        "name": "Simulador de Hall of Legends"
+        "name": "Simulador Do Salão Das Lendas"
       }
     }
   },
@@ -508,82 +508,82 @@
     },
     "cards": {
       "decorations": {
-        "name": "Přehled dekorací"
+        "name": "Přehled Dekorací"
       },
       "building_items": {
-        "name": "Přehled CI a TCI"
+        "name": "Přehled CI A TCI"
       },
       "look_items": {
-        "name": "Přehled položek vzhledu"
+        "name": "Přehled Položek Vzhledu"
       },
       "equipment_sets": {
-        "name": "Přehled jedinečné sady"
+        "name": "Přehled Jedinečných Sad"
       },
       "generals": {
-        "name": "Přehled generálů"
+        "name": "Přehled Generálů"
       },
       "event_rewards": {
-        "name": "Přehled odměn za akce"
+        "name": "Přehled Odměn Za Akce"
       },
       "gacha": {
         "name": "Přehled Gacha"
       },
       "loot_boxes": {
-        "name": "Přehled lootboxů"
+        "name": "Přehled Lootboxů"
       },
       "offerings": {
-        "name": "Přehled nabídek"
+        "name": "Přehled Nabídek"
       },
       "master_blacksmith": {
-        "name": "Přehled mistra kováře"
+        "name": "Přehled Mistra Kováře"
       },
       "troops": {
-        "name": "Přehled vojsk"
+        "name": "Přehled Vojsk"
       },
       "tools": {
-        "name": "Přehled nástrojů"
+        "name": "Přehled Nástrojů"
       },
       "rift_event": {
-        "name": "Přehled událostí Rift"
+        "name": "Přehled Událostí Rift"
       },
       "quests": {
-        "name": "Přehled úkolů"
+        "name": "Přehled Úkolů"
       },
       "event_plan": {
-        "name": "Přehled plánu akcí"
+        "name": "Přehled Plánu Akcí"
       },
       "food_production": {
-        "name": "Kalkulačka výroby potravin"
+        "name": "Kalkulačka Výroby Potravin"
       },
       "mead_production": {
-        "name": "Kalkulačka výroby medoviny"
+        "name": "Kalkulačka Výroby Medoviny"
       },
       "wall_limit": {
-        "name": "Kalkulačka limitu zdi"
+        "name": "Kalkulačka Limitu Zdi"
       },
       "collector_event": {
-        "name": "Sběratelská kalkulačka událostí"
+        "name": "Sběratelská Kalkulačka Událostí"
       },
       "detection_time": {
-        "name": "Kalkulačka doby detekce"
+        "name": "Kalkulačka Doby Detekce"
       },
       "rift_points": {
         "name": "Kalkulačka Rift Raid Point"
       },
       "kingdom_league": {
-        "name": "Kalkulačka Královské ligy"
+        "name": "Kalkulačka Královské Ligy"
       },
       "imperial_patronage": {
-        "name": "Simulátor imperiálního patronátu"
+        "name": "Simulátor Císařské Přízně"
       },
       "equipment_builder": {
-        "name": "Tvůrce zařízení"
+        "name": "Tvůrce Sad Vybavení"
       },
       "castle_layout": {
-        "name": "Castle Layout Simulator"
+        "name": "Simulátor Rozložení Hradu"
       },
       "hall_of_legends": {
-        "name": "Simulátor Hall of Legends"
+        "name": "Simulátor Síně Legend"
       }
     }
   },
@@ -606,34 +606,34 @@
     },
     "cards": {
       "decorations": {
-        "name": "Übersicht über Dekorationen"
+        "name": "Übersicht Über Dekorationen"
       },
       "building_items": {
-        "name": "Übersicht über CIs und TCIs"
+        "name": "Übersicht Über CIs Und TCIs"
       },
       "look_items": {
         "name": "Look-Items-Übersicht"
       },
       "equipment_sets": {
-        "name": "Einzigartige Set-Übersicht"
+        "name": "Übersicht Einzigartiger Sets"
       },
       "generals": {
-        "name": "Übersicht über die Generäle"
+        "name": "Übersicht Über Die Generäle"
       },
       "event_rewards": {
-        "name": "Übersicht über Event-Belohnungen"
+        "name": "Übersicht Über Event-Belohnungen"
       },
       "gacha": {
         "name": "Gacha-Übersicht"
       },
       "loot_boxes": {
-        "name": "Übersicht über Lootboxen"
+        "name": "Übersicht Über Lootboxen"
       },
       "offerings": {
         "name": "Angebotsübersicht"
       },
       "master_blacksmith": {
-        "name": "Überblick über den Meisterschmied"
+        "name": "Überblick Über Den Meisterschmied"
       },
       "troops": {
         "name": "Truppenübersicht"
@@ -648,10 +648,10 @@
         "name": "Questübersicht"
       },
       "event_plan": {
-        "name": "Übersicht über den Veranstaltungsplan"
+        "name": "Übersicht Über Den Veranstaltungsplan"
       },
       "food_production": {
-        "name": "Rechner für die Lebensmittelproduktion"
+        "name": "Rechner Für Die Lebensmittelproduktion"
       },
       "mead_production": {
         "name": "Met-Produktionsrechner"
@@ -672,16 +672,16 @@
         "name": "Kingdom League-Rechner"
       },
       "imperial_patronage": {
-        "name": "Imperialer Schirmherrschaftssimulator"
+        "name": "Simulator Der Imperialen Gunst"
       },
       "equipment_builder": {
-        "name": "Gerätebauer"
+        "name": "Ausrüstungsset-Ersteller"
       },
       "castle_layout": {
-        "name": "Schlosslayout-Simulator"
+        "name": "Burganlagen-Simulator"
       },
       "hall_of_legends": {
-        "name": "Hall of Legends-Simulator"
+        "name": "Halle-Der-Legenden-Simulator"
       }
     }
   },
@@ -710,16 +710,16 @@
         "name": "CI'er & TCI'er Oversigt"
       },
       "look_items": {
-        "name": "Look-items Oversigt"
+        "name": "Look-Items Oversigt"
       },
       "equipment_sets": {
-        "name": "Unikt sætoversigt"
+        "name": "Oversigt Over Unikke Sæt"
       },
       "generals": {
-        "name": "Oversigt over generaler"
+        "name": "Oversigt Over Generaler"
       },
       "event_rewards": {
-        "name": "Oversigt over begivenhedsbelønninger"
+        "name": "Oversigt Over Begivenhedsbelønninger"
       },
       "gacha": {
         "name": "Gacha Oversigt"
@@ -728,13 +728,13 @@
         "name": "Loot Boxes Oversigt"
       },
       "offerings": {
-        "name": "Oversigt over tilbud"
+        "name": "Oversigt Over Tilbud"
       },
       "master_blacksmith": {
         "name": "Smedmesteroversigt"
       },
       "troops": {
-        "name": "Tropper oversigt"
+        "name": "Tropper Oversigt"
       },
       "tools": {
         "name": "Værktøjsoversigt"
@@ -770,16 +770,16 @@
         "name": "Kingdom League Lommeregner"
       },
       "imperial_patronage": {
-        "name": "Imperial Patronage Simulator"
+        "name": "Simulator For Kejserlig Protektion"
       },
       "equipment_builder": {
-        "name": "Udstyrsbygger"
+        "name": "Bygger Til Udstyrssæt"
       },
       "castle_layout": {
-        "name": "Castle Layout Simulator"
+        "name": "Simulator Til Borglayout"
       },
       "hall_of_legends": {
-        "name": "Hall of Legends Simulator"
+        "name": "Legendernes Hal-Simulator"
       }
     }
   },
@@ -802,52 +802,52 @@
     },
     "cards": {
       "decorations": {
-        "name": "Koristeiden yleiskatsaus"
+        "name": "Koristeiden Yleiskatsaus"
       },
       "building_items": {
-        "name": "CI:n ja TCI:n yleiskatsaus"
+        "name": "CI:n Ja TCI:n Yleiskatsaus"
       },
       "look_items": {
-        "name": "Look-kohteiden yleiskatsaus"
+        "name": "Look-Kohteiden Yleiskatsaus"
       },
       "equipment_sets": {
-        "name": "Ainutlaatuinen sarjakatsaus"
+        "name": "Ainutlaatuisten Sarjojen Yleiskatsaus"
       },
       "generals": {
-        "name": "Kenraalien yleiskatsaus"
+        "name": "Kenraalien Yleiskatsaus"
       },
       "event_rewards": {
-        "name": "Tapahtuman palkintojen yleiskatsaus"
+        "name": "Tapahtuman Palkintojen Yleiskatsaus"
       },
       "gacha": {
-        "name": "Gacha yleiskatsaus"
+        "name": "Gacha Yleiskatsaus"
       },
       "loot_boxes": {
-        "name": "Loot-laatikoiden yleiskatsaus"
+        "name": "Loot-Laatikoiden Yleiskatsaus"
       },
       "offerings": {
-        "name": "Tarjousten yleiskatsaus"
+        "name": "Tarjousten Yleiskatsaus"
       },
       "master_blacksmith": {
-        "name": "Seppämestarin yleiskatsaus"
+        "name": "Seppämestarin Yleiskatsaus"
       },
       "troops": {
-        "name": "Joukkojen yleiskatsaus"
+        "name": "Joukkojen Yleiskatsaus"
       },
       "tools": {
-        "name": "Työkalujen yleiskatsaus"
+        "name": "Työkalujen Yleiskatsaus"
       },
       "rift_event": {
-        "name": "Rift-tapahtuman yleiskatsaus"
+        "name": "Rift-Tapahtuman Yleiskatsaus"
       },
       "quests": {
-        "name": "Tehtävien yleiskatsaus"
+        "name": "Tehtävien Yleiskatsaus"
       },
       "event_plan": {
-        "name": "Tapahtumasuunnitelman yleiskatsaus"
+        "name": "Tapahtumasuunnitelman Yleiskatsaus"
       },
       "food_production": {
-        "name": "Elintarvikkeiden tuotannon laskin"
+        "name": "Elintarvikkeiden Tuotannon Laskin"
       },
       "mead_production": {
         "name": "Mead Production Laskin"
@@ -862,22 +862,22 @@
         "name": "Havaintoaikalaskin"
       },
       "rift_points": {
-        "name": "Rift Raid Point -laskin"
+        "name": "Rift Raid Point -Laskin"
       },
       "kingdom_league": {
-        "name": "Kingdom League -laskin"
+        "name": "Kingdom League -Laskin"
       },
       "imperial_patronage": {
-        "name": "Imperiumin holhoussimulaattori"
+        "name": "Keisarillisen Suojeluksen Simulaattori"
       },
       "equipment_builder": {
-        "name": "Laitteiden rakentaja"
+        "name": "Varustesettien Rakentaja"
       },
       "castle_layout": {
-        "name": "Linnan asettelusimulaattori"
+        "name": "Linnan Asettelusimulaattori"
       },
       "hall_of_legends": {
-        "name": "Hall of Legends -simulaattori"
+        "name": "Legendojen Salin Simulaattori"
       }
     }
   },
@@ -900,82 +900,82 @@
     },
     "cards": {
       "decorations": {
-        "name": "Aperçu des décorations"
+        "name": "Aperçu Des Décorations"
       },
       "building_items": {
-        "name": "Présentation des CI et TCI"
+        "name": "Présentation Des CI Et TCI"
       },
       "look_items": {
-        "name": "Aperçu des éléments de look"
+        "name": "Aperçu Des Éléments De Look"
       },
       "equipment_sets": {
-        "name": "Aperçu de l'ensemble unique"
+        "name": "Aperçu Des Ensembles Uniques"
       },
       "generals": {
-        "name": "Aperçu des généraux"
+        "name": "Aperçu Des Généraux"
       },
       "event_rewards": {
-        "name": "Aperçu des récompenses d'événement"
+        "name": "Aperçu Des Récompenses D'événement"
       },
       "gacha": {
-        "name": "Présentation de Gacha"
+        "name": "Présentation De Gacha"
       },
       "loot_boxes": {
-        "name": "Présentation des coffres à butin"
+        "name": "Présentation Des Coffres À Butin"
       },
       "offerings": {
-        "name": "Aperçu des offres"
+        "name": "Aperçu Des Offres"
       },
       "master_blacksmith": {
-        "name": "Aperçu du maître forgeron"
+        "name": "Aperçu Du Maître Forgeron"
       },
       "troops": {
-        "name": "Aperçu des troupes"
+        "name": "Aperçu Des Troupes"
       },
       "tools": {
-        "name": "Présentation des outils"
+        "name": "Présentation Des Outils"
       },
       "rift_event": {
-        "name": "Aperçu de l'événement Rift"
+        "name": "Aperçu De L'événement Rift"
       },
       "quests": {
-        "name": "Aperçu des quêtes"
+        "name": "Aperçu Des Quêtes"
       },
       "event_plan": {
-        "name": "Aperçu du plan d'événement"
+        "name": "Aperçu Du Plan D'événement"
       },
       "food_production": {
-        "name": "Calculateur de production alimentaire"
+        "name": "Calculateur De Production Alimentaire"
       },
       "mead_production": {
-        "name": "Calculateur de production d'hydromel"
+        "name": "Calculateur De Production D'hydromel"
       },
       "wall_limit": {
-        "name": "Calculateur de limite de mur"
+        "name": "Calculateur De Limite De Mur"
       },
       "collector_event": {
-        "name": "Calculateur d'événements de collection"
+        "name": "Calculateur D'événements De Collection"
       },
       "detection_time": {
-        "name": "Calculateur de temps de détection"
+        "name": "Calculateur De Temps De Détection"
       },
       "rift_points": {
-        "name": "Calculateur de points de raid sur le Rift"
+        "name": "Calculateur De Points De Raid Sur Le Rift"
       },
       "kingdom_league": {
-        "name": "Calculateur de la Ligue du Royaume"
+        "name": "Calculateur De La Ligue Du Royaume"
       },
       "imperial_patronage": {
-        "name": "Simulateur de patronage impérial"
+        "name": "Simulateur De Patronage Impérial"
       },
       "equipment_builder": {
-        "name": "Constructeur d'équipement"
+        "name": "Créateur D'ensembles D'équipement"
       },
       "castle_layout": {
-        "name": "Simulateur d'aménagement de château"
+        "name": "Simulateur D'aménagement De Château"
       },
       "hall_of_legends": {
-        "name": "Simulateur du Hall des Légendes"
+        "name": "Simulateur Du Hall Des Légendes"
       }
     }
   },
@@ -998,22 +998,22 @@
     },
     "cards": {
       "decorations": {
-        "name": "Επισκόπηση διακοσμήσεων"
+        "name": "Επισκόπηση Διακοσμήσεων"
       },
       "building_items": {
         "name": "Επισκόπηση CI & TCI"
       },
       "look_items": {
-        "name": "Επισκόπηση αντικειμένων"
+        "name": "Επισκόπηση Αντικειμένων"
       },
       "equipment_sets": {
-        "name": "Μοναδική επισκόπηση σετ"
+        "name": "Επισκόπηση Μοναδικών Σετ"
       },
       "generals": {
         "name": "Γενικές Επισκόπηση"
       },
       "event_rewards": {
-        "name": "Επισκόπηση ανταμοιβών εκδήλωσης"
+        "name": "Επισκόπηση Ανταμοιβών Εκδήλωσης"
       },
       "gacha": {
         "name": "Επισκόπηση Gacha"
@@ -1028,19 +1028,19 @@
         "name": "Επισκόπηση Master Blacksmith"
       },
       "troops": {
-        "name": "Επισκόπηση στρατευμάτων"
+        "name": "Επισκόπηση Στρατευμάτων"
       },
       "tools": {
-        "name": "Επισκόπηση εργαλείων"
+        "name": "Επισκόπηση Εργαλείων"
       },
       "rift_event": {
-        "name": "Επισκόπηση γεγονότος Rift"
+        "name": "Επισκόπηση Γεγονότος Rift"
       },
       "quests": {
-        "name": "Επισκόπηση αποστολών"
+        "name": "Επισκόπηση Αποστολών"
       },
       "event_plan": {
-        "name": "Επισκόπηση σχεδίου εκδήλωσης"
+        "name": "Επισκόπηση Σχεδίου Εκδήλωσης"
       },
       "food_production": {
         "name": "Υπολογιστής Παραγωγής Τροφίμων"
@@ -1049,13 +1049,13 @@
         "name": "Υπολογιστής Mead Production"
       },
       "wall_limit": {
-        "name": "Υπολογιστής ορίου τοίχου"
+        "name": "Υπολογιστής Ορίου Τοίχου"
       },
       "collector_event": {
-        "name": "Υπολογιστής συμβάντων συλλεκτών"
+        "name": "Υπολογιστής Συμβάντων Συλλεκτών"
       },
       "detection_time": {
-        "name": "Υπολογιστής χρόνου ανίχνευσης"
+        "name": "Υπολογιστής Χρόνου Ανίχνευσης"
       },
       "rift_points": {
         "name": "Υπολογιστής Rift Raid Point"
@@ -1064,16 +1064,16 @@
         "name": "Υπολογιστής Kingdom League"
       },
       "imperial_patronage": {
-        "name": "Imperial Patronage Simulator"
+        "name": "Προσομοιωτής Αυτοκρατορικής Προστασίας"
       },
       "equipment_builder": {
-        "name": "Κατασκευαστής εξοπλισμού"
+        "name": "Δημιουργός Σετ Εξοπλισμού"
       },
       "castle_layout": {
-        "name": "Castle Layout Simulator"
+        "name": "Προσομοιωτής Διάταξης Κάστρου"
       },
       "hall_of_legends": {
-        "name": "Hall of Legends Simulator"
+        "name": "Προσομοιωτής Αίθουσας Θρύλων"
       }
     }
   },
@@ -1096,82 +1096,82 @@
     },
     "cards": {
       "decorations": {
-        "name": "Dekorációk áttekintése"
+        "name": "Dekorációk Áttekintése"
       },
       "building_items": {
-        "name": "A CI és a TCI áttekintése"
+        "name": "A CI & TCI Áttekintése"
       },
       "look_items": {
-        "name": "Kinézeti elemek áttekintése"
+        "name": "Kinézeti Elemek Áttekintése"
       },
       "equipment_sets": {
-        "name": "Egyedi készlet áttekintése"
+        "name": "Felszerelések Áttekintése"
       },
       "generals": {
-        "name": "A tábornokok áttekintése"
+        "name": "A Tábornokok Áttekintése"
       },
       "event_rewards": {
-        "name": "Esemény jutalmak áttekintése"
+        "name": "Esemény Jutalmak Áttekintése"
       },
       "gacha": {
-        "name": "Gacha áttekintése"
+        "name": "Gacha Áttekintése"
       },
       "loot_boxes": {
-        "name": "A zsákmánydobozok áttekintése"
+        "name": "A Zsákmánydobozok Áttekintése"
       },
       "offerings": {
-        "name": "Ajánlatok áttekintése"
+        "name": "Ajánlatok Áttekintése"
       },
       "master_blacksmith": {
-        "name": "Kovácsmester áttekintése"
+        "name": "Kovácsmester Áttekintése"
       },
       "troops": {
-        "name": "Csapatok áttekintése"
+        "name": "Csapatok Áttekintése"
       },
       "tools": {
-        "name": "Eszközök áttekintése"
+        "name": "Eszközök Áttekintése"
       },
       "rift_event": {
-        "name": "Rift esemény áttekintése"
+        "name": "Rift Esemény Áttekintése"
       },
       "quests": {
-        "name": "A küldetések áttekintése"
+        "name": "A Küldetések Áttekintése"
       },
       "event_plan": {
-        "name": "Rendezvényterv áttekintése"
+        "name": "Rendezvényterv Áttekintése"
       },
       "food_production": {
-        "name": "Élelmiszer-termelési kalkulátor"
+        "name": "Élelmiszer-Termelési Kalkulátor"
       },
       "mead_production": {
-        "name": "Mézsörtermelési kalkulátor"
+        "name": "Mézsörtermelési Kalkulátor"
       },
       "wall_limit": {
-        "name": "Fali határérték kalkulátor"
+        "name": "Falkapacitás Kalkulátor"
       },
       "collector_event": {
-        "name": "Collector Esemény kalkulátor"
+        "name": "Gyűjtögető Esemény Kalkulátor"
       },
       "detection_time": {
-        "name": "Észlelési idő kalkulátor"
+        "name": "Észlelési Idő Kalkulátor"
       },
       "rift_points": {
-        "name": "Rift Raid Point kalkulátor"
+        "name": "Rift Raid Pont Kalkulátor"
       },
       "kingdom_league": {
-        "name": "Királyság Liga kalkulátor"
+        "name": "Királyság Liga Kalkulátor"
       },
       "imperial_patronage": {
-        "name": "Imperial Patronage Simulator"
+        "name": "Császári Pártfogó Szimulátor"
       },
       "equipment_builder": {
-        "name": "Berendezésépítő"
+        "name": "Felszerelés Szett Építő"
       },
       "castle_layout": {
-        "name": "Castle Layout Simulator"
+        "name": "Kastély Elrendezés Szimulátor"
       },
       "hall_of_legends": {
-        "name": "Hall of Legends szimulátor"
+        "name": "Legendák Csarnoka Szimulátor"
       }
     }
   },
@@ -1194,82 +1194,82 @@
     },
     "cards": {
       "decorations": {
-        "name": "Panoramica delle decorazioni"
+        "name": "Panoramica Delle Decorazioni"
       },
       "building_items": {
-        "name": "Panoramica di CI e TCI"
+        "name": "Panoramica Di CI E TCI"
       },
       "look_items": {
-        "name": "Panoramica degli elementi di ricerca"
+        "name": "Panoramica Degli Elementi Di Ricerca"
       },
       "equipment_sets": {
-        "name": "Panoramica del set unico"
+        "name": "Panoramica Dei Set Unici"
       },
       "generals": {
-        "name": "Panoramica dei generali"
+        "name": "Panoramica Dei Generali"
       },
       "event_rewards": {
-        "name": "Panoramica dei premi degli eventi"
+        "name": "Panoramica Dei Premi Degli Eventi"
       },
       "gacha": {
-        "name": "Panoramica del Gacha"
+        "name": "Panoramica Del Gacha"
       },
       "loot_boxes": {
-        "name": "Panoramica sui bottini"
+        "name": "Panoramica Sui Bottini"
       },
       "offerings": {
-        "name": "Panoramica delle offerte"
+        "name": "Panoramica Delle Offerte"
       },
       "master_blacksmith": {
-        "name": "Panoramica del maestro fabbro"
+        "name": "Panoramica Del Maestro Fabbro"
       },
       "troops": {
-        "name": "Panoramica delle truppe"
+        "name": "Panoramica Delle Truppe"
       },
       "tools": {
-        "name": "Panoramica degli strumenti"
+        "name": "Panoramica Degli Strumenti"
       },
       "rift_event": {
-        "name": "Panoramica dell'evento Rift"
+        "name": "Panoramica Dell'evento Rift"
       },
       "quests": {
-        "name": "Panoramica delle missioni"
+        "name": "Panoramica Delle Missioni"
       },
       "event_plan": {
-        "name": "Panoramica del piano eventi"
+        "name": "Panoramica Del Piano Eventi"
       },
       "food_production": {
-        "name": "Calcolatore della produzione alimentare"
+        "name": "Calcolatore Della Produzione Alimentare"
       },
       "mead_production": {
-        "name": "Calcolatore della produzione di idromele"
+        "name": "Calcolatore Della Produzione Di Idromele"
       },
       "wall_limit": {
-        "name": "Calcolatore del limite del muro"
+        "name": "Calcolatore Del Limite Del Muro"
       },
       "collector_event": {
-        "name": "Calcolatore degli eventi del collezionista"
+        "name": "Calcolatore Degli Eventi Del Collezionista"
       },
       "detection_time": {
-        "name": "Calcolatore del tempo di rilevamento"
+        "name": "Calcolatore Del Tempo Di Rilevamento"
       },
       "rift_points": {
-        "name": "Calcolatore dei punti raid Rift"
+        "name": "Calcolatore Dei Punti Raid Rift"
       },
       "kingdom_league": {
-        "name": "Calcolatore della lega del Regno"
+        "name": "Calcolatore Della Lega Del Regno"
       },
       "imperial_patronage": {
-        "name": "Simulatore del mecenatismo imperiale"
+        "name": "Simulatore Del Patrocinio Imperiale"
       },
       "equipment_builder": {
-        "name": "Costruttore di attrezzature"
+        "name": "Creatore Di Set Di Equipaggiamento"
       },
       "castle_layout": {
-        "name": "Simulatore della disposizione del castello"
+        "name": "Simulatore Della Disposizione Del Castello"
       },
       "hall_of_legends": {
-        "name": "Simulatore della Sala delle Leggende"
+        "name": "Simulatore Della Sala Delle Leggende"
       }
     }
   },
@@ -1301,7 +1301,7 @@
         "name": "ルックアイテムの概要"
       },
       "equipment_sets": {
-        "name": "ユニークなセットの概要"
+        "name": "ユニークセットの概要"
       },
       "generals": {
         "name": "将軍の概要"
@@ -1361,13 +1361,13 @@
         "name": "帝国後援シミュレーター"
       },
       "equipment_builder": {
-        "name": "機器ビルダー"
+        "name": "装備セットビルダー"
       },
       "castle_layout": {
-        "name": "城のレイアウトシミュレータ"
+        "name": "城レイアウトシミュレーター"
       },
       "hall_of_legends": {
-        "name": "レジェンドの殿堂シミュレータ"
+        "name": "伝説の殿堂シミュレーター"
       }
     }
   },
@@ -1399,7 +1399,7 @@
         "name": "룩 아이템 개요"
       },
       "equipment_sets": {
-        "name": "고유 세트 개요"
+        "name": "고유 세트 모음 개요"
       },
       "generals": {
         "name": "장군 개요"
@@ -1459,10 +1459,10 @@
         "name": "황실 후원 시뮬레이터"
       },
       "equipment_builder": {
-        "name": "장비 빌더"
+        "name": "장비 세트 빌더"
       },
       "castle_layout": {
-        "name": "성 레이아웃 시뮬레이터"
+        "name": "성 배치 시뮬레이터"
       },
       "hall_of_legends": {
         "name": "전설의 전당 시뮬레이터"
@@ -1488,82 +1488,82 @@
     },
     "cards": {
       "decorations": {
-        "name": "Dekoracijų apžvalga"
+        "name": "Dekoracijų Apžvalga"
       },
       "building_items": {
-        "name": "CI ir TCI apžvalga"
+        "name": "CI Ir TCI Apžvalga"
       },
       "look_items": {
-        "name": "Išvaizdos elementų apžvalga"
+        "name": "Išvaizdos Elementų Apžvalga"
       },
       "equipment_sets": {
-        "name": "Unikali rinkinio apžvalga"
+        "name": "Unikalių Rinkinių Apžvalga"
       },
       "generals": {
-        "name": "Generolų apžvalga"
+        "name": "Generolų Apžvalga"
       },
       "event_rewards": {
-        "name": "Renginio apdovanojimų apžvalga"
+        "name": "Renginio Apdovanojimų Apžvalga"
       },
       "gacha": {
-        "name": "Gacha apžvalga"
+        "name": "Gacha Apžvalga"
       },
       "loot_boxes": {
-        "name": "Grobio dėžučių apžvalga"
+        "name": "Grobio Dėžučių Apžvalga"
       },
       "offerings": {
-        "name": "Pasiūlymų apžvalga"
+        "name": "Pasiūlymų Apžvalga"
       },
       "master_blacksmith": {
-        "name": "Meistro kalvio apžvalga"
+        "name": "Meistro Kalvio Apžvalga"
       },
       "troops": {
-        "name": "Karių apžvalga"
+        "name": "Karių Apžvalga"
       },
       "tools": {
-        "name": "Įrankių apžvalga"
+        "name": "Įrankių Apžvalga"
       },
       "rift_event": {
-        "name": "„Rift“ įvykio apžvalga"
+        "name": "„Rift“ Įvykio Apžvalga"
       },
       "quests": {
-        "name": "Užduočių apžvalga"
+        "name": "Užduočių Apžvalga"
       },
       "event_plan": {
-        "name": "Renginio plano apžvalga"
+        "name": "Renginio Plano Apžvalga"
       },
       "food_production": {
-        "name": "Maisto gamybos skaičiuoklė"
+        "name": "Maisto Gamybos Skaičiuoklė"
       },
       "mead_production": {
-        "name": "Midaus gamybos skaičiuoklė"
+        "name": "Midaus Gamybos Skaičiuoklė"
       },
       "wall_limit": {
-        "name": "Sienos limito skaičiuoklė"
+        "name": "Sienos Limito Skaičiuoklė"
       },
       "collector_event": {
-        "name": "Kolekcionieriaus įvykių skaičiuoklė"
+        "name": "Kolekcionieriaus Įvykių Skaičiuoklė"
       },
       "detection_time": {
-        "name": "Aptikimo laiko skaičiuoklė"
+        "name": "Aptikimo Laiko Skaičiuoklė"
       },
       "rift_points": {
-        "name": "Rift Raid Point skaičiuoklė"
+        "name": "Rift Raid Point Skaičiuoklė"
       },
       "kingdom_league": {
-        "name": "Karalystės lygos skaičiuoklė"
+        "name": "Karalystės Lygos Skaičiuoklė"
       },
       "imperial_patronage": {
-        "name": "Imperial Patronage Simulator"
+        "name": "Imperatoriškosios Globos Simuliatorius"
       },
       "equipment_builder": {
-        "name": "Įrangos kūrėjas"
+        "name": "Įrangos Rinkinių Kūrimo Priemonė"
       },
       "castle_layout": {
-        "name": "Pilies išdėstymo simuliatorius"
+        "name": "Pilies Išdėstymo Simuliatorius"
       },
       "hall_of_legends": {
-        "name": "Legendų salės simuliatorius"
+        "name": "Legendų Salės Simuliatorius"
       }
     }
   },
@@ -1589,46 +1589,46 @@
         "name": "Decoratieoverzicht"
       },
       "building_items": {
-        "name": "Overzicht van CI's en TCI's"
+        "name": "Overzicht Van CI's En TCI's"
       },
       "look_items": {
-        "name": "Look-items Overzicht"
+        "name": "Look-Items Overzicht"
       },
       "equipment_sets": {
-        "name": "Uniek setoverzicht"
+        "name": "Overzicht Van Unieke Sets"
       },
       "generals": {
-        "name": "Algemeen overzicht"
+        "name": "Algemeen Overzicht"
       },
       "event_rewards": {
-        "name": "Overzicht evenementbeloningen"
+        "name": "Overzicht Evenementbeloningen"
       },
       "gacha": {
-        "name": "Gacha-overzicht"
+        "name": "Gacha-Overzicht"
       },
       "loot_boxes": {
-        "name": "Overzicht van buitdozen"
+        "name": "Overzicht Van Buitdozen"
       },
       "offerings": {
-        "name": "Overzicht aanbod"
+        "name": "Overzicht Aanbod"
       },
       "master_blacksmith": {
-        "name": "Overzicht meestersmid"
+        "name": "Overzicht Meestersmid"
       },
       "troops": {
         "name": "Troepenoverzicht"
       },
       "tools": {
-        "name": "Overzicht hulpmiddelen"
+        "name": "Overzicht Hulpmiddelen"
       },
       "rift_event": {
-        "name": "Rift-evenementoverzicht"
+        "name": "Rift-Evenementoverzicht"
       },
       "quests": {
-        "name": "Overzicht van speurtochten"
+        "name": "Overzicht Van Speurtochten"
       },
       "event_plan": {
-        "name": "Overzicht evenementenplan"
+        "name": "Overzicht Evenementenplan"
       },
       "food_production": {
         "name": "Voedselproductiecalculator"
@@ -1640,28 +1640,28 @@
         "name": "Muurlimietcalculator"
       },
       "collector_event": {
-        "name": "Collector-evenementcalculator"
+        "name": "Collector-Evenementcalculator"
       },
       "detection_time": {
         "name": "Detectietijdcalculator"
       },
       "rift_points": {
-        "name": "Rift Raid-puntcalculator"
+        "name": "Rift Raid-Puntcalculator"
       },
       "kingdom_league": {
-        "name": "Koninkrijksliga-calculator"
+        "name": "Koninkrijksliga-Calculator"
       },
       "imperial_patronage": {
-        "name": "Keizerlijke patronagesimulator"
+        "name": "Keizerlijke Patronagesimulator"
       },
       "equipment_builder": {
-        "name": "Bouwer van apparatuur"
+        "name": "Uitrustingssetbouwer"
       },
       "castle_layout": {
-        "name": "Simulator voor kasteelindeling"
+        "name": "Kasteelindelingssimulator"
       },
       "hall_of_legends": {
-        "name": "Hall of Legends-simulator"
+        "name": "Hal Der Legenden-Simulator"
       }
     }
   },
@@ -1687,19 +1687,19 @@
         "name": "Dekorasjonsoversikt"
       },
       "building_items": {
-        "name": "CI-er og TCI-oversikt"
+        "name": "CI-Er Og TCI-Oversikt"
       },
       "look_items": {
-        "name": "Look-items Oversikt"
+        "name": "Look-Items Oversikt"
       },
       "equipment_sets": {
-        "name": "Unik settoversikt"
+        "name": "Oversikt Over Unike Sett"
       },
       "generals": {
         "name": "Generals Oversikt"
       },
       "event_rewards": {
-        "name": "Oversikt over arrangementsbelønninger"
+        "name": "Oversikt Over Arrangementsbelønninger"
       },
       "gacha": {
         "name": "Gacha Oversikt"
@@ -1708,25 +1708,25 @@
         "name": "Loot Boxes Oversikt"
       },
       "offerings": {
-        "name": "Oversikt over tilbud"
+        "name": "Oversikt Over Tilbud"
       },
       "master_blacksmith": {
         "name": "Master Blacksmith Oversikt"
       },
       "troops": {
-        "name": "Oversikt over tropper"
+        "name": "Oversikt Over Tropper"
       },
       "tools": {
         "name": "Verktøy Oversikt"
       },
       "rift_event": {
-        "name": "Oversikt over Rift-hendelser"
+        "name": "Oversikt Over Rift-Hendelser"
       },
       "quests": {
         "name": "Oppdragsoversikt"
       },
       "event_plan": {
-        "name": "Oversikt over arrangementsplan"
+        "name": "Oversikt Over Arrangementsplan"
       },
       "food_production": {
         "name": "Matproduksjonskalkulator"
@@ -1747,19 +1747,19 @@
         "name": "Rift Raid Point Kalkulator"
       },
       "kingdom_league": {
-        "name": "Kingdom League-kalkulator"
+        "name": "Kingdom League-Kalkulator"
       },
       "imperial_patronage": {
-        "name": "Imperial Patronage Simulator"
+        "name": "Simulator For Keiserlig Beskyttelse"
       },
       "equipment_builder": {
-        "name": "Utstyrsbygger"
+        "name": "Utstyrssettbygger"
       },
       "castle_layout": {
-        "name": "Castle Layout Simulator"
+        "name": "Simulator For Slottsoppsett"
       },
       "hall_of_legends": {
-        "name": "Hall of Legends Simulator"
+        "name": "Legendenes Hall-Simulator"
       }
     }
   },
@@ -1782,79 +1782,79 @@
     },
     "cards": {
       "decorations": {
-        "name": "Przegląd dekoracji"
+        "name": "Przegląd Dekoracji"
       },
       "building_items": {
-        "name": "Przegląd CI i TCI"
+        "name": "Przegląd CI I TCI"
       },
       "look_items": {
-        "name": "Przegląd elementów wyglądu"
+        "name": "Przegląd Elementów Wyglądu"
       },
       "equipment_sets": {
-        "name": "Przegląd unikalnego zestawu"
+        "name": "Przegląd Unikalnych Zestawów"
       },
       "generals": {
-        "name": "Przegląd generałów"
+        "name": "Przegląd Generałów"
       },
       "event_rewards": {
-        "name": "Przegląd nagród w wydarzeniu"
+        "name": "Przegląd Nagród W Wydarzeniu"
       },
       "gacha": {
         "name": "Przegląd Gachy"
       },
       "loot_boxes": {
-        "name": "Przegląd skrzynek z łupami"
+        "name": "Przegląd Skrzynek Z Łupami"
       },
       "offerings": {
-        "name": "Przegląd ofert"
+        "name": "Przegląd Ofert"
       },
       "master_blacksmith": {
-        "name": "Przegląd mistrza kowala"
+        "name": "Przegląd Mistrza Kowala"
       },
       "troops": {
-        "name": "Przegląd żołnierzy"
+        "name": "Przegląd Żołnierzy"
       },
       "tools": {
-        "name": "Przegląd narzędzi"
+        "name": "Przegląd Narzędzi"
       },
       "rift_event": {
-        "name": "Przegląd wydarzeń Rift"
+        "name": "Przegląd Wydarzeń Rift"
       },
       "quests": {
-        "name": "Przegląd zadań"
+        "name": "Przegląd Zadań"
       },
       "event_plan": {
-        "name": "Omówienie planu wydarzenia"
+        "name": "Omówienie Planu Wydarzenia"
       },
       "food_production": {
-        "name": "Kalkulator produkcji żywności"
+        "name": "Kalkulator Produkcji Żywności"
       },
       "mead_production": {
-        "name": "Kalkulator produkcji miodu pitnego"
+        "name": "Kalkulator Produkcji Miodu Pitnego"
       },
       "wall_limit": {
-        "name": "Kalkulator limitu ściany"
+        "name": "Kalkulator Limitu Ściany"
       },
       "collector_event": {
-        "name": "Kalkulator zdarzeń kolekcjonerskich"
+        "name": "Kalkulator Zdarzeń Kolekcjonerskich"
       },
       "detection_time": {
-        "name": "Kalkulator czasu wykrywania"
+        "name": "Kalkulator Czasu Wykrywania"
       },
       "rift_points": {
-        "name": "Kalkulator punktów najazdu na Rift"
+        "name": "Kalkulator Punktów Najazdu Na Rift"
       },
       "kingdom_league": {
         "name": "Kalkulator Ligi Królestwa"
       },
       "imperial_patronage": {
-        "name": "Symulator Patronatu Cesarskiego"
+        "name": "Symulator Cesarskiego Patronatu"
       },
       "equipment_builder": {
-        "name": "Konstruktor sprzętu"
+        "name": "Kreator Zestawów Wyposażenia"
       },
       "castle_layout": {
-        "name": "Symulator układu zamku"
+        "name": "Symulator Układu Zamku"
       },
       "hall_of_legends": {
         "name": "Symulator Sali Legend"
@@ -1880,64 +1880,64 @@
     },
     "cards": {
       "decorations": {
-        "name": "Prezentare generală a decorațiunilor"
+        "name": "Prezentare Generală A Decorațiunilor"
       },
       "building_items": {
-        "name": "Prezentare generală a CI și TCI"
+        "name": "Prezentare Generală A CI Și TCI"
       },
       "look_items": {
-        "name": "Prezentare generală a articolelor"
+        "name": "Prezentare Generală A Articolelor"
       },
       "equipment_sets": {
-        "name": "Prezentare generală a setului unic"
+        "name": "Prezentare Generală A Seturilor Unice"
       },
       "generals": {
-        "name": "Prezentare generală"
+        "name": "Prezentare Generală"
       },
       "event_rewards": {
-        "name": "Prezentare generală a recompenselor evenimentului"
+        "name": "Prezentare Generală A Recompenselor Evenimentului"
       },
       "gacha": {
-        "name": "Privire de ansamblu Gacha"
+        "name": "Privire De Ansamblu Gacha"
       },
       "loot_boxes": {
-        "name": "Prezentare generală a cutiilor de pradă"
+        "name": "Prezentare Generală A Cutiilor De Pradă"
       },
       "offerings": {
-        "name": "Prezentare generală a ofertelor"
+        "name": "Prezentare Generală A Ofertelor"
       },
       "master_blacksmith": {
-        "name": "Prezentare generală a maestrului fierar"
+        "name": "Prezentare Generală A Maestrului Fierar"
       },
       "troops": {
-        "name": "Prezentare generală a trupelor"
+        "name": "Prezentare Generală A Trupelor"
       },
       "tools": {
-        "name": "Prezentare generală a instrumentelor"
+        "name": "Prezentare Generală A Instrumentelor"
       },
       "rift_event": {
-        "name": "Prezentare generală a evenimentului Rift"
+        "name": "Prezentare Generală A Evenimentului Rift"
       },
       "quests": {
-        "name": "Prezentare generală a misiunilor"
+        "name": "Prezentare Generală A Misiunilor"
       },
       "event_plan": {
-        "name": "Prezentare generală a planului de evenimente"
+        "name": "Prezentare Generală A Planului De Evenimente"
       },
       "food_production": {
-        "name": "Calculator de producție alimentară"
+        "name": "Calculator De Producție Alimentară"
       },
       "mead_production": {
-        "name": "Calculator de producție de hidromel"
+        "name": "Calculator De Producție De Hidromel"
       },
       "wall_limit": {
-        "name": "Calculator limită de perete"
+        "name": "Calculator Limită De Perete"
       },
       "collector_event": {
-        "name": "Calculator de evenimente colector"
+        "name": "Calculator De Evenimente Colector"
       },
       "detection_time": {
-        "name": "Calculator de timp de detectare"
+        "name": "Calculator De Timp De Detectare"
       },
       "rift_points": {
         "name": "Rift Raid Point Calculator"
@@ -1946,16 +1946,16 @@
         "name": "Calculator League Kingdom"
       },
       "imperial_patronage": {
-        "name": "Simulator de patronaj imperial"
+        "name": "Simulator De Patronaj Imperial"
       },
       "equipment_builder": {
-        "name": "Constructor de echipamente"
+        "name": "Creator De Seturi De Echipament"
       },
       "castle_layout": {
-        "name": "Simulator de amenajare a castelului"
+        "name": "Simulator De Amenajare A Castelului"
       },
       "hall_of_legends": {
-        "name": "Simulatorul Sala Legendelor"
+        "name": "Simulatorul Sălii Legendelor"
       }
     }
   },
@@ -1978,67 +1978,67 @@
     },
     "cards": {
       "decorations": {
-        "name": "Обзор украшений"
+        "name": "Обзор Украшений"
       },
       "building_items": {
-        "name": "Обзор CI и TCI"
+        "name": "Обзор CI И TCI"
       },
       "look_items": {
-        "name": "Обзор предметов Look"
+        "name": "Обзор Предметов Look"
       },
       "equipment_sets": {
-        "name": "Обзор уникального набора"
+        "name": "Обзор Уникальных Наборов"
       },
       "generals": {
-        "name": "Обзор генералов"
+        "name": "Обзор Генералов"
       },
       "event_rewards": {
-        "name": "Обзор наград за события"
+        "name": "Обзор Наград За События"
       },
       "gacha": {
         "name": "Обзор Гачи"
       },
       "loot_boxes": {
-        "name": "Обзор лутбоксов"
+        "name": "Обзор Лутбоксов"
       },
       "offerings": {
-        "name": "Обзор предложений"
+        "name": "Обзор Предложений"
       },
       "master_blacksmith": {
-        "name": "Обзор мастера-кузнеца"
+        "name": "Обзор Мастера-Кузнеца"
       },
       "troops": {
-        "name": "Обзор войск"
+        "name": "Обзор Войск"
       },
       "tools": {
-        "name": "Обзор инструментов"
+        "name": "Обзор Инструментов"
       },
       "rift_event": {
-        "name": "Обзор событий Rift"
+        "name": "Обзор Событий Rift"
       },
       "quests": {
-        "name": "Обзор квестов"
+        "name": "Обзор Квестов"
       },
       "event_plan": {
-        "name": "Обзор плана мероприятия"
+        "name": "Обзор Плана Мероприятия"
       },
       "food_production": {
-        "name": "Калькулятор производства продуктов питания"
+        "name": "Калькулятор Производства Продуктов Питания"
       },
       "mead_production": {
-        "name": "Калькулятор производства медовухи"
+        "name": "Калькулятор Производства Медовухи"
       },
       "wall_limit": {
-        "name": "Калькулятор предела стены"
+        "name": "Калькулятор Предела Стены"
       },
       "collector_event": {
-        "name": "Калькулятор событий коллекционера"
+        "name": "Калькулятор Событий Коллекционера"
       },
       "detection_time": {
-        "name": "Калькулятор времени обнаружения"
+        "name": "Калькулятор Времени Обнаружения"
       },
       "rift_points": {
-        "name": "Калькулятор очков рейда в Рифте"
+        "name": "Калькулятор Очков Рейда В Рифте"
       },
       "kingdom_league": {
         "name": "Калькулятор Лиги Королевства"
@@ -2047,10 +2047,10 @@
         "name": "Симулятор Императорского Покровительства"
       },
       "equipment_builder": {
-        "name": "Производитель оборудования"
+        "name": "Конструктор Комплектов Снаряжения"
       },
       "castle_layout": {
-        "name": "Симулятор планировки замка"
+        "name": "Симулятор Планировки Замка"
       },
       "hall_of_legends": {
         "name": "Симулятор Зала Легенд"
@@ -2079,34 +2079,34 @@
         "name": "Dekorationer Översikt"
       },
       "building_items": {
-        "name": "CI:s & TCI:s översikt"
+        "name": "CI:s & TCI:s Översikt"
       },
       "look_items": {
-        "name": "Look-objekt Översikt"
+        "name": "Look-Objekt Översikt"
       },
       "equipment_sets": {
-        "name": "Unik uppsättningsöversikt"
+        "name": "Översikt Över Unika Uppsättningar"
       },
       "generals": {
-        "name": "Generals översikt"
+        "name": "Generals Översikt"
       },
       "event_rewards": {
         "name": "Event Rewards Översikt"
       },
       "gacha": {
-        "name": "Gacha översikt"
+        "name": "Gacha Översikt"
       },
       "loot_boxes": {
-        "name": "Loot Boxes översikt"
+        "name": "Loot Boxes Översikt"
       },
       "offerings": {
-        "name": "Översikt över erbjudanden"
+        "name": "Översikt Över Erbjudanden"
       },
       "master_blacksmith": {
         "name": "Master Blacksmith Översikt"
       },
       "troops": {
-        "name": "Översikt över trupper"
+        "name": "Översikt Över Trupper"
       },
       "tools": {
         "name": "Verktygsöversikt"
@@ -2118,13 +2118,13 @@
         "name": "Uppdragsöversikt"
       },
       "event_plan": {
-        "name": "Event Plan översikt"
+        "name": "Event Plan Översikt"
       },
       "food_production": {
-        "name": "Kalkylator för livsmedelsproduktion"
+        "name": "Kalkylator För Livsmedelsproduktion"
       },
       "mead_production": {
-        "name": "Kalkylator för mjödproduktion"
+        "name": "Kalkylator För Mjödproduktion"
       },
       "wall_limit": {
         "name": "Wall Limit Calculator"
@@ -2139,19 +2139,19 @@
         "name": "Rift Raid Point Calculator"
       },
       "kingdom_league": {
-        "name": "Kingdom League-kalkylator"
+        "name": "Kingdom League-Kalkylator"
       },
       "imperial_patronage": {
-        "name": "Imperial Patronage Simulator"
+        "name": "Simulator För Kejserligt Beskydd"
       },
       "equipment_builder": {
-        "name": "Utrustningsbyggare"
+        "name": "Byggare För Utrustningsset"
       },
       "castle_layout": {
-        "name": "Castle Layout Simulator"
+        "name": "Simulator För Slottslayout"
       },
       "hall_of_legends": {
-        "name": "Hall of Legends Simulator"
+        "name": "Legendernas Sal-Simulator"
       }
     }
   },
@@ -2174,82 +2174,82 @@
     },
     "cards": {
       "decorations": {
-        "name": "Prehľad dekorácií"
+        "name": "Prehľad Dekorácií"
       },
       "building_items": {
-        "name": "Prehľad CI a TCI"
+        "name": "Prehľad CI A TCI"
       },
       "look_items": {
-        "name": "Prehľad položiek vzhľadu"
+        "name": "Prehľad Položiek Vzhľadu"
       },
       "equipment_sets": {
-        "name": "Prehľad jedinečného súboru"
+        "name": "Prehľad Jedinečných Súprav"
       },
       "generals": {
-        "name": "Prehľad generálov"
+        "name": "Prehľad Generálov"
       },
       "event_rewards": {
-        "name": "Prehľad odmien za udalosti"
+        "name": "Prehľad Odmien Za Udalosti"
       },
       "gacha": {
         "name": "Prehľad Gacha"
       },
       "loot_boxes": {
-        "name": "Prehľad lootboxov"
+        "name": "Prehľad Lootboxov"
       },
       "offerings": {
-        "name": "Prehľad ponúk"
+        "name": "Prehľad Ponúk"
       },
       "master_blacksmith": {
-        "name": "Prehľad majstra kováča"
+        "name": "Prehľad Majstra Kováča"
       },
       "troops": {
-        "name": "Prehľad vojsk"
+        "name": "Prehľad Vojsk"
       },
       "tools": {
-        "name": "Prehľad nástrojov"
+        "name": "Prehľad Nástrojov"
       },
       "rift_event": {
-        "name": "Prehľad udalostí Rift"
+        "name": "Prehľad Udalostí Rift"
       },
       "quests": {
-        "name": "Prehľad úloh"
+        "name": "Prehľad Úloh"
       },
       "event_plan": {
-        "name": "Prehľad plánu udalostí"
+        "name": "Prehľad Plánu Udalostí"
       },
       "food_production": {
-        "name": "Kalkulačka výroby potravín"
+        "name": "Kalkulačka Výroby Potravín"
       },
       "mead_production": {
-        "name": "Kalkulačka výroby medoviny"
+        "name": "Kalkulačka Výroby Medoviny"
       },
       "wall_limit": {
-        "name": "Kalkulačka limitu steny"
+        "name": "Kalkulačka Limitu Steny"
       },
       "collector_event": {
-        "name": "Kalkulačka zberateľských udalostí"
+        "name": "Kalkulačka Zberateľských Udalostí"
       },
       "detection_time": {
-        "name": "Kalkulačka času detekcie"
+        "name": "Kalkulačka Času Detekcie"
       },
       "rift_points": {
         "name": "Kalkulačka Rift Raid Point"
       },
       "kingdom_league": {
-        "name": "Kalkulačka Kráľovskej ligy"
+        "name": "Kalkulačka Kráľovskej Ligy"
       },
       "imperial_patronage": {
-        "name": "Simulátor imperiálneho patronátu"
+        "name": "Simulátor Cisárskej Priazne"
       },
       "equipment_builder": {
-        "name": "Staviteľ zariadenia"
+        "name": "Tvorca Súprav Vybavenia"
       },
       "castle_layout": {
-        "name": "Simulátor rozloženia hradu"
+        "name": "Simulátor Rozloženia Hradu"
       },
       "hall_of_legends": {
-        "name": "Simulátor Hall of Legends"
+        "name": "Simulátor Siene Legiend"
       }
     }
   },
@@ -2275,13 +2275,13 @@
         "name": "Dekorasyonlara Genel Bakış"
       },
       "building_items": {
-        "name": "CI'lar ve TCI'lara Genel Bakış"
+        "name": "CI'lar Ve TCI'lara Genel Bakış"
       },
       "look_items": {
         "name": "Görünüm Öğelerine Genel Bakış"
       },
       "equipment_sets": {
-        "name": "Benzersiz Sete Genel Bakış"
+        "name": "Benzersiz Setlere Genel Bakış"
       },
       "generals": {
         "name": "Generallere Genel Bakış"
@@ -2338,10 +2338,10 @@
         "name": "Krallık Ligi Hesaplayıcısı"
       },
       "imperial_patronage": {
-        "name": "İmparatorluk Patronajı Simülatörü"
+        "name": "İmparatorluk Himayesi Simülatörü"
       },
       "equipment_builder": {
-        "name": "Ekipman Oluşturucu"
+        "name": "Ekipman Seti Oluşturucu"
       },
       "castle_layout": {
         "name": "Kale Düzeni Simülatörü"

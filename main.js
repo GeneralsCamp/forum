@@ -14,7 +14,7 @@ const categories = {
         { key: "decorations", name: "Decorations Overview", icon: "main_page/decorations.webp", link: "./overviews/decorations/index.html", disabled: false },
         { key: "building_items", name: "CI's & TCI's Overview", icon: "main_page/ci-icon.webp", link: "./overviews/building_items/index.html", disabled: false },
         { key: "look_items", name: "Look-items Overview", icon: "main_page/look-items.webp", link: "./overviews/look_items/index.html", disabled: false },
-        { key: "equipment_sets", name: "Unique Set Overview", icon: "main_page/equipment-icon.webp", link: "./overviews/equipment_sets/index.html", disabled: false },
+        { key: "equipment_sets", name: "Unique Sets Overview", icon: "main_page/equipment-icon.webp", link: "./overviews/equipment_sets/index.html", disabled: false },
         { key: "generals", name: "Generals Overview", icon: "main_page/generals-icon.webp", link: "./overviews/generals/index.html", disabled: false },
         { key: "event_rewards", name: "Event Rewards Overview", icon: "main_page/event-rewards-icon.webp", link: "./overviews/event_rewards/index.html", disabled: false },
         { key: "gacha", name: "Gacha Overview", icon: "main_page/gacha-icon.webp", link: "./overviews/gacha_events/index.html", disabled: false },
@@ -23,7 +23,7 @@ const categories = {
         { key: "master_blacksmith", name: "Master Blacksmith Overview", icon: "main_page/master-blacksmith.webp", link: "./overviews/master_blacksmith/index.html", disabled: false },
         { key: "troops", name: "Troops Overview", icon: "main_page/troops-icon.webp", link: "./overviews/troops_and_tools/index.html#troops", disabled: false },
         { key: "tools", name: "Tools Overview", icon: "main_page/tools-icon.webp", link: "./overviews/troops_and_tools/index.html#tools", disabled: false },
-        { key: "rift_event", name: "Rift Event Overview", icon: "main_page/rift-raid-points-icon.webp", link: "./overviews/rift_event/index.html", disabled: false },
+        { key: "rift_event", name: "Rift Event Overview", icon: "main_page/rift-raid-icon.webp", link: "./overviews/rift_event/index.html", disabled: false },
         { key: "quests", name: "Quests Overview", icon: "main_page/quest-icon.webp", link: "./overviews/quests/index.html", disabled: false },
         { key: "event_plan", name: "Event Plan Overview", icon: "main_page/event-plan-icon.webp", link: "./overviews/event_plan/index.html", disabled: false }
     ],
@@ -39,8 +39,8 @@ const categories = {
     ],
 
     simulators: [
-        { key: "imperial_patronage", name: "Imperial Patronage Simulator", icon: "patronage-icon.webp", link: "./simulators/imperial_patronage/index.html", disabled: false },
-        { key: "equipment_builder", name: "Equipment Builder", icon: "main_page/equipment-icon.webp", link: "./simulators/equipment_builder/index.html", disabled: false },
+        { key: "imperial_patronage", name: "Imperial Patronage Simulator", icon: "main_page/patronage-icon.webp", link: "./simulators/imperial_patronage/index.html", disabled: false },
+        { key: "equipment_builder", name: "Equipment Set Builder", icon: "main_page/equipment-icon.webp", link: "./simulators/equipment_builder/index.html", disabled: false },
         { key: "castle_layout", name: "Castle Layout Simulator", icon: "main_page/layout-icon.webp", link: "./simulators/layout_editor/index.html", disabled: false },
         { key: "hall_of_legends", name: "Hall of Legends Simulator", icon: "main_page/hall-of-legends-simulator-icon.webp", link: "./simulators/hol_simulator/index.html", disabled: false },
     ]
@@ -97,7 +97,13 @@ function applyHomeTranslations() {
     });
 
     setText(".contact-note-intro", "contact_intro", "Questions or suggestions?");
+    setText(".nav-settings-label", "settings", "Settings");
     setText("#settingsModalTitle", "settings", "Settings");
+
+    const settingsButton = document.getElementById("openSettingsBtn");
+    if (settingsButton) {
+        settingsButton.setAttribute("aria-label", translate("settings", "Settings"));
+    }
 
     const optionTitles = document.querySelectorAll(".settings-option-title");
     if (optionTitles[0]) optionTitles[0].textContent = translate("game", "Game");
