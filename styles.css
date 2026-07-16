@@ -440,16 +440,19 @@ html {
 
 .category-box h3 {
     margin: 0;
+    padding: 0 8px;
     font-size: 16px;
     font-weight: bold;
     color: #f7ead5;
-    padding: 0 8px;
     text-align: left;
     line-height: 1.2;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .category-content {
     flex: 1;
+    min-width: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -837,9 +840,26 @@ html {
 }
 
 @media only screen and (max-width: 700px) {
+
+    body {
+        min-height: 100svh;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
     .now-card {
         flex-basis: min(86vw, 360px);
     }
+
+
+    .container {
+        position: relative;
+        height: 100svh;
+        min-height: 100svh;
+        overflow: hidden;
+        padding-bottom: 55px;
+    }
+
 
     .main-nav {
         position: absolute;
@@ -860,20 +880,18 @@ html {
         z-index: 300;
     }
 
-    .container {
-        position: relative;
-        padding-top: 6px;
-        padding-bottom: 55px;
-        height: 100vh;
-        min-height: 100vh;
-        overflow: hidden;
-    }
 
     .main-scroll {
+        display: flex;
+        flex-direction: column;
+
         flex: 1 1 auto;
         min-height: 0;
-        overflow-y: auto;
+
         overflow-x: hidden;
+        overflow-y: auto;
+
+        padding-bottom: 10px;
     }
 
     .main-nav-left {
@@ -932,6 +950,6 @@ html {
     }
 
     .category-wrapper {
-        padding: 6px 0px 14px;
+        padding: 6px 0 14px;
     }
 }
