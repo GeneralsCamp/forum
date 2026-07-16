@@ -1,0 +1,2354 @@
+{
+  "en": {
+    "ui": {
+      "brand_subtitle": "Tools & Simulators",
+      "search_prefix": "Search:",
+      "overviews": "Overviews",
+      "calculators": "Calculators",
+      "simulators": "Simulators",
+      "contact_intro": "Questions or suggestions?",
+      "settings": "Settings",
+      "game": "Game",
+      "empire_browser": "Empire (Browser)",
+      "empire_browser_short": "EM (Browser)",
+      "e4k_mobile": "Empire: Four Kingdoms (Mobile)",
+      "e4k_mobile_short": "E4K (Mobile)",
+      "language": "Language",
+      "developer_comments": "Developer Comments"
+    },
+    "cards": {
+      "decorations": {
+        "name": "Decorations Overview"
+      },
+      "building_items": {
+        "name": "CI's & TCI's Overview"
+      },
+      "look_items": {
+        "name": "Look-items Overview"
+      },
+      "equipment_sets": {
+        "name": "Unique Set Overview"
+      },
+      "generals": {
+        "name": "Generals Overview"
+      },
+      "event_rewards": {
+        "name": "Event Rewards Overview"
+      },
+      "gacha": {
+        "name": "Gacha Overview"
+      },
+      "loot_boxes": {
+        "name": "Loot Boxes Overview"
+      },
+      "offerings": {
+        "name": "Offerings Overview"
+      },
+      "master_blacksmith": {
+        "name": "Master Blacksmith Overview"
+      },
+      "troops": {
+        "name": "Troops Overview"
+      },
+      "tools": {
+        "name": "Tools Overview"
+      },
+      "rift_event": {
+        "name": "Rift Event Overview"
+      },
+      "quests": {
+        "name": "Quests Overview"
+      },
+      "event_plan": {
+        "name": "Event Plan Overview"
+      },
+      "food_production": {
+        "name": "Food Production Calculator"
+      },
+      "mead_production": {
+        "name": "Mead Production Calculator"
+      },
+      "wall_limit": {
+        "name": "Wall Limit Calculator"
+      },
+      "collector_event": {
+        "name": "Collector Event Calculator"
+      },
+      "detection_time": {
+        "name": "Detection Time Calculator"
+      },
+      "rift_points": {
+        "name": "Rift Raid Point Calculator"
+      },
+      "kingdom_league": {
+        "name": "Kingdom League Calculator"
+      },
+      "imperial_patronage": {
+        "name": "Imperial Patronage Simulator"
+      },
+      "equipment_builder": {
+        "name": "Equipment Builder"
+      },
+      "castle_layout": {
+        "name": "Castle Layout Simulator"
+      },
+      "hall_of_legends": {
+        "name": "Hall of Legends Simulator"
+      }
+    }
+  },
+  "ar": {
+    "ui": {
+      "brand_subtitle": "الأدوات والمحاكيات",
+      "search_prefix": "بحث:",
+      "overviews": "لمحات عامة",
+      "calculators": "الآلات الحاسبة",
+      "simulators": "محاكيات",
+      "contact_intro": "أسئلة أو اقتراحات؟",
+      "settings": "الإعدادات",
+      "game": "لعبة",
+      "empire_browser": "الإمبراطورية (المتصفح)",
+      "empire_browser_short": "م (المتصفح)",
+      "e4k_mobile": "الإمبراطورية: الممالك الأربع (الجوال)",
+      "e4k_mobile_short": "E4K (الجوال)",
+      "language": "اللغة",
+      "developer_comments": "تعليقات المطورين"
+    },
+    "cards": {
+      "decorations": {
+        "name": "نظرة عامة على الزخارف"
+      },
+      "building_items": {
+        "name": "نظرة عامة على CI وTCI"
+      },
+      "look_items": {
+        "name": "نظرة عامة على العناصر"
+      },
+      "equipment_sets": {
+        "name": "نظرة عامة على المجموعة الفريدة"
+      },
+      "generals": {
+        "name": "نظرة عامة على الجنرالات"
+      },
+      "event_rewards": {
+        "name": "نظرة عامة على مكافآت الأحداث"
+      },
+      "gacha": {
+        "name": "نظرة عامة على جاشا"
+      },
+      "loot_boxes": {
+        "name": "نظرة عامة على صناديق الغنائم"
+      },
+      "offerings": {
+        "name": "نظرة عامة على العروض"
+      },
+      "master_blacksmith": {
+        "name": "نظرة عامة على سيد الحداد"
+      },
+      "troops": {
+        "name": "نظرة عامة على القوات"
+      },
+      "tools": {
+        "name": "نظرة عامة على الأدوات"
+      },
+      "rift_event": {
+        "name": "نظرة عامة على حدث الصدع"
+      },
+      "quests": {
+        "name": "نظرة عامة على المهام"
+      },
+      "event_plan": {
+        "name": "نظرة عامة على خطة الحدث"
+      },
+      "food_production": {
+        "name": "حاسبة إنتاج الغذاء"
+      },
+      "mead_production": {
+        "name": "حاسبة إنتاج ميد"
+      },
+      "wall_limit": {
+        "name": "حاسبة حدود الجدار"
+      },
+      "collector_event": {
+        "name": "حاسبة حدث المجمع"
+      },
+      "detection_time": {
+        "name": "حاسبة وقت الكشف"
+      },
+      "rift_points": {
+        "name": "حاسبة نقطة الغارة الصدع"
+      },
+      "kingdom_league": {
+        "name": "حاسبة دوري المملكة"
+      },
+      "imperial_patronage": {
+        "name": "محاكي الرعاية الإمبراطورية"
+      },
+      "equipment_builder": {
+        "name": "منشئ المعدات"
+      },
+      "castle_layout": {
+        "name": "محاكاة تخطيط القلعة"
+      },
+      "hall_of_legends": {
+        "name": "قاعة محاكاة الأساطير"
+      }
+    }
+  },
+  "es": {
+    "ui": {
+      "brand_subtitle": "Herramientas y simuladores",
+      "search_prefix": "Buscar:",
+      "overviews": "Resúmenes",
+      "calculators": "Calculadoras",
+      "simulators": "Simuladores",
+      "contact_intro": "¿Preguntas o sugerencias?",
+      "settings": "Configuración",
+      "game": "juego",
+      "empire_browser": "Imperio (navegador)",
+      "empire_browser_short": "EM (navegador)",
+      "e4k_mobile": "Imperio: Cuatro Reinos (Móvil)",
+      "e4k_mobile_short": "E4K (móvil)",
+      "language": "Idioma",
+      "developer_comments": "Comentarios del desarrollador"
+    },
+    "cards": {
+      "decorations": {
+        "name": "Descripción general de las decoraciones"
+      },
+      "building_items": {
+        "name": "Descripción general de CI y TCI"
+      },
+      "look_items": {
+        "name": "Descripción general de los elementos de apariencia"
+      },
+      "equipment_sets": {
+        "name": "Descripción general del conjunto único"
+      },
+      "generals": {
+        "name": "Resumen general"
+      },
+      "event_rewards": {
+        "name": "Descripción general de las recompensas del evento"
+      },
+      "gacha": {
+        "name": "Descripción general de Gacha"
+      },
+      "loot_boxes": {
+        "name": "Descripción general de las cajas de botín"
+      },
+      "offerings": {
+        "name": "Descripción general de las ofertas"
+      },
+      "master_blacksmith": {
+        "name": "Descripción general del maestro herrero"
+      },
+      "troops": {
+        "name": "Resumen de tropas"
+      },
+      "tools": {
+        "name": "Descripción general de las herramientas"
+      },
+      "rift_event": {
+        "name": "Descripción general del evento de ruptura"
+      },
+      "quests": {
+        "name": "Resumen de misiones"
+      },
+      "event_plan": {
+        "name": "Descripción general del plan de eventos"
+      },
+      "food_production": {
+        "name": "Calculadora de producción de alimentos"
+      },
+      "mead_production": {
+        "name": "Calculadora de producción de hidromiel"
+      },
+      "wall_limit": {
+        "name": "Calculadora de límite de pared"
+      },
+      "collector_event": {
+        "name": "Calculadora de eventos de coleccionista"
+      },
+      "detection_time": {
+        "name": "Calculadora de tiempo de detección"
+      },
+      "rift_points": {
+        "name": "Calculadora de puntos de incursión de Rift"
+      },
+      "kingdom_league": {
+        "name": "Calculadora de la Liga del Reino"
+      },
+      "imperial_patronage": {
+        "name": "Simulador de Patrocinio Imperial"
+      },
+      "equipment_builder": {
+        "name": "Constructor de equipos"
+      },
+      "castle_layout": {
+        "name": "Simulador de diseño de castillo"
+      },
+      "hall_of_legends": {
+        "name": "Simulador de Salón de Leyendas"
+      }
+    }
+  },
+  "bg": {
+    "ui": {
+      "brand_subtitle": "Инструменти и симулатори",
+      "search_prefix": "търсене:",
+      "overviews": "Прегледи",
+      "calculators": "Калкулатори",
+      "simulators": "Симулатори",
+      "contact_intro": "Въпроси или предложения?",
+      "settings": "Настройки",
+      "game": "Игра",
+      "empire_browser": "Empire (браузър)",
+      "empire_browser_short": "EM (браузър)",
+      "e4k_mobile": "Империя: Четирите кралства (мобилен)",
+      "e4k_mobile_short": "E4K (мобилен)",
+      "language": "език",
+      "developer_comments": "Коментари на разработчици"
+    },
+    "cards": {
+      "decorations": {
+        "name": "Преглед на декорациите"
+      },
+      "building_items": {
+        "name": "Преглед на CI и TCI"
+      },
+      "look_items": {
+        "name": "Общ преглед на артикули"
+      },
+      "equipment_sets": {
+        "name": "Преглед на уникален комплект"
+      },
+      "generals": {
+        "name": "Общ преглед"
+      },
+      "event_rewards": {
+        "name": "Преглед на наградите за събитието"
+      },
+      "gacha": {
+        "name": "Общ преглед на Gacha"
+      },
+      "loot_boxes": {
+        "name": "Общ преглед на кутии за плячка"
+      },
+      "offerings": {
+        "name": "Преглед на предложенията"
+      },
+      "master_blacksmith": {
+        "name": "Преглед на майстор ковач"
+      },
+      "troops": {
+        "name": "Преглед на войските"
+      },
+      "tools": {
+        "name": "Общ преглед на инструментите"
+      },
+      "rift_event": {
+        "name": "Преглед на събитието Rift"
+      },
+      "quests": {
+        "name": "Преглед на мисии"
+      },
+      "event_plan": {
+        "name": "Преглед на плана за събитието"
+      },
+      "food_production": {
+        "name": "Калкулатор за производство на храна"
+      },
+      "mead_production": {
+        "name": "Калкулатор за производство на медовина"
+      },
+      "wall_limit": {
+        "name": "Калкулатор за ограничаване на стените"
+      },
+      "collector_event": {
+        "name": "Калкулатор на събития за събиране"
+      },
+      "detection_time": {
+        "name": "Калкулатор за време за откриване"
+      },
+      "rift_points": {
+        "name": "Калкулатор на точка за нападение на Rift"
+      },
+      "kingdom_league": {
+        "name": "Калкулатор на кралската лига"
+      },
+      "imperial_patronage": {
+        "name": "Симулатор на императорско покровителство"
+      },
+      "equipment_builder": {
+        "name": "Конструктор на оборудване"
+      },
+      "castle_layout": {
+        "name": "Симулатор на оформление на замъка"
+      },
+      "hall_of_legends": {
+        "name": "Симулатор на Hall of Legends"
+      }
+    }
+  },
+  "pt": {
+    "ui": {
+      "brand_subtitle": "Ferramentas e Simuladores",
+      "search_prefix": "Pesquisar:",
+      "overviews": "Visão geral",
+      "calculators": "Calculadoras",
+      "simulators": "Simuladores",
+      "contact_intro": "Dúvidas ou sugestões?",
+      "settings": "Configurações",
+      "game": "Jogo",
+      "empire_browser": "Império (navegador)",
+      "empire_browser_short": "EM (navegador)",
+      "e4k_mobile": "Império: Quatro Reinos (Celular)",
+      "e4k_mobile_short": "E4K (móvel)",
+      "language": "Idioma",
+      "developer_comments": "Comentários do desenvolvedor"
+    },
+    "cards": {
+      "decorations": {
+        "name": "Visão geral das decorações"
+      },
+      "building_items": {
+        "name": "Visão geral de CI e TCI"
+      },
+      "look_items": {
+        "name": "Visão geral dos itens de aparência"
+      },
+      "equipment_sets": {
+        "name": "Visão geral do conjunto exclusivo"
+      },
+      "generals": {
+        "name": "Visão geral dos generais"
+      },
+      "event_rewards": {
+        "name": "Visão geral das recompensas do evento"
+      },
+      "gacha": {
+        "name": "Visão geral do Gacha"
+      },
+      "loot_boxes": {
+        "name": "Visão geral das caixas de saque"
+      },
+      "offerings": {
+        "name": "Visão geral das ofertas"
+      },
+      "master_blacksmith": {
+        "name": "Visão geral do mestre ferreiro"
+      },
+      "troops": {
+        "name": "Visão geral das tropas"
+      },
+      "tools": {
+        "name": "Visão geral das ferramentas"
+      },
+      "rift_event": {
+        "name": "Visão geral do evento Rift"
+      },
+      "quests": {
+        "name": "Visão geral das missões"
+      },
+      "event_plan": {
+        "name": "Visão geral do plano de evento"
+      },
+      "food_production": {
+        "name": "Calculadora de produção de alimentos"
+      },
+      "mead_production": {
+        "name": "Calculadora de produção de hidromel"
+      },
+      "wall_limit": {
+        "name": "Calculadora de limite de parede"
+      },
+      "collector_event": {
+        "name": "Calculadora de eventos de coletor"
+      },
+      "detection_time": {
+        "name": "Calculadora de tempo de detecção"
+      },
+      "rift_points": {
+        "name": "Calculadora de pontos de ataque em Rift"
+      },
+      "kingdom_league": {
+        "name": "Calculadora da Liga do Reino"
+      },
+      "imperial_patronage": {
+        "name": "Simulador de Patrocínio Imperial"
+      },
+      "equipment_builder": {
+        "name": "Construtor de equipamentos"
+      },
+      "castle_layout": {
+        "name": "Simulador de layout de castelo"
+      },
+      "hall_of_legends": {
+        "name": "Simulador de Hall of Legends"
+      }
+    }
+  },
+  "cs": {
+    "ui": {
+      "brand_subtitle": "Nástroje a simulátory",
+      "search_prefix": "Hledat:",
+      "overviews": "Přehledy",
+      "calculators": "Kalkulačky",
+      "simulators": "Simulátory",
+      "contact_intro": "Máte dotazy nebo návrhy?",
+      "settings": "Nastavení",
+      "game": "Hra",
+      "empire_browser": "Empire (prohlížeč)",
+      "empire_browser_short": "EM (prohlížeč)",
+      "e4k_mobile": "Empire: Four Kingdoms (mobil)",
+      "e4k_mobile_short": "E4K (mobilní zařízení)",
+      "language": "Jazyk",
+      "developer_comments": "Komentáře vývojářů"
+    },
+    "cards": {
+      "decorations": {
+        "name": "Přehled dekorací"
+      },
+      "building_items": {
+        "name": "Přehled CI a TCI"
+      },
+      "look_items": {
+        "name": "Přehled položek vzhledu"
+      },
+      "equipment_sets": {
+        "name": "Přehled jedinečné sady"
+      },
+      "generals": {
+        "name": "Přehled generálů"
+      },
+      "event_rewards": {
+        "name": "Přehled odměn za akce"
+      },
+      "gacha": {
+        "name": "Přehled Gacha"
+      },
+      "loot_boxes": {
+        "name": "Přehled lootboxů"
+      },
+      "offerings": {
+        "name": "Přehled nabídek"
+      },
+      "master_blacksmith": {
+        "name": "Přehled mistra kováře"
+      },
+      "troops": {
+        "name": "Přehled vojsk"
+      },
+      "tools": {
+        "name": "Přehled nástrojů"
+      },
+      "rift_event": {
+        "name": "Přehled událostí Rift"
+      },
+      "quests": {
+        "name": "Přehled úkolů"
+      },
+      "event_plan": {
+        "name": "Přehled plánu akcí"
+      },
+      "food_production": {
+        "name": "Kalkulačka výroby potravin"
+      },
+      "mead_production": {
+        "name": "Kalkulačka výroby medoviny"
+      },
+      "wall_limit": {
+        "name": "Kalkulačka limitu zdi"
+      },
+      "collector_event": {
+        "name": "Sběratelská kalkulačka událostí"
+      },
+      "detection_time": {
+        "name": "Kalkulačka doby detekce"
+      },
+      "rift_points": {
+        "name": "Kalkulačka Rift Raid Point"
+      },
+      "kingdom_league": {
+        "name": "Kalkulačka Královské ligy"
+      },
+      "imperial_patronage": {
+        "name": "Simulátor imperiálního patronátu"
+      },
+      "equipment_builder": {
+        "name": "Tvůrce zařízení"
+      },
+      "castle_layout": {
+        "name": "Castle Layout Simulator"
+      },
+      "hall_of_legends": {
+        "name": "Simulátor Hall of Legends"
+      }
+    }
+  },
+  "de": {
+    "ui": {
+      "brand_subtitle": "Tools und Simulatoren",
+      "search_prefix": "Suche:",
+      "overviews": "Übersichten",
+      "calculators": "Taschenrechner",
+      "simulators": "Simulatoren",
+      "contact_intro": "Fragen oder Anregungen?",
+      "settings": "Einstellungen",
+      "game": "Spiel",
+      "empire_browser": "Empire (Browser)",
+      "empire_browser_short": "EM (Browser)",
+      "e4k_mobile": "Empire: Four Kingdoms (Mobil)",
+      "e4k_mobile_short": "E4K (Mobil)",
+      "language": "Sprache",
+      "developer_comments": "Entwicklerkommentare"
+    },
+    "cards": {
+      "decorations": {
+        "name": "Übersicht über Dekorationen"
+      },
+      "building_items": {
+        "name": "Übersicht über CIs und TCIs"
+      },
+      "look_items": {
+        "name": "Look-Items-Übersicht"
+      },
+      "equipment_sets": {
+        "name": "Einzigartige Set-Übersicht"
+      },
+      "generals": {
+        "name": "Übersicht über die Generäle"
+      },
+      "event_rewards": {
+        "name": "Übersicht über Event-Belohnungen"
+      },
+      "gacha": {
+        "name": "Gacha-Übersicht"
+      },
+      "loot_boxes": {
+        "name": "Übersicht über Lootboxen"
+      },
+      "offerings": {
+        "name": "Angebotsübersicht"
+      },
+      "master_blacksmith": {
+        "name": "Überblick über den Meisterschmied"
+      },
+      "troops": {
+        "name": "Truppenübersicht"
+      },
+      "tools": {
+        "name": "Tools-Übersicht"
+      },
+      "rift_event": {
+        "name": "Rift-Ereignisübersicht"
+      },
+      "quests": {
+        "name": "Questübersicht"
+      },
+      "event_plan": {
+        "name": "Übersicht über den Veranstaltungsplan"
+      },
+      "food_production": {
+        "name": "Rechner für die Lebensmittelproduktion"
+      },
+      "mead_production": {
+        "name": "Met-Produktionsrechner"
+      },
+      "wall_limit": {
+        "name": "Wandlimit-Rechner"
+      },
+      "collector_event": {
+        "name": "Collector-Ereignisrechner"
+      },
+      "detection_time": {
+        "name": "Erkennungszeitrechner"
+      },
+      "rift_points": {
+        "name": "Rift-Raid-Punktrechner"
+      },
+      "kingdom_league": {
+        "name": "Kingdom League-Rechner"
+      },
+      "imperial_patronage": {
+        "name": "Imperialer Schirmherrschaftssimulator"
+      },
+      "equipment_builder": {
+        "name": "Gerätebauer"
+      },
+      "castle_layout": {
+        "name": "Schlosslayout-Simulator"
+      },
+      "hall_of_legends": {
+        "name": "Hall of Legends-Simulator"
+      }
+    }
+  },
+  "da": {
+    "ui": {
+      "brand_subtitle": "Værktøjer og simulatorer",
+      "search_prefix": "Søg:",
+      "overviews": "Oversigter",
+      "calculators": "Lommeregnere",
+      "simulators": "Simulatorer",
+      "contact_intro": "Spørgsmål eller forslag?",
+      "settings": "Indstillinger",
+      "game": "Spil",
+      "empire_browser": "Empire (browser)",
+      "empire_browser_short": "EM (browser)",
+      "e4k_mobile": "Empire: Four Kingdoms (mobil)",
+      "e4k_mobile_short": "E4K (mobil)",
+      "language": "Sprog",
+      "developer_comments": "Udviklerkommentarer"
+    },
+    "cards": {
+      "decorations": {
+        "name": "Udsmykningsoversigt"
+      },
+      "building_items": {
+        "name": "CI'er & TCI'er Oversigt"
+      },
+      "look_items": {
+        "name": "Look-items Oversigt"
+      },
+      "equipment_sets": {
+        "name": "Unikt sætoversigt"
+      },
+      "generals": {
+        "name": "Oversigt over generaler"
+      },
+      "event_rewards": {
+        "name": "Oversigt over begivenhedsbelønninger"
+      },
+      "gacha": {
+        "name": "Gacha Oversigt"
+      },
+      "loot_boxes": {
+        "name": "Loot Boxes Oversigt"
+      },
+      "offerings": {
+        "name": "Oversigt over tilbud"
+      },
+      "master_blacksmith": {
+        "name": "Smedmesteroversigt"
+      },
+      "troops": {
+        "name": "Tropper oversigt"
+      },
+      "tools": {
+        "name": "Værktøjsoversigt"
+      },
+      "rift_event": {
+        "name": "Rift Event Oversigt"
+      },
+      "quests": {
+        "name": "Quests Oversigt"
+      },
+      "event_plan": {
+        "name": "Event Plan Oversigt"
+      },
+      "food_production": {
+        "name": "Fødevareproduktion Lommeregner"
+      },
+      "mead_production": {
+        "name": "Mjød Produktion Lommeregner"
+      },
+      "wall_limit": {
+        "name": "Væggrænseberegner"
+      },
+      "collector_event": {
+        "name": "Collector Event Lommeregner"
+      },
+      "detection_time": {
+        "name": "Detektionstidsberegner"
+      },
+      "rift_points": {
+        "name": "Rift Raid Point Lommeregner"
+      },
+      "kingdom_league": {
+        "name": "Kingdom League Lommeregner"
+      },
+      "imperial_patronage": {
+        "name": "Imperial Patronage Simulator"
+      },
+      "equipment_builder": {
+        "name": "Udstyrsbygger"
+      },
+      "castle_layout": {
+        "name": "Castle Layout Simulator"
+      },
+      "hall_of_legends": {
+        "name": "Hall of Legends Simulator"
+      }
+    }
+  },
+  "fi": {
+    "ui": {
+      "brand_subtitle": "Työkalut ja simulaattorit",
+      "search_prefix": "Haku:",
+      "overviews": "Yleiskatsaukset",
+      "calculators": "Laskimet",
+      "simulators": "Simulaattorit",
+      "contact_intro": "Kysymyksiä tai ehdotuksia?",
+      "settings": "Asetukset",
+      "game": "Peli",
+      "empire_browser": "Empire (selain)",
+      "empire_browser_short": "EM (selain)",
+      "e4k_mobile": "Empire: Four Kingdoms (mobiili)",
+      "e4k_mobile_short": "E4K (mobiili)",
+      "language": "Kieli",
+      "developer_comments": "Kehittäjien kommentit"
+    },
+    "cards": {
+      "decorations": {
+        "name": "Koristeiden yleiskatsaus"
+      },
+      "building_items": {
+        "name": "CI:n ja TCI:n yleiskatsaus"
+      },
+      "look_items": {
+        "name": "Look-kohteiden yleiskatsaus"
+      },
+      "equipment_sets": {
+        "name": "Ainutlaatuinen sarjakatsaus"
+      },
+      "generals": {
+        "name": "Kenraalien yleiskatsaus"
+      },
+      "event_rewards": {
+        "name": "Tapahtuman palkintojen yleiskatsaus"
+      },
+      "gacha": {
+        "name": "Gacha yleiskatsaus"
+      },
+      "loot_boxes": {
+        "name": "Loot-laatikoiden yleiskatsaus"
+      },
+      "offerings": {
+        "name": "Tarjousten yleiskatsaus"
+      },
+      "master_blacksmith": {
+        "name": "Seppämestarin yleiskatsaus"
+      },
+      "troops": {
+        "name": "Joukkojen yleiskatsaus"
+      },
+      "tools": {
+        "name": "Työkalujen yleiskatsaus"
+      },
+      "rift_event": {
+        "name": "Rift-tapahtuman yleiskatsaus"
+      },
+      "quests": {
+        "name": "Tehtävien yleiskatsaus"
+      },
+      "event_plan": {
+        "name": "Tapahtumasuunnitelman yleiskatsaus"
+      },
+      "food_production": {
+        "name": "Elintarvikkeiden tuotannon laskin"
+      },
+      "mead_production": {
+        "name": "Mead Production Laskin"
+      },
+      "wall_limit": {
+        "name": "Wall Limit Laskin"
+      },
+      "collector_event": {
+        "name": "Keräilijätapahtumalaskin"
+      },
+      "detection_time": {
+        "name": "Havaintoaikalaskin"
+      },
+      "rift_points": {
+        "name": "Rift Raid Point -laskin"
+      },
+      "kingdom_league": {
+        "name": "Kingdom League -laskin"
+      },
+      "imperial_patronage": {
+        "name": "Imperiumin holhoussimulaattori"
+      },
+      "equipment_builder": {
+        "name": "Laitteiden rakentaja"
+      },
+      "castle_layout": {
+        "name": "Linnan asettelusimulaattori"
+      },
+      "hall_of_legends": {
+        "name": "Hall of Legends -simulaattori"
+      }
+    }
+  },
+  "fr": {
+    "ui": {
+      "brand_subtitle": "Outils et simulateurs",
+      "search_prefix": "Rechercher :",
+      "overviews": "Aperçus",
+      "calculators": "Calculatrices",
+      "simulators": "Simulateurs",
+      "contact_intro": "Des questions ou des suggestions ?",
+      "settings": "Paramètres",
+      "game": "Jeu",
+      "empire_browser": "Empire (Navigateur)",
+      "empire_browser_short": "EM (navigateur)",
+      "e4k_mobile": "Empire : Quatre Royaumes (Mobile)",
+      "e4k_mobile_short": "E4K (Mobile)",
+      "language": "Langue",
+      "developer_comments": "Commentaires des développeurs"
+    },
+    "cards": {
+      "decorations": {
+        "name": "Aperçu des décorations"
+      },
+      "building_items": {
+        "name": "Présentation des CI et TCI"
+      },
+      "look_items": {
+        "name": "Aperçu des éléments de look"
+      },
+      "equipment_sets": {
+        "name": "Aperçu de l'ensemble unique"
+      },
+      "generals": {
+        "name": "Aperçu des généraux"
+      },
+      "event_rewards": {
+        "name": "Aperçu des récompenses d'événement"
+      },
+      "gacha": {
+        "name": "Présentation de Gacha"
+      },
+      "loot_boxes": {
+        "name": "Présentation des coffres à butin"
+      },
+      "offerings": {
+        "name": "Aperçu des offres"
+      },
+      "master_blacksmith": {
+        "name": "Aperçu du maître forgeron"
+      },
+      "troops": {
+        "name": "Aperçu des troupes"
+      },
+      "tools": {
+        "name": "Présentation des outils"
+      },
+      "rift_event": {
+        "name": "Aperçu de l'événement Rift"
+      },
+      "quests": {
+        "name": "Aperçu des quêtes"
+      },
+      "event_plan": {
+        "name": "Aperçu du plan d'événement"
+      },
+      "food_production": {
+        "name": "Calculateur de production alimentaire"
+      },
+      "mead_production": {
+        "name": "Calculateur de production d'hydromel"
+      },
+      "wall_limit": {
+        "name": "Calculateur de limite de mur"
+      },
+      "collector_event": {
+        "name": "Calculateur d'événements de collection"
+      },
+      "detection_time": {
+        "name": "Calculateur de temps de détection"
+      },
+      "rift_points": {
+        "name": "Calculateur de points de raid sur le Rift"
+      },
+      "kingdom_league": {
+        "name": "Calculateur de la Ligue du Royaume"
+      },
+      "imperial_patronage": {
+        "name": "Simulateur de patronage impérial"
+      },
+      "equipment_builder": {
+        "name": "Constructeur d'équipement"
+      },
+      "castle_layout": {
+        "name": "Simulateur d'aménagement de château"
+      },
+      "hall_of_legends": {
+        "name": "Simulateur du Hall des Légendes"
+      }
+    }
+  },
+  "el": {
+    "ui": {
+      "brand_subtitle": "Εργαλεία & Προσομοιωτές",
+      "search_prefix": "Αναζήτηση:",
+      "overviews": "Επισκοπήσεις",
+      "calculators": "Αριθμομηχανές",
+      "simulators": "Προσομοιωτές",
+      "contact_intro": "Ερωτήσεις ή προτάσεις;",
+      "settings": "Ρυθμίσεις",
+      "game": "Παιχνίδι",
+      "empire_browser": "Empire (Πρόγραμμα περιήγησης)",
+      "empire_browser_short": "EM (Πρόγραμμα περιήγησης)",
+      "e4k_mobile": "Empire: Four Kingdoms (Κινητό)",
+      "e4k_mobile_short": "E4K (Κινητό)",
+      "language": "Γλώσσα",
+      "developer_comments": "Σχόλια προγραμματιστή"
+    },
+    "cards": {
+      "decorations": {
+        "name": "Επισκόπηση διακοσμήσεων"
+      },
+      "building_items": {
+        "name": "Επισκόπηση CI & TCI"
+      },
+      "look_items": {
+        "name": "Επισκόπηση αντικειμένων"
+      },
+      "equipment_sets": {
+        "name": "Μοναδική επισκόπηση σετ"
+      },
+      "generals": {
+        "name": "Γενικές Επισκόπηση"
+      },
+      "event_rewards": {
+        "name": "Επισκόπηση ανταμοιβών εκδήλωσης"
+      },
+      "gacha": {
+        "name": "Επισκόπηση Gacha"
+      },
+      "loot_boxes": {
+        "name": "Επισκόπηση Loot Boxes"
+      },
+      "offerings": {
+        "name": "Επισκόπηση Προσφορών"
+      },
+      "master_blacksmith": {
+        "name": "Επισκόπηση Master Blacksmith"
+      },
+      "troops": {
+        "name": "Επισκόπηση στρατευμάτων"
+      },
+      "tools": {
+        "name": "Επισκόπηση εργαλείων"
+      },
+      "rift_event": {
+        "name": "Επισκόπηση γεγονότος Rift"
+      },
+      "quests": {
+        "name": "Επισκόπηση αποστολών"
+      },
+      "event_plan": {
+        "name": "Επισκόπηση σχεδίου εκδήλωσης"
+      },
+      "food_production": {
+        "name": "Υπολογιστής Παραγωγής Τροφίμων"
+      },
+      "mead_production": {
+        "name": "Υπολογιστής Mead Production"
+      },
+      "wall_limit": {
+        "name": "Υπολογιστής ορίου τοίχου"
+      },
+      "collector_event": {
+        "name": "Υπολογιστής συμβάντων συλλεκτών"
+      },
+      "detection_time": {
+        "name": "Υπολογιστής χρόνου ανίχνευσης"
+      },
+      "rift_points": {
+        "name": "Υπολογιστής Rift Raid Point"
+      },
+      "kingdom_league": {
+        "name": "Υπολογιστής Kingdom League"
+      },
+      "imperial_patronage": {
+        "name": "Imperial Patronage Simulator"
+      },
+      "equipment_builder": {
+        "name": "Κατασκευαστής εξοπλισμού"
+      },
+      "castle_layout": {
+        "name": "Castle Layout Simulator"
+      },
+      "hall_of_legends": {
+        "name": "Hall of Legends Simulator"
+      }
+    }
+  },
+  "hu": {
+    "ui": {
+      "brand_subtitle": "Eszközök és szimulátorok",
+      "search_prefix": "Keresés:",
+      "overviews": "Áttekintések",
+      "calculators": "Számológépek",
+      "simulators": "Szimulátorok",
+      "contact_intro": "Kérdések vagy javaslatok?",
+      "settings": "Beállítások",
+      "game": "Játék",
+      "empire_browser": "Empire (böngésző)",
+      "empire_browser_short": "EM (böngésző)",
+      "e4k_mobile": "Empire: Four Kingdoms (mobil)",
+      "e4k_mobile_short": "E4K (mobil)",
+      "language": "Nyelv",
+      "developer_comments": "Fejlesztői megjegyzések"
+    },
+    "cards": {
+      "decorations": {
+        "name": "Dekorációk áttekintése"
+      },
+      "building_items": {
+        "name": "A CI és a TCI áttekintése"
+      },
+      "look_items": {
+        "name": "Kinézeti elemek áttekintése"
+      },
+      "equipment_sets": {
+        "name": "Egyedi készlet áttekintése"
+      },
+      "generals": {
+        "name": "A tábornokok áttekintése"
+      },
+      "event_rewards": {
+        "name": "Esemény jutalmak áttekintése"
+      },
+      "gacha": {
+        "name": "Gacha áttekintése"
+      },
+      "loot_boxes": {
+        "name": "A zsákmánydobozok áttekintése"
+      },
+      "offerings": {
+        "name": "Ajánlatok áttekintése"
+      },
+      "master_blacksmith": {
+        "name": "Kovácsmester áttekintése"
+      },
+      "troops": {
+        "name": "Csapatok áttekintése"
+      },
+      "tools": {
+        "name": "Eszközök áttekintése"
+      },
+      "rift_event": {
+        "name": "Rift esemény áttekintése"
+      },
+      "quests": {
+        "name": "A küldetések áttekintése"
+      },
+      "event_plan": {
+        "name": "Rendezvényterv áttekintése"
+      },
+      "food_production": {
+        "name": "Élelmiszer-termelési kalkulátor"
+      },
+      "mead_production": {
+        "name": "Mézsörtermelési kalkulátor"
+      },
+      "wall_limit": {
+        "name": "Fali határérték kalkulátor"
+      },
+      "collector_event": {
+        "name": "Collector Esemény kalkulátor"
+      },
+      "detection_time": {
+        "name": "Észlelési idő kalkulátor"
+      },
+      "rift_points": {
+        "name": "Rift Raid Point kalkulátor"
+      },
+      "kingdom_league": {
+        "name": "Királyság Liga kalkulátor"
+      },
+      "imperial_patronage": {
+        "name": "Imperial Patronage Simulator"
+      },
+      "equipment_builder": {
+        "name": "Berendezésépítő"
+      },
+      "castle_layout": {
+        "name": "Castle Layout Simulator"
+      },
+      "hall_of_legends": {
+        "name": "Hall of Legends szimulátor"
+      }
+    }
+  },
+  "it": {
+    "ui": {
+      "brand_subtitle": "Strumenti e simulatori",
+      "search_prefix": "Cerca:",
+      "overviews": "Panoramica",
+      "calculators": "Calcolatrici",
+      "simulators": "Simulatori",
+      "contact_intro": "Domande o suggerimenti?",
+      "settings": "Impostazioni",
+      "game": "Gioco",
+      "empire_browser": "Impero (browser)",
+      "empire_browser_short": "EM (browser)",
+      "e4k_mobile": "Empire: Quattro Regni (Mobile)",
+      "e4k_mobile_short": "E4K (mobile)",
+      "language": "Lingua",
+      "developer_comments": "Commenti degli sviluppatori"
+    },
+    "cards": {
+      "decorations": {
+        "name": "Panoramica delle decorazioni"
+      },
+      "building_items": {
+        "name": "Panoramica di CI e TCI"
+      },
+      "look_items": {
+        "name": "Panoramica degli elementi di ricerca"
+      },
+      "equipment_sets": {
+        "name": "Panoramica del set unico"
+      },
+      "generals": {
+        "name": "Panoramica dei generali"
+      },
+      "event_rewards": {
+        "name": "Panoramica dei premi degli eventi"
+      },
+      "gacha": {
+        "name": "Panoramica del Gacha"
+      },
+      "loot_boxes": {
+        "name": "Panoramica sui bottini"
+      },
+      "offerings": {
+        "name": "Panoramica delle offerte"
+      },
+      "master_blacksmith": {
+        "name": "Panoramica del maestro fabbro"
+      },
+      "troops": {
+        "name": "Panoramica delle truppe"
+      },
+      "tools": {
+        "name": "Panoramica degli strumenti"
+      },
+      "rift_event": {
+        "name": "Panoramica dell'evento Rift"
+      },
+      "quests": {
+        "name": "Panoramica delle missioni"
+      },
+      "event_plan": {
+        "name": "Panoramica del piano eventi"
+      },
+      "food_production": {
+        "name": "Calcolatore della produzione alimentare"
+      },
+      "mead_production": {
+        "name": "Calcolatore della produzione di idromele"
+      },
+      "wall_limit": {
+        "name": "Calcolatore del limite del muro"
+      },
+      "collector_event": {
+        "name": "Calcolatore degli eventi del collezionista"
+      },
+      "detection_time": {
+        "name": "Calcolatore del tempo di rilevamento"
+      },
+      "rift_points": {
+        "name": "Calcolatore dei punti raid Rift"
+      },
+      "kingdom_league": {
+        "name": "Calcolatore della lega del Regno"
+      },
+      "imperial_patronage": {
+        "name": "Simulatore del mecenatismo imperiale"
+      },
+      "equipment_builder": {
+        "name": "Costruttore di attrezzature"
+      },
+      "castle_layout": {
+        "name": "Simulatore della disposizione del castello"
+      },
+      "hall_of_legends": {
+        "name": "Simulatore della Sala delle Leggende"
+      }
+    }
+  },
+  "ja": {
+    "ui": {
+      "brand_subtitle": "ツールとシミュレータ",
+      "search_prefix": "検索:",
+      "overviews": "概要",
+      "calculators": "電卓",
+      "simulators": "シミュレータ",
+      "contact_intro": "ご質問またはご提案はありますか?",
+      "settings": "設定",
+      "game": "ゲーム",
+      "empire_browser": "エンパイア (ブラウザ)",
+      "empire_browser_short": "EM (ブラウザ)",
+      "e4k_mobile": "Empire: Four Kingdoms (モバイル)",
+      "e4k_mobile_short": "E4K (モバイル)",
+      "language": "言語",
+      "developer_comments": "開発者のコメント"
+    },
+    "cards": {
+      "decorations": {
+        "name": "装飾の概要"
+      },
+      "building_items": {
+        "name": "CI と TCI の概要"
+      },
+      "look_items": {
+        "name": "ルックアイテムの概要"
+      },
+      "equipment_sets": {
+        "name": "ユニークなセットの概要"
+      },
+      "generals": {
+        "name": "将軍の概要"
+      },
+      "event_rewards": {
+        "name": "イベント報酬概要"
+      },
+      "gacha": {
+        "name": "ガチャ概要"
+      },
+      "loot_boxes": {
+        "name": "ルートボックスの概要"
+      },
+      "offerings": {
+        "name": "オファリングの概要"
+      },
+      "master_blacksmith": {
+        "name": "マスター鍛冶屋の概要"
+      },
+      "troops": {
+        "name": "部隊の概要"
+      },
+      "tools": {
+        "name": "ツールの概要"
+      },
+      "rift_event": {
+        "name": "リフトイベント概要"
+      },
+      "quests": {
+        "name": "クエスト概要"
+      },
+      "event_plan": {
+        "name": "イベントプラン概要"
+      },
+      "food_production": {
+        "name": "食糧生産計算機"
+      },
+      "mead_production": {
+        "name": "ミード生産量計算機"
+      },
+      "wall_limit": {
+        "name": "壁制限計算機"
+      },
+      "collector_event": {
+        "name": "コレクターイベント計算ツール"
+      },
+      "detection_time": {
+        "name": "検出時間計算機"
+      },
+      "rift_points": {
+        "name": "リフトレイドポイント計算機"
+      },
+      "kingdom_league": {
+        "name": "キングダムリーグ計算機"
+      },
+      "imperial_patronage": {
+        "name": "帝国後援シミュレーター"
+      },
+      "equipment_builder": {
+        "name": "機器ビルダー"
+      },
+      "castle_layout": {
+        "name": "城のレイアウトシミュレータ"
+      },
+      "hall_of_legends": {
+        "name": "レジェンドの殿堂シミュレータ"
+      }
+    }
+  },
+  "ko": {
+    "ui": {
+      "brand_subtitle": "도구 및 시뮬레이터",
+      "search_prefix": "검색:",
+      "overviews": "개요",
+      "calculators": "계산기",
+      "simulators": "시뮬레이터",
+      "contact_intro": "질문이나 제안이 있으신가요?",
+      "settings": "설정",
+      "game": "게임",
+      "empire_browser": "엠파이어(브라우저)",
+      "empire_browser_short": "EM(브라우저)",
+      "e4k_mobile": "Empire: Four Kingdoms (모바일)",
+      "e4k_mobile_short": "E4K(모바일)",
+      "language": "언어",
+      "developer_comments": "개발자 코멘트"
+    },
+    "cards": {
+      "decorations": {
+        "name": "장식 개요"
+      },
+      "building_items": {
+        "name": "CI 및 TCI 개요"
+      },
+      "look_items": {
+        "name": "룩 아이템 개요"
+      },
+      "equipment_sets": {
+        "name": "고유 세트 개요"
+      },
+      "generals": {
+        "name": "장군 개요"
+      },
+      "event_rewards": {
+        "name": "이벤트 보상 개요"
+      },
+      "gacha": {
+        "name": "가챠 개요"
+      },
+      "loot_boxes": {
+        "name": "전리품 상자 개요"
+      },
+      "offerings": {
+        "name": "오퍼링 개요"
+      },
+      "master_blacksmith": {
+        "name": "대장장이 개요"
+      },
+      "troops": {
+        "name": "부대 개요"
+      },
+      "tools": {
+        "name": "도구 개요"
+      },
+      "rift_event": {
+        "name": "리프트 이벤트 개요"
+      },
+      "quests": {
+        "name": "퀘스트 개요"
+      },
+      "event_plan": {
+        "name": "이벤트 기획 개요"
+      },
+      "food_production": {
+        "name": "식량 생산 계산기"
+      },
+      "mead_production": {
+        "name": "미드 생산 계산기"
+      },
+      "wall_limit": {
+        "name": "벽 한계 계산기"
+      },
+      "collector_event": {
+        "name": "수집가 이벤트 계산기"
+      },
+      "detection_time": {
+        "name": "감지 시간 계산기"
+      },
+      "rift_points": {
+        "name": "리프트 레이드 포인트 계산기"
+      },
+      "kingdom_league": {
+        "name": "킹덤 리그 계산기"
+      },
+      "imperial_patronage": {
+        "name": "황실 후원 시뮬레이터"
+      },
+      "equipment_builder": {
+        "name": "장비 빌더"
+      },
+      "castle_layout": {
+        "name": "성 레이아웃 시뮬레이터"
+      },
+      "hall_of_legends": {
+        "name": "전설의 전당 시뮬레이터"
+      }
+    }
+  },
+  "lt": {
+    "ui": {
+      "brand_subtitle": "Įrankiai ir treniruokliai",
+      "search_prefix": "Paieška:",
+      "overviews": "Apžvalgos",
+      "calculators": "Skaičiuoklės",
+      "simulators": "Simuliatoriai",
+      "contact_intro": "Turite klausimų ar pasiūlymų?",
+      "settings": "Nustatymai",
+      "game": "Žaidimas",
+      "empire_browser": "Empire (naršyklė)",
+      "empire_browser_short": "EM (naršyklė)",
+      "e4k_mobile": "Imperija: keturios karalystės (mobilusis)",
+      "e4k_mobile_short": "E4K (mobilusis)",
+      "language": "Kalba",
+      "developer_comments": "Kūrėjų komentarai"
+    },
+    "cards": {
+      "decorations": {
+        "name": "Dekoracijų apžvalga"
+      },
+      "building_items": {
+        "name": "CI ir TCI apžvalga"
+      },
+      "look_items": {
+        "name": "Išvaizdos elementų apžvalga"
+      },
+      "equipment_sets": {
+        "name": "Unikali rinkinio apžvalga"
+      },
+      "generals": {
+        "name": "Generolų apžvalga"
+      },
+      "event_rewards": {
+        "name": "Renginio apdovanojimų apžvalga"
+      },
+      "gacha": {
+        "name": "Gacha apžvalga"
+      },
+      "loot_boxes": {
+        "name": "Grobio dėžučių apžvalga"
+      },
+      "offerings": {
+        "name": "Pasiūlymų apžvalga"
+      },
+      "master_blacksmith": {
+        "name": "Meistro kalvio apžvalga"
+      },
+      "troops": {
+        "name": "Karių apžvalga"
+      },
+      "tools": {
+        "name": "Įrankių apžvalga"
+      },
+      "rift_event": {
+        "name": "„Rift“ įvykio apžvalga"
+      },
+      "quests": {
+        "name": "Užduočių apžvalga"
+      },
+      "event_plan": {
+        "name": "Renginio plano apžvalga"
+      },
+      "food_production": {
+        "name": "Maisto gamybos skaičiuoklė"
+      },
+      "mead_production": {
+        "name": "Midaus gamybos skaičiuoklė"
+      },
+      "wall_limit": {
+        "name": "Sienos limito skaičiuoklė"
+      },
+      "collector_event": {
+        "name": "Kolekcionieriaus įvykių skaičiuoklė"
+      },
+      "detection_time": {
+        "name": "Aptikimo laiko skaičiuoklė"
+      },
+      "rift_points": {
+        "name": "Rift Raid Point skaičiuoklė"
+      },
+      "kingdom_league": {
+        "name": "Karalystės lygos skaičiuoklė"
+      },
+      "imperial_patronage": {
+        "name": "Imperial Patronage Simulator"
+      },
+      "equipment_builder": {
+        "name": "Įrangos kūrėjas"
+      },
+      "castle_layout": {
+        "name": "Pilies išdėstymo simuliatorius"
+      },
+      "hall_of_legends": {
+        "name": "Legendų salės simuliatorius"
+      }
+    }
+  },
+  "nl": {
+    "ui": {
+      "brand_subtitle": "Hulpmiddelen en simulatoren",
+      "search_prefix": "Zoeken:",
+      "overviews": "Overzichten",
+      "calculators": "Rekenmachines",
+      "simulators": "Simulatoren",
+      "contact_intro": "Vragen of suggesties?",
+      "settings": "Instellingen",
+      "game": "Spel",
+      "empire_browser": "Rijk (browser)",
+      "empire_browser_short": "EM (browser)",
+      "e4k_mobile": "Empire: Vier koninkrijken (mobiel)",
+      "e4k_mobile_short": "E4K (mobiel)",
+      "language": "Taal",
+      "developer_comments": "Opmerkingen van ontwikkelaars"
+    },
+    "cards": {
+      "decorations": {
+        "name": "Decoratieoverzicht"
+      },
+      "building_items": {
+        "name": "Overzicht van CI's en TCI's"
+      },
+      "look_items": {
+        "name": "Look-items Overzicht"
+      },
+      "equipment_sets": {
+        "name": "Uniek setoverzicht"
+      },
+      "generals": {
+        "name": "Algemeen overzicht"
+      },
+      "event_rewards": {
+        "name": "Overzicht evenementbeloningen"
+      },
+      "gacha": {
+        "name": "Gacha-overzicht"
+      },
+      "loot_boxes": {
+        "name": "Overzicht van buitdozen"
+      },
+      "offerings": {
+        "name": "Overzicht aanbod"
+      },
+      "master_blacksmith": {
+        "name": "Overzicht meestersmid"
+      },
+      "troops": {
+        "name": "Troepenoverzicht"
+      },
+      "tools": {
+        "name": "Overzicht hulpmiddelen"
+      },
+      "rift_event": {
+        "name": "Rift-evenementoverzicht"
+      },
+      "quests": {
+        "name": "Overzicht van speurtochten"
+      },
+      "event_plan": {
+        "name": "Overzicht evenementenplan"
+      },
+      "food_production": {
+        "name": "Voedselproductiecalculator"
+      },
+      "mead_production": {
+        "name": "Medeproductiecalculator"
+      },
+      "wall_limit": {
+        "name": "Muurlimietcalculator"
+      },
+      "collector_event": {
+        "name": "Collector-evenementcalculator"
+      },
+      "detection_time": {
+        "name": "Detectietijdcalculator"
+      },
+      "rift_points": {
+        "name": "Rift Raid-puntcalculator"
+      },
+      "kingdom_league": {
+        "name": "Koninkrijksliga-calculator"
+      },
+      "imperial_patronage": {
+        "name": "Keizerlijke patronagesimulator"
+      },
+      "equipment_builder": {
+        "name": "Bouwer van apparatuur"
+      },
+      "castle_layout": {
+        "name": "Simulator voor kasteelindeling"
+      },
+      "hall_of_legends": {
+        "name": "Hall of Legends-simulator"
+      }
+    }
+  },
+  "no": {
+    "ui": {
+      "brand_subtitle": "Verktøy og simulatorer",
+      "search_prefix": "Søk:",
+      "overviews": "Oversikter",
+      "calculators": "Kalkulatorer",
+      "simulators": "Simulatorer",
+      "contact_intro": "Spørsmål eller forslag?",
+      "settings": "Innstillinger",
+      "game": "Spill",
+      "empire_browser": "Empire (nettleser)",
+      "empire_browser_short": "EM (nettleser)",
+      "e4k_mobile": "Empire: Four Kingdoms (mobil)",
+      "e4k_mobile_short": "E4K (mobil)",
+      "language": "Språk",
+      "developer_comments": "Utviklerkommentarer"
+    },
+    "cards": {
+      "decorations": {
+        "name": "Dekorasjonsoversikt"
+      },
+      "building_items": {
+        "name": "CI-er og TCI-oversikt"
+      },
+      "look_items": {
+        "name": "Look-items Oversikt"
+      },
+      "equipment_sets": {
+        "name": "Unik settoversikt"
+      },
+      "generals": {
+        "name": "Generals Oversikt"
+      },
+      "event_rewards": {
+        "name": "Oversikt over arrangementsbelønninger"
+      },
+      "gacha": {
+        "name": "Gacha Oversikt"
+      },
+      "loot_boxes": {
+        "name": "Loot Boxes Oversikt"
+      },
+      "offerings": {
+        "name": "Oversikt over tilbud"
+      },
+      "master_blacksmith": {
+        "name": "Master Blacksmith Oversikt"
+      },
+      "troops": {
+        "name": "Oversikt over tropper"
+      },
+      "tools": {
+        "name": "Verktøy Oversikt"
+      },
+      "rift_event": {
+        "name": "Oversikt over Rift-hendelser"
+      },
+      "quests": {
+        "name": "Oppdragsoversikt"
+      },
+      "event_plan": {
+        "name": "Oversikt over arrangementsplan"
+      },
+      "food_production": {
+        "name": "Matproduksjonskalkulator"
+      },
+      "mead_production": {
+        "name": "Mjødproduksjonskalkulator"
+      },
+      "wall_limit": {
+        "name": "Vegggrensekalkulator"
+      },
+      "collector_event": {
+        "name": "Samlerhendelseskalkulator"
+      },
+      "detection_time": {
+        "name": "Deteksjonstidskalkulator"
+      },
+      "rift_points": {
+        "name": "Rift Raid Point Kalkulator"
+      },
+      "kingdom_league": {
+        "name": "Kingdom League-kalkulator"
+      },
+      "imperial_patronage": {
+        "name": "Imperial Patronage Simulator"
+      },
+      "equipment_builder": {
+        "name": "Utstyrsbygger"
+      },
+      "castle_layout": {
+        "name": "Castle Layout Simulator"
+      },
+      "hall_of_legends": {
+        "name": "Hall of Legends Simulator"
+      }
+    }
+  },
+  "pl": {
+    "ui": {
+      "brand_subtitle": "Narzędzia i symulatory",
+      "search_prefix": "Szukaj:",
+      "overviews": "Przeglądy",
+      "calculators": "Kalkulatory",
+      "simulators": "Symulatory",
+      "contact_intro": "Pytania lub sugestie?",
+      "settings": "Ustawienia",
+      "game": "Gra",
+      "empire_browser": "Imperium (przeglądarka)",
+      "empire_browser_short": "EM (przeglądarka)",
+      "e4k_mobile": "Imperium: Cztery Królestwa (mobilne)",
+      "e4k_mobile_short": "E4K (mobilny)",
+      "language": "Język",
+      "developer_comments": "Komentarze deweloperów"
+    },
+    "cards": {
+      "decorations": {
+        "name": "Przegląd dekoracji"
+      },
+      "building_items": {
+        "name": "Przegląd CI i TCI"
+      },
+      "look_items": {
+        "name": "Przegląd elementów wyglądu"
+      },
+      "equipment_sets": {
+        "name": "Przegląd unikalnego zestawu"
+      },
+      "generals": {
+        "name": "Przegląd generałów"
+      },
+      "event_rewards": {
+        "name": "Przegląd nagród w wydarzeniu"
+      },
+      "gacha": {
+        "name": "Przegląd Gachy"
+      },
+      "loot_boxes": {
+        "name": "Przegląd skrzynek z łupami"
+      },
+      "offerings": {
+        "name": "Przegląd ofert"
+      },
+      "master_blacksmith": {
+        "name": "Przegląd mistrza kowala"
+      },
+      "troops": {
+        "name": "Przegląd żołnierzy"
+      },
+      "tools": {
+        "name": "Przegląd narzędzi"
+      },
+      "rift_event": {
+        "name": "Przegląd wydarzeń Rift"
+      },
+      "quests": {
+        "name": "Przegląd zadań"
+      },
+      "event_plan": {
+        "name": "Omówienie planu wydarzenia"
+      },
+      "food_production": {
+        "name": "Kalkulator produkcji żywności"
+      },
+      "mead_production": {
+        "name": "Kalkulator produkcji miodu pitnego"
+      },
+      "wall_limit": {
+        "name": "Kalkulator limitu ściany"
+      },
+      "collector_event": {
+        "name": "Kalkulator zdarzeń kolekcjonerskich"
+      },
+      "detection_time": {
+        "name": "Kalkulator czasu wykrywania"
+      },
+      "rift_points": {
+        "name": "Kalkulator punktów najazdu na Rift"
+      },
+      "kingdom_league": {
+        "name": "Kalkulator Ligi Królestwa"
+      },
+      "imperial_patronage": {
+        "name": "Symulator Patronatu Cesarskiego"
+      },
+      "equipment_builder": {
+        "name": "Konstruktor sprzętu"
+      },
+      "castle_layout": {
+        "name": "Symulator układu zamku"
+      },
+      "hall_of_legends": {
+        "name": "Symulator Sali Legend"
+      }
+    }
+  },
+  "ro": {
+    "ui": {
+      "brand_subtitle": "Instrumente și simulatoare",
+      "search_prefix": "Caută:",
+      "overviews": "Prezentare de ansamblu",
+      "calculators": "Calculatoare",
+      "simulators": "Simulatoare",
+      "contact_intro": "Întrebări sau sugestii?",
+      "settings": "Setări",
+      "game": "Joc",
+      "empire_browser": "Empire (browser)",
+      "empire_browser_short": "EM (browser)",
+      "e4k_mobile": "Empire: Four Kingdoms (Mobil)",
+      "e4k_mobile_short": "E4K (mobil)",
+      "language": "Limba",
+      "developer_comments": "Comentariile dezvoltatorilor"
+    },
+    "cards": {
+      "decorations": {
+        "name": "Prezentare generală a decorațiunilor"
+      },
+      "building_items": {
+        "name": "Prezentare generală a CI și TCI"
+      },
+      "look_items": {
+        "name": "Prezentare generală a articolelor"
+      },
+      "equipment_sets": {
+        "name": "Prezentare generală a setului unic"
+      },
+      "generals": {
+        "name": "Prezentare generală"
+      },
+      "event_rewards": {
+        "name": "Prezentare generală a recompenselor evenimentului"
+      },
+      "gacha": {
+        "name": "Privire de ansamblu Gacha"
+      },
+      "loot_boxes": {
+        "name": "Prezentare generală a cutiilor de pradă"
+      },
+      "offerings": {
+        "name": "Prezentare generală a ofertelor"
+      },
+      "master_blacksmith": {
+        "name": "Prezentare generală a maestrului fierar"
+      },
+      "troops": {
+        "name": "Prezentare generală a trupelor"
+      },
+      "tools": {
+        "name": "Prezentare generală a instrumentelor"
+      },
+      "rift_event": {
+        "name": "Prezentare generală a evenimentului Rift"
+      },
+      "quests": {
+        "name": "Prezentare generală a misiunilor"
+      },
+      "event_plan": {
+        "name": "Prezentare generală a planului de evenimente"
+      },
+      "food_production": {
+        "name": "Calculator de producție alimentară"
+      },
+      "mead_production": {
+        "name": "Calculator de producție de hidromel"
+      },
+      "wall_limit": {
+        "name": "Calculator limită de perete"
+      },
+      "collector_event": {
+        "name": "Calculator de evenimente colector"
+      },
+      "detection_time": {
+        "name": "Calculator de timp de detectare"
+      },
+      "rift_points": {
+        "name": "Rift Raid Point Calculator"
+      },
+      "kingdom_league": {
+        "name": "Calculator League Kingdom"
+      },
+      "imperial_patronage": {
+        "name": "Simulator de patronaj imperial"
+      },
+      "equipment_builder": {
+        "name": "Constructor de echipamente"
+      },
+      "castle_layout": {
+        "name": "Simulator de amenajare a castelului"
+      },
+      "hall_of_legends": {
+        "name": "Simulatorul Sala Legendelor"
+      }
+    }
+  },
+  "ru": {
+    "ui": {
+      "brand_subtitle": "Инструменты и симуляторы",
+      "search_prefix": "Поиск:",
+      "overviews": "Обзоры",
+      "calculators": "Калькуляторы",
+      "simulators": "Симуляторы",
+      "contact_intro": "Вопросы или предложения?",
+      "settings": "Настройки",
+      "game": "Игра",
+      "empire_browser": "Империя (Браузер)",
+      "empire_browser_short": "ЭМ (Браузер)",
+      "e4k_mobile": "Империя: Четыре королевства (мобильный)",
+      "e4k_mobile_short": "E4K (мобильный)",
+      "language": "Язык",
+      "developer_comments": "Комментарии разработчиков"
+    },
+    "cards": {
+      "decorations": {
+        "name": "Обзор украшений"
+      },
+      "building_items": {
+        "name": "Обзор CI и TCI"
+      },
+      "look_items": {
+        "name": "Обзор предметов Look"
+      },
+      "equipment_sets": {
+        "name": "Обзор уникального набора"
+      },
+      "generals": {
+        "name": "Обзор генералов"
+      },
+      "event_rewards": {
+        "name": "Обзор наград за события"
+      },
+      "gacha": {
+        "name": "Обзор Гачи"
+      },
+      "loot_boxes": {
+        "name": "Обзор лутбоксов"
+      },
+      "offerings": {
+        "name": "Обзор предложений"
+      },
+      "master_blacksmith": {
+        "name": "Обзор мастера-кузнеца"
+      },
+      "troops": {
+        "name": "Обзор войск"
+      },
+      "tools": {
+        "name": "Обзор инструментов"
+      },
+      "rift_event": {
+        "name": "Обзор событий Rift"
+      },
+      "quests": {
+        "name": "Обзор квестов"
+      },
+      "event_plan": {
+        "name": "Обзор плана мероприятия"
+      },
+      "food_production": {
+        "name": "Калькулятор производства продуктов питания"
+      },
+      "mead_production": {
+        "name": "Калькулятор производства медовухи"
+      },
+      "wall_limit": {
+        "name": "Калькулятор предела стены"
+      },
+      "collector_event": {
+        "name": "Калькулятор событий коллекционера"
+      },
+      "detection_time": {
+        "name": "Калькулятор времени обнаружения"
+      },
+      "rift_points": {
+        "name": "Калькулятор очков рейда в Рифте"
+      },
+      "kingdom_league": {
+        "name": "Калькулятор Лиги Королевства"
+      },
+      "imperial_patronage": {
+        "name": "Симулятор Императорского Покровительства"
+      },
+      "equipment_builder": {
+        "name": "Производитель оборудования"
+      },
+      "castle_layout": {
+        "name": "Симулятор планировки замка"
+      },
+      "hall_of_legends": {
+        "name": "Симулятор Зала Легенд"
+      }
+    }
+  },
+  "sv": {
+    "ui": {
+      "brand_subtitle": "Verktyg & Simulatorer",
+      "search_prefix": "Sök:",
+      "overviews": "Översikter",
+      "calculators": "Miniräknare",
+      "simulators": "Simulatorer",
+      "contact_intro": "Frågor eller förslag?",
+      "settings": "Inställningar",
+      "game": "Spel",
+      "empire_browser": "Empire (webbläsare)",
+      "empire_browser_short": "EM (webbläsare)",
+      "e4k_mobile": "Empire: Four Kingdoms (mobil)",
+      "e4k_mobile_short": "E4K (mobil)",
+      "language": "Språk",
+      "developer_comments": "Utvecklarens kommentarer"
+    },
+    "cards": {
+      "decorations": {
+        "name": "Dekorationer Översikt"
+      },
+      "building_items": {
+        "name": "CI:s & TCI:s översikt"
+      },
+      "look_items": {
+        "name": "Look-objekt Översikt"
+      },
+      "equipment_sets": {
+        "name": "Unik uppsättningsöversikt"
+      },
+      "generals": {
+        "name": "Generals översikt"
+      },
+      "event_rewards": {
+        "name": "Event Rewards Översikt"
+      },
+      "gacha": {
+        "name": "Gacha översikt"
+      },
+      "loot_boxes": {
+        "name": "Loot Boxes översikt"
+      },
+      "offerings": {
+        "name": "Översikt över erbjudanden"
+      },
+      "master_blacksmith": {
+        "name": "Master Blacksmith Översikt"
+      },
+      "troops": {
+        "name": "Översikt över trupper"
+      },
+      "tools": {
+        "name": "Verktygsöversikt"
+      },
+      "rift_event": {
+        "name": "Rift Event Översikt"
+      },
+      "quests": {
+        "name": "Uppdragsöversikt"
+      },
+      "event_plan": {
+        "name": "Event Plan översikt"
+      },
+      "food_production": {
+        "name": "Kalkylator för livsmedelsproduktion"
+      },
+      "mead_production": {
+        "name": "Kalkylator för mjödproduktion"
+      },
+      "wall_limit": {
+        "name": "Wall Limit Calculator"
+      },
+      "collector_event": {
+        "name": "Collector Event Calculator"
+      },
+      "detection_time": {
+        "name": "Detektionstidskalkylator"
+      },
+      "rift_points": {
+        "name": "Rift Raid Point Calculator"
+      },
+      "kingdom_league": {
+        "name": "Kingdom League-kalkylator"
+      },
+      "imperial_patronage": {
+        "name": "Imperial Patronage Simulator"
+      },
+      "equipment_builder": {
+        "name": "Utrustningsbyggare"
+      },
+      "castle_layout": {
+        "name": "Castle Layout Simulator"
+      },
+      "hall_of_legends": {
+        "name": "Hall of Legends Simulator"
+      }
+    }
+  },
+  "sk": {
+    "ui": {
+      "brand_subtitle": "Nástroje a simulátory",
+      "search_prefix": "Hľadať:",
+      "overviews": "Prehľady",
+      "calculators": "Kalkulačky",
+      "simulators": "Simulátory",
+      "contact_intro": "Máte otázky alebo návrhy?",
+      "settings": "Nastavenia",
+      "game": "Hra",
+      "empire_browser": "Empire (prehliadač)",
+      "empire_browser_short": "EM (prehliadač)",
+      "e4k_mobile": "Empire: Four Kingdoms (mobil)",
+      "e4k_mobile_short": "E4K (mobil)",
+      "language": "Jazyk",
+      "developer_comments": "Komentáre vývojárov"
+    },
+    "cards": {
+      "decorations": {
+        "name": "Prehľad dekorácií"
+      },
+      "building_items": {
+        "name": "Prehľad CI a TCI"
+      },
+      "look_items": {
+        "name": "Prehľad položiek vzhľadu"
+      },
+      "equipment_sets": {
+        "name": "Prehľad jedinečného súboru"
+      },
+      "generals": {
+        "name": "Prehľad generálov"
+      },
+      "event_rewards": {
+        "name": "Prehľad odmien za udalosti"
+      },
+      "gacha": {
+        "name": "Prehľad Gacha"
+      },
+      "loot_boxes": {
+        "name": "Prehľad lootboxov"
+      },
+      "offerings": {
+        "name": "Prehľad ponúk"
+      },
+      "master_blacksmith": {
+        "name": "Prehľad majstra kováča"
+      },
+      "troops": {
+        "name": "Prehľad vojsk"
+      },
+      "tools": {
+        "name": "Prehľad nástrojov"
+      },
+      "rift_event": {
+        "name": "Prehľad udalostí Rift"
+      },
+      "quests": {
+        "name": "Prehľad úloh"
+      },
+      "event_plan": {
+        "name": "Prehľad plánu udalostí"
+      },
+      "food_production": {
+        "name": "Kalkulačka výroby potravín"
+      },
+      "mead_production": {
+        "name": "Kalkulačka výroby medoviny"
+      },
+      "wall_limit": {
+        "name": "Kalkulačka limitu steny"
+      },
+      "collector_event": {
+        "name": "Kalkulačka zberateľských udalostí"
+      },
+      "detection_time": {
+        "name": "Kalkulačka času detekcie"
+      },
+      "rift_points": {
+        "name": "Kalkulačka Rift Raid Point"
+      },
+      "kingdom_league": {
+        "name": "Kalkulačka Kráľovskej ligy"
+      },
+      "imperial_patronage": {
+        "name": "Simulátor imperiálneho patronátu"
+      },
+      "equipment_builder": {
+        "name": "Staviteľ zariadenia"
+      },
+      "castle_layout": {
+        "name": "Simulátor rozloženia hradu"
+      },
+      "hall_of_legends": {
+        "name": "Simulátor Hall of Legends"
+      }
+    }
+  },
+  "tr": {
+    "ui": {
+      "brand_subtitle": "Araçlar ve Simülatörler",
+      "search_prefix": "Arama:",
+      "overviews": "Genel Bakış",
+      "calculators": "Hesap makineleri",
+      "simulators": "Simülatörler",
+      "contact_intro": "Sorularınız veya önerileriniz mi var?",
+      "settings": "Ayarlar",
+      "game": "Oyun",
+      "empire_browser": "İmparatorluk (Tarayıcı)",
+      "empire_browser_short": "EM (Tarayıcı)",
+      "e4k_mobile": "İmparatorluk: Dört Krallık (Mobil)",
+      "e4k_mobile_short": "E4K (Mobil)",
+      "language": "Dil",
+      "developer_comments": "Geliştirici Yorumları"
+    },
+    "cards": {
+      "decorations": {
+        "name": "Dekorasyonlara Genel Bakış"
+      },
+      "building_items": {
+        "name": "CI'lar ve TCI'lara Genel Bakış"
+      },
+      "look_items": {
+        "name": "Görünüm Öğelerine Genel Bakış"
+      },
+      "equipment_sets": {
+        "name": "Benzersiz Sete Genel Bakış"
+      },
+      "generals": {
+        "name": "Generallere Genel Bakış"
+      },
+      "event_rewards": {
+        "name": "Etkinlik Ödüllerine Genel Bakış"
+      },
+      "gacha": {
+        "name": "Gacha'ya Genel Bakış"
+      },
+      "loot_boxes": {
+        "name": "Ganimet Kutularına Genel Bakış"
+      },
+      "offerings": {
+        "name": "Tekliflere Genel Bakış"
+      },
+      "master_blacksmith": {
+        "name": "Usta Demirciye Genel Bakış"
+      },
+      "troops": {
+        "name": "Birliklere Genel Bakış"
+      },
+      "tools": {
+        "name": "Araçlara Genel Bakış"
+      },
+      "rift_event": {
+        "name": "Rift Etkinliğine Genel Bakış"
+      },
+      "quests": {
+        "name": "Görevlere Genel Bakış"
+      },
+      "event_plan": {
+        "name": "Etkinlik Planına Genel Bakış"
+      },
+      "food_production": {
+        "name": "Gıda Üretim Hesaplayıcısı"
+      },
+      "mead_production": {
+        "name": "Mead Üretim Hesaplayıcısı"
+      },
+      "wall_limit": {
+        "name": "Duvar Limiti Hesaplayıcı"
+      },
+      "collector_event": {
+        "name": "Toplayıcı Olay Hesaplayıcısı"
+      },
+      "detection_time": {
+        "name": "Algılama Süresi Hesaplayıcı"
+      },
+      "rift_points": {
+        "name": "Rift Baskın Noktası Hesaplayıcı"
+      },
+      "kingdom_league": {
+        "name": "Krallık Ligi Hesaplayıcısı"
+      },
+      "imperial_patronage": {
+        "name": "İmparatorluk Patronajı Simülatörü"
+      },
+      "equipment_builder": {
+        "name": "Ekipman Oluşturucu"
+      },
+      "castle_layout": {
+        "name": "Kale Düzeni Simülatörü"
+      },
+      "hall_of_legends": {
+        "name": "Efsaneler Salonu Simülatörü"
+      }
+    }
+  }
+}

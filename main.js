@@ -1,72 +1,117 @@
 import { loadGoogleAnalytics } from "./overviews/shared/ConsentManager.mjs";
 import {
     getDefaultGameSource,
-    HOME_SETTINGS_KEY,
-    FAVORITES_KEY
+    HOME_SETTINGS_KEY
 } from "./overviews/shared/GameSettings.mjs";
 import { availableLanguages, getInitialLanguage } from "./overviews/shared/LanguageService.mjs";
 import { initCustomModal } from "./overviews/shared/ModalService.mjs";
-const MAX_FAVORITES = 12;
-
-const DESKTOP_DND_ENABLED = window.matchMedia?.("(pointer:fine)").matches ?? true;
-let lastAddedFavoriteLink = "";
-let mobileReorderMode = false;
-let activeMobileReorder = null;
-let mobileReorderRaf = 0;
-let mobileReorderIdleTimer = 0;
-const MOBILE_REORDER_IDLE_MS = 5000;
-const CARD_EXIT_DURATION_MS = 190;
-let lockedScrollY = 0;
 let uiSettings = readHomeSettings();
+let currentLanguage = getSavedSiteLanguage();
+let ownLang = {};
 
 const categories = {
     overviews: [
-        { name: "Decorations Overview", desc: "This page loads the in-game decorations automatically!", icon: "main_page/decorations.webp", link: "./overviews/decorations/index.html", disabled: false },
-        { name: "CI's & TCI's Overview", desc: "This page loads the in-game CI's & TCI's automatically!", icon: "main_page/ci-icon.webp", link: "./overviews/building_items/index.html", disabled: false },
-        { name: "Look-items Overview", desc: "This page loads the in-game look items automatically!", icon: "main_page/look-items.webp", link: "./overviews/look_items/index.html", disabled: false },
-        { name: "Unique Set Overview", desc: "This page loads the in-game equipment sets, and set bonuses!", icon: "main_page/equipment-icon.webp", link: "./overviews/equipment_sets/index.html", disabled: false },
-        { name: "Generals Overview", desc: "This page loads the in-game generals automatically!", icon: "main_page/generals-icon.webp", link: "./overviews/generals/index.html", disabled: false },
-        { name: "Event Rewards Overview", desc: "This page loads in-game event rewards with a vary of filters!", icon: "main_page/event-rewards-icon.webp", link: "./overviews/event_rewards/index.html", disabled: false },
-        { name: "Gacha Overview", desc: "This page loads the in-game gacha rewards automatically!", icon: "main_page/gacha-icon.webp", link: "./overviews/gacha_events/index.html", disabled: false },
-        { name: "Loot Boxes Overview", desc: "This page loads in-game loot box key chances and full reward pools!", icon: "main_page/lootbox-icon.webp", link: "./overviews/loot_box/index.html#boxes", disabled: false },
-        { name: "Offerings Overview", desc: "This page loads in-game offerings and their linked reward pools!", icon: "main_page/offerings-icon.webp", link: "./overviews/loot_box/index.html#offerings", disabled: false },
-        { name: "Master Blacksmith Overview", desc: "This page loads Master Blacksmith shops automatically!", icon: "main_page/master-blacksmith.webp", link: "./overviews/master_blacksmith/index.html", disabled: false },
-        { name: "Troops Overview", desc: "This page loads all in-game troops with detailed stats!", icon: "main_page/troops-icon.webp", link: "./overviews/troops_and_tools/index.html#troops", disabled: false },
-        { name: "Tools Overview", desc: "This page loads all in-game tools with detailed stats!", icon: "main_page/tools-icon.webp", link: "./overviews/troops_and_tools/index.html#tools", disabled: false },
-        { name: "Rift Event Overview", desc: "This page loads in-game Rift activity and boss defeat rewards!", icon: "main_page/rift-raid-points-icon.webp", link: "./overviews/rift_event/index.html", disabled: false },
-        { name: "Quests Overview", desc: "This page loads in-game quests automatically!", icon: "main_page/quest-icon.webp", link: "./overviews/quests/index.html", disabled: false },
-        { name: "Event Plan Overview", desc: "This page loads the event plans automatically!", icon: "main_page/event-plan-icon.webp", link: "./overviews/event_plan/index.html", disabled: false }
+        { key: "decorations", name: "Decorations Overview", icon: "main_page/decorations.webp", link: "./overviews/decorations/index.html", disabled: false },
+        { key: "building_items", name: "CI's & TCI's Overview", icon: "main_page/ci-icon.webp", link: "./overviews/building_items/index.html", disabled: false },
+        { key: "look_items", name: "Look-items Overview", icon: "main_page/look-items.webp", link: "./overviews/look_items/index.html", disabled: false },
+        { key: "equipment_sets", name: "Unique Set Overview", icon: "main_page/equipment-icon.webp", link: "./overviews/equipment_sets/index.html", disabled: false },
+        { key: "generals", name: "Generals Overview", icon: "main_page/generals-icon.webp", link: "./overviews/generals/index.html", disabled: false },
+        { key: "event_rewards", name: "Event Rewards Overview", icon: "main_page/event-rewards-icon.webp", link: "./overviews/event_rewards/index.html", disabled: false },
+        { key: "gacha", name: "Gacha Overview", icon: "main_page/gacha-icon.webp", link: "./overviews/gacha_events/index.html", disabled: false },
+        { key: "loot_boxes", name: "Loot Boxes Overview", icon: "main_page/lootbox-icon.webp", link: "./overviews/loot_box/index.html#boxes", disabled: false },
+        { key: "offerings", name: "Offerings Overview", icon: "main_page/offerings-icon.webp", link: "./overviews/loot_box/index.html#offerings", disabled: false },
+        { key: "master_blacksmith", name: "Master Blacksmith Overview", icon: "main_page/master-blacksmith.webp", link: "./overviews/master_blacksmith/index.html", disabled: false },
+        { key: "troops", name: "Troops Overview", icon: "main_page/troops-icon.webp", link: "./overviews/troops_and_tools/index.html#troops", disabled: false },
+        { key: "tools", name: "Tools Overview", icon: "main_page/tools-icon.webp", link: "./overviews/troops_and_tools/index.html#tools", disabled: false },
+        { key: "rift_event", name: "Rift Event Overview", icon: "main_page/rift-raid-points-icon.webp", link: "./overviews/rift_event/index.html", disabled: false },
+        { key: "quests", name: "Quests Overview", icon: "main_page/quest-icon.webp", link: "./overviews/quests/index.html", disabled: false },
+        { key: "event_plan", name: "Event Plan Overview", icon: "main_page/event-plan-icon.webp", link: "./overviews/event_plan/index.html", disabled: false }
     ],
 
     calculators: [
-        { name: "Food Production Calculator", desc: "Calculate your in-game food production easily.", icon: "main_page/food-production-icon.webp", link: "./calculators/food_production/index.html", disabled: false },
-        { name: "Mead Production Calculator", desc: "Calculate your mead production easily.", icon: "main_page/mead-icon.webp", link: "./calculators/mead_production/index.html", disabled: false },
-        { name: "Wall Limit Calculator", desc: "Calculate your wall unit limit with absolute accuracy.", icon: "main_page/wall-icon.webp", link: "./calculators/wall_limit/index.html", disabled: false },
-        { name: "Collector Event Calculator", desc: "Calculate that how many points you need to reach your goal.", icon: "main_page/collector-icon.webp", link: "./calculators/collector_event/index.html", disabled: false },
-        { name: "Detection Time Calculator", desc: "Calculate the exact land time, and detection time of an attack.", icon: "main_page/detection-icon.webp", link: "./calculators/travel_speed/index.html", disabled: false },
-        { name: "Rift Raid Point Calculator", desc: "Calculate Rift Points, bonuses, and boss reward eligibility", icon: "main_page/rift-raid-points-icon.webp", link: "./calculators/rift_raid_points/index.html", disabled: false },
-        { name: "Kingdom League Calculator", desc: "Calculate your Kingdom League points, title, and next rank requirements.", icon: "main_page/leauge-icon.webp", link: "./calculators/kingdom_league/index.html", disabled: false }
+        { key: "food_production", name: "Food Production Calculator", icon: "main_page/food-production-icon.webp", link: "./calculators/food_production/index.html", disabled: false },
+        { key: "mead_production", name: "Mead Production Calculator", icon: "main_page/mead-icon.webp", link: "./calculators/mead_production/index.html", disabled: false },
+        { key: "wall_limit", name: "Wall Limit Calculator", icon: "main_page/wall-icon.webp", link: "./calculators/wall_limit/index.html", disabled: false },
+        { key: "collector_event", name: "Collector Event Calculator", icon: "main_page/collector-icon.webp", link: "./calculators/collector_event/index.html", disabled: false },
+        { key: "detection_time", name: "Detection Time Calculator", icon: "main_page/detection-icon.webp", link: "./calculators/travel_speed/index.html", disabled: false },
+        { key: "rift_points", name: "Rift Raid Point Calculator", icon: "main_page/rift-raid-points-icon.webp", link: "./calculators/rift_raid_points/index.html", disabled: false },
+        { key: "kingdom_league", name: "Kingdom League Calculator", icon: "main_page/leauge-icon.webp", link: "./calculators/kingdom_league/index.html", disabled: false }
     ],
 
     simulators: [
-        { name: "Imperial Patronage Simulator", desc: "Simulate donations, thresholds, and rewards.", icon: "patronage-icon.webp", link: "./simulators/imperial_patronage/index.html", disabled: false },
-        { name: "Equipment Builder", desc: "Build custom commander and castellan equipment sets.", icon: "main_page/equipment-icon.webp", link: "./simulators/equipment_builder/index.html", disabled: false },
-        { name: "Castle Layout Simulator", desc: "Design and manage your castle layouts.", icon: "main_page/layout-icon.webp", link: "./simulators/layout_editor/index.html", disabled: false },
-        { name: "Hall of Legends Simulator", desc: "Try point allocations without spending rubies.", icon: "main_page/hall-of-legends-simulator-icon.webp", link: "./simulators/hol_simulator/index.html", disabled: false },
+        { key: "imperial_patronage", name: "Imperial Patronage Simulator", icon: "patronage-icon.webp", link: "./simulators/imperial_patronage/index.html", disabled: false },
+        { key: "equipment_builder", name: "Equipment Builder", icon: "main_page/equipment-icon.webp", link: "./simulators/equipment_builder/index.html", disabled: false },
+        { key: "castle_layout", name: "Castle Layout Simulator", icon: "main_page/layout-icon.webp", link: "./simulators/layout_editor/index.html", disabled: false },
+        { key: "hall_of_legends", name: "Hall of Legends Simulator", icon: "main_page/hall-of-legends-simulator-icon.webp", link: "./simulators/hol_simulator/index.html", disabled: false },
     ]
 };
 
-function createCategoryCard(item, options = {}) {
-    const {
-        draggable = false,
-        showReorderHandle = false,
-        showFavoriteToggle = true,
-        showDescription = false
-    } = options;
+async function loadOwnLanguage() {
+    try {
+        const response = await fetch("./ownLang.json");
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        ownLang = await response.json();
+    } catch (error) {
+        console.error("Homepage ownLang load error:", error);
+        ownLang = {};
+    }
+}
+
+function translate(key, fallback = "", variables = {}) {
+    const selected = ownLang?.[currentLanguage]?.ui?.[key];
+    const english = ownLang?.en?.ui?.[key];
+    let value = String(selected || english || fallback || key);
+    Object.entries(variables).forEach(([name, replacement]) => {
+        value = value.replaceAll(`{${name}}`, String(replacement));
+    });
+    return value;
+}
+
+function localizeItem(item) {
+    const selected = ownLang?.[currentLanguage]?.cards?.[item.key];
+    const english = ownLang?.en?.cards?.[item.key];
+    return {
+        ...item,
+        name: selected?.name || english?.name || item.name
+    };
+}
+
+function setText(selector, key, fallback) {
+    const element = document.querySelector(selector);
+    if (element) element.textContent = translate(key, fallback);
+}
+
+function applyHomeTranslations() {
+    document.documentElement.lang = currentLanguage;
+    document.documentElement.dir = currentLanguage === "ar" ? "rtl" : "ltr";
+
+    setText(".main-nav-brand-subtext", "brand_subtitle", "Tools & Simulators");
+    const sectionKeys = [
+        ["overviews", "overviews", "OVERVIEWS"],
+        ["calculators", "calculators", "CALCULATORS"],
+        ["simulators", "simulators", "SIMULATORS"]
+    ];
+    sectionKeys.forEach(([id, key, fallback]) => {
+        const title = document.querySelector(`#${id}`)?.previousElementSibling?.querySelector(".header-title");
+        if (title) title.textContent = translate(key, fallback).toUpperCase();
+    });
+
+    setText(".contact-note-intro", "contact_intro", "Questions or suggestions?");
+    setText("#settingsModalTitle", "settings", "Settings");
+
+    const optionTitles = document.querySelectorAll(".settings-option-title");
+    if (optionTitles[0]) optionTitles[0].textContent = translate("game", "Game");
+    if (optionTitles[1]) optionTitles[1].textContent = translate("language", "Language");
+    const devLabel = document.querySelector("#settingsDevComments")?.previousElementSibling;
+    if (devLabel) devLabel.textContent = translate("developer_comments", "Developer Comments");
+
+    window.dispatchEvent(new CustomEvent("home-language-change"));
+}
+
+function createCategoryCard(item) {
     const shell = document.createElement("div");
     shell.className = "category-card-shell";
     shell.dataset.link = item.link || "";
-    shell.draggable = Boolean(draggable && item.link && DESKTOP_DND_ENABLED);
 
     const box = document.createElement("a");
     box.classList.add("category-box");
@@ -84,44 +129,10 @@ function createCategoryCard(item, options = {}) {
         </div>
         <div class="category-content">
             <h3>${item.name}</h3>
-            ${showDescription ? `<p class="category-description">${item.desc || ""}</p>` : ""}
         </div>
     `;
 
-    if (showReorderHandle) {
-        box.classList.add("has-reorder-handle");
-    }
-
-    if (showDescription) {
-        box.classList.add("has-description");
-    }
-
-    if (showFavoriteToggle) {
-        const favActive = isFavorite(item.link);
-        const favDisabled = isFavoritesFull() && !favActive;
-        box.classList.add("has-favorite-toggle");
-        const fav = document.createElement("button");
-        fav.className = `favorite-toggle ${favActive ? "is-favorite" : ""} ${favDisabled ? "is-disabled" : ""}`.trim();
-        fav.type = "button";
-        fav.setAttribute("aria-label", "Toggle favorite");
-        fav.dataset.link = item.link || "";
-        fav.disabled = favDisabled;
-        fav.title = favDisabled ? `Maximum ${MAX_FAVORITES} favorites reached` : "";
-        fav.innerHTML = `<i class="bi ${favActive ? "bi-star-fill" : "bi-star"}"></i>`;
-        box.appendChild(fav);
-    }
-
     shell.appendChild(box);
-
-    if (showReorderHandle) {
-        const reorderHandle = document.createElement("button");
-        reorderHandle.className = "favorite-reorder-handle";
-        reorderHandle.type = "button";
-        reorderHandle.setAttribute("aria-label", "Reorder favorite");
-        reorderHandle.dataset.link = item.link || "";
-        reorderHandle.innerHTML = `<i class="bi bi-list"></i>`;
-        shell.appendChild(reorderHandle);
-    }
 
     return shell;
 }
@@ -131,12 +142,9 @@ function renderCategory(list, targetId) {
     if (!container) return;
     container.innerHTML = "";
 
-    list.forEach((item) => {
-        const card = createCategoryCard(item, {
-            draggable: false,
-            showFavoriteToggle: uiSettings.favoritesEnabled,
-            showDescription: uiSettings.descriptionsEnabled
-        });
+    list.forEach((rawItem) => {
+        const item = localizeItem(rawItem);
+        const card = createCategoryCard(item);
         container.appendChild(card);
     });
 }
@@ -144,8 +152,6 @@ function renderCategory(list, targetId) {
 function getDefaultHomeSettings() {
     return {
         selectedGame: getDefaultGameSource(),
-        descriptionsEnabled: true,
-        favoritesEnabled: false,
         devCommentsEnabled: true
     };
 }
@@ -157,8 +163,6 @@ function readHomeSettings() {
         const parsed = JSON.parse(raw || "{}");
         return {
             selectedGame: parsed.selectedGame ?? defaults.selectedGame,
-            descriptionsEnabled: parsed.descriptionsEnabled ?? defaults.descriptionsEnabled,
-            favoritesEnabled: parsed.favoritesEnabled ?? defaults.favoritesEnabled,
             devCommentsEnabled: parsed.devCommentsEnabled ?? defaults.devCommentsEnabled
         };
     } catch {
@@ -171,7 +175,8 @@ function writeHomeSettings(settings) {
 }
 
 function getSavedSiteLanguage() {
-    return localStorage.getItem("selectedLanguage") || getInitialLanguage();
+    const saved = localStorage.getItem("selectedLanguage");
+    return availableLanguages.includes(saved) ? saved : getInitialLanguage();
 }
 
 function writeSiteLanguage(languageCode) {
@@ -200,7 +205,6 @@ function rerenderMainSections() {
     renderCategory(categories.overviews, "overviews");
     renderCategory(categories.calculators, "calculators");
     renderCategory(categories.simulators, "simulators");
-    renderFavorites();
 }
 
 function getAllCategoryItems() {
@@ -208,480 +212,17 @@ function getAllCategoryItems() {
         ...categories.overviews,
         ...categories.simulators,
         ...categories.calculators
-    ].filter(item => !item.disabled && item.link);
-}
-
-function readFavorites() {
-    try {
-        const raw = localStorage.getItem(FAVORITES_KEY);
-        const parsed = JSON.parse(raw || "[]");
-        return Array.isArray(parsed) ? parsed : [];
-    } catch {
-        return [];
-    }
-}
-
-function writeFavorites(favs) {
-    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favs));
-}
-
-function isFavorite(link) {
-    if (!link) return false;
-    return readFavorites().includes(link);
-}
-
-function isFavoritesFull() {
-    return readFavorites().length >= MAX_FAVORITES;
-}
-
-function toggleFavorite(link) {
-    if (!link) return;
-    const favs = readFavorites();
-    const idx = favs.indexOf(link);
-    let added = false;
-    if (idx >= 0) {
-        favs.splice(idx, 1);
-        lastAddedFavoriteLink = "";
-    } else {
-        if (favs.length >= MAX_FAVORITES) {
-            return "limit";
-        }
-        favs.unshift(link);
-        added = true;
-        lastAddedFavoriteLink = link;
-    }
-    writeFavorites(favs);
-    return added;
-}
-
-function updateAllFavoriteButtons() {
-    const full = isFavoritesFull();
-    document.querySelectorAll(".favorite-toggle").forEach(btn => {
-        const link = btn.dataset.link || "";
-        const fav = isFavorite(link);
-        const disabled = full && !fav;
-        btn.classList.toggle("is-favorite", fav);
-        btn.classList.toggle("is-disabled", disabled);
-        btn.disabled = disabled;
-        btn.title = disabled ? `Maximum ${MAX_FAVORITES} favorites reached` : "";
-        const icon = btn.querySelector("i");
-        if (icon) {
-            icon.className = `bi ${fav ? "bi-star-fill" : "bi-star"}`;
-        }
-    });
-}
-
-function renderFavorites() {
-    const header = document.getElementById("favoritesSection");
-    const wrapper = document.getElementById("favorites");
-    const container = document.querySelector("#favorites .category-grid");
-    const mobileReorderToggle = document.getElementById("mobileReorderToggle");
-    if (!header || !wrapper || !container) return;
-
-    if (!uiSettings.favoritesEnabled) {
-        mobileReorderMode = false;
-        header.style.display = "none";
-        wrapper.style.display = "none";
-        return;
-    }
-    header.style.display = "";
-    wrapper.style.display = "";
-
-    const allByLink = new Map(getAllCategoryItems().map(item => [item.link, item]));
-    const items = readFavorites().map(link => allByLink.get(link)).filter(Boolean);
-    const mobileReorderAvailable = isMobileReorderAvailable();
-
-    document.body.classList.toggle("favorites-reorder-mode", mobileReorderMode);
-
-    if (mobileReorderToggle) {
-        const canReorder = items.length > 1;
-        mobileReorderToggle.style.display = canReorder ? "inline-flex" : "none";
-        mobileReorderToggle.textContent = mobileReorderMode && canReorder ? "Confirm" : "Reorder";
-    }
-
-    container.innerHTML = "";
-    wrapper.classList.add("has-items");
-
-    if (!items.length) {
-        container.innerHTML = `
-            <div class="favorites-empty">
-                Click the <i class="bi bi-star"></i> icon on any card to add it to Favorites (up to ${MAX_FAVORITES}).
-            </div>
-        `;
-        return;
-    }
-
-    const enableDesktopDndReorder = mobileReorderMode && !mobileReorderAvailable;
-
-    items.forEach((item) => {
-        const card = createCategoryCard(item, {
-            draggable: enableDesktopDndReorder,
-            showReorderHandle: mobileReorderMode,
-            showFavoriteToggle: mobileReorderMode && uiSettings.favoritesEnabled
-        });
-        if (item.link === lastAddedFavoriteLink) {
-            card.classList.add("card-enter");
-        }
-        container.appendChild(card);
-    });
-    lastAddedFavoriteLink = "";
-}
-
-function setupFavoriteToggles() {
-    const commitToggle = (link, button) => {
-        const result = toggleFavorite(link);
-        if (result === "limit") {
-            if (button) {
-                button.classList.add("is-limit-hit");
-                setTimeout(() => button.classList.remove("is-limit-hit"), 320);
-            }
-            return;
-        }
-
-        const added = result === true;
-        if (added && button) {
-            button.classList.add("is-popping");
-            setTimeout(() => button.classList.remove("is-popping"), 260);
-        }
-        renderFavorites();
-        updateAllFavoriteButtons();
-    };
-
-    document.addEventListener("click", (event) => {
-        if (!uiSettings.favoritesEnabled) return;
-        const button = event.target.closest(".favorite-toggle");
-        if (!button) return;
-        if (button.disabled) return;
-
-        event.preventDefault();
-        event.stopPropagation();
-
-        const link = button.dataset.link || "";
-        const removing = isFavorite(link);
-
-        if (removing) {
-            const removingCard = Array.from(document.querySelectorAll("#favorites .category-card-shell"))
-                .find((el) => el.dataset.link === link);
-            if (removingCard) {
-                removingCard.classList.add("card-exit");
-                setTimeout(() => commitToggle(link, button), CARD_EXIT_DURATION_MS);
-                return;
-            }
-        }
-
-        commitToggle(link, button);
-    });
-}
-
-function setupFavoritesDragAndDrop() {
-    if (!DESKTOP_DND_ENABLED) return;
-
-    const favoritesWrapper = document.getElementById("favorites");
-    const favoritesGrid = document.querySelector("#favorites .category-grid");
-    if (!favoritesWrapper || !favoritesGrid) return;
-
-    let draggedLink = "";
-
-    document.addEventListener("dragstart", (event) => {
-        if (!uiSettings.favoritesEnabled) return;
-        if (!mobileReorderMode) return;
-
-        const shell = event.target.closest(".category-card-shell");
-        if (!shell || !shell.draggable) return;
-
-        const link = shell.dataset.link || "";
-        if (!link) return;
-
-        draggedLink = link;
-        shell.classList.add("is-dragging");
-
-        if (event.dataTransfer) {
-            event.dataTransfer.effectAllowed = "move";
-            event.dataTransfer.setData("text/plain", link);
-        }
-    });
-
-    document.addEventListener("dragend", () => {
-        document.querySelectorAll(".category-card-shell.is-dragging").forEach(el => el.classList.remove("is-dragging"));
-        favoritesWrapper.classList.remove("drag-over");
-        draggedLink = "";
-    });
-
-    favoritesGrid.addEventListener("dragover", (event) => {
-        if (!draggedLink) return;
-        event.preventDefault();
-        favoritesWrapper.classList.add("drag-over");
-        if (event.dataTransfer) event.dataTransfer.dropEffect = "move";
-    });
-
-    favoritesGrid.addEventListener("dragleave", (event) => {
-        if (!favoritesWrapper.contains(event.relatedTarget)) {
-            favoritesWrapper.classList.remove("drag-over");
-        }
-    });
-
-    favoritesGrid.addEventListener("drop", (event) => {
-        if (!uiSettings.favoritesEnabled) return;
-        if (!draggedLink) return;
-        event.preventDefault();
-        favoritesWrapper.classList.remove("drag-over");
-
-        const targetShell = event.target.closest(".category-card-shell");
-        const targetLink = targetShell?.dataset.link || "";
-
-        const favs = readFavorites();
-        const sourceIndex = favs.indexOf(draggedLink);
-        if (sourceIndex < 0) return;
-
-        if (!targetLink || targetLink === draggedLink) {
-            return;
-        }
-
-        const targetIndex = favs.indexOf(targetLink);
-        if (targetIndex < 0) return;
-
-        [favs[sourceIndex], favs[targetIndex]] = [favs[targetIndex], favs[sourceIndex]];
-
-        writeFavorites([...new Set(favs)]);
-        renderFavorites();
-        updateAllFavoriteButtons();
-    });
-}
-
-function isMobileReorderAvailable() {
-    const coarse = window.matchMedia?.("(pointer:coarse)").matches ?? false;
-    const smallViewport = window.matchMedia?.("(max-width: 900px)").matches ?? false;
-    return coarse || smallViewport;
-}
-
-function writeFavoritesFromDomOrder() {
-    const links = Array.from(document.querySelectorAll("#favorites .category-grid .category-card-shell"))
-        .map(el => el.dataset.link || "")
-        .filter(Boolean);
-    if (!links.length) return;
-    writeFavorites([...new Set(links)]);
-}
-
-function setPageScrollLock(lock) {
-    const body = document.body;
-    const docEl = document.documentElement;
-    if (!body) return;
-
-    if (lock) {
-        if (body.classList.contains("scroll-locked")) return;
-        lockedScrollY = window.scrollY || window.pageYOffset || 0;
-        body.classList.add("scroll-locked");
-        body.style.top = `-${lockedScrollY}px`;
-        return;
-    }
-
-    if (!body.classList.contains("scroll-locked")) return;
-    const restoreY = lockedScrollY;
-    const prevScrollBehavior = docEl ? docEl.style.scrollBehavior : "";
-    if (docEl) docEl.style.scrollBehavior = "auto";
-
-    body.classList.remove("scroll-locked");
-    body.style.top = "";
-    window.scrollTo(0, restoreY);
-    window.requestAnimationFrame(() => {
-        window.scrollTo(0, restoreY);
-        window.requestAnimationFrame(() => {
-            window.scrollTo(0, restoreY);
-            if (docEl) docEl.style.scrollBehavior = prevScrollBehavior;
-        });
-    });
-}
-
-function processMobileReorderFrame() {
-    mobileReorderRaf = 0;
-    if (!activeMobileReorder || !activeMobileReorder.shell || !activeMobileReorder.grid) return;
-    if (!activeMobileReorder.shell.isConnected) return;
-
-    const touchY = activeMobileReorder.currentY;
-    if (activeMobileReorder.ghost) {
-        activeMobileReorder.ghost.style.top = `${touchY - activeMobileReorder.offsetY}px`;
-    }
-
-    const candidates = Array.from(activeMobileReorder.grid.querySelectorAll(".category-card-shell"))
-        .filter((el) => el !== activeMobileReorder.shell);
-
-    let insertBeforeEl = null;
-    for (const candidate of candidates) {
-        const rect = candidate.getBoundingClientRect();
-        const midpoint = rect.top + (rect.height / 2);
-        if (touchY < midpoint) {
-            insertBeforeEl = candidate;
-            break;
-        }
-    }
-
-    const currentNext = activeMobileReorder.shell.nextElementSibling;
-    if (insertBeforeEl !== currentNext) {
-        activeMobileReorder.grid.insertBefore(activeMobileReorder.shell, insertBeforeEl);
-    }
-}
-
-function setupMobileFavoritesReorder() {
-    const toggle = document.getElementById("mobileReorderToggle");
-    const favoritesGrid = document.querySelector("#favorites .category-grid");
-    if (!toggle) return;
-
-    const clearIdleTimer = () => {
-        if (!mobileReorderIdleTimer) return;
-        window.clearTimeout(mobileReorderIdleTimer);
-        mobileReorderIdleTimer = 0;
-    };
-
-    const resetActiveMobileReorder = ({ persistOrder = false, rerender = false } = {}) => {
-        clearIdleTimer();
-
-        if (mobileReorderRaf) {
-            window.cancelAnimationFrame(mobileReorderRaf);
-            mobileReorderRaf = 0;
-        }
-
-        if (!activeMobileReorder) {
-            setPageScrollLock(false);
-            if (rerender) renderFavorites();
-            return;
-        }
-
-        if (activeMobileReorder.ghost?.parentNode) {
-            activeMobileReorder.ghost.parentNode.removeChild(activeMobileReorder.ghost);
-        }
-
-        if (activeMobileReorder.shell?.classList) {
-            activeMobileReorder.shell.classList.remove("is-reorder-active", "is-reorder-placeholder");
-        }
-
-        if (persistOrder) {
-            writeFavoritesFromDomOrder();
-        }
-
-        activeMobileReorder = null;
-        setPageScrollLock(false);
-        if (rerender) renderFavorites();
-    };
-
-    const armIdleTimer = () => {
-        clearIdleTimer();
-        mobileReorderIdleTimer = window.setTimeout(() => {
-            if (!mobileReorderMode) return;
-            resetActiveMobileReorder({ persistOrder: true, rerender: true });
-        }, MOBILE_REORDER_IDLE_MS);
-    };
-
-    toggle.addEventListener("click", () => {
-        if (!uiSettings.favoritesEnabled) return;
-        const nextMode = !mobileReorderMode;
-        if (!nextMode) {
-            resetActiveMobileReorder({ persistOrder: true, rerender: false });
-        }
-        mobileReorderMode = nextMode;
-        renderFavorites();
-    });
-
-    document.addEventListener("click", (event) => {
-        if (!uiSettings.favoritesEnabled) return;
-        if (!mobileReorderMode) return;
-        const inFavoritesCard = event.target.closest("#favorites .category-box");
-        if (!inFavoritesCard) return;
-        if (event.target.closest(".favorite-reorder-handle")) return;
-        if (event.target.closest(".favorite-toggle")) return;
-        event.preventDefault();
-        event.stopPropagation();
-    }, true);
-
-    document.addEventListener("touchstart", (event) => {
-        if (!uiSettings.favoritesEnabled) return;
-        if (!mobileReorderMode || !isMobileReorderAvailable()) return;
-
-        const handle = event.target.closest(".favorite-reorder-handle");
-        if (!handle) return;
-
-        const shell = handle.closest(".category-card-shell");
-        const link = shell?.dataset.link || "";
-        if (!shell || !link) return;
-
-        const touch = event.touches?.[0];
-        if (!touch) return;
-
-        resetActiveMobileReorder({ persistOrder: false, rerender: false });
-
-        const shellRect = shell.getBoundingClientRect();
-        const ghost = shell.cloneNode(true);
-        ghost.classList.add("favorite-drag-ghost");
-        ghost.style.width = `${shellRect.width}px`;
-        ghost.style.left = `${shellRect.left}px`;
-        ghost.style.top = `${shellRect.top}px`;
-        document.body.appendChild(ghost);
-
-        activeMobileReorder = {
-            link,
-            shell,
-            grid: favoritesGrid,
-            ghost,
-            offsetY: touch.clientY - shellRect.top,
-            currentY: touch.clientY
-        };
-
-        setPageScrollLock(true);
-        armIdleTimer();
-        shell.classList.add("is-reorder-active", "is-reorder-placeholder");
-        event.preventDefault();
-    }, { passive: false });
-
-    document.addEventListener("touchmove", (event) => {
-        if (!activeMobileReorder || !mobileReorderMode) return;
-
-        const touch = event.touches?.[0];
-        if (!touch) return;
-
-        activeMobileReorder.currentY = touch.clientY;
-        armIdleTimer();
-        if (!mobileReorderRaf) {
-            mobileReorderRaf = window.requestAnimationFrame(processMobileReorderFrame);
-        }
-
-        event.preventDefault();
-    }, { passive: false });
-
-    const finishTouchReorder = () => {
-        if (!activeMobileReorder) return;
-        resetActiveMobileReorder({ persistOrder: true, rerender: true });
-    };
-
-    document.addEventListener("touchend", finishTouchReorder);
-    document.addEventListener("touchcancel", finishTouchReorder);
-    document.addEventListener("pointercancel", finishTouchReorder);
-
-    window.addEventListener("resize", () => {
-        if (!activeMobileReorder) return;
-        resetActiveMobileReorder({ persistOrder: false, rerender: true });
-    });
-
-    window.addEventListener("blur", () => {
-        if (!mobileReorderMode && !activeMobileReorder) return;
-        resetActiveMobileReorder({ persistOrder: true, rerender: true });
-    });
-
-    document.addEventListener("visibilitychange", () => {
-        if (!document.hidden) return;
-        if (!mobileReorderMode && !activeMobileReorder) return;
-        resetActiveMobileReorder({ persistOrder: true, rerender: true });
-    });
+    ].filter(item => !item.disabled && item.link).map(localizeItem);
 }
 
 function setupSettingsModal() {
     const openBtn = document.getElementById("openSettingsBtn");
     const closeBtn = document.getElementById("closeSettingsBtn");
     const modal = document.getElementById("settingsModal");
-    const descriptionsInput = document.getElementById("settingsDescriptions");
-    const favoritesInput = document.getElementById("settingsFavorites");
     const devCommentsInput = document.getElementById("settingsDevComments");
     const selectedGameInput = document.getElementById("settingsSelectedGame");
     const selectedLanguageInput = document.getElementById("settingsSelectedLanguage");
-    if (!openBtn || !closeBtn || !modal || !descriptionsInput || !favoritesInput || !devCommentsInput || !selectedGameInput || !selectedLanguageInput) return;
+    if (!openBtn || !closeBtn || !modal || !devCommentsInput || !selectedGameInput || !selectedLanguageInput) return;
     const settingsModal = initCustomModal({ modalId: "settingsModal", closeAnimMs: 190 });
 
     const empireOption = selectedGameInput.querySelector('option[value="empire"]');
@@ -690,10 +231,14 @@ function setupSettingsModal() {
     const syncGameOptionLabels = () => {
         const isMobile = window.matchMedia("(max-width: 700px)").matches;
         if (empireOption) {
-            empireOption.textContent = isMobile ? "EM (Browser)" : "Empire (Browser)";
+            empireOption.textContent = isMobile
+                ? translate("empire_browser_short", "EM (Browser)")
+                : translate("empire_browser", "Empire (Browser)");
         }
         if (e4kOption) {
-            e4kOption.textContent = isMobile ? "E4K (Mobile)" : "Empire: Four Kingdoms (Mobile)";
+            e4kOption.textContent = isMobile
+                ? translate("e4k_mobile_short", "E4K (Mobile)")
+                : translate("e4k_mobile", "Empire: Four Kingdoms (Mobile)");
         }
     };
 
@@ -703,8 +248,6 @@ function setupSettingsModal() {
         syncGameOptionLabels();
         selectedGameInput.value = uiSettings.selectedGame || getDefaultGameSource();
         selectedLanguageInput.value = getSavedSiteLanguage();
-        descriptionsInput.checked = Boolean(uiSettings.descriptionsEnabled);
-        favoritesInput.checked = Boolean(uiSettings.favoritesEnabled);
         devCommentsInput.checked = Boolean(uiSettings.devCommentsEnabled);
     };
 
@@ -715,15 +258,17 @@ function setupSettingsModal() {
 
     const handleChange = () => {
         const selectedGame = selectedGameInput.value || getDefaultGameSource();
-        writeSiteLanguage(selectedLanguageInput.value || getInitialLanguage());
+        const nextLanguage = selectedLanguageInput.value || getInitialLanguage();
+        writeSiteLanguage(nextLanguage);
+        currentLanguage = nextLanguage;
         uiSettings = {
             ...uiSettings,
             selectedGame,
-            descriptionsEnabled: descriptionsInput.checked,
-            favoritesEnabled: favoritesInput.checked,
             devCommentsEnabled: devCommentsInput.checked
         };
         writeHomeSettings(uiSettings);
+        applyHomeTranslations();
+        syncGameOptionLabels();
         rerenderMainSections();
     };
 
@@ -731,8 +276,6 @@ function setupSettingsModal() {
 
     selectedGameInput.addEventListener("change", handleChange);
     selectedLanguageInput.addEventListener("change", handleChange);
-    descriptionsInput.addEventListener("change", handleChange);
-    favoritesInput.addEventListener("change", handleChange);
     devCommentsInput.addEventListener("change", handleChange);
     window.addEventListener("resize", syncGameOptionLabels);
     syncGameOptionLabels();
@@ -744,18 +287,13 @@ function setupSearch() {
     const box = document.getElementById("searchSuggestions");
     if (!input || !box) return;
 
-    const index = getAllCategoryItems().map(item => ({
-        ...item,
-        hay: `${item.name} ${item.desc}`.toLowerCase()
-    }));
-
     const closeSuggestions = () => {
         box.classList.remove("open");
         box.innerHTML = "";
     };
 
     input.addEventListener("input", () => {
-        const q = input.value.trim().toLowerCase();
+        const q = input.value.trim().toLocaleLowerCase(currentLanguage);
         if (!q) {
             closeSuggestions();
             return;
@@ -763,6 +301,10 @@ function setupSearch() {
 
         const starts = [];
         const contains = [];
+        const index = getAllCategoryItems().map(item => ({
+            ...item,
+            hay: item.name.toLocaleLowerCase(currentLanguage)
+        }));
 
         index.forEach(item => {
             if (item.hay.startsWith(q)) {
@@ -811,19 +353,29 @@ function setupSearch() {
 }
 
 function setupSearchPlaceholderTyping(input) {
-    const basePlaceholder = "Search:";
-    const prompts = [...new Set(
-        getAllCategoryItems()
-            .map(item => String(item?.name || "").trim())
-            .filter(Boolean)
-    )];
-    if (prompts.length === 0) prompts.push("Rift Event");
+    let basePlaceholder = translate("search_prefix", "Search:");
+    let prompts = [];
 
     let timer = null;
     let lastPhrase = "";
     let currentPhrase = "";
     let charIndex = 0;
     let deleting = false;
+
+    const syncLanguage = () => {
+        basePlaceholder = translate("search_prefix", "Search:");
+        prompts = [...new Set(
+            getAllCategoryItems()
+                .map(item => String(item?.name || "").trim())
+                .filter(Boolean)
+        )];
+        if (prompts.length === 0) prompts.push("Rift Event");
+        lastPhrase = "";
+        currentPhrase = "";
+        charIndex = 0;
+        deleting = false;
+        if (String(input.value || "").trim() === "") input.placeholder = basePlaceholder;
+    };
 
     const canAnimate = () =>
         String(input.value || "").trim() === "";
@@ -859,7 +411,7 @@ function setupSearchPlaceholderTyping(input) {
         const phrase = currentPhrase;
         if (!deleting) {
             charIndex += 1;
-            input.placeholder = `Search: ${phrase.slice(0, charIndex)}`;
+            input.placeholder = `${basePlaceholder} ${phrase.slice(0, charIndex)}`;
 
             if (charIndex >= phrase.length) {
                 deleting = true;
@@ -872,7 +424,7 @@ function setupSearchPlaceholderTyping(input) {
 
         charIndex -= 1;
         input.placeholder = charIndex > 0
-            ? `Search: ${phrase.slice(0, charIndex)}`
+            ? `${basePlaceholder} ${phrase.slice(0, charIndex)}`
             : basePlaceholder;
 
         if (charIndex <= 0) {
@@ -893,6 +445,11 @@ function setupSearchPlaceholderTyping(input) {
         }
     });
 
+    window.addEventListener("home-language-change", () => {
+        syncLanguage();
+        schedule(500);
+    });
+    syncLanguage();
     schedule(1200);
 }
 
@@ -926,13 +483,13 @@ function setupBrandEasterEgg() {
     brand.addEventListener("pointerup", registerTap);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     loadGoogleAnalytics("G-8TGZRNFGRR");
+    await loadOwnLanguage();
+    currentLanguage = getSavedSiteLanguage();
+    applyHomeTranslations();
     setupSettingsModal();
     rerenderMainSections();
-    setupFavoriteToggles();
-    setupFavoritesDragAndDrop();
-    setupMobileFavoritesReorder();
     setupSearch();
     setupBrandEasterEgg();
 });

@@ -1,5 +1,4 @@
 export const HOME_SETTINGS_KEY = "gf_home_settings";
-export const FAVORITES_KEY = "gf_favorites";
 const DEFAULT_GAME_SOURCE = "empire";
 const VALID_GAME_SOURCES = new Set(["empire", "e4k"]);
 

@@ -1204,6 +1204,19 @@ function setupTypeSelector() {
   });
 }
 
+function getBossDefeatRewardFilterLabel() {
+  const requestedLabel = String(
+    langValue("dialog_are_bossdefeatreward_title") || ""
+  ).trim();
+
+  if (requestedLabel && !/\{\d+\}/.test(requestedLabel)) {
+    return requestedLabel;
+  }
+
+  return langValue("dialog_reward_hub_are_reward_type")
+    || ownText("boss_defeat_reward", "Boss defeat reward");
+}
+
 function ensureTypeOptions(typeSelect) {
   const hasBoss = Array.from(typeSelect.options).some(opt => opt.value === "boss");
   const hasBossOverview = Array.from(typeSelect.options).some(opt => opt.value === "boss_overview");
@@ -1215,7 +1228,7 @@ function ensureTypeOptions(typeSelect) {
   bossOverview.textContent = ownText("boss_overview", "Boss overview");
   const boss = document.createElement("option");
   boss.value = "boss";
-  boss.textContent = ownText("boss_defeat_reward", "Boss defeat reward");
+  boss.textContent = getBossDefeatRewardFilterLabel();
   typeSelect.appendChild(bossOverview);
   typeSelect.appendChild(boss);
 }
@@ -1225,8 +1238,7 @@ function applyTypeLabelsFromLang() {
   if (!typeSelect) return;
   ensureTypeOptions(typeSelect);
 
-  const bossLabel =
-    langValue("dialog_are_bossdefeatreward_title") || ownText("boss_defeat_reward", "Boss defeat reward");
+  const bossLabel = getBossDefeatRewardFilterLabel();
 
   const bossOption = Array.from(typeSelect.options).find(
     opt => opt.value === "boss"
