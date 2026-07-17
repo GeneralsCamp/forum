@@ -323,19 +323,14 @@
 
 }
 
-@media (max-width:480px) {
-    .max-bonus {
-        display: inline;
-        white-space: nowrap;
-    }
+#cards .box.effects-stacked .reward-effect-row .effect-amount {
+    display: block;
+    width: fit-content;
+    margin-top: 2px;
+}
 
-    #cards .reward-effect-row .effect-amount {
-        display: block;
-        width: fit-content;
-        margin-top: 2px;
-    }
-
-    #cards .reward-effect-row .effect-value {
-        display: inline;
-    }
+#cards .box.effects-stacked .reward-effect-row .effect-value,
+#cards .box.effects-stacked .reward-effect-row .max-bonus {
+    display: inline;
+    white-space: nowrap;
 }

@@ -605,6 +605,34 @@ function fitDecoStatValues(root = document) {
   });
 }
 
+function syncDecoEffectAmountLayout(root = document) {
+  const boxes = root.querySelectorAll("#cards .box");
+
+  boxes.forEach(box => {
+    box.classList.remove("effects-stacked");
+
+    const amounts = box.querySelectorAll(".reward-effect-row .effect-amount");
+    if (!amounts.length) return;
+
+    const shouldStack = Array.from(amounts).some(amount => {
+      const rects = amount.getClientRects();
+      if (rects.length > 1) return true;
+
+      const value = amount.querySelector(".effect-value");
+      const max = amount.querySelector(".max-bonus");
+      if (!value || !max) return false;
+
+      const valueRect = value.getBoundingClientRect();
+      const maxRect = max.getBoundingClientRect();
+      return Math.abs(valueRect.top - maxRect.top) > 1;
+    });
+
+    if (shouldStack) {
+      box.classList.add("effects-stacked");
+    }
+  });
+}
+
 let decoStatFitResizeFrame = null;
 window.addEventListener("resize", () => {
   if (decoStatFitResizeFrame) {
@@ -613,6 +641,7 @@ window.addEventListener("resize", () => {
 
   decoStatFitResizeFrame = requestAnimationFrame(() => {
     fitDecoStatValues(document);
+    syncDecoEffectAmountLayout(document);
     decoStatFitResizeFrame = null;
   });
 });
@@ -631,7 +660,10 @@ function appendCards(items, { container, sentinel }) {
 
   container.insertBefore(fragment, sentinel);
 
-  requestAnimationFrame(() => fitDecoStatValues(container));
+  requestAnimationFrame(() => {
+    fitDecoStatValues(container);
+    syncDecoEffectAmountLayout(container);
+  });
 
   void hydrateComposedImages({
     root: container,
