@@ -10,18 +10,6 @@ body {
     overflow: hidden;
 }
 
-body,
-body * {
-    -webkit-user-select: none;
-    user-select: none;
-}
-
-input,
-textarea {
-    -webkit-user-select: text;
-    user-select: text;
-}
-
 @media only screen and (max-width: 700px) {
     body {
         margin: 0 !important;
@@ -842,7 +830,7 @@ html {
 @media only screen and (max-width: 700px) {
 
     body {
-        min-height: 100svh;
+        min-height: 100dvh;
         overflow-x: hidden;
         overflow-y: auto;
     }
@@ -854,8 +842,8 @@ html {
 
     .container {
         position: relative;
-        height: 100svh;
-        min-height: 100svh;
+        height: 100dvh;
+        min-height: 100dvh;
         overflow: hidden;
         padding-bottom: 55px;
     }

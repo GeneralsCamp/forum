@@ -442,7 +442,8 @@ function updateSelectedSizes() {
 
 // --- CARD CREATION (HTML RENDERING) ---
 function createCard(item, imageUrlMap = {}) {
-  const langData = ownLang[currentLanguage] || {};
+  const langData = ownLang[String(currentLanguage || "en").toLowerCase()] || ownLang.en || {};
+  const ownText = (key, fallback) => langData[key] || ownLang.en?.[key] || fallback;
 
   const name = getName(item);
   const size = getSize(item);
@@ -452,7 +453,8 @@ function createCard(item, imageUrlMap = {}) {
   const po = getPO(item);
   const poPerTile = area > 0 ? (po / area).toFixed(2) : "N/A";
   const might = item.mightValue || "0";
-  const publicOrderLabel = lang.publicOrder || lang.public_order || "Public order";
+  const publicOrderLabel = lang.publicorder || lang.publicOrder || lang.public_order || "Public order";
+  const mightLabel = lang.playermight || lang.playerMight || "Might points";
 
   const isFusionSource = item.isFusionSource === "1";
   const isFusionTarget = item.isFusionTarget === "1";
@@ -560,17 +562,17 @@ function createCard(item, imageUrlMap = {}) {
             <div class="col-8 card-cell">
               <div class="row g-0">
                 ${statCell({ label: publicOrderLabel, value: formatNumber(po), icon: `<img src="../../img_base/po.png" alt="">`, border: true })}
-                ${statCell({ label: "PO/tile", value: poPerTile, icon: `<img src="../../img_base/po.png" alt="">` })}
+                ${statCell({ label: ownText("label_po_per_tile", "PO/tile"), value: poPerTile, icon: `<img src="../../img_base/po.png" alt="">` })}
               </div>
               <hr>
               <div class="row g-0">
-                ${statCell({ label: langData.label_size, value: size, icon: `<img src="../../img_base/size.png" alt="">`, border: true })}
-                ${statCell({ label: "Might", value: formatNumber(might), icon: `<img src="../../img_base/might.png" alt="">` })}
+                ${statCell({ label: ownText("label_size", "Size"), value: size, icon: `<img src="../../img_base/size.png" alt="">`, border: true })}
+                ${statCell({ label: mightLabel, value: formatNumber(might), icon: `<img src="../../img_base/might.png" alt="">` })}
               </div>
               <hr>
               <div class="row g-0">
-                ${statCell({ label: "Sale", value: sellPriceDisplay, icon: sellPriceIconDisplay, border: true })}
-                ${statCell({ label: langData.label_fusion, value: fusion, icon: `<img src="../../img_base/fusion.png" alt="">` })}
+                ${statCell({ label: ownText("label_sale", "Sale price"), value: sellPriceDisplay, icon: sellPriceIconDisplay, border: true })}
+                ${statCell({ label: ownText("label_fusion", "Fusion"), value: fusion, icon: `<img src="../../img_base/fusion.png" alt="">` })}
               </div>
             </div>
           </div>
@@ -605,27 +607,6 @@ function fitDecoStatValues(root = document) {
   });
 }
 
-function syncDecoEffectAmountLayout(root = document) {
-  const boxes = root.querySelectorAll("#cards .box");
-
-  boxes.forEach(box => {
-    box.classList.remove("effects-stacked");
-
-    const amounts = box.querySelectorAll(".reward-effect-row .effect-amount");
-    if (!amounts.length) return;
-
-    const shouldStack = Array.from(amounts).some(amount => {
-      const rects = amount.getClientRects();
-      if (rects.length > 1) return true;
-      return false;
-    });
-
-    if (shouldStack) {
-      box.classList.add("effects-stacked");
-    }
-  });
-}
-
 let decoStatFitResizeFrame = null;
 window.addEventListener("resize", () => {
   if (decoStatFitResizeFrame) {
@@ -634,7 +615,6 @@ window.addEventListener("resize", () => {
 
   decoStatFitResizeFrame = requestAnimationFrame(() => {
     fitDecoStatValues(document);
-    syncDecoEffectAmountLayout(document);
     decoStatFitResizeFrame = null;
   });
 });
@@ -655,7 +635,6 @@ function appendCards(items, { container, sentinel }) {
 
   requestAnimationFrame(() => {
     fitDecoStatValues(container);
-    syncDecoEffectAmountLayout(container);
   });
 
   void hydrateComposedImages({

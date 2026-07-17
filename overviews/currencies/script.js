@@ -7,7 +7,6 @@ const searchInput = document.getElementById("searchInput");
 const rowsElement = document.getElementById("currencyRows");
 const tableWrap = document.getElementById("tableWrap");
 const emptyState = document.getElementById("emptyState");
-const loadingBox = document.getElementById("loadingBox");
 const searchButton = document.getElementById("searchButton");
 const sortSelect = document.getElementById("sortSelect");
 const currentLanguage = getInitialLanguage();
@@ -257,7 +256,6 @@ async function init() {
           .filter((currency) => currency.id)
           .sort((a, b) => Number(a.id) - Number(b.id));
 
-        loadingBox.hidden = true;
         tableWrap.hidden = false;
         setupEventListeners();
         renderRows();
@@ -265,14 +263,17 @@ async function init() {
     });
   } catch (error) {
     console.error(error);
-    loadingBox.querySelector("h3").textContent = ui("load_error", "Could not load currencies.");
+    tableWrap.hidden = false;
+    rowsElement.replaceChildren();
+    emptyState.hidden = false;
+    emptyState.textContent = ui("load_error", "Could not load currencies.");
   }
 }
 
 initAutoHeight({
-  contentSelector: "#content",
+  contentSelector: "#tableWrap",
   subtractSelectors: [".note", ".page-title"],
-  extraOffset: 16
+  extraOffset: 4
 });
 
 init();

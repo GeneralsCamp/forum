@@ -623,8 +623,9 @@
   font-weight: 700;
   line-height: 1;
   max-width: 100%;
-  overflow-wrap: anywhere;
-  white-space: normal;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
 }
 
 .reward-decoration-modal .stat-text .stat-value {
@@ -640,7 +641,6 @@
   min-width: 0;
   max-width: 100%;
   overflow: visible;
-  overflow-wrap: anywhere;
   white-space: nowrap;
 }
 

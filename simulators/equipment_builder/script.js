@@ -383,8 +383,13 @@ function normalizeEffectSemanticValue(effectId, value, sourceType = "auto") {
   return numeric;
 }
 
-function getEquipmentUpgradeBonus(effectId, sourceType = "auto", effectIndex = 0) {
+function isHeroEquipmentItem(item) {
+  return String(item?.type || "").toLowerCase() === "hero" || String(item?.slotId || "") === "6";
+}
+
+function getEquipmentUpgradeBonus(effectId, sourceType = "auto", effectIndex = 0, item = null) {
   if (!upgradeToggleEnabled || sourceType !== "equipment") return 0;
+  if (isHeroEquipmentItem(item)) return 0;
   const effectMeta = equipmentEffectMetaById[String(effectId || "").trim()];
   if (!effectMeta) return 0;
   const rateKey = effectIndex === 0 ? "enchantmentPrimaryBonus" : "enchantmentSecondaryBonus";
@@ -404,7 +409,7 @@ function parseEffectTokens(raw, sourceType = "auto", item = null) {
       id: String(resolveEffectId(entry.id, sourceType) || entry.id || ""),
       value: normalizeEffectSemanticValue(
         entry.id,
-        Number(entry.value || 0) + getEquipmentUpgradeBonus(entry.id, sourceType, index),
+        Number(entry.value || 0) + getEquipmentUpgradeBonus(entry.id, sourceType, index, item),
         sourceType
       ),
       sourceType

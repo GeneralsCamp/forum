@@ -37,7 +37,7 @@
     justify-content: space-between;
     min-height: 34px;
     background: #4f3625;
-    border-bottom: 1px solid var(--tci-card-divider);
+    border-bottom: 2px solid var(--tci-card-divider);
     color: #f3c24a;
     font-size: 14px;
     font-weight: 800;
@@ -118,6 +118,10 @@
 #cards .card-table {
     color: var(--tci-text);
     font-size: 14px;
+    border-top: 2px solid var(--tci-card-divider) !important;
+}
+
+#cards .card-table.border-top {
     border-top: 2px solid var(--tci-card-divider) !important;
 }
 

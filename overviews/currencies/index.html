@@ -69,22 +69,24 @@
       </div>
 
       <main id="content" class="container-fluid">
-        <div id="loadingBox" class="loading-message">
-          <h3>Loading currencies...</h3>
-        </div>
-
         <div id="tableWrap" class="currency-table-wrap" hidden>
-          <table class="currency-table">
-            <thead>
-              <tr>
-                <th id="headerID" scope="col">ID</th>
-                <th id="headerName" scope="col">Name</th>
-                <th id="headerSoftCap" scope="col">Soft cap</th>
-                <th id="headerHardCap" scope="col">Hard cap</th>
-              </tr>
-            </thead>
-            <tbody id="currencyRows"></tbody>
-          </table>
+          <div class="currency-table-header">
+            <table class="currency-table">
+              <thead>
+                <tr>
+                  <th id="headerID" scope="col">ID</th>
+                  <th id="headerName" scope="col">Name</th>
+                  <th id="headerSoftCap" scope="col">Soft cap</th>
+                  <th id="headerHardCap" scope="col">Hard cap</th>
+                </tr>
+              </thead>
+            </table>
+          </div>
+          <div id="currencyTableScroll" class="currency-table-scroll">
+            <table class="currency-table">
+              <tbody id="currencyRows"></tbody>
+            </table>
+          </div>
           <p id="emptyState" class="filter-empty-message" hidden>No currencies found.</p>
         </div>
       </main>

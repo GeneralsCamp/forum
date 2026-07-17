@@ -957,7 +957,7 @@ function renderEffectsSection(title, effects, { showTitle = true } = {}) {
 
 function fitRewardDetailStatValues(root = document) {
   const values = root.querySelectorAll(
-    ".reward-decoration-modal .stat-text .stat-value, .reward-construction-modal .tci-info-value"
+    ".reward-decoration-modal .stat-text strong, .reward-decoration-modal .stat-text .stat-value, .reward-construction-modal .tci-info-value"
   );
 
   values.forEach(valueEl => {

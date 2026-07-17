@@ -75,8 +75,10 @@ body {
     0 3px 8px rgba(0, 0, 0, 0.28);
 }
 
+.calculator-bonuses-form.row,
 .calculator-bonuses-form > .row {
   margin: 0;
+  row-gap: 0;
 }
 
 .calculator-bonuses-form .form-group {
@@ -88,7 +90,7 @@ body {
 }
 
 .calculator-bonuses-form .form-group:nth-child(2n) {
-  background: #5a3c29;
+  background: #60412c;
 }
 
 .calculator-bonuses-form label {
