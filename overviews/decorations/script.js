@@ -204,7 +204,7 @@ function parseEffects(effectsStr) {
             maxStr = ` <span class="max-bonus" role="button" tabindex="0" data-effectid="${id}" data-capid="${effectDef.capID}" title="Show all items with this effect">(Max: ${formatter.format(Number(cap.maxTotalBonus))}${suffix})</span>`;
           }
         }
-        results.push(`${localizedName}: ${formatter.format(val)}${suffix}${maxStr}`);
+        results.push(`${localizedName}: <span class="effect-amount"><span class="effect-value">${formatter.format(val)}${suffix}</span>${maxStr}</span>`);
       } else {
         results.push(`${localizedName}: Invalid value (${rest})`);
       }
@@ -218,7 +218,7 @@ function parseEffects(effectsStr) {
             maxStr = ` <span class="max-bonus" role="button" tabindex="0" data-effectid="${id}" data-capid="${effectDef.capID}" title="Show all items with this effect">(Max: ${formatter.format(Number(cap.maxTotalBonus))}${suffix})</span>`;
           }
         }
-        results.push(`${localizedTemplate}: ${formatter.format(val)}${suffix}${maxStr}`);
+        results.push(`${localizedTemplate}: <span class="effect-amount"><span class="effect-value">${formatter.format(val)}${suffix}</span>${maxStr}</span>`);
       } else {
         results.push(`${localizedTemplate}: Invalid value (${rest})`);
       }
@@ -452,6 +452,7 @@ function createCard(item, imageUrlMap = {}) {
   const po = getPO(item);
   const poPerTile = area > 0 ? (po / area).toFixed(2) : "N/A";
   const might = item.mightValue || "0";
+  const publicOrderLabel = lang.publicOrder || lang.public_order || "Public order";
 
   const isFusionSource = item.isFusionSource === "1";
   const isFusionTarget = item.isFusionTarget === "1";
@@ -558,7 +559,7 @@ function createCard(item, imageUrlMap = {}) {
             </div>
             <div class="col-8 card-cell">
               <div class="row g-0">
-                ${statCell({ label: "PO", value: formatNumber(po), icon: `<img src="../../img_base/po.png" alt="">`, border: true })}
+                ${statCell({ label: publicOrderLabel, value: formatNumber(po), icon: `<img src="../../img_base/po.png" alt="">`, border: true })}
                 ${statCell({ label: "PO/tile", value: poPerTile, icon: `<img src="../../img_base/po.png" alt="">` })}
               </div>
               <hr>
@@ -580,6 +581,42 @@ function createCard(item, imageUrlMap = {}) {
   </div>`;
 }
 
+function fitDecoStatValues(root = document) {
+  const values = root.querySelectorAll("#cards .stat-text .stat-value");
+
+  values.forEach(valueEl => {
+    valueEl.style.fontSize = "";
+
+    const textEl = valueEl.closest(".stat-text");
+    if (!textEl) return;
+
+    const availableWidth = textEl.clientWidth;
+    if (!availableWidth) return;
+
+    const computed = window.getComputedStyle(valueEl);
+    const baseSize = parseFloat(computed.fontSize);
+    if (!baseSize) return;
+
+    const naturalWidth = valueEl.scrollWidth;
+    if (naturalWidth <= availableWidth) return;
+
+    const scaledSize = Math.max(10, Math.floor(baseSize * (availableWidth / naturalWidth)));
+    valueEl.style.fontSize = `${scaledSize}px`;
+  });
+}
+
+let decoStatFitResizeFrame = null;
+window.addEventListener("resize", () => {
+  if (decoStatFitResizeFrame) {
+    cancelAnimationFrame(decoStatFitResizeFrame);
+  }
+
+  decoStatFitResizeFrame = requestAnimationFrame(() => {
+    fitDecoStatValues(document);
+    decoStatFitResizeFrame = null;
+  });
+});
+
 function appendCards(items, { container, sentinel }) {
   const fragment = document.createDocumentFragment();
 
@@ -593,6 +630,8 @@ function appendCards(items, { container, sentinel }) {
   });
 
   container.insertBefore(fragment, sentinel);
+
+  requestAnimationFrame(() => fitDecoStatValues(container));
 
   void hydrateComposedImages({
     root: container,

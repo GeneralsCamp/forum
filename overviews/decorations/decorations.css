@@ -214,7 +214,10 @@
 
 #cards .stat-text {
     display: flex;
+    flex: 1 1 auto;
     min-width: 0;
+    max-width: calc(100% - 36px);
+    overflow: hidden;
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
@@ -234,6 +237,9 @@
     font-size: 16px;
     font-weight: 850;
     line-height: 1.12;
+    max-width: 100%;
+    overflow: visible;
+    white-space: nowrap;
 }
 
 #cards .card-section-title {
@@ -315,7 +321,21 @@
         padding-right: 1px;
     }
 
+}
+
+@media (max-width:480px) {
     .max-bonus {
+        display: inline;
         white-space: nowrap;
+    }
+
+    #cards .reward-effect-row .effect-amount {
+        display: block;
+        width: fit-content;
+        margin-top: 2px;
+    }
+
+    #cards .reward-effect-row .effect-value {
+        display: inline;
     }
 }
