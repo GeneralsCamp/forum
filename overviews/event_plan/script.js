@@ -735,6 +735,25 @@ function ensureEventGrid() {
     return grid;
 }
 
+function updateEventColumnBorders(container) {
+    if (!container) return;
+    const columns = Math.max(
+        1,
+        getComputedStyle(container).gridTemplateColumns.trim().split(/\s+/).length
+    );
+    container.classList.remove(
+        "event-grid-columns-1",
+        "event-grid-columns-2",
+        "event-grid-columns-3",
+        "event-grid-columns-4"
+    );
+    container.classList.add(`event-grid-columns-${Math.min(columns, 4)}`);
+    const cards = Array.from(container.querySelectorAll(":scope > .event-card"));
+    cards.forEach((card, index) => {
+        card.classList.toggle("event-card-last-column", (index + 1) % columns === 0);
+    });
+}
+
 function renderEvents(events) {
     const container = ensureEventGrid();
     if (!container) return;
@@ -827,6 +846,7 @@ function renderEvents(events) {
     });
 
     ensureDateFormatNote(container);
+    updateEventColumnBorders(container);
 }
 
 function renderCalendar(events) {
@@ -1178,8 +1198,12 @@ function normalizeCalendarBodyRowHeights(tbody) {
 }
 
 function getSelectedGameKey() {
-    const gameSelect = document.getElementById("gameSelect");
-    return gameSelect ? gameSelect.value : "empire";
+    try {
+        const settings = JSON.parse(localStorage.getItem("gf_home_settings") || "{}");
+        return settings.selectedGame === "e4k" ? "e4k" : "empire";
+    } catch {
+        return "empire";
+    }
 }
 
 function getSelectedViewKey() {
@@ -1195,21 +1219,6 @@ function renderCurrentView() {
         renderCalendar(events);
     } else {
         renderEvents(events);
-    }
-}
-
-function getGameKeyFromHash() {
-    const hash = window.location.hash.replace("#", "").toLowerCase();
-    if (hash === "e4k") return "e4k";
-    if (hash === "em" || hash === "empire") return "empire";
-    return null;
-}
-
-function updateHashForGame(key) {
-    if (key === "e4k") {
-        window.location.hash = "e4k";
-    } else if (key === "empire") {
-        window.location.hash = "em";
     }
 }
 
@@ -1234,7 +1243,8 @@ async function loadEvents(sourceKey) {
 }
 
 async function preloadAllEvents() {
-    const keys = Object.keys(eventSources).filter(key => !eventCache[key]);
+    const selectedKey = getSelectedGameKey();
+    const keys = [selectedKey].filter(key => !eventCache[key]);
     if (keys.length === 0) {
         return;
     }
@@ -1252,24 +1262,7 @@ async function preloadAllEvents() {
 }
 
 function setupSelectors() {
-    const gameSelect = document.getElementById("gameSelect");
     const viewSelect = document.getElementById("viewSelect");
-
-    if (gameSelect) {
-        gameSelect.innerHTML = "";
-        Object.entries(eventSources).forEach(([key, info]) => {
-            const option = document.createElement("option");
-            option.value = key;
-            option.textContent = info.label;
-            gameSelect.appendChild(option);
-        });
-        const hashKey = getGameKeyFromHash();
-        gameSelect.value = hashKey || "empire";
-        gameSelect.addEventListener("change", () => {
-            updateHashForGame(gameSelect.value);
-            loadEvents(gameSelect.value);
-        });
-    }
 
     if (viewSelect) {
         viewSelect.innerHTML = "";
@@ -1296,6 +1289,8 @@ function handleResize() {
         const newHeight = window.innerHeight - totalHeightToSubtract;
         content.style.height = `${newHeight}px`;
     }
+
+    updateEventColumnBorders(document.getElementById("eventGrid"));
 }
 
 window.addEventListener("resize", handleResize);

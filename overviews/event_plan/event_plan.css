@@ -53,7 +53,7 @@
 }
 
 .event-dates span:not(:last-child)::after {
-    content: ", ";
+    content: none;
 }
 
 .event-date-groups {
@@ -250,7 +250,7 @@
     }
 
     .event-dates span:not(:last-child)::after {
-        content: ", ";
+        content: none;
     }
 }
 
@@ -357,5 +357,119 @@
 
 .schedule-footer-line {
     color: #fff4de;
+}
+
+/* Keep the existing event layout, but remove the boxed-card appearance. */
+.event-grid {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+}
+
+.event-card {
+    background: transparent;
+    border-right: 1px solid rgba(215, 155, 66, 0.42);
+    border-left: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.schedule-header {
+    background: transparent;
+    border-bottom: 1px solid rgba(215, 155, 66, 0.58);
+}
+
+.schedule-footer-bar {
+    background: transparent;
+    border-top: 0;
+    border-bottom: 1px solid rgba(215, 155, 66, 0.58);
+}
+
+.schedule-header-icon {
+    display: none;
+}
+
+.schedule-header-title {
+    font-size: 1.35rem;
+    color: #f3c24a;
+}
+
+@media (min-width: 1400px) {
+    .event-card:nth-child(4n) {
+        border-right: 1px solid rgba(215, 155, 66, 0.42);
+    }
+
+    /* The schedule header is the first grid child, so the 4th event is 5th. */
+    .event-card:nth-child(4n + 1) {
+        border-right: 0;
+    }
+}
+
+@media (max-width: 576px) {
+    .event-card {
+        border-right: 0;
+    }
+}
+
+@media (min-width: 960px) and (max-width: 1399.98px) {
+    .event-card:nth-child(3n) {
+        border-right: 1px solid rgba(215, 155, 66, 0.42);
+    }
+
+    .event-card:nth-child(3n + 1) {
+        border-right: 0;
+    }
+}
+
+@media (min-width: 640px) and (max-width: 959.98px) {
+    .event-card:nth-child(4n),
+    .event-card:nth-child(3n),
+    .event-card:nth-child(2n) {
+        border-right: 1px solid rgba(215, 155, 66, 0.42);
+    }
+
+    .event-card:nth-child(2n + 1) {
+        border-right: 0;
+    }
+}
+
+@media (max-width: 639.98px) {
+    .event-card:nth-child(n) {
+        border-right: 0 !important;
+    }
+}
+
+.event-card {
+    border-right: 1px solid rgba(215, 155, 66, 0.42) !important;
+}
+
+.event-card.event-card-last-column {
+    border-right: 0 !important;
+}
+
+/* In a single-column layout, keep the text centered independently of the icon. */
+.event-grid.event-grid-columns-1 .event-card {
+    position: relative;
+    justify-content: center;
+}
+
+.event-grid.event-grid-columns-1 .event-icon {
+    position: absolute;
+    left: 24px;
+    flex: 0 0 auto;
+}
+
+.event-grid.event-grid-columns-1 .event-meta {
+    width: 100%;
+    flex: 1 1 100%;
+    align-items: center;
+    text-align: center;
+}
+
+.event-grid.event-grid-columns-1 .event-title,
+.event-grid.event-grid-columns-1 .event-dates,
+.event-grid.event-grid-columns-1 .event-subtitle {
+    text-align: center;
 }
 
