@@ -25,8 +25,8 @@ const categories = {
         { key: "tools", name: "Tools Overview", icon: "main_page/tools-icon.webp", link: "./overviews/troops_and_tools/index.html#tools", disabled: false },
         { key: "rift_event", name: "Rift Event Overview", icon: "main_page/rift-raid-icon.webp", link: "./overviews/rift_event/index.html", disabled: false },
         { key: "quests", name: "Quests Overview", icon: "main_page/quest-icon.webp", link: "./overviews/quests/index.html", disabled: false },
-        { key: "event_plan", name: "Event Plan Overview", icon: "main_page/event-plan-icon.webp", link: "./overviews/event_plan/index.html", disabled: false },
-        { key: "currencies", name: "Currencies Overview", icon: "main_page/currencies-icon.webp", link: "./overviews/currencies/index.html", disabled: false }
+        { key: "currencies", name: "Currencies Overview", icon: "main_page/currencies-icon.webp", link: "./overviews/currencies/index.html", disabled: false },
+        { key: "event_plan", name: "Event Plan Overview", icon: "main_page/event-plan-icon.webp", link: "./overviews/event_plan/index.html", disabled: false }
     ],
 
     calculators: [
