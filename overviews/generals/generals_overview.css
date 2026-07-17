@@ -3,6 +3,13 @@
     --rarity-rare: rgb(160, 217, 72);
     --rarity-epic: rgb(201, 134, 255);
     --rarity-legendary: rgb(247, 148, 32);
+    --generals-panel: #60412c;
+    --generals-panel-soft: #714c31;
+    --generals-panel-dark: #332318;
+    --generals-line: rgba(215, 155, 66, 0.52);
+    --generals-line-soft: rgba(215, 155, 66, 0.22);
+    --generals-text: #f7ead5;
+    --generals-muted: rgba(247, 234, 213, 0.74);
 }
 
 .note {
@@ -10,153 +17,148 @@
     color: #f7ead5;
     font-weight: bolder;
     padding: 8px;
+    border: 0;
+    border-bottom: 1px solid var(--gf-gold-line);
     border-radius: 0;
     display: flex;
     align-items: center;
     box-sizing: border-box;
+    box-shadow: 0 5px 14px rgba(0, 0, 0, 0.22);
 }
 
-@media (min-width: 769px) {
-    .note>.col-md-1 {
-        display: flex;
-        justify-content: center;
-    }
+#content {
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
-@media (max-width: 769px) {
-    .note>.col-md-1 {
-        display: none;
-    }
+.view-section {
+    color: var(--generals-text);
 }
 
 .general-icon {
-    width: 64px;
-    height: 64px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
     padding: 3px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #2b1e14;
+    background: radial-gradient(circle at 35% 25%, rgba(255, 255, 255, 0.18), rgba(43, 30, 20, 0.94) 62%);
     overflow: hidden;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14), 0 4px 10px rgba(0, 0, 0, 0.34);
+}
+
+.general-icon img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 .general-icon.rarity-common {
-    border: 3px solid var(--rarity-common);
+    border: 2px solid var(--rarity-common);
     background-color: rgb(93, 93, 93);
 }
 
 .general-icon.rarity-rare {
-    border: 3px solid var(--rarity-rare);
+    border: 2px solid var(--rarity-rare);
     background-color: rgb(71, 94, 19);
 }
 
 .general-icon.rarity-epic {
-    border: 3px solid var(--rarity-epic);
+    border: 2px solid var(--rarity-epic);
     background-color: rgb(111, 40, 173);
 }
 
 .general-icon.rarity-legendary {
-    border: 3px solid var(--rarity-legendary);
+    border: 2px solid var(--rarity-legendary);
     background-color: rgb(165, 85, 27);
-}
-
-.cost-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    table-layout: fixed;
-    font-size: 12px;
-    color: #2b1c0e;
-}
-
-.cost-table th,
-.cost-table td {
-    border: 1px solid #c7b08f;
-    text-align: center;
-    min-width: 48px;
-    height: 28px;
-    background-color: #f4e6c8;
-    font-weight: 500;
-}
-
-.cost-table th {
-    font-weight: 700;
-    background-color: #e2cda5;
-    font-size: medium;
-}
-
-.cost-table thead th {
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    background-color: #e2cda5;
-    border-bottom: 2px solid black;
-}
-
-.cost-row-alt {
-    filter: contrast(0.9);
-}
-
-.cost-total-row td {
-    font-weight: bolder;
-    background-color: #e2cda5;
-    border-top: 2px solid black;
-    font-size: medium;
 }
 
 .skill-tree-grouped {
     display: flex;
     flex-direction: column;
+    gap: 0;
+    border-top: 1px solid var(--generals-line);
 }
 
 .skill-tier-row {
     display: grid;
-    grid-template-columns: 48px 1fr;
+    grid-template-columns: 46px minmax(0, 1fr);
     align-items: center;
-    background-color: rgb(145, 98, 65);
-    padding: 10px 6px;
-    border: 1px solid white;
-    border-top: none;
+    background: linear-gradient(90deg, rgba(96, 65, 44, 0.72), rgba(96, 65, 44, 0.24));
+    border: 0;
+    border-bottom: 1px solid var(--generals-line);
+    border-radius: 0;
+    padding: 0;
+    overflow: visible;
+    box-shadow: none;
 }
 
 .skill-tier-label {
-    font-size: 40px;
-    font-weight: 700;
-    color: white;
+    color: var(--gf-gold-strong);
+    font-size: 34px;
+    font-weight: 850;
+    line-height: 1;
     text-align: center;
-    margin-right: 20px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.38);
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
 }
 
 .skill-tier-content {
     display: flex;
-    gap: 16px;
+    min-width: 0;
+    flex-wrap: wrap;
+    gap: 12px;
     align-items: center;
+    justify-content: flex-start;
+    padding: 9px 10px 16px;
+    border-left: 1px solid rgba(215, 155, 66, 0.32);
 }
 
 .skill-group {
     position: relative;
-    width: 64px;
-    height: 64px;
+    width: 62px;
+    height: 62px;
     border-radius: 50%;
-    background-color: #4c5263;
-    border: 3px solid #999;
+    background: #4c5263;
+    border: 2px solid #f4b551;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transform: scale(0.98);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    transform: translateZ(0);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
 }
 
 .skill-group.selected {
-    transform: scale(1.05);
-    box-shadow: 0 0 8px rgba(244, 181, 81, 0.7);
+    border-color: var(--gf-gold-strong);
+    background: #4c5263;
+    box-shadow: 0 0 0 2px rgba(243, 194, 74, 0.24), 0 0 14px rgba(243, 194, 74, 0.32);
+    transform: scale(1.04);
     z-index: 2;
 }
 
 .skill-group.maxed {
-    border: #f4b551 2px solid;
+    border-color: #f4b551;
+}
+
+.skill-group.attack,
+.skill-group.defense,
+.skill-group.both {
+    background: #4c5263;
+    border-color: #f4b551;
+}
+
+.skill-group.attack.selected,
+.skill-group.defense.selected,
+.skill-group.both.selected {
+    background: #4c5263;
+    border-color: var(--gf-gold-strong);
 }
 
 .skill-group img {
@@ -171,69 +173,87 @@
     bottom: -8px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: #2b2f3a;
-    border: 1px solid #f4b551;
+    background: rgba(35, 25, 18, 0.92);
+    border: 1px solid rgba(243, 194, 74, 0.78);
     border-radius: 4px;
-    padding: 1px 6px;
-    font-size: 12px;
-    font-weight: 700;
-    color: #f4b551;
+    padding: 1px 5px;
+    color: #f3c24a;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.1;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.32);
 }
 
 .skill-group:not(.maxed) .skill-group-level {
-    border-color: #aaa;
-    color: #ddd;
+    border-color: rgba(247, 234, 213, 0.42);
+    color: rgba(247, 234, 213, 0.86);
 }
 
 .skill-group.attack img {
-    filter: sepia(0.5) hue-rotate(300deg);
+    filter: none;
 }
 
 .skill-group.defense img {
-    filter: hue-rotate(200deg) saturate(1.05);
+    filter: none;
 }
 
 .skill-group.both img {
-    filter: sepia(0.45) hue-rotate(270deg);
+    filter: none;
 }
 
 .skill-overview {
-    height: 96px;
-    padding: 10px 6px;
+    min-height: 92px;
+    margin-bottom: 8px;
+    padding: 0;
     display: flex;
     align-items: center;
-    background-color: rgb(145, 98, 65);
-    border: 1px solid white;
+    background: linear-gradient(90deg, rgba(96, 65, 44, 0.58), rgba(96, 65, 44, 0.16));
+    border: 0;
+    border-top: 1px solid var(--generals-line);
+    border-bottom: 1px solid var(--generals-line);
+    border-radius: 0;
+    overflow: visible;
+    box-shadow: none;
+}
+
+.skill-overview.empty {
+    opacity: 0.88;
 }
 
 .skill-overview-content {
     display: flex;
+    min-width: 0;
     align-items: center;
-    gap: 16px;
+    gap: 14px;
+    padding: 10px;
 }
 
 .skill-overview-info {
     display: flex;
+    min-width: 0;
     flex-direction: column;
-    color: white;
-    font-size: 14px;
+    color: var(--generals-muted);
+    font-size: 13px;
+    line-height: 1.18;
 }
 
-.skill-overview-info>div:first-child {
+.skill-overview-info > div:first-child {
+    color: var(--gf-gold-strong);
+    font-size: 16px;
+    font-weight: 850;
+}
+
+.skill-overview-type {
+    margin-top: 3px;
+    color: var(--generals-muted);
     font-weight: 700;
-    color: #f4b551;
-}
-
-.skill-overview img {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
 }
 
 .skill-overview .skill-group {
-    width: 64px;
-    height: 64px;
+    width: 70px;
+    height: 70px;
     cursor: default;
+    flex: 0 0 auto;
 }
 
 .skill-overview .skill-group-level {
@@ -241,66 +261,119 @@
 }
 
 .skill-overview .general-icon {
-    margin-right: 12px;
-    flex-shrink: 0;
+    margin: 10px 0 10px 10px;
+    flex: 0 0 auto;
 }
 
 .skill-details-row {
-    display: flex;
-    margin-top: 6px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    margin-top: 8px;
+    border-top: 1px solid var(--generals-line);
+    border-bottom: 1px solid var(--generals-line);
 }
 
 .skill-detail-panel {
-    flex: 0 0 50%;
-    background-color: rgb(145, 98, 65);
-    border: 1px solid white;
-    padding: 8px;
-    min-height: 100px;
-    font-size: 14px;
-    color: white;
+    background: linear-gradient(180deg, rgba(96, 65, 44, 0.42), rgba(96, 65, 44, 0.18));
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    min-height: 96px;
+    color: var(--generals-text);
+    font-size: 13px;
+    line-height: 1.28;
+    overflow: hidden;
+    box-shadow: none;
+}
+
+.skill-detail-panel + .skill-detail-panel {
+    border-left: 1px solid var(--generals-line);
 }
 
 .skill-detail-title {
-    font-weight: 700;
-    color: #f4b551;
+    margin-bottom: 6px;
+    padding: 7px 10px;
+    border-bottom: 1px solid var(--generals-line);
+    background: transparent;
+    color: var(--gf-gold-strong);
+    font-size: 14px;
+    font-weight: 850;
+}
+
+.skill-detail-panel > div:not(.skill-detail-title) {
+    padding: 0 10px 8px;
+}
+
+#viewCosts .box {
+    background: transparent;
+    border: 0;
+    border-top: 1px solid var(--generals-line);
+    border-bottom: 1px solid var(--generals-line);
+    border-radius: 0;
+    overflow: hidden;
+    box-shadow: none;
+}
+
+#viewCosts .box-content {
+    padding: 0;
+    background: transparent;
+}
+
+.cost-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    color: var(--generals-text);
+    font-size: 13px;
+}
+
+.cost-table th,
+.cost-table td {
+    height: 30px;
+    border: 1px solid var(--generals-line-soft);
+    background: var(--generals-panel);
+    text-align: center;
+    font-weight: 650;
+}
+
+.cost-table th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--generals-panel-dark);
+    border-bottom: 1px solid var(--generals-line);
+    color: var(--gf-gold-strong);
+    font-size: 14px;
+    font-weight: 850;
+}
+
+.cost-row-alt td {
+    background: #543824;
+}
+
+.cost-total-row td {
+    background: var(--generals-panel-dark);
+    border-top: 1px solid var(--generals-line);
+    color: var(--gf-gold-strong);
+    font-size: 14px;
+    font-weight: 850;
 }
 
 @media (max-width: 768px) {
-
-    .skill-group {
-        width: 50px;
-        height: 50px;
+    #content {
+        padding-left: 2px;
+        padding-right: 2px;
     }
 
-    .skill-group-level {
-        font-size: 11px;
-        padding: 1px 4px;
+    .note {
+        gap: 4px;
+        padding-inline: 4px;
     }
 
-    .skill-tier-label {
-        font-size: 32px;
-    }
-
-    .skill-details-row {
-        flex-direction: column;
-    }
-
-    .skill-detail-panel {
-        width: 100%;
-    }
-}
-
-@media (max-width: 400px) {
-
-    .general-icon,
-    .skill-group,
-    .skill-overview img {
-        width: 40px !important;
-        height: 40px !important;
-    }
-
-    .skill-overview {
-        height: 50px;
+    .skill-tier-row {
+        grid-template-columns: 38px minmax(0, 1fr);
+        padding: 0;
     }
 
     .skill-tier-label {
@@ -308,6 +381,62 @@
     }
 
     .skill-tier-content {
-        gap: 10px;
+        gap: 9px;
+        padding: 8px 7px 14px;
+    }
+
+    .skill-group {
+        width: 50px;
+        height: 50px;
+    }
+
+    .skill-group-level {
+        bottom: -5px;
+        font-size: 10px;
+        padding: 1px 4px;
+    }
+
+    .skill-overview {
+        min-height: 76px;
+    }
+
+    .general-icon,
+    .skill-overview .skill-group {
+        width: 54px;
+        height: 54px;
+    }
+
+    .skill-details-row {
+        grid-template-columns: 1fr;
+    }
+
+    .skill-detail-panel + .skill-detail-panel {
+        border-left: 0;
+        border-top: 1px solid var(--generals-line);
+    }
+}
+
+@media (max-width: 400px) {
+    .general-icon,
+    .skill-overview .skill-group {
+        width: 46px;
+        height: 46px;
+    }
+
+    .skill-group {
+        width: 44px;
+        height: 44px;
+    }
+
+    .skill-tier-content {
+        gap: 7px;
+    }
+
+    .skill-overview-info > div:first-child {
+        font-size: 14px;
+    }
+
+    .cost-table {
+        font-size: 12px;
     }
 }
