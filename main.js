@@ -47,8 +47,8 @@ const categories = {
     ],
 
     others: [
-        { key: "assets_downloader", name: "Assets Downloader", icon: "main_page/tools-icon.webp", link: "./others/assets_downloader/index.html", disabled: false },
-        { key: "empire_duels", name: "Empire Duels", icon: "main_page/generals-icon.webp", link: "./empire_duels/index.html", disabled: false }
+        { key: "assets_downloader", name: "Assets Downloader", icon: "main_page/layout-icon.webp", link: "./others/assets_downloader/index.html", disabled: false },
+        { key: "empire_duels", name: "Empire Duels", icon: "main_page/empire-duels-icon.webp", link: "./empire_duels/index.html", disabled: false }
     ]
 };
 
