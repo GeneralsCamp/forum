@@ -1,12 +1,3 @@
-body {
-  color: #433120;
-}
-
-h1 {
-  font-weight: bolder;
-  text-align: center;
-}
-
 .container {
   display: flex;
   flex-direction: column;
@@ -16,8 +7,8 @@ h1 {
 #rewardsViewport {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding-right: 2px;
+  gap: 10px;
+  padding: 0 2px 8px;
 }
 
 #rewardsViewport > .collapse-area {
@@ -25,14 +16,17 @@ h1 {
 }
 
 .collapse-area {
-  background-color: rgb(180, 127, 92);
-  border-radius: 10px;
+  background: transparent;
+  border-radius: 0;
 }
 
 #content {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
+  padding-left: 2px;
+  padding-right: 2px;
+  padding-top: 0;
 }
 
 .note {
@@ -69,12 +63,14 @@ label {
 }
 
 .reward-card {
-  background-color: rgb(145, 98, 65);
-  border: 1px solid rgba(255, 255, 255, 0.72);
-  border-radius: 6px;
+  background: var(--gf-panel-bg);
+  border: 1px solid rgba(215, 155, 66, 0.52);
+  border-radius: 8px;
   padding: 0;
   height: 100%;
   overflow: hidden;
+  color: #f7ead5;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045), 0 3px 8px rgba(0, 0, 0, 0.28);
 }
 
 .reward-col {
@@ -101,26 +97,49 @@ label {
 .boss-overview-grid {
   display: grid;
   grid-template-columns: repeat(1, minmax(0, 1fr));
-  gap: 8px;
+  gap: 8px 0;
 }
 
 .boss-overview-card {
-  background: rgb(145, 98, 65);
-  border: 1px solid rgba(255, 255, 255, 0.52);
-  border-radius: 8px;
-  overflow: hidden;
+  background: rgba(96, 65, 44, 0.40);
+  border: 0;
+  border-top: 1px solid rgba(215, 155, 66, 0.52);
+  border-bottom: 1px solid rgba(215, 155, 66, 0.52);
+  border-radius: 0;
+  overflow: visible;
   min-width: 0;
+  color: #f7ead5;
+  box-shadow: none;
+}
+
+.boss-overview-card:not(.boss-overview-meta):not(.boss-overview-effects-card) .boss-overview-heading {
+  text-align: center;
+}
+
+.boss-overview-meta,
+.boss-overview-effects-card {
+  background: rgba(96, 65, 44, 0.48);
+}
+
+.boss-overview-grid > .boss-overview-card:not(.boss-overview-meta):not(.boss-overview-effects-card),
+.boss-overview-reserve-slot > .boss-overview-card {
+  background: rgba(96, 65, 44, 0.36);
+}
+
+.boss-overview-card + .boss-overview-card,
+.boss-overview-grid > .boss-overview-reserve-slot + .boss-overview-card {
+  border-top: 0;
 }
 
 .boss-overview-heading {
   margin: 0;
-  background: rgb(119, 80, 54);
-  color: #f3c24a;
-  font-size: 0.85rem;
+  background: rgba(32, 23, 17, 0.28);
+  color: var(--gf-gold-strong);
+  font-size: 0.86rem;
   font-weight: 900;
   text-transform: uppercase;
   padding: 7px 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.42);
+  border-bottom: 1px solid rgba(215, 155, 66, 0.52);
   line-height: 1.15;
   white-space: normal;
   overflow-wrap: anywhere;
@@ -129,8 +148,8 @@ label {
 .boss-overview-stats {
   display: grid;
   grid-template-columns: repeat(1, minmax(0, 1fr));
-  gap: 6px;
-  padding: 8px;
+  gap: 0;
+  padding: 0;
 }
 
 @media (min-width: 576px) {
@@ -140,51 +159,56 @@ label {
 }
 
 .boss-overview-stat {
-  background: #f3e0c2;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  border-radius: 6px;
-  padding: 6px 8px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid rgba(215, 155, 66, 0.22);
+  border-radius: 0;
+  padding: 8px 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 
 .boss-overview-stat-key {
-  font-size: 0.74rem;
+  font-size: 0.78rem;
   font-weight: 800;
-  color: #2f2116;
+  color: rgba(247, 234, 213, 0.78);
+  line-height: 1.18;
 }
 
 .boss-overview-stat-value {
-  font-size: 0.86rem;
+  font-size: 0.92rem;
   font-weight: 900;
-  color: #2f2116;
+  color: #fff3dc;
+  line-height: 1.05;
+  text-align: right;
+  white-space: nowrap;
 }
 
 .boss-overview-effects {
-  padding: 8px;
+  padding: 0;
   display: grid;
   grid-template-columns: repeat(1, minmax(0, 1fr));
-  gap: 6px;
+  gap: 0;
 }
 
 .boss-overview-empty {
-  color: #f3e0c2;
+  color: #f7ead5;
   font-size: 0.8rem;
   font-weight: 700;
   padding: 8px;
 }
 
 .boss-overview-effect-stat {
-  min-height: 44px;
+  min-height: 48px;
 }
 
 .boss-effect-name {
   flex: 1 1 auto;
-  font-size: 0.74rem;
+  font-size: 0.78rem;
   font-weight: 800;
-  color: #2f2116;
+  color: rgba(247, 234, 213, 0.86);
   line-height: 1.15;
 }
 
@@ -204,10 +228,10 @@ label {
 }
 
 .boss-overview-item-grid {
-  padding: 8px;
+  padding: 8px 10px;
   min-height: 90px;
   height: auto;
-  background: rgb(119, 80, 54);
+  background: transparent;
   justify-content: safe center;
 }
 
@@ -220,21 +244,21 @@ label {
 }
 
 .reward-title {
-  font-size: 0.86rem;
+  font-size: 0.9rem;
   font-weight: 900;
   margin: 0;
-  color: #ffffff;
+  color: var(--gf-gold-strong);
   text-transform: uppercase;
-  background: rgb(119, 80, 54);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.48);
-  padding: 6px 10px;
+  background: rgba(32, 23, 17, 0.26);
+  border-bottom: 1px solid rgba(215, 155, 66, 0.52);
+  padding: 5px 8px;
   letter-spacing: 0.2px;
 }
 
 .reward-list {
   margin: 0;
   padding-left: 18px;
-  color: #f3e0c2;
+  color: #f7ead5;
 }
 
 .reward-list li {
@@ -243,11 +267,12 @@ label {
 
 .badge-line {
   font-size: 0.73rem;
-  color: #fff;
+  color: rgba(247, 234, 213, 0.82);
   margin: 0;
   font-weight: 700;
-  padding: 4px 10px;
-  background: rgb(145, 98, 65);
+  padding: 4px 8px;
+  background: transparent;
+  border-bottom: 1px solid rgba(215, 155, 66, 0.38);
 }
 
 .item-grid {
@@ -255,13 +280,17 @@ label {
   flex-wrap: nowrap;
   align-items: flex-start;
   gap: 8px;
-  padding: 6px 8px 8px;
+  padding: 7px 8px 8px;
   height: 86px;
   max-width: 100%;
   min-width: 0;
   overflow-x: auto;
   overflow-y: hidden;
-  background: rgb(145, 98, 65);
+  background: transparent;
+}
+
+.reward-card .item-grid {
+  border-top: 1px solid rgba(215, 155, 66, 0.18);
 }
 
 #individualSection .item-grid {
@@ -273,20 +302,20 @@ label {
 }
 
 .item-grid::-webkit-scrollbar-thumb {
-  background: #c9ab7a;
+  background: rgba(215, 155, 66, 0.72);
   border-radius: 4px;
 }
 
 .item-grid::-webkit-scrollbar-track {
-  background: rgb(119, 80, 54);
+  background: rgba(32, 23, 17, 0.32);
 }
 
 .item-card {
   width: 72px;
   min-width: 72px;
   height: 72px;
-  background-color: #f3e0c2;
-  border: 1px solid #c9ab7a;
+  background: rgba(32, 23, 17, 0.42);
+  border: 1px solid rgba(215, 155, 66, 0.46);
   border-radius: 4px;
   display: flex;
   flex-direction: column;
@@ -309,18 +338,19 @@ label {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f3e0c2;
+  background: transparent;
 }
 
 .item-image {
   width: 42px !important;
   height: 42px !important;
   object-fit: contain;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.45));
 }
 
 .item-fallback {
   font-size: 10px;
-  color: #6c5a48;
+  color: rgba(247, 234, 213, 0.72);
   font-weight: 700;
   text-transform: uppercase;
 }
@@ -337,7 +367,7 @@ label {
   color: #ffffff;
   text-align: center;
   padding: 0 2px;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(32, 23, 17, 0.74);
   border-top: 0;
   display: flex;
   align-items: center;
@@ -373,7 +403,28 @@ label {
   min-width: 0;
 }
 
+.boss-overview-reserve-card,
+.boss-overview-reserve-slot > .boss-overview-card {
+  border-top: 0;
+}
+
 @media (max-width: 768px) {
+  #content {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  #rewardsViewport {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  #bossLevelFilterWrap,
+  #bossStageFilterWrap {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+
   .item-grid {
     gap: 5px;
     height: 76px;
@@ -406,13 +457,31 @@ label {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .boss-overview-grid > .boss-overview-card {
+    border-left: 0;
+  }
+
+  .boss-overview-grid > .boss-overview-card:nth-child(2n):not(.boss-overview-meta):not(.boss-overview-effects-card) {
+    border-left: 1px solid rgba(215, 155, 66, 0.32);
+  }
+
   .boss-overview-effects {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .boss-overview-stats .boss-overview-stat:not(:nth-child(2n)),
+  .boss-overview-effects .boss-overview-stat:not(:nth-child(2n)) {
+    border-right: 1px solid rgba(215, 155, 66, 0.22);
   }
 
   .boss-overview-meta,
   .boss-overview-effects-card {
     grid-column: span 2;
+  }
+
+  .boss-overview-meta,
+  .boss-overview-effects-card {
+    border-left: 0 !important;
   }
 
   #bossRows {
@@ -443,6 +512,21 @@ label {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
+  .boss-overview-grid > .boss-overview-card {
+    border-left: 0;
+  }
+
+  .boss-overview-grid > .boss-overview-card:nth-child(3) {
+    border-left: 0;
+  }
+
+  .boss-overview-grid > .boss-overview-card:nth-child(4),
+  .boss-overview-grid > .boss-overview-card:nth-child(5),
+  .boss-overview-grid > .boss-overview-card:nth-child(6),
+  .boss-overview-reserve-slot > .boss-overview-card + .boss-overview-card {
+    border-left: 1px solid rgba(215, 155, 66, 0.32);
+  }
+
   .boss-overview-meta,
   .boss-overview-effects-card {
     grid-column: span 4;
@@ -454,6 +538,16 @@ label {
 
   .boss-overview-effects {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .boss-overview-stats .boss-overview-stat:not(:nth-child(2n)),
+  .boss-overview-effects .boss-overview-stat:not(:nth-child(2n)) {
+    border-right: 0;
+  }
+
+  .boss-overview-stats .boss-overview-stat:not(:nth-child(4n)),
+  .boss-overview-effects .boss-overview-stat:not(:nth-child(3n)) {
+    border-right: 1px solid rgba(215, 155, 66, 0.22);
   }
 
   .boss-overview-grid > .boss-overview-reserve-card,

@@ -4,28 +4,33 @@
 
 .quest-col {
     display: flex;
+    padding: 4px 5px;
 }
 
 .quest-panel {
-    background: #916241;
-    border: 2px solid #f2d9bb;
-    border-radius: 12px;
-    color: #fff;
-    margin-bottom: 8px;
+    background: #60412c;
+    border: 1px solid rgba(215, 155, 66, 0.52);
+    border-radius: 8px;
+    color: #f7ead5;
+    margin-bottom: 2px;
     overflow: hidden;
     width: 100%;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.045),
+        0 3px 8px rgba(0, 0, 0, 0.28);
 }
 
 .quest-panel-title {
     margin: 0;
-    padding: 5px 10px;
+    padding: 4px 6px;
     font-size: 16px;
-    line-height: 1.15;
+    line-height: 1.2;
     font-weight: 900;
     color: #f3c24a;
-    background: #775036;
-    border-bottom: 2px solid #f2d9bb;
+    background: transparent;
+    border-bottom: 1px solid rgba(215, 155, 66, 0.52);
     text-align: center;
+    text-shadow: none;
 }
 
 .quest-info-grid {
@@ -35,8 +40,8 @@
 
 .quest-info-cell {
     padding: 6px 8px;
-    border-right: 1px solid #f2d9bb;
-    border-bottom: 1px solid #f2d9bb;
+    border-right: 1px solid rgba(215, 155, 66, 0.34);
+    border-bottom: 1px solid rgba(215, 155, 66, 0.34);
     text-align: center;
 }
 
@@ -50,11 +55,11 @@
 }
 
 .quest-info-cell.quest-cell-reward {
-    border-right: 1px solid #f2d9bb;
+    border-right: 1px solid rgba(215, 155, 66, 0.34);
 }
 
 .quest-info-cell.quest-cell-duration {
-    border-right: 1px solid #f2d9bb;
+    border-right: 1px solid rgba(215, 155, 66, 0.34);
 }
 
 .quest-info-cell.quest-cell-chance {
@@ -67,7 +72,7 @@
 }
 
 .quest-info-label {
-    color: #f3c24a;
+    color: rgba(247, 234, 213, 0.74);
     font-size: 11px;
     font-weight: 900;
     text-transform: uppercase;
@@ -76,7 +81,7 @@
 }
 
 .quest-info-value {
-    color: #ffffff;
+    color: #fff3dc;
     font-size: 14px;
     font-weight: 800;
     text-align: center;
@@ -93,10 +98,10 @@
 }
 
 .quest-empty {
-    background: #f3e0c2;
-    border: 2px solid #bd9a79;
-    border-radius: 10px;
-    color: #433120;
+    background: #60412c;
+    border: 1px solid rgba(215, 155, 66, 0.52);
+    border-radius: 8px;
+    color: #f7ead5;
     text-align: center;
     font-weight: 800;
     padding: 16px;

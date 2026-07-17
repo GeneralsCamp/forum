@@ -1807,6 +1807,8 @@ function renderUnitToolModal(detail, ctx) {
 
 export function initRewardDetailModal({ getContext }) {
   document.addEventListener("click", (event) => {
+    if (event.target.closest("[data-copy-unit-id], [data-copy-equipment-id], [data-copy-decoration-id], [data-copy-effect-item-id]")) return;
+
     const trigger = event.target.closest("[data-reward-detail]");
     if (!trigger) return;
 

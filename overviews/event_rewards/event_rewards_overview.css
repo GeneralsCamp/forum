@@ -1,5 +1,5 @@
 .card-section.border-top {
-    border-top: 1px solid white !important;
+    border-top: 1px solid rgba(215, 155, 66, 0.42) !important;
     opacity: 1 !important;
 }
 
@@ -8,12 +8,18 @@
 }
 
 .reward-title {
-    border-bottom: 1px solid white;
+    border-bottom: 1px solid rgba(215, 155, 66, 0.52);
+    color: var(--gf-gold-strong);
+    font-size: 16px;
+    line-height: 1.2;
     margin-bottom: 0;
+    padding: 4px 6px;
+    text-shadow: none;
 }
 
 .reward-body {
-    border-top: 1px solid white;
+    border-top: 1px solid rgba(215, 155, 66, 0.38);
+    min-height: 92px;
 }
 
 .reward-image {
@@ -21,8 +27,9 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    border-right: 1px solid white;
+    border-right: 1px solid rgba(215, 155, 66, 0.42);
     min-height: 100px;
+    background: transparent;
 }
 
 .reward-image-placeholder {
@@ -40,11 +47,11 @@
     align-items: center;
     justify-content: flex-start;
     text-align: left;
-    padding: 4px 8px;
+    padding: 4px 6px;
 }
 
 .reward-stat:not(:last-child) {
-    border-bottom: 1px solid white;
+    border-bottom: 1px solid rgba(215, 155, 66, 0.28);
 }
 
 .reward-stat-line {
@@ -58,11 +65,16 @@
 
 .reward-stat-value,
 .reward-stat-label {
-    color: white;
     font-size: 14px;
 }
 
+.reward-stat-value {
+    color: #fff3dc;
+    font-weight: 800;
+}
+
 .reward-stat-label {
+    color: rgba(247, 234, 213, 0.74);
     font-weight: bolder;
     white-space: nowrap;
 }
@@ -74,6 +86,8 @@
 .card-image {
     height: 100px;
     max-width: 95%;
+    object-fit: contain;
+    filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.32));
 }
 
 canvas.card-image {
@@ -97,19 +111,20 @@ canvas.card-image {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #7b5a3b;
-    border-radius: 8px 8px 0 0;
-    border-bottom: 2px solid #ffffff;
+    background: rgba(51, 35, 24, 0.86);
+    border-radius: 0;
+    border-bottom: 1px solid rgba(215, 155, 66, 0.52);
     color: #f3c24a;
     font-weight: bold;
     user-select: none;
     font-size: 1rem;
-    box-shadow: 0 2px 3px -2px rgba(255, 255, 255, .7);
+    box-shadow: none;
 }
 
 .level-selector button {
-    background-color: #f3c24a;
-    color: #433120;
+    background-color: rgba(215, 155, 66, 0.12);
+    color: #f3c24a;
+    border: 0;
     font-weight: bold;
     padding: 4px 10px;
     cursor: pointer;
@@ -119,13 +134,13 @@ canvas.card-image {
 }
 
 .level-selector button:first-child {
-    border-radius: 8px 0 0 0;
-    border-right: 2px solid white;
+    border-radius: 0;
+    border-right: 1px solid rgba(215, 155, 66, 0.42);
 }
 
 .level-selector button:last-child {
-    border-radius: 0 8px 0 0;
-    border-left: 2px solid white;
+    border-radius: 0;
+    border-left: 1px solid rgba(215, 155, 66, 0.42);
 }
 
 .level-selector button:disabled {
@@ -136,7 +151,7 @@ canvas.card-image {
 }
 
 .level-selector button:hover:not(:disabled) {
-    background-color: #e2b33d;
+    background-color: rgba(215, 155, 66, 0.22);
 }
 
 .level-selector .level-text {
@@ -146,4 +161,27 @@ canvas.card-image {
 
 .image-wrapper {
     padding: 0;
+}
+
+#rewardRows > [class*="col-"] {
+    padding: 4px 5px;
+}
+
+#rewardRows .box {
+    background: #60412c;
+    border: 1px solid rgba(215, 155, 66, 0.52);
+    border-radius: 8px;
+    color: #f7ead5;
+    margin-bottom: 2px;
+    overflow: hidden;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.045),
+        0 3px 8px rgba(0, 0, 0, 0.28);
+    transition: none;
+}
+
+#rewardRows .box-content {
+    background: transparent;
+    border-radius: 0;
+    color: #f7ead5;
 }

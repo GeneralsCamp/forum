@@ -1,5 +1,50 @@
 .ci-title {
-  padding: 5px;
+  margin-bottom: 0;
+  padding: 4px 6px;
+  border-bottom: 1px solid rgba(215, 155, 66, 0.52);
+  color: var(--gf-gold-strong);
+  font-size: 16px;
+  line-height: 1.2;
+  text-shadow: none;
+}
+
+#cards > [class*="col-"] {
+  padding: 4px 5px;
+}
+
+#cards .box {
+  background: #60412c;
+  border: 1px solid rgba(215, 155, 66, 0.52);
+  border-radius: 8px;
+  color: #f7ead5;
+  margin-bottom: 2px;
+  overflow: hidden;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    0 3px 8px rgba(0, 0, 0, 0.28);
+  transition: none;
+}
+
+#cards .box-content {
+  background: transparent;
+  border-radius: 0;
+  color: #f7ead5;
+}
+
+#cards .card-table {
+  border-top-color: rgba(215, 155, 66, 0.38) !important;
+}
+
+#cards .card-cell {
+  color: #f7ead5;
+}
+
+#cards .border-end {
+  border-right: 1px solid rgba(215, 155, 66, 0.42) !important;
+}
+
+#cards .border-bottom {
+  border-bottom: 1px solid rgba(215, 155, 66, 0.28) !important;
 }
 
 .offering-card .box-content {
@@ -25,6 +70,7 @@
 .offering-card .card-image,
 .offering-image {
   max-height: 80px;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.32));
 }
 
 .lootbox-image-slot .bi-zoom-in,

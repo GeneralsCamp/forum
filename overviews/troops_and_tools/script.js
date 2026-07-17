@@ -7,7 +7,6 @@ import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
 import { getSharedLanguagePack, getSharedText } from "../shared/SharedTextService.mjs";
 import { revealCard } from "../shared/CardReveal.mjs";
 import { initRewardDetailModal, rewardDetailAttrs } from "../shared/RewardDetailModal.mjs";
-import { HOME_SETTINGS_KEY } from "../shared/GameSettings.mjs";
 
 const loader = createLoader();
 let currentLanguage = getInitialLanguage();
@@ -24,23 +23,12 @@ let currentGameSource = "empire";
 let noMatchMessage = "No match to the current filters.";
 let effectCtx = { effectDefinitions: {}, percentEffectIDs: new Set() };
 let sharedLangPack = { ui: {}, filters: {} };
-const devCommentsEnabled = readHomeSetting("devCommentsEnabled", true);
 const FORCE_PLUS_PERCENT_EFFECT_NAMES = new Set([
   "bonuswallcapacity",
   "bonusdefencepower",
   "bonusyarddefensepower",
   "difficultyscalingdefenseboostyard"
 ]);
-
-function readHomeSetting(key, fallback) {
-  try {
-    const raw = localStorage.getItem(HOME_SETTINGS_KEY);
-    const parsed = JSON.parse(raw || "{}");
-    return parsed?.[key] ?? fallback;
-  } catch {
-    return fallback;
-  }
-}
 
 const STAT_ICONS = {
   supplyFood: "../../img_base/foodwastage.png",
@@ -941,8 +929,8 @@ function createUnitCard(group, groupIndex) {
       imageUrl: imageUrl || ""
     });
     const unitId = getUnitId(unit);
-    const devIdHtml = devCommentsEnabled && unitId !== "-"
-      ? `<div class="unit-dev-id">#${unitId}</div>`
+    const devIdHtml = unitId !== "-"
+      ? `<button class="unit-dev-id" type="button" data-copy-unit-id="${unitId}" title="Copy ID #${unitId}">#${unitId}</button>`
       : "";
 
     const rowsForCard = category === "unit"
@@ -1016,12 +1004,40 @@ function createUnitCard(group, groupIndex) {
         return;
       }
 
+      const idBadge = target.closest("[data-copy-unit-id]");
+      if (idBadge) {
+        event.stopPropagation();
+        copyUnitIdFromElement(idBadge);
+        return;
+      }
+
       const trigger = target.closest(".unit-detail-trigger");
       if (!trigger) return;
     });
   }, 0);
 
   return html;
+}
+
+async function copyUnitIdFromElement(element) {
+  const id = element?.dataset?.copyUnitId;
+  if (!id) return;
+
+  element.classList.add("is-copied");
+  setTimeout(() => element.classList.remove("is-copied"), 650);
+
+  try {
+    await navigator.clipboard.writeText(id);
+  } catch {
+    const input = document.createElement("textarea");
+    input.value = id;
+    input.style.position = "fixed";
+    input.style.opacity = "0";
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand("copy");
+    input.remove();
+  }
 }
 
 function renderUnits(groups) {

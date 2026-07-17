@@ -31,8 +31,6 @@ const composedImageCache = new Map();
 let currentLanguage = getInitialLanguage();
 const DEFAULT_MIN_SET_ID = 1084;
 const EXCLUDED_SET_IDS = new Set(["104"]);
-const HOME_SETTINGS_KEY = "gf_home_settings";
-const devCommentsEnabled = readHomeSetting("devCommentsEnabled", true);
 
 const SLOT_ORDER = {
   "1": 1,
@@ -93,16 +91,6 @@ function escapeHtml(text) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
-}
-
-function readHomeSetting(key, fallback) {
-  try {
-    const raw = localStorage.getItem(HOME_SETTINGS_KEY);
-    const parsed = JSON.parse(raw || "{}");
-    return parsed?.[key] ?? fallback;
-  } catch {
-    return fallback;
-  }
 }
 
 function normalizeSetId(value) {
@@ -1092,7 +1080,8 @@ function renderSet(setId) {
 
   const pieceRowsHtml = pieceRows.map((piece, idx) => {
     const duration = formatEquipmentDurationCompact(piece.duration);
-    const displayName = `${piece.name} (${[piece.slotLabel, duration].filter(Boolean).join(", ")})`;
+    const typeText = [piece.slotLabel, duration].filter(Boolean).join(", ");
+    const displayNameHtml = `${escapeHtml(piece.name)}${typeText ? ` <span class="piece-name-type">(${escapeHtml(typeText)})</span>` : ""}`;
     const itemEffects = piece.effects.length > 0
       ? piece.effects.map((line) => `<li class="reward-effect-row">${escapeHtml(line)}</li>`).join("")
       : `<li class="reward-effect-row">No effect data</li>`;
@@ -1119,13 +1108,13 @@ function renderSet(setId) {
     const composeAttrs = composed
       ? ` data-compose-asset="1" data-image-url="${composed.imageUrl}" data-json-url="${composed.jsonUrl}" data-js-url="${composed.jsUrl}"`
       : "";
-    const pieceIdHtml = devCommentsEnabled && piece.id
-      ? `<div class="piece-dev-id">ID: ${escapeHtml(piece.id)}</div>`
+    const pieceIdHtml = piece.id
+      ? `<div class="piece-dev-id" role="button" tabindex="0" data-copy-equipment-id="${escapeHtml(piece.id)}" title="Copy ID #${escapeHtml(piece.id)}">#${escapeHtml(piece.id)}</div>`
       : "";
 
     return `
       <article class="piece-row">
-        <h3 class="piece-name piece-name-mobile">${displayName}</h3>
+        <h3 class="piece-name piece-name-mobile">${displayNameHtml}</h3>
         <div class="piece-visual">
           <div class="piece-image">
             ${piece.imageUrl ? `<img src="${piece.imageUrl}" alt="" loading="lazy"${composeAttrs}>` : "<span>?</span>"}
@@ -1133,7 +1122,7 @@ function renderSet(setId) {
           ${pieceIdHtml}
         </div>
         <div class="piece-content">
-          <h3 class="piece-name piece-name-desktop">${displayName}</h3>
+          <h3 class="piece-name piece-name-desktop">${displayNameHtml}</h3>
           <ul class="effect-list">${itemEffects}</ul>
           ${sellRiftShardHtml}
           ${sellOfferingShardHtml}
@@ -1304,6 +1293,27 @@ function setupSetOptions(wearerFilter = "all") {
   renderSet(select.value);
 }
 
+async function copyEquipmentIdFromElement(element) {
+  const id = element?.dataset?.copyEquipmentId;
+  if (!id) return;
+
+  element.classList.add("is-copied");
+  setTimeout(() => element.classList.remove("is-copied"), 700);
+
+  try {
+    await navigator.clipboard.writeText(id);
+  } catch {
+    const input = document.createElement("textarea");
+    input.value = id;
+    input.style.position = "fixed";
+    input.style.opacity = "0";
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand("copy");
+    input.remove();
+  }
+}
+
 function bindControls() {
   const wearerSelect = document.getElementById("wearerSelect");
   const setSelect = document.getElementById("setSelect");
@@ -1369,6 +1379,27 @@ function bindControls() {
       renderSet(currentSetId);
     });
     window.__equipmentSetsResizeBound = true;
+  }
+
+  const root = document.getElementById("setOverview");
+  if (root && !root.dataset.copyIdBound) {
+    root.addEventListener("click", (event) => {
+      const target = event.target.closest("[data-copy-equipment-id]");
+      if (!target) return;
+      event.preventDefault();
+      event.stopPropagation();
+      copyEquipmentIdFromElement(target);
+    });
+
+    root.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      const target = event.target.closest("[data-copy-equipment-id]");
+      if (!target) return;
+      event.preventDefault();
+      copyEquipmentIdFromElement(target);
+    });
+
+    root.dataset.copyIdBound = "true";
   }
 }
 
