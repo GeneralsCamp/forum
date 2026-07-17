@@ -97,7 +97,6 @@ function applyHomeTranslations() {
         if (title) title.textContent = translate(key, fallback).toUpperCase();
     });
 
-    setText(".contact-note-intro", "contact_intro", "Questions or suggestions?");
     setText(".nav-settings-label", "settings", "Settings");
     setText("#settingsModalTitle", "settings", "Settings");
 

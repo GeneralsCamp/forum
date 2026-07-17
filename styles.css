@@ -6,7 +6,7 @@ body {
     background-size: cover;
     background-attachment: fixed;
     color: #433120;
-    height: 100vh;
+    min-height: 100vh;
     overflow: hidden;
 }
 
@@ -253,7 +253,7 @@ body {
     -webkit-backdrop-filter: blur(8px);
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: auto;
     min-height: 0;
     margin-top: 0 !important;
     overflow: hidden;
@@ -571,59 +571,6 @@ html {
     border-top-color: rgba(174, 231, 182, 0.55);
 }
 
-.contact-note {
-    margin: 0 0 0;
-    padding: 11px 12px;
-    color: #f2d9bb;
-    font-size: 13px;
-    font-weight: 700;
-    text-align: center;
-    border: 0;
-    border-top: 1px solid rgba(215, 155, 66, 0.48);
-    border-bottom: 1px solid rgba(215, 155, 66, 0.2);
-    border-radius: 0;
-    background: linear-gradient(90deg, transparent, rgba(25, 18, 13, 0.7) 18%, rgba(25, 18, 13, 0.7) 82%, transparent);
-    box-shadow: none;
-    line-height: 1.3;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    backdrop-filter: blur(3px);
-}
-
-.contact-note::before {
-    content: "";
-    width: 7px;
-    height: 7px;
-    margin-right: 2px;
-    border: 1px solid #d79b42;
-    transform: rotate(45deg);
-    flex: 0 0 7px;
-}
-
-.contact-note-intro {
-    display: inline;
-}
-
-.contact-note-email {
-    display: inline-block;
-    white-space: nowrap;
-}
-
-.contact-note a {
-    color: #f3c24a;
-    text-decoration: none;
-    font-weight: 800;
-    border-bottom: 1px dashed rgba(243, 194, 74, 0.6);
-    display: inline-block;
-    width: fit-content;
-}
-
-.contact-note a:hover {
-    border-bottom-color: rgba(243, 194, 74, 1);
-}
-
 .settings-modal {
     --gf-modal-width: min(420px, calc(100% - 20px));
     --gf-modal-shell-bg: #4f3625;
@@ -931,10 +878,6 @@ html {
     .search-suggestions {
         top: auto;
         bottom: calc(100% + 6px);
-    }
-
-    .contact-note {
-        display: none;
     }
 
     .category-wrapper {
