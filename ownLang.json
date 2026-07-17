@@ -62,6 +62,9 @@
       "event_plan": {
         "name": "Event Plan Overview"
       },
+      "currencies": {
+        "name": "Currencies Overview"
+      },
       "food_production": {
         "name": "Food Production Calculator"
       },
@@ -159,6 +162,9 @@
       },
       "event_plan": {
         "name": "نظرة عامة على خطة الحدث"
+      },
+      "currencies": {
+        "name": "نظرة عامة على العملات"
       },
       "food_production": {
         "name": "حاسبة إنتاج الغذاء"
@@ -258,6 +264,9 @@
       "event_plan": {
         "name": "Descripción General Del Plan De Eventos"
       },
+      "currencies": {
+        "name": "Descripción General De Las Monedas"
+      },
       "food_production": {
         "name": "Calculadora De Producción De Alimentos"
       },
@@ -355,6 +364,9 @@
       },
       "event_plan": {
         "name": "Преглед На Плана За Събитието"
+      },
+      "currencies": {
+        "name": "Преглед На Валутите"
       },
       "food_production": {
         "name": "Калкулатор За Производство На Храна"
@@ -454,6 +466,9 @@
       "event_plan": {
         "name": "Visão Geral Do Plano De Evento"
       },
+      "currencies": {
+        "name": "Visão Geral Das Moedas"
+      },
       "food_production": {
         "name": "Calculadora De Produção De Alimentos"
       },
@@ -551,6 +566,9 @@
       },
       "event_plan": {
         "name": "Přehled Plánu Akcí"
+      },
+      "currencies": {
+        "name": "Přehled Měn"
       },
       "food_production": {
         "name": "Kalkulačka Výroby Potravin"
@@ -650,6 +668,9 @@
       "event_plan": {
         "name": "Übersicht Über Den Veranstaltungsplan"
       },
+      "currencies": {
+        "name": "Währungsübersicht"
+      },
       "food_production": {
         "name": "Rechner Für Die Lebensmittelproduktion"
       },
@@ -747,6 +768,9 @@
       },
       "event_plan": {
         "name": "Event Plan Oversigt"
+      },
+      "currencies": {
+        "name": "Valutaoversigt"
       },
       "food_production": {
         "name": "Fødevareproduktion Lommeregner"
@@ -846,6 +870,9 @@
       "event_plan": {
         "name": "Tapahtumasuunnitelman Yleiskatsaus"
       },
+      "currencies": {
+        "name": "Valuuttojen Yleiskatsaus"
+      },
       "food_production": {
         "name": "Elintarvikkeiden Tuotannon Laskin"
       },
@@ -884,7 +911,7 @@
   "fr": {
     "ui": {
       "brand_subtitle": "Outils et simulateurs",
-      "search_prefix": "Rechercher :",
+      "search_prefix": "Rechercher:",
       "overviews": "Aperçus",
       "calculators": "Calculatrices",
       "simulators": "Simulateurs",
@@ -893,7 +920,7 @@
       "game": "Jeu",
       "empire_browser": "Empire (Navigateur)",
       "empire_browser_short": "EM (navigateur)",
-      "e4k_mobile": "Empire : Quatre Royaumes (Mobile)",
+      "e4k_mobile": "Empire: Quatre Royaumes (Mobile)",
       "e4k_mobile_short": "E4K (Mobile)",
       "language": "Langue",
       "developer_comments": "Commentaires des développeurs"
@@ -943,6 +970,9 @@
       },
       "event_plan": {
         "name": "Aperçu Du Plan D'événement"
+      },
+      "currencies": {
+        "name": "Aperçu Des Monnaies"
       },
       "food_production": {
         "name": "Calculateur De Production Alimentaire"
@@ -1042,6 +1072,9 @@
       "event_plan": {
         "name": "Επισκόπηση Σχεδίου Εκδήλωσης"
       },
+      "currencies": {
+        "name": "Επισκόπηση Νομισμάτων"
+      },
       "food_production": {
         "name": "Υπολογιστής Παραγωγής Τροφίμων"
       },
@@ -1139,6 +1172,9 @@
       },
       "event_plan": {
         "name": "Rendezvényterv Áttekintése"
+      },
+      "currencies": {
+        "name": "Pénznemek Áttekintése"
       },
       "food_production": {
         "name": "Élelmiszer-Termelési Kalkulátor"
@@ -1238,6 +1274,9 @@
       "event_plan": {
         "name": "Panoramica Del Piano Eventi"
       },
+      "currencies": {
+        "name": "Panoramica Delle Valute"
+      },
       "food_production": {
         "name": "Calcolatore Della Produzione Alimentare"
       },
@@ -1335,6 +1374,9 @@
       },
       "event_plan": {
         "name": "イベントプラン概要"
+      },
+      "currencies": {
+        "name": "通貨の概要"
       },
       "food_production": {
         "name": "食糧生産計算機"
@@ -1434,6 +1476,9 @@
       "event_plan": {
         "name": "이벤트 기획 개요"
       },
+      "currencies": {
+        "name": "통화 개요"
+      },
       "food_production": {
         "name": "식량 생산 계산기"
       },
@@ -1531,6 +1576,9 @@
       },
       "event_plan": {
         "name": "Renginio Plano Apžvalga"
+      },
+      "currencies": {
+        "name": "Valiutų Apžvalga"
       },
       "food_production": {
         "name": "Maisto Gamybos Skaičiuoklė"
@@ -1630,6 +1678,9 @@
       "event_plan": {
         "name": "Overzicht Evenementenplan"
       },
+      "currencies": {
+        "name": "Valutaoverzicht"
+      },
       "food_production": {
         "name": "Voedselproductiecalculator"
       },
@@ -1727,6 +1778,9 @@
       },
       "event_plan": {
         "name": "Oversikt Over Arrangementsplan"
+      },
+      "currencies": {
+        "name": "Valutaoversikt"
       },
       "food_production": {
         "name": "Matproduksjonskalkulator"
@@ -1826,6 +1880,9 @@
       "event_plan": {
         "name": "Omówienie Planu Wydarzenia"
       },
+      "currencies": {
+        "name": "Przegląd Walut"
+      },
       "food_production": {
         "name": "Kalkulator Produkcji Żywności"
       },
@@ -1923,6 +1980,9 @@
       },
       "event_plan": {
         "name": "Prezentare Generală A Planului De Evenimente"
+      },
+      "currencies": {
+        "name": "Prezentare Generală A Monedelor"
       },
       "food_production": {
         "name": "Calculator De Producție Alimentară"
@@ -2022,6 +2082,9 @@
       "event_plan": {
         "name": "Обзор Плана Мероприятия"
       },
+      "currencies": {
+        "name": "Обзор Валют"
+      },
       "food_production": {
         "name": "Калькулятор Производства Продуктов Питания"
       },
@@ -2119,6 +2182,9 @@
       },
       "event_plan": {
         "name": "Event Plan Översikt"
+      },
+      "currencies": {
+        "name": "Valutaöversikt"
       },
       "food_production": {
         "name": "Kalkylator För Livsmedelsproduktion"
@@ -2218,6 +2284,9 @@
       "event_plan": {
         "name": "Prehľad Plánu Udalostí"
       },
+      "currencies": {
+        "name": "Prehľad Mien"
+      },
       "food_production": {
         "name": "Kalkulačka Výroby Potravín"
       },
@@ -2315,6 +2384,9 @@
       },
       "event_plan": {
         "name": "Etkinlik Planına Genel Bakış"
+      },
+      "currencies": {
+        "name": "Para Birimlerine Genel Bakış"
       },
       "food_production": {
         "name": "Gıda Üretim Hesaplayıcısı"

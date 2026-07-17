@@ -1,5 +1,6 @@
 #content {
   padding-top: 2px;
+  --currency-scrollbar-width: 10px;
 }
 
 .container > .row > .col-12.mb-2 {
@@ -26,6 +27,9 @@
 .currency-table-header {
   flex: 0 0 auto;
   overflow: hidden;
+  box-sizing: border-box;
+  padding-inline-end: var(--currency-scrollbar-width);
+  background: #4f3625;
 }
 
 .currency-table-scroll {
@@ -33,6 +37,7 @@
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
+  scrollbar-gutter: stable;
 }
 
 .currency-table {
