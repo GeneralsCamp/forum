@@ -1,7 +1,203 @@
 /* Rift Raid Points specific styles */
+body {
+  color: #f7edd7;
+}
+
+.container {
+  background-color: rgba(32, 23, 17, 0.74);
+}
+
+.row {
+  row-gap: 10px;
+}
+
+.home-icon-link {
+  position: fixed !important;
+  right: 10px !important;
+  bottom: 20px !important;
+  top: auto !important;
+  left: auto !important;
+  transform: none !important;
+  z-index: 1000;
+}
+
+.collapse-area {
+  position: relative;
+  overflow: visible;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.collapse-header {
+  position: relative;
+  gap: 14px;
+  margin: 0;
+  padding: 8px 8px 8px 30px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #f3c24a;
+  font-size: 1.15rem;
+  line-height: 1.1;
+  text-align: left;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.38);
+}
+
+.collapse-header::before {
+  content: "";
+  position: absolute;
+  left: 9px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border: 2px solid #d79b42;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.collapse-header::after {
+  content: "";
+  flex: 1 1 auto;
+  height: 1px;
+  margin-left: 10px;
+  background: linear-gradient(90deg, rgba(215, 155, 66, 0.7), rgba(215, 155, 66, 0.08));
+}
+
+.header-title {
+  flex: 0 0 auto;
+}
+
+.collapse {
+  padding: 0;
+}
+
+.calculator-bonuses-form {
+  margin: 0;
+  padding: 0;
+  border: 1px solid rgba(215, 155, 66, 0.52);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #60412c;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    0 3px 8px rgba(0, 0, 0, 0.28);
+}
+
+.calculator-bonuses-form .form-group {
+  min-height: 74px;
+  padding: 8px 10px;
+  border-right: 1px solid rgba(215, 155, 66, 0.34);
+  border-bottom: 1px solid rgba(215, 155, 66, 0.34);
+  background: #60412c;
+}
+
+.calculator-bonuses-form .form-group:nth-child(2n) {
+  background: #5a3c29;
+}
+
+.calculator-bonuses-form label {
+  display: block;
+  margin-bottom: 5px;
+  color: #e6d1af;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.calculator-bonuses-form .form-control,
+.calculator-bonuses-form .form-select {
+  height: 34px;
+  min-height: 34px;
+  padding: 4px 8px;
+  border: 1px solid rgba(215, 155, 66, 0.72);
+  border-radius: 5px;
+  background-color: #f0d7ae;
+  color: #56391f;
+  font-size: 1rem;
+  font-weight: 900;
+  text-align: center;
+  box-shadow: inset 0 1px 2px rgba(89, 56, 30, 0.18);
+}
+
+.calculator-bonuses-form .form-control:focus,
+.calculator-bonuses-form .form-select:focus {
+  background-color: #f5dfba;
+  color: #4b311b;
+  border-color: rgba(243, 194, 74, 0.95);
+  box-shadow: 0 0 0 2px rgba(215, 155, 66, 0.25), inset 0 1px 2px rgba(89, 56, 30, 0.16);
+}
+
+.result .collapse {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  padding: 0;
+  border: 1px solid rgba(215, 155, 66, 0.52);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #60412c;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    0 3px 8px rgba(0, 0, 0, 0.28);
+}
+
+.results p {
+  display: flex;
+  min-height: 72px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  margin: 0;
+  padding: 10px 12px;
+  border-right: 1px solid rgba(215, 155, 66, 0.34);
+  color: #e6d1af;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.results p:last-of-type {
+  border-right: 0;
+}
+
+.results span {
+  color: #fff4de;
+  font-size: 1.05rem;
+  font-weight: 900;
+  line-height: 1.15;
+  text-transform: none;
+}
+
+.results hr {
+  display: none;
+}
+
 #courtyardBox input[readonly],
 #wallBox input[readonly] {
-  filter: brightness(80%);
+  filter: saturate(0.75) brightness(0.9);
   cursor: not-allowed;
-  background-color: rgb(233, 236, 239);
+  background-color: #d4b98f;
+  color: rgba(86, 57, 31, 0.74);
+}
+
+@media (max-width: 575px) {
+  .container {
+    padding-inline: 6px;
+  }
+
+  .collapse-header {
+    font-size: 1rem;
+  }
+
+  .calculator-bonuses-form .form-group {
+    min-height: 68px;
+    padding: 7px;
+  }
+
+  .results span {
+    font-size: 0.98rem;
+  }
 }

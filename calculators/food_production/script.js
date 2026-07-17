@@ -592,13 +592,8 @@ function updateBuildings() {
 
     let totalProductionWithBonuses = totalProduction + cast + decobonus + tcibonus + res1;
 
-    if (window.innerWidth <= 768) {
-        document.getElementById("finalProduction").innerHTML =
-            "TOTAL FOOD PRODUCTION:<br>" + totalProductionWithBonuses.toLocaleString() + " / hour";
-    } else {
-        document.getElementById("finalProduction").innerHTML =
-            "TOTAL FOOD PRODUCTION: " + totalProductionWithBonuses.toLocaleString() + " / hour";
-    }
+    document.getElementById("finalProduction").innerHTML =
+        `<span class="result-label">TOTAL FOOD PRODUCTION:</span><span class="result-value">${totalProductionWithBonuses.toLocaleString()} / hour</span>`;
 }
 
 export function updateBuilding() {

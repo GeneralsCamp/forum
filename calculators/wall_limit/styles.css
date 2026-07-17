@@ -1,4 +1,4 @@
-/* Travel Speed specific styles */
+/* Wall Limit specific styles */
 body {
   color: #f7edd7;
 }
@@ -163,20 +163,6 @@ body {
 
 .results hr {
   display: none;
-}
-
-.results span.alert-time,
-.alert-time {
-  color: #ff5b4a;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
-}
-
-.form-select:disabled,
-.form-control:disabled {
-  filter: saturate(0.75) brightness(0.9);
-  cursor: not-allowed;
-  background-color: #d4b98f;
-  color: rgba(86, 57, 31, 0.74);
 }
 
 @media (max-width: 767px) {

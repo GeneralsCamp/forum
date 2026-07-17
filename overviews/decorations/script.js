@@ -617,14 +617,7 @@ function syncDecoEffectAmountLayout(root = document) {
     const shouldStack = Array.from(amounts).some(amount => {
       const rects = amount.getClientRects();
       if (rects.length > 1) return true;
-
-      const value = amount.querySelector(".effect-value");
-      const max = amount.querySelector(".max-bonus");
-      if (!value || !max) return false;
-
-      const valueRect = value.getBoundingClientRect();
-      const maxRect = max.getBoundingClientRect();
-      return Math.abs(valueRect.top - maxRect.top) > 1;
+      return false;
     });
 
     if (shouldStack) {

@@ -1317,3 +1317,32 @@
     padding-bottom: 0;
   }
 }
+
+.patronage-container .page-title h1 {
+  position: static;
+  top: auto;
+  z-index: 50;
+  width: calc(100% + 1.5rem);
+  margin: 0 -0.75rem 8px;
+  padding: 6px 10px;
+  background: linear-gradient(100deg, rgba(50, 35, 25, 0.96), rgba(82, 54, 35, 0.92));
+  border: 0;
+  border-bottom: 1px solid rgba(215, 155, 66, 0.48);
+  border-radius: 0;
+  color: #f3c24a;
+  font-size: 1.35rem;
+  font-weight: 900;
+  text-align: left;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.42);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.22);
+}
+
+.patronage-container .page-title h1::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin: 0 11px 2px 4px;
+  border: 2px solid #d79b42;
+  transform: rotate(45deg);
+}

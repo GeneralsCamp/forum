@@ -11,6 +11,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css"
     rel="stylesheet">
   <link rel="stylesheet" href="../shared/calculators-shared.css">
+  <link rel="stylesheet" href="styles.css">
   <meta property="og:title" content="Mead Production Calculator | Generals Forum">
   <meta property="og:description" content="Calculate your mead production easily.">
   <meta property="og:image" content="https://generalscamp.github.io/forum/img_base/main_page/mead-icon.webp">
@@ -440,12 +441,12 @@
         <div class="collapse show">
           <form class="calculator-bonuses-form row" onsubmit="return false;">
             <div class="collapse show results">
-              <p class="il">TOTAL HONEY PRODUCTION: <i id="honeyProd">0</i> /hour</p>
+              <p class="il result-line">TOTAL HONEY PRODUCTION: <span><i id="honeyProd">0</i> /hour</span></p>
               <hr>
-              <p>TOTAL MEAD PRODUCTION: <br> <i id="food">0</i> food + <i id="honey">0</i> honey = <i id="mead">0</i>
-                mead</p>
+              <p class="result-line">TOTAL MEAD PRODUCTION: <span><i id="food">0</i> food + <i id="honey">0</i> honey =
+                  <i id="mead">0</i> mead</span></p>
               <hr>
-              <p class="il">NUMBER OF UNITS YOU CAN KEEP: <i id="unitsHold">0</i></p>
+              <p class="il result-line">NUMBER OF UNITS YOU CAN KEEP: <span><i id="unitsHold">0</i></span></p>
             </div>
           </form>
         </div>
