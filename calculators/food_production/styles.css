@@ -408,6 +408,51 @@ body {
   .results p:last-of-type {
     border-bottom: 0;
   }
+
+  .box-content h2 {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 5px;
+    font-size: 14px;
+    padding-inline: 6px;
+  }
+
+  .fixSelector {
+    width: 100%;
+    min-height: 24px;
+    padding: 2px 5px;
+    font-size: 11px;
+  }
+
+  .levelSelector {
+    min-width: 74px;
+    max-width: 92px;
+  }
+
+  .box-text {
+    display: grid;
+    grid-template-columns: 1fr;
+    padding: 6px;
+  }
+
+  .box-text > [class*="col-"] {
+    width: 100%;
+    max-width: 100%;
+    padding-inline: 0;
+    margin-bottom: 0 !important;
+  }
+
+  .box-text .fixSelector {
+    width: min(100%, 150px);
+    margin-left: 0;
+  }
+
+  .box-content p {
+    font-size: 12px;
+  }
+
+  .box-content p span {
+    font-size: 12px;
+  }
 }
 
 @media (max-width: 575px) {

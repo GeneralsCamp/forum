@@ -37,11 +37,12 @@
 .patronage-reward-modal {
   --gf-modal-width: min(680px, calc(100% - 20px));
   --patronage-reward-modal-height: min(680px, calc(100vh - 20px));
-  --gf-modal-shell-bg: #5b4330;
-  --gf-modal-shell-border: #2f2319;
-  --gf-modal-head-bg: #815638;
-  --gf-modal-head-border: #3a2b1f;
-  --gf-modal-body-bg: #9a6a45;
+  --gf-modal-shell-bg: #4f3625;
+  --gf-modal-shell-border: rgba(215, 155, 66, 0.62);
+  --gf-modal-head-bg: linear-gradient(100deg, #503724, #704a2f);
+  --gf-modal-head-border: rgba(215, 155, 66, 0.48);
+  --gf-modal-body-bg: #60412c;
+  --gf-modal-shadow: 0 18px 42px rgba(0, 0, 0, 0.48);
 }
 
 .patronage-reward-modal-card {
@@ -51,6 +52,8 @@
   max-height: var(--patronage-reward-modal-height);
   display: flex;
   flex-direction: column;
+  border-radius: 9px;
+  box-shadow: var(--gf-modal-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .patronage-reward-modal .gf-modal-title {
@@ -62,14 +65,14 @@
   flex: 1 1 auto;
   min-height: 0;
   max-height: 680px;
-  padding: 8px;
+  padding: 10px;
   overflow-x: auto;
   overflow-y: auto;
 }
 
 .patronage-reward-list {
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 
 .patronage-version-group,
@@ -81,45 +84,56 @@
 .patronage-version-title,
 .patronage-type-title {
   margin: 0;
-  color: #fff4de;
+  color: #f3c24a;
   font-weight: 800;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.32);
 }
 
 .patronage-version-title {
   font-size: 18px;
+  padding: 2px 0 4px;
+  border-bottom: 1px solid rgba(215, 155, 66, 0.34);
 }
 
 .patronage-type-title {
   font-size: 15px;
+  color: #e6d1af;
 }
 
 .patronage-reward-table {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
-  background: rgba(67, 51, 38, 0.35);
+  overflow: hidden;
+  background: #60412c;
+  border: 1px solid rgba(215, 155, 66, 0.52);
+  border-radius: 8px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    0 3px 8px rgba(0, 0, 0, 0.22);
 }
 
 .patronage-reward-table th,
 .patronage-reward-table td {
   padding: 7px 8px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(215, 155, 66, 0.28);
   vertical-align: middle;
 }
 
 .patronage-reward-table th {
   color: var(--gold-1);
-  background: rgba(0, 0, 0, 0.22);
+  background: #4f3625;
   font-size: 12px;
   text-transform: uppercase;
 }
 
 .patronage-level-cell,
 .patronage-points-cell {
-  color: #fff;
+  color: #fff4de;
   font-weight: 800;
   text-align: center;
   white-space: nowrap;
+  background: rgba(79, 54, 37, 0.32);
 }
 
 .patronage-reward-table th:nth-child(1),
@@ -134,7 +148,7 @@
 
 .patronage-reward-items {
   display: grid;
-  gap: 6px;
+  gap: 5px;
 }
 
 .patronage-reward-item {
@@ -142,7 +156,7 @@
   min-width: 0;
   align-items: center;
   gap: 8px;
-  color: #fff4de;
+  color: #f7edd7;
   font-weight: 700;
   text-decoration: none;
 }
@@ -157,8 +171,8 @@
 }
 
 .patronage-reward-item-button:hover {
-  color: #fff;
-  text-decoration: underline;
+  color: #f3c24a;
+  text-decoration: none;
 }
 
 .patronage-reward-item img {
@@ -166,6 +180,7 @@
   height: 38px;
   flex: 0 0 38px;
   object-fit: contain;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
 }
 
 .patronage-reward-item span {
@@ -175,16 +190,19 @@
 
 .patronage-game-choice-modal {
   --gf-modal-width: min(430px, calc(100% - 20px));
-  --gf-modal-shell-bg: #5b4330;
-  --gf-modal-shell-border: #2f2319;
-  --gf-modal-head-bg: #815638;
-  --gf-modal-head-border: #3a2b1f;
-  --gf-modal-body-bg: #9a6a45;
+  --gf-modal-shell-bg: #4f3625;
+  --gf-modal-shell-border: rgba(215, 155, 66, 0.62);
+  --gf-modal-head-bg: linear-gradient(100deg, #503724, #704a2f);
+  --gf-modal-head-border: rgba(215, 155, 66, 0.48);
+  --gf-modal-body-bg: #60412c;
+  --gf-modal-shadow: 0 18px 42px rgba(0, 0, 0, 0.48);
 }
 
 .patronage-game-choice-modal-card {
   min-width: var(--gf-modal-width);
   max-width: var(--gf-modal-width);
+  border-radius: 9px;
+  box-shadow: var(--gf-modal-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .patronage-game-choice-modal .gf-modal-title {
@@ -199,7 +217,7 @@
 
 .patronage-game-choice-text {
   margin: 0;
-  color: #fff4de;
+  color: #f7edd7;
   font-size: 14px;
   font-weight: 700;
 }
@@ -207,6 +225,38 @@
 .patronage-game-choice-select,
 .patronage-game-choice-continue {
   width: 100%;
+}
+
+.patronage-game-choice-select {
+  min-height: 38px;
+  border: 1px solid rgba(215, 155, 66, 0.72);
+  border-radius: 6px;
+  background-color: #f0d7ae;
+  color: #56391f;
+  font-weight: 900;
+  box-shadow: inset 0 1px 2px rgba(89, 56, 30, 0.18);
+}
+
+.patronage-game-choice-select:focus {
+  background-color: #f5dfba;
+  color: #4b311b;
+  border-color: rgba(243, 194, 74, 0.95);
+  box-shadow: 0 0 0 2px rgba(215, 155, 66, 0.25), inset 0 1px 2px rgba(89, 56, 30, 0.16);
+}
+
+.patronage-game-choice-continue {
+  min-height: 40px;
+  border: 1px solid rgba(215, 155, 66, 0.72);
+  border-radius: 7px;
+  background: #f3c24a;
+  color: #433120;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.patronage-game-choice-continue:hover {
+  background: #ffd76a;
+  border-color: rgba(243, 194, 74, 0.95);
 }
 
 @media (max-width: 768px) {

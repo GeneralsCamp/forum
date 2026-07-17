@@ -590,7 +590,6 @@ function renderRewardListModal() {
     <div class="patronage-reward-list">
       ${visibleSets.map((setModel) => `
         <section class="patronage-version-group">
-          <h3 class="patronage-version-title">${escapeHtml(setModel.label)}</h3>
           ${setModel.types.map((typeModel) => `
             <section class="patronage-type-group">
               <h4 class="patronage-type-title">${escapeHtml(typeModel.label)}</h4>
@@ -1030,7 +1029,8 @@ function buildDonationModel(data, lang, imageMaps) {
     currenciesById,
     decorationsById,
     buildingsById: decorationsById,
-    buildings: extractDecorations(data.buildings || []),
+    buildings: getArray(data, ["buildings"]),
+    allBuildings: getArray(data, ["buildings"]),
     constructionById,
     equipmentById,
     gemsById,

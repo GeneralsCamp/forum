@@ -919,8 +919,10 @@ function getConstructionLevelText(entity, labels) {
   const slotTypeID = Number(getProp(entity, ["slotTypeID", "slottypeid"]) || 0);
   const level = getProp(entity, ["level"]);
   const rarity = getConstructionRarityName(entity, labels);
+  const hasDecoPoints = !!getProp(entity, ["decoPoints", "decopoints"]);
   if (slotTypeID === 4) return `${labels.primary} (${labels.level} ${level})`;
   if (slotTypeID === 3 || slotTypeID === 6) return labels.appearance;
+  if (slotTypeID === 0 && hasDecoPoints) return labels.appearance;
   if (slotTypeID === 1) return labels.permanent;
   if (slotTypeID === 2) return `${labels.relic} (${labels.level} ${level})`;
   return rarity ? `${rarity} (${labels.level} ${level})` : `${labels.level} ${level}`;
