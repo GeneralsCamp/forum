@@ -211,6 +211,14 @@ body {
   padding-top: 6px !important;
 }
 
+#buildings-container .box {
+  background: rgba(96, 65, 44, 0.94);
+}
+
+#buildings-container .box-content {
+  background: transparent;
+}
+
 .buildings-header {
   border-top-left-radius: 0;
   border-top-right-radius: 0;

@@ -299,120 +299,63 @@
     text-align: center;
 }
 
-.export-root {
-    width: 1320px;
-    background: #f3e6c8;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
+/* Normal view: transparent, high-contrast event log layout. */
+.event-grid {
+    background: rgba(32, 23, 17, 0.68);
+    border: 1px solid rgba(215, 155, 66, 0.7);
+    border-radius: 8px;
+    overflow: hidden;
 }
 
-.export-header {
-    height: 56px;
-    display: flex;
-    align-items: center;
+.event-card {
+    background: transparent;
+    border-right: 1px solid rgba(215, 155, 66, 0.48);
+    border-bottom: 1px solid rgba(215, 155, 66, 0.48);
+    border-radius: 0;
+    color: #fff4de;
+}
+
+.event-title {
+    color: #f3c24a;
     justify-content: center;
-    gap: 10px;
-    padding: 1px 3px;
-    background: #ead6b3;
-    border: 1px solid #c7b08f;
-    margin-bottom: 12px;
-}
-
-.export-header-icon {
-    width: 45px;
-    height: auto;
-    object-fit: contain;
-}
-
-.export-header-title {
-    font-size: 26px;
-    font-weight: 900;
-    color: #2b1c0e;
-}
-
-.export-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-}
-
-.export-card {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 10px 12px;
-    box-sizing: border-box;
-    min-height: 150px;
-}
-
-.export-icon {
-    width: 80px;
-    height: auto;
-    object-fit: contain;
-    flex-shrink: 0;
-}
-
-.export-meta {
-    display: flex;
-    flex-direction: column;
-}
-
-.export-title {
-    font-size: 20px;
-    font-weight: 900;
-    color: #2b1c0e;
-    line-height: 1.1;
-}
-
-.export-dates {
-    font-size: 18px;
-    font-weight: 500;
-    color: #2b1c0e;
-    line-height: 1.35;
-}
-
-.export-dates span {
-    display: block;
-}
-
-.export-dates span:not(:last-child)::after {
-    content: ", ";
-}
-
-.export-dates span {
-    margin: 0;
-    padding: 0;
-}
-
-.export-note {
-    margin-top: 12px;
-    font-size: 14px;
-    font-weight: 600;
-    text-align: left;
-    color: #2b1c0e;
-}
-
-.export-subtitle {
-    font-weight: 800;
-    color: #4d3520;
-    margin-top: 6px;
-    margin-bottom: 2px;
-}
-
-.export-footer {
-    height: auto;
-    padding: 4px 5px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0;
-    background: #ead6b3;
-    border: 1px solid #c7b08f;
-}
-
-.export-footer-line {
-    font-size: 14px;
-    font-weight: 700;
-    color: #2b1c0e;
     text-align: center;
 }
+
+.event-meta {
+    flex: 1 1 auto;
+    align-items: center;
+}
+
+.event-dates {
+    color: #fff4de;
+    font-weight: 700;
+    font-size: 1.28rem;
+    line-height: 1.3;
+    text-align: center;
+}
+
+.event-subtitle {
+    color: #e6d1af;
+    font-size: 1.05rem;
+    font-weight: 800;
+    text-align: center;
+}
+
+.schedule-header {
+    background: transparent;
+    border-bottom: 1px solid rgba(215, 155, 66, 0.7);
+}
+
+.schedule-header-title {
+    color: #f3c24a;
+}
+
+.schedule-footer-bar {
+    background: transparent;
+    border-top: 0;
+}
+
+.schedule-footer-line {
+    color: #fff4de;
+}
+

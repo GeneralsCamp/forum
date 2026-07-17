@@ -814,7 +814,7 @@ function parseDetailEffects(effectsStr, ctx) {
       const maxText = maxTotalBonus
         ? ` <span class="max-bonus">(Max: ${escapeHtml(formatNumber(maxTotalBonus))}${isPercent ? "%" : ""})</span>`
         : "";
-      return `${escapeHtml(label)}: ${escapeHtml(formatEffectValue(valueRaw, isPercent))}${maxText}`;
+      return `${escapeHtml(label)}: <span class="effect-amount"><span class="effect-value">${escapeHtml(formatEffectValue(valueRaw, isPercent))}</span>${maxText}</span>`;
     });
 }
 

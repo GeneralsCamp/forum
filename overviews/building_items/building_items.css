@@ -1,7 +1,7 @@
 #cards {
     --tci-card-border: rgba(215, 155, 66, 0.52);
     --tci-card-divider: rgba(215, 155, 66, 0.34);
-    --tci-card-bg: #60412c;
+    --tci-card-bg: rgba(96, 65, 44, 0.94);
     --tci-text: #f7ead5;
     position: relative;
     z-index: 1;

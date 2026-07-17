@@ -1,7 +1,7 @@
 #cards {
     --look-card-border: rgba(215, 155, 66, 0.52);
     --look-card-divider: rgba(215, 155, 66, 0.34);
-    --look-card-bg: #60412c;
+    --look-card-bg: rgba(96, 65, 44, 0.94);
     --look-text: #f7ead5;
     position: relative;
     z-index: 1;

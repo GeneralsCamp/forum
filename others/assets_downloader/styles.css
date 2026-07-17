@@ -290,46 +290,6 @@ h2 {
     }
 }
 
-/* Floating buttons */
-.home-icon-link {
-    width: 50px;
-    height: 50px;
-    text-decoration: none;
-    opacity: 0.8;
-    transition: opacity 0.3s ease-in-out;
-}
-
-.home-icon-link:hover {
-    opacity: 1;
-}
-
-.home-icon {
-    background-color: #7e4606;
-    border: 1px solid #f8bc00;
-    border-radius: 50%;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.home-icon i {
-    color: #f8bc00;
-    font-size: 18px;
-}
-
-#topButtonsContainer {
-    position: fixed;
-    right: 10px;
-    bottom: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    z-index: 1000;
-}
-
 /* GENERAL RESET & SCROLLBAR */
 * {
     touch-action: manipulation;
@@ -507,4 +467,419 @@ h2 {
 .custom-textarea::placeholder {
     color: #8d7155;
     font-weight: 600;
+}
+
+/* Current forum visual system */
+html,
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    min-height: 100vh;
+    background: #201711 url("../../img_base/bg.png") center / cover fixed no-repeat;
+    color: #f7ead5;
+}
+
+.container {
+    width: 100%;
+    max-width: none;
+    min-height: 100vh;
+    margin: 0 !important;
+    padding: 0 8px 12px;
+    background: rgba(32, 23, 17, 0.74);
+    border-inline: 1px solid rgba(215, 155, 66, 0.24);
+    box-shadow: inset 12px 0 18px -18px rgba(215, 155, 66, 0.42),
+        inset -12px 0 18px -18px rgba(215, 155, 66, 0.42);
+}
+
+.container > .row {
+    --bs-gutter-x: 0;
+    margin-inline: 0;
+    row-gap: 8px;
+    flex: 1 1 auto;
+    min-height: 0;
+    flex-direction: column;
+    flex-wrap: nowrap;
+}
+
+.container > .row > .col-12 {
+    padding-inline: 0;
+    margin-bottom: 0 !important;
+}
+
+#content {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0;
+    overflow-y: auto;
+}
+
+#content > .collapse-area {
+    flex: 0 0 auto;
+    width: 100%;
+}
+
+#content > .collapse-area:last-child {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    background: rgba(32, 23, 17, 0.88);
+}
+
+#content > .collapse-area:last-child .collapse.show {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+}
+
+#content > .collapse-area:last-child #log {
+    height: 100%;
+    min-height: 0;
+    max-height: none;
+    background: transparent;
+}
+
+.collapse-area {
+    overflow: hidden;
+    background: rgba(79, 54, 37, 0.86);
+    border: 1px solid rgba(215, 155, 66, 0.52);
+    border-radius: 0;
+}
+
+.collapse-header {
+    position: relative;
+    gap: 14px;
+    margin: 0;
+    padding: 8px 10px 8px 30px;
+    border: 0;
+    border-bottom: 1px solid rgba(215, 155, 66, 0.52);
+    border-radius: 0;
+    background: transparent;
+    color: #f3c24a;
+    font-size: 1.05rem;
+    line-height: 1.1;
+    text-align: left;
+    text-shadow: none;
+}
+
+.collapse-header::before {
+    content: "";
+    position: absolute;
+    left: 11px;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    border: 2px solid #d79b42;
+    transform: translateY(-50%) rotate(45deg);
+}
+
+.note {
+    margin: 0;
+    padding: 8px;
+    background: rgba(96, 65, 44, 0.94);
+    border: 0;
+    border-radius: 0;
+}
+
+.row.note {
+    width: 100%;
+    margin-inline: 0 !important;
+    padding: 4px !important;
+    box-sizing: border-box;
+}
+
+.row.note .col-md-4,
+.row.note .col-md-6,
+.row.note .col-sm-12 {
+    padding-inline: 4px;
+}
+
+.row.note .col-md-4 {
+    padding-inline: 4px;
+}
+
+.row.note .col-md-6 {
+    padding-inline: 4px;
+}
+
+.form-select,
+.form-select option {
+    min-height: 38px;
+    border: 1px solid rgba(215, 155, 66, 0.72);
+    border-radius: 5px;
+    background-color: #ead6b8;
+    color: #3e2a16;
+}
+
+.btn {
+    min-height: 38px;
+    border-width: 1px;
+    border-radius: 5px;
+    box-shadow: none;
+}
+
+.custom-folder-button {
+    background: #d79b42;
+    border-color: #f3c24a;
+    color: #332318;
+}
+
+.custom-start-button {
+    background: #3f704b;
+    border-color: #78ad7e;
+    color: #f2f5e9;
+}
+
+.custom-stop-button {
+    background: #81453f;
+    border-color: #b8786d;
+    color: #f8e8e2;
+}
+
+.custom-folder-button:hover,
+.custom-start-button:hover,
+.custom-stop-button:hover {
+    filter: brightness(1.1);
+    transform: none;
+}
+
+.custom-folder-button,
+.custom-folder-button:hover,
+.custom-folder-button:focus,
+.custom-folder-button:active,
+.custom-folder-button.active {
+    background: #e2b33d !important;
+    border-color: #f3c24a !important;
+    color: #332318 !important;
+    box-shadow: none !important;
+}
+
+.custom-start-button,
+.custom-start-button:hover,
+.custom-start-button:focus,
+.custom-start-button:active,
+.custom-start-button.active {
+    background: #4f8a5b !important;
+    border-color: #8bc58b !important;
+    color: #332318 !important;
+    box-shadow: none !important;
+}
+
+.custom-stop-button,
+.custom-stop-button:hover,
+.custom-stop-button:focus,
+.custom-stop-button:active,
+.custom-stop-button.active {
+    background: #9a5149 !important;
+    border-color: #d08a7d !important;
+    color: #332318 !important;
+    box-shadow: none !important;
+}
+
+.custom-folder-button:disabled,
+.custom-start-button:disabled,
+.custom-stop-button:disabled {
+    opacity: 0.58;
+    filter: saturate(0.65) brightness(0.78);
+    cursor: not-allowed;
+}
+
+.progress {
+    height: 24px;
+    border: 0;
+    border-bottom: 1px solid rgba(215, 155, 66, 0.52);
+    border-radius: 0;
+    background: #332318;
+    box-shadow: none;
+}
+
+.progress-bar {
+    background: #6b472f;
+    box-shadow: none;
+}
+
+.progress-text {
+    color: #f7ead5;
+    text-shadow: none;
+    font-size: 12px;
+}
+
+#log {
+    min-height: 300px;
+    max-height: 52vh;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: rgba(32, 23, 17, 0.82);
+    color: #f7ead5;
+    padding: 10px;
+    font-size: 13px;
+}
+
+@media (max-width: 1024px) {
+    .container {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 700px) {
+    body {
+        background-attachment: scroll;
+    }
+
+    .container {
+        padding-inline: 3px;
+    }
+
+    #log {
+        min-height: 240px;
+        max-height: 45vh;
+    }
+}
+
+/* Match the overview container widths instead of forcing viewport width. */
+.container {
+    width: 100%;
+    max-width: 1320px;
+    margin-inline: auto !important;
+}
+
+@media (max-width: 1399.98px) {
+    .container {
+        max-width: 100%;
+    }
+}
+
+html {
+    scrollbar-width: thin;
+    scrollbar-color: #9a6a45 #332318;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    background: transparent;
+}
+
+::-webkit-scrollbar-track {
+    background: #332318;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #9a6a45;
+    border: 2px solid #332318;
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #b47b4f;
+}
+
+/* Keep the downloader sections in the same open, boxed layout as calculators. */
+#content {
+    gap: 10px;
+}
+
+#content > .collapse-area {
+    overflow: visible;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+}
+
+#content > .collapse-area .collapse-header {
+    gap: 14px;
+    padding: 8px 8px 8px 30px;
+    border: 0;
+    background: transparent;
+    color: #f3c24a;
+    text-align: left;
+    text-shadow: 0 2px 3px rgba(0, 0, 0, 0.38);
+}
+
+#content > .collapse-area .collapse-header::after {
+    content: "";
+    flex: 1 1 auto;
+    height: 1px;
+    margin-left: 10px;
+    background: linear-gradient(90deg, rgba(215, 155, 66, 0.7), rgba(215, 155, 66, 0.08));
+}
+
+#content > .collapse-area > .note {
+    margin: 0;
+    padding: 8px !important;
+    border: 1px solid rgba(215, 155, 66, 0.52);
+    border-radius: 8px;
+    background: #60412c;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045), 0 3px 8px rgba(0, 0, 0, 0.28);
+}
+
+#content > .collapse-area:last-child {
+    background: transparent;
+}
+
+#content > .collapse-area:last-child > .progress {
+    border: 1px solid rgba(215, 155, 66, 0.52);
+    border-bottom: 1px solid rgba(215, 155, 66, 0.52);
+    border-radius: 8px 8px 0 0;
+    background: transparent;
+}
+
+#content > .collapse-area:last-child > .collapse.show {
+    margin: 0;
+    padding: 8px !important;
+    border: 1px solid rgba(215, 155, 66, 0.52);
+    border-top: 0;
+    border-radius: 0 0 8px 8px;
+    background: transparent;
+    box-shadow: none;
+}
+
+#content > .collapse-area:last-child #log {
+    color: #fff4de;
+    font-weight: 600;
+}
+
+/* Match the calculator page title exactly. */
+.container > .row > .col-12 > h1 {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    width: calc(100% + 16px);
+    margin: 0 -8px 8px;
+    background: var(--gf-navbar-bg);
+    color: var(--gf-gold-strong);
+    padding: 6px 10px;
+    border: 0;
+    border-bottom: 1px solid var(--gf-gold-line);
+    border-radius: 0;
+    box-shadow: 0 5px 14px rgba(0, 0, 0, 0.3);
+    font-size: 1.35rem;
+    font-weight: 900;
+    text-align: left;
+    text-shadow: 0 2px 3px rgba(0, 0, 0, 0.42);
+}
+
+.container > .row > .col-12 > h1::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin: 0 11px 2px 4px;
+    border: 2px solid #d79b42;
+    transform: rotate(45deg);
+}
+
+@media (max-width: 700px) {
+    .container > .row > .col-12 > h1 {
+        width: calc(100% + 6px);
+        margin-inline: -3px;
+    }
 }

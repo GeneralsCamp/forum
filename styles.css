@@ -223,10 +223,10 @@ body {
     left: 0;
     right: 0;
     top: calc(100% + 6px);
-    background: rgba(29, 21, 16, 0.97);
-    border: 1px solid rgba(215, 155, 66, 0.5);
+    background: #ead6b8;
+    border: 1px solid rgba(215, 155, 66, 0.72);
     border-radius: 7px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.42);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
     display: none;
     max-height: 280px;
     overflow: auto;
@@ -243,14 +243,14 @@ body {
     border: 0;
     background: transparent;
     padding: 8px 10px;
-    color: #f7ead5;
+    color: #433120;
     font-weight: 700;
-    border-bottom: 1px solid rgba(215, 155, 66, 0.14);
+    border-bottom: 1px solid rgba(215, 155, 66, 0.28);
 }
 
 .search-suggestion-btn:hover {
-    background: rgba(111, 72, 39, 0.58);
-    color: #f3c24a;
+    background: rgba(243, 194, 74, 0.25);
+    color: #433120;
 }
 
 .container {
@@ -398,7 +398,7 @@ html {
 .category-box {
     display: flex;
     align-items: stretch;
-    background: #60412c;
+    background: rgba(96, 65, 44, 0.94);
     border: 1px solid rgba(215, 155, 66, 0.52);
     border-radius: 9px;
     text-decoration: none;
@@ -420,7 +420,7 @@ html {
 @media (hover: none),
 (pointer: coarse) {
     .category-card-shell:hover .category-box {
-        background-color: #60412c;
+        background-color: rgba(96, 65, 44, 0.94);
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045), 0 3px 8px rgba(0, 0, 0, 0.34);
         border-color: rgba(215, 155, 66, 0.52);
     }
@@ -439,6 +439,32 @@ html {
     width: 46px;
     height: 46px;
     object-fit: contain;
+}
+
+@media (max-width: 1023.98px) {
+    #othersHeader,
+    #others {
+        display: none !important;
+    }
+}
+
+@keyframes category-icon-wiggle {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    50% { transform: translateX(2px); }
+    75% { transform: translateX(-1px); }
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .category-card-shell:hover .category-icon img {
+        animation: category-icon-wiggle 620ms ease-in-out both;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .category-card-shell:hover .category-icon img {
+        animation: none;
+    }
 }
 
 .category-box h3 {

@@ -44,6 +44,11 @@ const categories = {
         { key: "equipment_builder", name: "Equipment Set Builder", icon: "main_page/equipment-icon.webp", link: "./simulators/equipment_builder/index.html", disabled: false },
         { key: "castle_layout", name: "Castle Layout Simulator", icon: "main_page/layout-icon.webp", link: "./simulators/layout_editor/index.html", disabled: false },
         { key: "hall_of_legends", name: "Hall of Legends Simulator", icon: "main_page/hall-of-legends-simulator-icon.webp", link: "./simulators/hol_simulator/index.html", disabled: false },
+    ],
+
+    others: [
+        { key: "assets_downloader", name: "Assets Downloader", icon: "main_page/tools-icon.webp", link: "./others/assets_downloader/index.html", disabled: false },
+        { key: "empire_duels", name: "Empire Duels", icon: "main_page/generals-icon.webp", link: "./empire_duels/index.html", disabled: false }
     ]
 };
 
@@ -90,7 +95,8 @@ function applyHomeTranslations() {
     const sectionKeys = [
         ["overviews", "overviews", "OVERVIEWS"],
         ["calculators", "calculators", "CALCULATORS"],
-        ["simulators", "simulators", "SIMULATORS"]
+        ["simulators", "simulators", "SIMULATORS"],
+        ["others", "others", "OTHERS"]
     ];
     sectionKeys.forEach(([id, key, fallback]) => {
         const title = document.querySelector(`#${id}`)?.previousElementSibling?.querySelector(".header-title");
@@ -211,13 +217,15 @@ function rerenderMainSections() {
     renderCategory(categories.overviews, "overviews");
     renderCategory(categories.calculators, "calculators");
     renderCategory(categories.simulators, "simulators");
+    renderCategory(categories.others, "others");
 }
 
 function getAllCategoryItems() {
     return [
         ...categories.overviews,
         ...categories.simulators,
-        ...categories.calculators
+        ...categories.calculators,
+        ...categories.others
     ].filter(item => !item.disabled && item.link).map(localizeItem);
 }
 
@@ -459,36 +467,6 @@ function setupSearchPlaceholderTyping(input) {
     schedule(1200);
 }
 
-function setupBrandEasterEgg() {
-    const brand = document.getElementById("brandEasterEgg");
-    if (!brand) return;
-
-    let tapCount = 0;
-    let resetTimer = 0;
-
-    const registerTap = () => {
-        tapCount += 1;
-        if (resetTimer) {
-            window.clearTimeout(resetTimer);
-        }
-        resetTimer = window.setTimeout(() => {
-            tapCount = 0;
-            resetTimer = 0;
-        }, 2200);
-
-        if (tapCount >= 5) {
-            tapCount = 0;
-            if (resetTimer) {
-                window.clearTimeout(resetTimer);
-                resetTimer = 0;
-            }
-            window.location.href = "./empire_duels/index.html";
-        }
-    };
-
-    brand.addEventListener("pointerup", registerTap);
-}
-
 document.addEventListener("DOMContentLoaded", async () => {
     loadGoogleAnalytics("G-8TGZRNFGRR");
     await loadOwnLanguage();
@@ -497,5 +475,4 @@ document.addEventListener("DOMContentLoaded", async () => {
     setupSettingsModal();
     rerenderMainSections();
     setupSearch();
-    setupBrandEasterEgg();
 });

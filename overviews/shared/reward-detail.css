@@ -125,8 +125,8 @@
 .loot-reward {
   width: 64px;
   height: 64px;
-  background: rgba(32, 23, 17, 0.42);
-  border: 1px solid rgba(215, 155, 66, 0.46);
+  background: #6b472f;
+  border: 1px solid rgba(215, 155, 66, 0.62);
   border-radius: 4px;
   display: flex;
   align-items: center;
@@ -155,7 +155,7 @@
   right: 0;
   bottom: 0;
   height: 18px;
-  background: rgba(32, 23, 17, 0.74);
+  background: rgba(45, 30, 20, 0.72);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -314,6 +314,14 @@
   font-style: italic;
   color: rgba(247, 234, 213, 0.76);
   font-size: 12px;
+  white-space: nowrap;
+}
+
+.reward-decoration-modal .reward-effect-row .effect-amount {
+  display: inline-block;
+  max-width: 100%;
+  white-space: nowrap;
+  vertical-align: baseline;
 }
 
 .reward-decoration-modal .reward-info-card-modal-card,

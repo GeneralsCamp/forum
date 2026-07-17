@@ -8,6 +8,14 @@
 }
 
 .reward-title {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap;
     border-bottom: 1px solid rgba(215, 155, 66, 0.52);
     color: var(--gf-gold-strong);
     font-size: 16px;
@@ -168,7 +176,7 @@ canvas.card-image {
 }
 
 #rewardRows .box {
-    background: #60412c;
+    background: rgba(96, 65, 44, 0.94);
     border: 1px solid rgba(215, 155, 66, 0.52);
     border-radius: 8px;
     color: #f7ead5;

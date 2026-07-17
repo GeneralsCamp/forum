@@ -82,7 +82,7 @@ h2 {
 .collapse-header {
   color: #f3c24a;
   font-weight: bolder;
-  background-color: rgb(119, 80, 54);
+  background-color: rgba(79, 54, 37, 0.86);
   border-radius: 10px 10px 0 0;
   padding: 10px;
   margin: 0;
@@ -97,7 +97,7 @@ h2 {
 }
 
 .collapse-area {
-  background-color: rgb(180, 127, 92);
+  background-color: rgba(79, 54, 37, 0.86);
   border-radius: 10px;
   overflow: hidden;
 }
@@ -151,6 +151,17 @@ label {
 .calculator-bonuses-form .form-group {
   padding-left: 5px;
   padding-right: 5px;
+}
+
+/* Keep calculator surfaces readable while allowing the page background to show through slightly. */
+.calculator-bonuses-form,
+.calculator-bonuses-form .form-group,
+.results {
+  background: rgba(96, 65, 44, 0.94) !important;
+}
+
+.result .calculator-bonuses-form {
+  background: transparent !important;
 }
 
 html {

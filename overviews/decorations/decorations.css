@@ -8,7 +8,7 @@
 #cards {
     --deco-card-border: rgba(215, 155, 66, 0.52);
     --deco-card-divider: rgba(215, 155, 66, 0.34);
-    --deco-card-bg: #60412c;
+    --deco-card-bg: rgba(96, 65, 44, 0.94);
     --deco-text: #f7ead5;
     position: relative;
     z-index: 1;
@@ -267,6 +267,13 @@
     padding-block: 2px;
 }
 
+#cards .reward-effect-row .effect-amount {
+    display: inline-block;
+    max-width: 100%;
+    white-space: nowrap;
+    vertical-align: baseline;
+}
+
 @media (min-width: 768px) {
     #cards>.col-md-6:nth-child(odd):has(.box.has-effects)+.col-md-6 .box.no-effects .card-table,
     #cards>.col-md-6:nth-child(odd):has(.box.no-effects):has(+ .col-md-6 .box.has-effects) .box.no-effects .card-table {
@@ -309,6 +316,7 @@
     color: #f3c24a;
     font-size: 12px;
     cursor: pointer;
+    white-space: nowrap;
 }
 
 @media (max-width:768px) {

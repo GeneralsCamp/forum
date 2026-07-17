@@ -61,7 +61,7 @@ const gameIcons = {
     e4k: "../../img_base/event_icons/logo-e4k.webp"
 };
 const scheduleFooterLines = [
-    "Dates are shown in day/month/year format.",
+    "Dates are shown in day/month format.",
     "The schedule is subject to change."
 ];
 
@@ -288,13 +288,20 @@ function parseDateRange(text) {
 function formatDateForDisplay(date) {
     const day = String(date.getUTCDate()).padStart(2, "0");
     const month = String(date.getUTCMonth() + 1).padStart(2, "0");
-    const year = date.getUTCFullYear();
-    return `${day}/${month}/${year}`;
+    return `${day}/${month}`;
 }
 
 function formatDateRangeForDisplay(text) {
     const parsed = parseDateRange(text);
-    if (!parsed) return normalizeText(text).replace(/\s*[-\u2013]\s*/g, "-");
+    if (!parsed) {
+        return normalizeText(text)
+            .replace(/\/\d{4}\b/g, "")
+            .replace(/\b\d{4}\b/g, "")
+            .replace(/\s*[-\u2013]\s*/g, "-")
+            .replace(/\s{2,}/g, " ")
+            .replace(/\s*([-/])\s*/g, "$1")
+            .trim();
+    }
     return `${formatDateForDisplay(parsed.start)}-${formatDateForDisplay(parsed.end)}`;
 }
 
@@ -713,32 +720,6 @@ async function fetchEventPlanHtml(url) {
     return res.text();
 }
 
-function setLoadingState(message, show = true) {
-    const loadingBox = document.getElementById("loadingBox");
-    const loadingStatus = document.getElementById("loadingStatus");
-    const loadingProgress = document.getElementById("loadingProgress");
-    const loadingPercentText = document.getElementById("loadingPercentText");
-    const eventGrid = document.getElementById("eventGrid");
-
-    if (!loadingBox) return;
-    loadingBox.style.display = show ? "flex" : "none";
-    if (loadingStatus && message) loadingStatus.textContent = message;
-    if (loadingProgress) loadingProgress.style.width = show ? "0%" : "0%";
-    if (loadingPercentText) loadingPercentText.textContent = show ? "0%" : "";
-    if (eventGrid) eventGrid.style.visibility = show ? "hidden" : "visible";
-}
-
-function setLoadingProgress(percent, message) {
-    const loadingStatus = document.getElementById("loadingStatus");
-    const loadingProgress = document.getElementById("loadingProgress");
-    const loadingPercentText = document.getElementById("loadingPercentText");
-    const safePercent = Math.max(0, Math.min(100, Math.round(percent)));
-
-    if (loadingStatus && message) loadingStatus.textContent = message;
-    if (loadingProgress) loadingProgress.style.width = `${safePercent}%`;
-    if (loadingPercentText) loadingPercentText.textContent = `${safePercent}%`;
-}
-
 function ensureEventGrid() {
     let grid = document.getElementById("eventGrid");
     if (grid) return grid;
@@ -750,12 +731,7 @@ function ensureEventGrid() {
     grid.id = "eventGrid";
     grid.className = "event-grid";
 
-    const loadingBox = document.getElementById("loadingBox");
-    if (loadingBox) {
-        content.insertBefore(grid, loadingBox);
-    } else {
-        content.appendChild(grid);
-    }
+    content.appendChild(grid);
     return grid;
 }
 
@@ -1237,191 +1213,14 @@ function updateHashForGame(key) {
     }
 }
 
-function buildExportDom(events, gameKey) {
-    const label = eventSources[gameKey]?.label || gameKey;
-
-    const gameIconUrl =
-        gameKey === "empire"
-            ? "../../img_base/event_icons/logo-em.webp"
-            : "../../img_base/event_icons/logo-e4k.webp";
-
-    const root = document.createElement("div");
-    root.className = "export-root";
-
-    const header = document.createElement("div");
-    header.className = "export-header";
-
-    const icon = document.createElement("img");
-    icon.className = "export-header-icon";
-    icon.src = gameIconUrl;
-    icon.alt = label;
-
-    const title = document.createElement("div");
-    title.className = "export-header-title";
-    title.textContent = label;
-
-    header.appendChild(icon);
-    header.appendChild(title);
-    root.appendChild(header);
-
-    const grid = document.createElement("div");
-    grid.className = "export-grid";
-
-    const sortedEvents = getSortedEvents(events || []);
-
-    sortedEvents.forEach(event => {
-        const card = document.createElement("div");
-        card.className = "export-card";
-
-        const img = document.createElement("img");
-        img.className = "export-icon";
-        img.alt = event.title || "Event";
-
-        const custom = customEventImages.find(e =>
-            e.name.toLowerCase() === String(event.title || "").toLowerCase()
-        );
-
-        img.src = custom?.url || event.imageUrl || placeholderImage;
-
-        const meta = document.createElement("div");
-        meta.className = "export-meta";
-
-        const h3 = document.createElement("div");
-        h3.className = "export-title";
-        h3.textContent = getDisplayTitle(event.title);
-
-        const dates = document.createElement("div");
-        dates.className = "export-dates";
-
-        if (event.dateGroups && event.dateGroups.length > 0) {
-            event.dateGroups.forEach(group => {
-                if (group.label) {
-                    const sub = document.createElement("div");
-                    sub.className = "export-subtitle";
-                    sub.textContent = group.label;
-                    dates.appendChild(sub);
-                }
-
-                (group.dates || []).forEach(d => {
-                    const line = document.createElement("div");
-                    line.textContent = formatDateRangeForDisplay(d);
-                    dates.appendChild(line);
-                });
-            });
-        } else {
-            const dateList = event.dates || [];
-            if (dateList.length > 0) {
-                dateList.forEach(d => {
-                    const line = document.createElement("div");
-                    line.textContent = formatDateRangeForDisplay(d);
-                    dates.appendChild(line);
-                });
-            } else {
-                const line = document.createElement("div");
-                line.textContent = "No date data.";
-                dates.appendChild(line);
-            }
-        }
-
-        meta.appendChild(h3);
-        meta.appendChild(dates);
-
-        card.appendChild(img);
-        card.appendChild(meta);
-        grid.appendChild(card);
-    });
-
-    root.appendChild(grid);
-
-    const footer = document.createElement("div");
-    footer.className = "export-footer";
-    scheduleFooterLines.forEach(lineText => {
-        const line = document.createElement("span");
-        line.className = "export-footer-line";
-        line.textContent = lineText;
-        footer.appendChild(line);
-    });
-    root.appendChild(footer);
-
-    return root;
-}
-
-function setupDownloadButton() {
-    const button = document.getElementById("downloadButton");
-    if (!button) return;
-
-    let isDownloading = false;
-
-    button.addEventListener("click", async (e) => {
-        e.preventDefault();
-
-        if (isDownloading) return;
-        isDownloading = true;
-
-        try {
-            const view = getSelectedViewKey();
-            if (view !== "overview") {
-                alert("Download is only available in Normal view.");
-                return;
-            }
-            const gameKey = getSelectedGameKey();
-            const events = eventCache[gameKey];
-
-            if (!events) {
-                alert("Event plan is still loading.");
-                return;
-            }
-
-            const exportDom = buildExportDom(events, gameKey);
-
-            const sandbox = document.createElement("div");
-            sandbox.style.position = "fixed";
-            sandbox.style.left = "-9999px";
-            sandbox.style.top = "0";
-            sandbox.style.backgroundColor = "#f3e6c8";
-            sandbox.appendChild(exportDom);
-            document.body.appendChild(sandbox);
-
-            const canvas = await html2canvas(exportDom, {
-                backgroundColor: "#f3e6c8",
-                useCORS: true,
-                scale: 2
-            });
-
-            const link = document.createElement("a");
-            const dateStamp = new Date().toISOString().slice(0, 10);
-            const gameLabel = eventSources[gameKey]?.label || gameKey;
-
-            link.download = `${gameLabel.replace(/[^a-z0-9]+/gi, "_")}_event_plan_${dateStamp}.png`;
-            link.href = canvas.toDataURL("image/png");
-
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-
-            sandbox.remove();
-
-        } catch (err) {
-            console.error("Download error:", err);
-            alert("Download failed.");
-        } finally {
-            isDownloading = false;
-        }
-    });
-}
-
 async function loadEvents(sourceKey) {
     const source = eventSources[sourceKey];
     if (!source) return;
 
     if (eventCache[sourceKey]) {
-        setLoadingState("", false);
         renderCurrentView();
         return;
     }
-
-    setLoadingState(`Loading: ${source.label}...`, true);
-    setLoadingProgress(0, `Loading: ${source.label}...`);
 
     try {
         const html = await fetchEventPlanHtml(source.url);
@@ -1429,26 +1228,17 @@ async function loadEvents(sourceKey) {
         const events = extractEvents(doc, source.url);
         eventCache[sourceKey] = events;
         renderCurrentView();
-        setLoadingProgress(100, `Loaded: ${source.label}`);
-        setLoadingState("", false);
     } catch (err) {
         console.error("Load error:", err);
-        setLoadingProgress(100, "Failed to load event plan data.");
-        setLoadingState("Failed to load event plan data.", true);
     }
 }
 
 async function preloadAllEvents() {
-    setLoadingState("Loading event plans...", true);
-    setLoadingProgress(0, "Loading event plans...");
-
     const keys = Object.keys(eventSources).filter(key => !eventCache[key]);
     if (keys.length === 0) {
-        setLoadingState("", false);
         return;
     }
 
-    let completed = 0;
     await Promise.all(keys.map(async key => {
         try {
             const html = await fetchEventPlanHtml(eventSources[key].url);
@@ -1457,14 +1247,8 @@ async function preloadAllEvents() {
         } catch (err) {
             console.error("Preload error:", err);
             eventCache[key] = [];
-        } finally {
-            completed += 1;
-            setLoadingProgress((completed / keys.length) * 100, "Loading event plans...");
         }
     }));
-
-    setLoadingProgress(100, "Loading complete");
-    setLoadingState("", false);
 }
 
 function setupSelectors() {
@@ -1518,7 +1302,6 @@ window.addEventListener("resize", handleResize);
 window.addEventListener("DOMContentLoaded", () => {
     handleResize();
     setupSelectors();
-    setupDownloadButton();
     preloadAllEvents().then(() => {
         renderCurrentView();
     });

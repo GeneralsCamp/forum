@@ -85,15 +85,15 @@
 }
 
 .currency-table tbody tr {
-  background: linear-gradient(90deg, rgba(79, 54, 37, 0.9), rgba(79, 54, 37, 0.58));
+  background: linear-gradient(90deg, rgba(79, 54, 37, 0.96), rgba(79, 54, 37, 0.76));
 }
 
 .currency-table tbody tr:nth-child(even) {
-  background: linear-gradient(90deg, rgba(73, 49, 34, 0.9), rgba(73, 49, 34, 0.56));
+  background: linear-gradient(90deg, rgba(73, 49, 34, 0.96), rgba(73, 49, 34, 0.74));
 }
 
 .currency-table tbody tr:hover {
-  background: linear-gradient(90deg, rgba(86, 58, 39, 0.94), rgba(86, 58, 39, 0.64));
+  background: linear-gradient(90deg, rgba(86, 58, 39, 0.98), rgba(86, 58, 39, 0.82));
 }
 
 .currency-table th:first-child,
