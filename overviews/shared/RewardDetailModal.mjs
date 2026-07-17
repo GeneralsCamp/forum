@@ -955,6 +955,44 @@ function renderEffectsSection(title, effects, { showTitle = true } = {}) {
   `;
 }
 
+function fitRewardDetailStatValues(root = document) {
+  const values = root.querySelectorAll(
+    ".reward-decoration-modal .stat-text .stat-value, .reward-construction-modal .tci-info-value"
+  );
+
+  values.forEach(valueEl => {
+    valueEl.style.fontSize = "";
+
+    const textEl = valueEl.closest(".stat-text, .tci-info-text");
+    if (!textEl) return;
+
+    const availableWidth = textEl.clientWidth;
+    if (!availableWidth) return;
+
+    const computed = window.getComputedStyle(valueEl);
+    const baseSize = parseFloat(computed.fontSize);
+    if (!baseSize) return;
+
+    const naturalWidth = valueEl.scrollWidth;
+    if (naturalWidth <= availableWidth) return;
+
+    const scaledSize = Math.max(10, Math.floor(baseSize * (availableWidth / naturalWidth)));
+    valueEl.style.fontSize = `${scaledSize}px`;
+  });
+}
+
+let rewardDetailStatFitResizeFrame = null;
+window.addEventListener("resize", () => {
+  if (rewardDetailStatFitResizeFrame) {
+    cancelAnimationFrame(rewardDetailStatFitResizeFrame);
+  }
+
+  rewardDetailStatFitResizeFrame = requestAnimationFrame(() => {
+    fitRewardDetailStatValues(document);
+    rewardDetailStatFitResizeFrame = null;
+  });
+});
+
 function renderDecorationModal(detail, ctx) {
   const entity = findEntity("decoration", detail.id, ctx);
   if (!entity) return false;
@@ -1014,6 +1052,7 @@ function renderDecorationModal(detail, ctx) {
     </div>
   `;
   getInfoCardModal().open();
+  requestAnimationFrame(() => fitRewardDetailStatValues(modalEl));
   void hydrateComposedImages({
     root: modalEl,
     selector: 'img[data-compose-equipment="1"]:not([data-compose-ready])',
@@ -1038,7 +1077,7 @@ function renderConstructionModal(detail, ctx) {
   if (decoPoints) effects.push(`${escapeHtml(labels.publicOrder)}: ${escapeHtml(formatNumber(decoPoints))}`);
   const placement = getPlacementBuildingNames(entity, ctx);
   const placementText = placement.length ? placement.join(", ") : "-";
-  const placementValueClass = placement.length > 1 ? " tci-info-value-small" : "";
+  const placementValueClass = placement.length > 1 || placementText.length > 22 ? " tci-info-value-small" : "";
   const constructionId = String(getProp(entity, ["constructionItemID", "constructionitemid"]) || detail.id || "");
   const infoCell = ({ label, value, icon, valueClass = "" }) => `
     <div class="card-cell tci-info-cell">
@@ -1082,6 +1121,7 @@ function renderConstructionModal(detail, ctx) {
     </div>
   `;
   getInfoCardModal().open();
+  requestAnimationFrame(() => fitRewardDetailStatValues(modalEl));
   void hydrateComposedImages({
     root: modalEl,
     selector: 'img[data-compose-equipment="1"]:not([data-compose-ready])',
