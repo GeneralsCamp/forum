@@ -473,3 +473,7 @@
     text-align: center;
 }
 
+.event-grid.event-grid-columns-1 .event-icon {
+    display: none;
+}
+
