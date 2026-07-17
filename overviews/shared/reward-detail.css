@@ -480,7 +480,7 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  gap: 2px;
+  gap: 1px;
   line-height: 1.05;
 }
 
@@ -615,6 +615,7 @@
   align-items: flex-start;
   justify-content: center;
   line-height: 1.05;
+  gap: 1px;
 }
 
 .reward-decoration-modal .stat-text strong {

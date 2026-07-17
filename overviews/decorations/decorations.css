@@ -222,6 +222,7 @@
     align-items: flex-start;
     justify-content: center;
     line-height: 1.05;
+    gap: 1px;
 }
 
 #cards .stat-text strong {
