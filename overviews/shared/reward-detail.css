@@ -33,6 +33,7 @@
   max-height: 450px;
   min-height: 450px;
   overflow-y: auto;
+  background: #60412c;
 }
 
 .lootbox-modal-body::-webkit-scrollbar {
@@ -40,12 +41,12 @@
 }
 
 .lootbox-modal-body::-webkit-scrollbar-thumb {
-  background-color: #bd9a79;
+  background-color: rgba(215, 155, 66, 0.72);
   border-radius: 5px;
 }
 
 .lootbox-modal-body::-webkit-scrollbar-track {
-  background-color: #f2d9bb;
+  background-color: rgba(32, 23, 17, 0.36);
 }
 
 .loot-row {
@@ -54,8 +55,8 @@
   grid-template-columns: 130px 100px 1fr;
   align-items: center;
   min-height: 72px;
-  background-color: #7b5336;
-  border-bottom: 1px solid #5a3c27;
+  background: #60412c;
+  border-bottom: 1px solid rgba(215, 155, 66, 0.38);
 }
 
 .loot-row::before {
@@ -113,19 +114,20 @@
 }
 
 .loot-rewards::-webkit-scrollbar-thumb {
-  background: #c9ab7a;
+  background: rgba(215, 155, 66, 0.72);
   border-radius: 4px;
 }
 
 .loot-rewards::-webkit-scrollbar-track {
-  background: #6b4a30;
+  background: rgba(32, 23, 17, 0.36);
 }
 
 .loot-reward {
   width: 64px;
   height: 64px;
-  background-color: #f7edd7;
-  border-radius: 6px;
+  background: rgba(32, 23, 17, 0.42);
+  border: 1px solid rgba(215, 155, 66, 0.46);
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -139,6 +141,7 @@
   height: 40px;
   object-fit: contain;
   pointer-events: none;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.45));
 }
 
 .loot-reward canvas {
@@ -152,7 +155,7 @@
   right: 0;
   bottom: 0;
   height: 18px;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(32, 23, 17, 0.74);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -184,6 +187,7 @@
   padding: 0;
   max-height: min(78vh, 720px);
   overflow-y: auto;
+  background: #60412c;
 }
 
 .reward-equipment-modal .reward-info-card-modal-body {
@@ -192,23 +196,24 @@
   min-height: 190px;
   max-height: min(58vh, 360px);
   align-items: stretch;
-  background: #916241;
+  background: #60412c;
 }
 
 .reward-info-card {
-  color: white;
+  color: #f7ead5;
   min-height: 0;
-  border-radius: 0 0 10px 10px;
+  border-radius: 0 0 8px 8px;
+  background: #60412c;
 }
 
 .reward-info-card .card-table {
-  color: white;
+  color: #f7ead5;
   font-size: 14px;
   text-align: center;
 }
 
 .reward-info-card .card-cell {
-  padding: 2px 0;
+  padding: 5px 6px;
   text-align: center;
 }
 
@@ -216,35 +221,36 @@
 .reward-info-card hr {
   width: 100%;
   border: 0;
-  border-top: 1px solid white !important;
+  border-top: 1px solid rgba(215, 155, 66, 0.42) !important;
   opacity: 1 !important;
   margin: 0;
 }
 
 .reward-info-card .border-end {
-  border-right: 1px solid white !important;
+  border-right: 1px solid rgba(215, 155, 66, 0.42) !important;
 }
 
 .reward-info-card .border-top,
 .reward-info-card .border-bottom {
-  border-color: white !important;
+  border-color: rgba(215, 155, 66, 0.42) !important;
 }
 
 .reward-info-card .card-section {
-  padding: 5px;
+  padding: 7px 8px;
 }
 
 .reward-info-card .card-section-title {
-  color: white;
+  color: #f3c24a;
   font-size: 15px;
-  font-weight: bold;
+  font-weight: 900;
   text-align: left;
+  margin: 0 0 5px;
 }
 
 .reward-info-card .level-selector {
-  background-color: #7b5a3b;
+  background: rgba(32, 23, 17, 0.28);
   border-radius: 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.65);
+  border-bottom: 1px solid rgba(215, 155, 66, 0.52);
   color: #f3c24a;
   font-weight: bold;
   min-height: 30px;
@@ -267,7 +273,7 @@
 }
 
 .reward-info-card .bi-zoom-in {
-  color: white;
+  color: #f7ead5;
   font-size: 1.2rem;
 }
 
@@ -285,7 +291,7 @@
   position: relative;
   margin: 0;
   padding-left: 12px;
-  color: white;
+  color: #f7ead5;
   font-size: 13px;
   font-weight: 500;
   line-height: 1.35;
@@ -306,8 +312,369 @@
 
 .reward-info-card .max-bonus {
   font-style: italic;
-  color: rgb(234, 224, 224);
+  color: rgba(247, 234, 213, 0.76);
   font-size: 12px;
+}
+
+.reward-decoration-modal .reward-info-card-modal-card,
+.reward-construction-modal .reward-info-card-modal-card,
+.unit-stats-modal .unit-stats-modal-card {
+  border-color: rgba(215, 155, 66, 0.62);
+}
+
+.reward-decoration-modal .reward-info-card-modal-card {
+  background: #60412c;
+  border-radius: 8px;
+}
+
+.reward-decoration-modal .reward-info-card-modal-body {
+  max-height: min(78vh, 720px);
+  background: #60412c;
+}
+
+.reward-decoration-modal .reward-info-card {
+  background: #60412c;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.reward-decoration-modal .reward-info-image-cell,
+.reward-construction-modal .reward-info-image-cell {
+  background: transparent;
+  min-height: 124px;
+}
+
+.reward-decoration-modal .reward-info-image-cell .image-wrapper,
+.reward-construction-modal .reward-info-image-cell .image-wrapper {
+  width: 100%;
+  min-height: 118px;
+  padding: 4px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reward-decoration-modal .card-image,
+.reward-construction-modal .card-image {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 118px;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.42));
+}
+
+.reward-construction-modal .ci-title {
+  margin: 0;
+  padding: 4px 6px;
+  color: #f3c24a;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
+  text-shadow: none;
+}
+
+.reward-construction-modal .reward-info-card-modal-body,
+.reward-construction-modal .reward-info-card {
+  background: #60412c;
+}
+
+.reward-construction-modal .level-selector {
+  background: #4f3625;
+  border-bottom: 1px solid rgba(215, 155, 66, 0.34);
+  color: #f3c24a;
+  min-height: 34px;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.reward-construction-modal .level-selector > div {
+  flex: 1 1 auto;
+  padding: 4px 8px;
+  text-align: center;
+  line-height: 1.15;
+}
+
+.reward-construction-modal .card-table {
+  color: #f7ead5;
+  border-top: 0 !important;
+  background: #60412c;
+}
+
+.reward-construction-modal .ci-image {
+  min-height: 118px;
+}
+
+.reward-construction-modal .tci-modal-id-badge {
+  position: absolute;
+  left: 4px;
+  bottom: 3px;
+  z-index: 2;
+  max-width: calc(100% - 8px);
+  overflow: hidden;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: rgba(35, 25, 18, 0.62);
+  color: #f3c24a;
+  font-size: 10px;
+  font-weight: 650;
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.45);
+}
+
+.reward-construction-modal .tci-info-content-cell {
+  padding: 0;
+  background: #60412c;
+}
+
+.reward-construction-modal .tci-info-grid {
+  min-height: 100%;
+}
+
+.reward-construction-modal .tci-info-grid > hr {
+  width: 100%;
+  height: 1px;
+  border: 0 !important;
+  background: rgba(215, 155, 66, 0.34);
+  opacity: 1 !important;
+  margin: 0;
+  flex: 0 0 auto;
+}
+
+.reward-construction-modal .tci-info-cell {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 0;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  padding: 7px 8px;
+  color: #fff3dc;
+  background: #60412c;
+}
+
+.reward-construction-modal .tci-info-icon {
+  display: inline-flex;
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+}
+
+.reward-construction-modal .tci-info-icon img {
+  max-width: 23px;
+  max-height: 23px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+}
+
+.reward-construction-modal .tci-info-text {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2px;
+  line-height: 1.05;
+}
+
+.reward-construction-modal .tci-info-text strong {
+  color: rgba(247, 234, 213, 0.78);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.reward-construction-modal .tci-info-value {
+  color: #fff3dc;
+  font-size: 16px;
+  font-weight: 850;
+  line-height: 1.12;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.reward-construction-modal .tci-info-value-small {
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.12;
+}
+
+.reward-decoration-modal .deco-modal-id-badge {
+  position: absolute;
+  left: 4px;
+  bottom: 3px;
+  z-index: 2;
+  max-width: calc(100% - 8px);
+  overflow: hidden;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: rgba(35, 25, 18, 0.62);
+  color: #f3c24a;
+  font-size: 10px;
+  font-weight: 650;
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.45);
+}
+
+.reward-decoration-modal .reward-info-content-cell {
+  padding: 0;
+  position: relative;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+}
+
+.reward-decoration-modal .reward-info-content-cell::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(50% - 0.5px);
+  width: 1px;
+  background: rgba(215, 155, 66, 0.42);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.reward-decoration-modal .deco-stat-grid > .row {
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+.reward-decoration-modal .deco-stat-grid > hr {
+  width: 100%;
+  height: 1px;
+  border: 0 !important;
+  background: rgba(215, 155, 66, 0.34);
+  opacity: 1 !important;
+  margin: 0;
+}
+
+.reward-decoration-modal .stat-cell {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  min-width: 0;
+  padding: 4px 8px;
+  color: #fff3dc;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.reward-decoration-modal .stat-cell.border-end {
+  border-right: 0 !important;
+}
+
+.reward-decoration-modal .stat-icon-box {
+  display: inline-flex;
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+}
+
+.reward-decoration-modal .stat-icon-box img,
+.reward-decoration-modal .stat-value img {
+  max-width: 23px;
+  max-height: 23px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+}
+
+.reward-decoration-modal .stat-icon-box img + img,
+.reward-decoration-modal .stat-value img + img {
+  margin-left: -7px;
+}
+
+.reward-decoration-modal .stat-text {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: calc(100% - 36px);
+  overflow: hidden;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  line-height: 1.05;
+}
+
+.reward-decoration-modal .stat-text strong {
+  color: rgba(247, 234, 213, 0.78);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.reward-decoration-modal .stat-text .stat-value {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 3px;
+  color: #fff3dc;
+  font-size: 16px;
+  font-weight: 850;
+  line-height: 1.12;
+  max-width: 100%;
+  overflow: visible;
+  white-space: nowrap;
+}
+
+.reward-construction-modal .reward-info-content-cell strong {
+  display: block;
+  margin-bottom: 2px;
+  color: rgba(247, 234, 213, 0.74);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.reward-decoration-modal .effect-icon,
+.reward-construction-modal .effect-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  margin-right: 3px;
+  vertical-align: -4px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+}
+
+.reward-decoration-modal .reward-detail-effects,
+.reward-construction-modal .reward-detail-effects {
+  border-top: 1px solid rgba(215, 155, 66, 0.52) !important;
+  background: transparent;
+}
+
+.reward-decoration-modal .reward-detail-effects {
+  padding: 6px 8px 7px;
+}
+
+.reward-decoration-modal .card-section-title {
+  padding-bottom: 3px;
+  border-bottom: 1px solid rgba(215, 155, 66, 0.34);
+}
+
+.reward-decoration-modal .reward-effect-row {
+  line-height: 1.28;
+  padding-block: 2px;
+}
+
+.reward-construction-modal .reward-info-content-cell .card-cell {
+  min-height: 46px;
 }
 
 .reward-equipment-modal .reward-equipment-card.box-content {
@@ -323,11 +690,11 @@
   height: 100%;
   min-height: 190px;
   padding: 10px 12px;
-  background: #916241;
-  color: white;
+  background: #60412c;
+  color: #f7ead5;
   align-items: center;
   align-content: center;
-  border-radius: 0 0 10px 10px;
+  border-radius: 0 0 8px 8px;
 }
 
 .reward-equipment-visual {
@@ -352,7 +719,7 @@
   object-fit: contain;
   border: 2px solid #d44646;
   border-radius: 2px;
-  background: transparent;
+  background: rgba(25, 18, 13, 0.42);
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
 }
 
@@ -383,7 +750,7 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  color: white;
+  color: #f7ead5;
   font-size: 12px;
   line-height: 1.35;
 }
@@ -416,30 +783,24 @@
   object-fit: contain;
 }
 
-.unit-stats-modal-head {
-  padding: 0.1rem 0.3rem;
-}
-
-.unit-stats-modal .gf-modal-title {
-  font-weight: 700;
-}
-
 .unit-stats-modal-body {
   padding: 0;
+  background: #60412c;
 }
 
 .unit-modal-list {
   min-height: 286px;
   max-height: none;
   overflow-y: auto;
-  padding-right: 4px;
+  padding-right: 0;
   flex: 1;
 }
 
 .unit-modal-layout {
   display: flex;
-  gap: 12px;
+  gap: 0;
   align-items: center;
+  background: #60412c;
 }
 
 .unit-modal-row {
@@ -447,8 +808,8 @@
   grid-template-columns: 26px 1fr auto;
   align-items: center;
   gap: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
-  padding: 8px 6px;
+  border-bottom: 1px solid rgba(215, 155, 66, 0.34);
+  padding: 8px 10px;
 }
 
 .unit-modal-row:last-child {
@@ -456,13 +817,13 @@
 }
 
 .unit-modal-label {
-  color: #f6d9b0;
+  color: rgba(247, 234, 213, 0.78);
   font-weight: 700;
 }
 
 .unit-modal-value {
-  color: #fff;
-  font-weight: 700;
+  color: #fff3dc;
+  font-weight: 900;
 }
 
 .stat-icon {
@@ -473,6 +834,22 @@
   flex: 0 0 18px;
   min-width: 18px;
   min-height: 18px;
+}
+
+.unit-modal-list::-webkit-scrollbar,
+.reward-info-card-modal-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.unit-modal-list::-webkit-scrollbar-thumb,
+.reward-info-card-modal-body::-webkit-scrollbar-thumb {
+  background: rgba(215, 155, 66, 0.72);
+  border-radius: 5px;
+}
+
+.unit-modal-list::-webkit-scrollbar-track,
+.reward-info-card-modal-body::-webkit-scrollbar-track {
+  background: rgba(32, 23, 17, 0.36);
 }
 
 @media (max-width: 768px) {

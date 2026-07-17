@@ -705,6 +705,7 @@ function getConstructionLabels(ctx) {
   return {
     effects: lang.effects || "Effects",
     type: lang.type || "Type",
+    expirationTime: lang.expiration_time || "Expiration time",
     removalCost: "Removal Cost",
     nonRemovable: "Non removable",
     coins: lang.coins || "coins",
@@ -745,25 +746,33 @@ function getDecorationFusionText(entity) {
   return "No";
 }
 
-function getDecorationSellPriceHtml(entity) {
+function getDecorationSellPriceParts(entity) {
   const legendaryToken = getProp(entity, ["sellLegendaryToken", "selllegendarytoken"]);
   const legendaryMaterial = getProp(entity, ["sellLegendaryMaterial", "selllegendarymaterial"]);
   if (legendaryToken || legendaryMaterial) {
     const parts = [];
+    const icons = [];
     if (legendaryToken) parts.push(`<img src="../../img_base/construction-token.png" class="effect-icon" alt="">x${escapeHtml(formatNumber(legendaryToken))}`);
     if (legendaryMaterial) parts.push(`<img src="../../img_base/upgrade-token.png" class="effect-icon" alt="">x${escapeHtml(formatNumber(legendaryMaterial))}`);
-    return parts.join("<br>");
+    if (legendaryToken) icons.push(`<img src="../../img_base/construction-token.png" alt="">`);
+    if (legendaryMaterial) icons.push(`<img src="../../img_base/upgrade-token.png" alt="">`);
+    return { icon: icons.join(""), value: parts.map((part) => part.replace(/<img[^>]*>/g, "")).join("<br>") };
   }
   const sellC1 = getProp(entity, ["sellC1", "sellc1"]) || "0";
   const riftShard = getProp(entity, ["sellRiftShard", "sellriftshard"]);
   const biscuit = getProp(entity, ["sellSoldierBiscuit", "sellsoldierbiscuit"]);
   if (Number(sellC1) === 0 && riftShard) {
-    return `<img src="../../img_base/rift-shard.png" class="effect-icon" alt="">x${escapeHtml(formatNumber(riftShard))}`;
+    return { icon: `<img src="../../img_base/rift-shard.png" alt="">`, value: `x${escapeHtml(formatNumber(riftShard))}` };
   }
   if (Number(sellC1) === 0 && biscuit) {
-    return `<img src="../../img_base/biscuit.png" class="effect-icon" alt="">x${escapeHtml(formatNumber(biscuit))}`;
+    return { icon: `<img src="../../img_base/biscuit.png" alt="">`, value: `x${escapeHtml(formatNumber(biscuit))}` };
   }
-  return `<img src="../../img_base/coin.png" class="effect-icon" alt="">x${escapeHtml(formatNumber(sellC1))}`;
+  return { icon: `<img src="../../img_base/coin.png" alt="">`, value: `x${escapeHtml(formatNumber(sellC1))}` };
+}
+
+function getDecorationSellPriceHtml(entity) {
+  const parts = getDecorationSellPriceParts(entity);
+  return `${parts.icon}${parts.value}`;
 }
 
 function formatEffectValue(rawValue, isPercent = false) {
@@ -932,11 +941,11 @@ function getPlacementBuildingNames(entity, ctx) {
   return Array.from(names);
 }
 
-function renderEffectsSection(title, effects) {
+function renderEffectsSection(title, effects, { showTitle = true } = {}) {
   if (!effects.length) return "";
   return `
     <div class="card-section card-effects border-top reward-detail-effects">
-      <h5 class="card-section-title">${escapeHtml(title)}</h5>
+      ${showTitle ? `<h5 class="card-section-title">${escapeHtml(title)}</h5>` : ""}
       <div class="reward-effect-list">
         ${effects.map((effect) => `<div class="reward-effect-row">${effect}</div>`).join("")}
       </div>
@@ -956,7 +965,18 @@ function renderDecorationModal(detail, ctx) {
   const poPerTile = area > 0 ? (po / area).toFixed(2) : "N/A";
   const imageUrl = getDecorationImageUrl(entity, detail, ctx);
   const effects = parseDetailEffects(getProp(entity, ["areaSpecificEffects", "areaspecificeffects"]) || "", ctx);
+  const sellPrice = getDecorationSellPriceParts(entity);
+  const statCell = ({ label, value, icon, border = false }) => `
+    <div class="col-6 card-cell stat-cell${border ? " border-end" : ""}">
+      <span class="stat-icon-box">${icon}</span>
+      <span class="stat-text">
+        <strong>${escapeHtml(label)}</strong>
+        <span class="stat-value">${value}</span>
+      </span>
+    </div>`;
   const modalEl = createInfoCardModalElement();
+  modalEl.classList.add("reward-decoration-modal");
+  modalEl.classList.remove("reward-construction-modal");
   modalEl.classList.remove("reward-equipment-modal");
   modalEl.classList.remove("reward-alliance-layout-modal");
   modalEl.querySelector(".modal-title").textContent = name;
@@ -966,39 +986,28 @@ function renderDecorationModal(detail, ctx) {
         <div class="row g-0">
           <div class="col-4 card-cell border-end d-flex justify-content-center align-items-center position-relative reward-info-image-cell">
             <div class="image-wrapper">
-              <img src="${escapeHtml(imageUrl)}" class="card-image w-100" loading="lazy" alt="${escapeHtml(name)}" ${getComposedAttrs({ type: "decoration", imageUrl })}>
+              <img src="${escapeHtml(imageUrl)}" class="card-image" loading="lazy" alt="${escapeHtml(name)}" ${getComposedAttrs({ type: "decoration", imageUrl })}>
             </div>
+            <div class="deco-modal-id-badge">#${escapeHtml(String(getProp(entity, ["wodID", "wodid"]) || detail.id || ""))}</div>
           </div>
-          <div class="col-8 card-cell reward-info-content-cell">
+          <div class="col-8 card-cell reward-info-content-cell deco-stat-grid">
             <div class="row g-0">
-              <div class="col-6 card-cell border-end">
-                <strong>${escapeHtml(labels.publicOrder)}</strong><br><img src="../../img_base/po.png" class="effect-icon" alt="">${escapeHtml(formatNumber(po))}
-              </div>
-              <div class="col-6 card-cell">
-                <strong>${escapeHtml(labels.poPerTile)}</strong><br><img src="../../img_base/po.png" class="effect-icon" alt="">${escapeHtml(poPerTile)}
-              </div>
+              ${statCell({ label: labels.publicOrder, value: escapeHtml(formatNumber(po)), icon: `<img src="../../img_base/po.png" alt="">`, border: true })}
+              ${statCell({ label: labels.poPerTile, value: escapeHtml(poPerTile), icon: `<img src="../../img_base/po.png" alt="">` })}
             </div>
             <hr>
             <div class="row g-0">
-              <div class="col-6 card-cell border-end">
-                <strong>${escapeHtml(labels.size)}</strong><br><img src="../../img_base/size.png" class="effect-icon" alt="">${escapeHtml(`${width}x${height}`)}
-              </div>
-              <div class="col-6 card-cell">
-                <strong>${escapeHtml(labels.might)}</strong><br><img src="../../img_base/might.png" class="effect-icon" alt="">${escapeHtml(formatNumber(getProp(entity, ["mightValue", "might"]) || 0))}
-              </div>
+              ${statCell({ label: labels.size, value: escapeHtml(`${width}x${height}`), icon: `<img src="../../img_base/size.png" alt="">`, border: true })}
+              ${statCell({ label: labels.might, value: escapeHtml(formatNumber(getProp(entity, ["mightValue", "might"]) || 0)), icon: `<img src="../../img_base/might.png" alt="">` })}
             </div>
             <hr>
             <div class="row g-0">
-              <div class="col-6 card-cell border-end">
-                <strong>${escapeHtml(labels.salePrice)}</strong><br>${getDecorationSellPriceHtml(entity)}
-              </div>
-              <div class="col-6 card-cell">
-                <strong>${escapeHtml(labels.fusion)}</strong><br>${escapeHtml(getDecorationFusionText(entity))}
-              </div>
+              ${statCell({ label: labels.salePrice, value: sellPrice.value, icon: sellPrice.icon, border: true })}
+              ${statCell({ label: labels.fusion, value: escapeHtml(getDecorationFusionText(entity)), icon: `<img src="../../img_base/fusion.png" alt="">` })}
             </div>
           </div>
         </div>
-        ${renderEffectsSection(labels.effects, effects)}
+        ${renderEffectsSection(labels.effects, effects, { showTitle: false })}
       </div>
     </div>
   `;
@@ -1026,7 +1035,20 @@ function renderConstructionModal(detail, ctx) {
   const decoPoints = getProp(entity, ["decoPoints", "decopoints"]);
   if (decoPoints) effects.push(`${escapeHtml(labels.publicOrder)}: ${escapeHtml(formatNumber(decoPoints))}`);
   const placement = getPlacementBuildingNames(entity, ctx);
+  const placementText = placement.length ? placement.join(", ") : "-";
+  const placementValueClass = placement.length > 1 ? " tci-info-value-small" : "";
+  const constructionId = String(getProp(entity, ["constructionItemID", "constructionitemid"]) || detail.id || "");
+  const infoCell = ({ label, value, icon, valueClass = "" }) => `
+    <div class="card-cell tci-info-cell">
+      <span class="tci-info-icon">${icon}</span>
+      <span class="tci-info-text">
+        <strong>${escapeHtml(label)}</strong>
+        <span class="tci-info-value${valueClass}">${escapeHtml(value)}</span>
+      </span>
+    </div>`;
   const modalEl = createInfoCardModalElement();
+  modalEl.classList.add("reward-construction-modal");
+  modalEl.classList.remove("reward-decoration-modal");
   modalEl.classList.remove("reward-equipment-modal");
   modalEl.classList.remove("reward-alliance-layout-modal");
   modalEl.querySelector(".modal-title").textContent = name;
@@ -1035,29 +1057,26 @@ function renderConstructionModal(detail, ctx) {
       <div class="level-selector d-flex justify-content-center align-items-center">
         <div><strong>${escapeHtml(getConstructionLevelText(entity, labels))}</strong></div>
       </div>
-      <div class="card-table">
+      <div class="card-table border-top">
         <div class="row g-0">
           <div class="col-5 card-cell border-end d-flex justify-content-center align-items-center position-relative ci-image reward-info-image-cell">
             <div class="image-wrapper">
-              <img src="${escapeHtml(imageUrl)}" class="card-image w-100" loading="lazy" alt="${escapeHtml(name)}" ${getComposedAttrs({ type: "construction", imageUrl })}>
+              <img src="${escapeHtml(imageUrl)}" class="card-image" loading="lazy" alt="${escapeHtml(name)}" ${getComposedAttrs({ type: "construction", imageUrl })}>
             </div>
+            <div class="tci-modal-id-badge">#${escapeHtml(constructionId)}</div>
           </div>
-          <div class="col-7 card-cell d-flex flex-column reward-info-content-cell">
-            <div class="flex-fill d-flex flex-column justify-content-between h-100">
-              <div class="card-cell border-bottom flex-fill d-flex flex-column justify-content-center">
-                <strong>${escapeHtml(labels.type)}:</strong> ${escapeHtml(getConstructionTypeText(entity, labels))}
-              </div>
-              <div class="card-cell flex-fill d-flex flex-column justify-content-center">
-                <strong>${escapeHtml(labels.removalCost)}:</strong> ${escapeHtml(removalCostText)}
-              </div>
-              <div class="card-cell border-top flex-fill d-flex flex-column justify-content-center">
-                <strong>${escapeHtml(labels.canBePlacedOn)}:</strong> ${escapeHtml(placement.length ? placement.join(", ") : "-")}
-              </div>
+          <div class="col-7 card-cell d-flex flex-column reward-info-content-cell tci-info-content-cell">
+            <div class="tci-info-grid flex-fill d-flex flex-column h-100">
+              ${infoCell({ label: labels.expirationTime, value: getConstructionTypeText(entity, labels), icon: `<img src="../../img_base/time.png" alt="">` })}
+              <hr>
+              ${infoCell({ label: labels.removalCost, value: removalCostText, icon: `<img src="../../img_base/coin.png" alt="">` })}
+              <hr>
+              ${infoCell({ label: labels.canBePlacedOn, value: placementText, valueClass: placementValueClass, icon: `<img src="../../img_base/canbeplaced.png" alt="">` })}
             </div>
           </div>
         </div>
       </div>
-      ${renderEffectsSection(`${labels.effects}:`, effects)}
+      ${renderEffectsSection(`${labels.effects}:`, effects, { showTitle: false })}
     </div>
   `;
   getInfoCardModal().open();
@@ -1106,6 +1125,8 @@ function renderEquipmentGemModal(detail, ctx) {
     .join("");
   const modalEl = createInfoCardModalElement();
   modalEl.classList.add("reward-equipment-modal");
+  modalEl.classList.remove("reward-decoration-modal");
+  modalEl.classList.remove("reward-construction-modal");
   modalEl.classList.remove("reward-alliance-layout-modal");
   modalEl.querySelector(".modal-title").textContent = getEquipmentGemModalTitle(name, slotLabel, entity);
   modalEl.querySelector("#rewardInfoCardModalBody").innerHTML = `
@@ -1171,6 +1192,8 @@ function renderAllianceLayoutModal(detail, ctx) {
 
   modalEl.classList.add("reward-equipment-modal");
   modalEl.classList.add("reward-alliance-layout-modal");
+  modalEl.classList.remove("reward-decoration-modal");
+  modalEl.classList.remove("reward-construction-modal");
   modalEl.querySelector(".modal-title").textContent = name;
   modalEl.querySelector("#rewardInfoCardModalBody").innerHTML = `
     <article class="reward-equipment-card box-content">
