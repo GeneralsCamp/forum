@@ -27,7 +27,7 @@
 }
 
 #content {
-    padding-top: 10px;
+    padding-top: 2px;
     padding-bottom: 10px;
 }
 
@@ -293,7 +293,7 @@
 
 .skill-detail-title {
     margin-bottom: 6px;
-    padding: 7px 10px;
+    padding: 3px 10px;
     border-bottom: 1px solid var(--generals-line);
     background: transparent;
     color: var(--gf-gold-strong);
