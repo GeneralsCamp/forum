@@ -191,8 +191,8 @@ export function createEffectItemsModal({
         body.innerHTML = rows.length
             ? `
       <div class="effect-items-summary">
-        <span>Effect ID: ${escapeHtml(effectID)}</span>
-        ${capText ? `<span>${escapeHtml(capText)}</span>` : ""}
+        <span class="effect-items-summary-badge effect-items-summary-id">Effect #${escapeHtml(effectID)}</span>
+        ${capText ? `<span class="effect-items-summary-badge effect-items-summary-cap">${escapeHtml(capText)}</span>` : ""}
       </div>
       <div class="effect-items-list">
         ${rows.map(createRow).join("")}

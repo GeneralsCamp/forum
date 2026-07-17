@@ -1507,8 +1507,8 @@ function handleResize() {
     const pageTitle = document.querySelector(".page-title");
     const content = document.getElementById("content");
 
-    if (note && pageTitle && content) {
-        const totalHeightToSubtract = note.offsetHeight + pageTitle.offsetHeight + 18;
+    if (note && content) {
+        const totalHeightToSubtract = note.offsetHeight + (pageTitle?.offsetHeight || 0) + 18;
         const newHeight = window.innerHeight - totalHeightToSubtract;
         content.style.height = `${newHeight}px`;
     }

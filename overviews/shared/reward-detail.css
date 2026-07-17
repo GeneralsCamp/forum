@@ -295,12 +295,13 @@
   content: "";
   position: absolute;
   left: 1px;
-  top: 0.62em;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: rgba(245, 230, 207, 0.78);
-  transform: translateY(-50%);
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 0;
+  background: transparent;
+  transform: translateY(-50%) rotate(45deg);
 }
 
 .reward-info-card .max-bonus {

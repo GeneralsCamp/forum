@@ -6,15 +6,13 @@
 }
 
 .note {
-    background-color: rgb(119, 80, 54);
-    color: white;
+    background: var(--gf-navbar-bg);
+    color: #f7ead5;
     font-weight: bolder;
-    padding: 5px;
-    border-radius: 10px;
-    margin: 0;
+    padding: 8px;
+    border-radius: 0;
     display: flex;
     align-items: center;
-    width: 100%;
     box-sizing: border-box;
 }
 

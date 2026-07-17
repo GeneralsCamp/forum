@@ -61,6 +61,15 @@ function readHomeSetting(key, fallback) {
     }
 }
 
+function escapeHtml(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
 async function loadOwnLang() {
     try {
         const res = await fetch("./ownLang.json");
@@ -153,8 +162,7 @@ async function applyOwnLang() {
 
     window.UI_LANG = {
         effects: ui.effects || "Effects",
-        dev_comments: ui.dev_comments || "Developer comments",
-        type: ui.type || "Type",
+        expiration_time: ui.expiration_time || "Expiration time",
         removal_cost: ui.removal_cost || "Removal Cost",
         non_removable: ui.non_removable || "Non removable",
         coins: ui.coins || "coins",
@@ -695,6 +703,14 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
             : "";
 
         const safeName = name.replace(/'/g, "\\'");
+        const infoCell = ({ label, value, icon, valueClass = "" }) => `
+                <div class="card-cell tci-info-cell">
+                  <span class="tci-info-icon">${icon}</span>
+                  <span class="tci-info-text">
+                    <strong>${label}</strong>
+                    <span class="tci-info-value${valueClass ? ` ${valueClass}` : ""}">${value}</span>
+                  </span>
+                </div>`;
 
         const isFirstLevel = index === 0;
         const isLastLevel = index === groupItems.length - 1;
@@ -721,33 +737,27 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
         }
 
         const id = item.constructionItemID || "???";
-        const ciIdHTML =
-            `<span class="wod-id" style="cursor:pointer;" onclick="navigator.clipboard.writeText('${id}')">${id}</span>`;
-
-        const comments = [`constructionItemID: ${ciIdHTML}`, ...commentList];
-
-        if (item.effects && item.effects.trim() !== "") {
-            comments.push(`Effect IDs: ${item.effects}`);
-        }
+        const devCommentBadges = commentList;
 
         const placementBuildings = getPlacementBuildingNames(item);
         const placementText =
             placementBuildings.length > 0 ? placementBuildings.join(", ") : "-";
+        const placementValueClass = placementBuildings.length > 1 ? "tci-info-value-small" : "";
 
-        let commentsHTML = "";
-        if (devCommentsEnabled && comments.length > 0) {
-            commentsHTML = `
-        <div class="card-section card-sources border-top">
-          <h4 class="card-section-title">${UI_LANG.dev_comments}:</h4>
-          <div class="reward-effect-list">
-            ${comments.map(c => `<div class="reward-effect-row">${c}</div>`).join("")}
+        const devBadgesHTML = `<div class="tci-dev-badges" aria-label="Item ID${devCommentsEnabled ? " and developer comments" : ""}">
+          <div class="tci-dev-badge-row tci-dev-badge-row-id">
+            <span class="tci-dev-badge tci-dev-badge-id" role="button" tabindex="0" data-copy-tci-id="${escapeHtml(id)}" title="Copy ID #${escapeHtml(id)}">#${escapeHtml(id)}</span>
           </div>
+          ${devCommentsEnabled && devCommentBadges.length > 0
+                ? `<div class="tci-dev-badge-row tci-dev-badge-row-comments">
+              ${devCommentBadges.map(badge => `<span class="tci-dev-badge" title="${escapeHtml(badge)}">${escapeHtml(badge)}</span>`).join("")}
+            </div>`
+                : ""}
         </div>`;
-        }
 
         const typeText =
             isTemporary
-                ? `${UI_LANG.temporary} (${formatDuration(item.duration)})`
+                ? formatDuration(item.duration)
                 : UI_LANG.permanent;
 
         const imageSection = placedUrl
@@ -755,26 +765,25 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
         <div class="col-5 card-cell border-end d-flex justify-content-center align-items-center position-relative ci-image"
              style="cursor:pointer;" data-src="${placedUrl}" data-caption="${safeName}" data-modal-src="${placedUrl}" data-modal-caption="${safeName}">
           <div class="image-wrapper">
-            <img src="${placedUrl}" 
-                 data-modal-src="${placedUrl}" 
-                 data-modal-caption="${safeName}" 
-                 alt="${name}" 
-                 class="card-image w-100" 
+            <img src="${placedUrl}"
+                 data-modal-src="${placedUrl}"
+                 data-modal-caption="${safeName}"
+                 alt="${name}"
+                 class="card-image"
                  loading="lazy"
                  ${composeAttrs}>
           </div>
-          <span class="position-absolute bottom-0 end-0 p-1 rounded-circle m-1">
-            <i class="bi bi-zoom-in"></i>
-          </span>
+          ${devBadgesHTML}
         </div>`
             : `
-        <div class="col-5 card-cell border-end d-flex justify-content-center align-items-center">
+        <div class="col-5 card-cell border-end d-flex justify-content-center align-items-center position-relative">
           <div class="image-wrapper">
             <img src="../../img_base/placeholder.webp"
                  alt="${UI_LANG.no_image || "no image"}"
-                 class="card-image w-100"
+                 class="card-image"
                  loading="lazy">
           </div>
+          ${devBadgesHTML}
         </div>`;
 
         return `
@@ -783,7 +792,7 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
           <i class="bi bi-arrow-left"></i>
         </button>
 
-        <div><strong>${levelText}</strong></div>
+        <div class="level-text"><strong>${levelText}</strong></div>
 
         <button id="${groupId}-next" ${isLastLevel ? "disabled" : ""}>
           <i class="bi bi-arrow-right"></i>
@@ -797,21 +806,13 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
 
           ${imageSection}
 
-          <div class="col-7 card-cell d-flex flex-column">
-            <div class="flex-fill d-flex flex-column justify-content-between h-100">
-
-              <div class="card-cell border-bottom flex-fill d-flex flex-column justify-content-center">
-                <strong>${UI_LANG.type}:</strong> ${typeText}
-              </div>
-
-              <div class="card-cell flex-fill d-flex flex-column justify-content-center">
-                <strong>${UI_LANG.removal_cost}:</strong> ${removalCostText}
-              </div>
-
-              <div class="card-cell border-top flex-fill d-flex flex-column justify-content-center">
-                <strong>${UI_LANG.can_be_placed_on}:</strong> ${placementText}
-              </div>
-
+            <div class="col-7 card-cell d-flex flex-column">
+              <div class="tci-info-grid flex-fill d-flex flex-column h-100">
+                ${infoCell({ label: UI_LANG.expiration_time, value: typeText, icon: `<img src="../../img_base/time.png" alt="">` })}
+                <hr>
+                ${infoCell({ label: UI_LANG.removal_cost, value: removalCostText, icon: `<img src="../../img_base/coin.png" alt="">` })}
+                <hr>
+                ${infoCell({ label: UI_LANG.can_be_placed_on, value: placementText, valueClass: placementValueClass, icon: `<img src="../../img_base/canbeplaced.png" alt="">` })}
             </div>
           </div>
 
@@ -819,7 +820,7 @@ function createGroupedCard(groupItems, imageUrlMap = {}, groupKey = '') {
       </div>
 
       ${effectsHTML}
-      ${commentsHTML}`;
+      `;
     }
 
     const containerId = `${groupId}-container`;
@@ -1114,6 +1115,29 @@ function formatNumber(num) {
     return Number(num || 0).toLocaleString();
 }
 
+async function copyTciIdFromBadge(badge) {
+    const id = badge?.dataset?.copyTciId;
+    if (!id) return;
+
+    try {
+        await navigator.clipboard.writeText(id);
+    } catch {
+        const input = document.createElement("textarea");
+        input.value = id;
+        input.style.position = "fixed";
+        input.style.opacity = "0";
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand("copy");
+        input.remove();
+    }
+
+    badge.classList.remove("is-copied");
+    void badge.offsetWidth;
+    badge.classList.add("is-copied");
+    window.setTimeout(() => badge.classList.remove("is-copied"), 700);
+}
+
 function setupEventListeners() {
     const searchInput = document.getElementById("searchInput");
     const searchButton = document.getElementById("searchButton");
@@ -1122,7 +1146,13 @@ function setupEventListeners() {
     const searchFilters = document.querySelectorAll(".search-filter");
     function runSearch() {
         if (searchInput.disabled) return;
-        appliedSearchText = searchInput.value || "";
+        const value = searchInput.value.trim();
+        if (!value) {
+            searchInput.value = "";
+            if (!appliedSearchText) return;
+        }
+        if (value === appliedSearchText) return;
+        appliedSearchText = value;
         applyFiltersAndSorting();
     }
 
@@ -1141,6 +1171,26 @@ function setupEventListeners() {
     showFilter?.addEventListener("change", () => {
         applyFiltersAndSorting();
     });
+
+    document.addEventListener("click", (event) => {
+        const badge = event.target.closest("[data-copy-tci-id]");
+        if (!badge) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+        copyTciIdFromBadge(badge);
+    }, true);
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+
+        const badge = event.target.closest("[data-copy-tci-id]");
+        if (!badge) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+        copyTciIdFromBadge(badge);
+    }, true);
 
     function updateSearchInputState() {
 

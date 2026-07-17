@@ -61,6 +61,15 @@ function readHomeSetting(key, fallback) {
   }
 }
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 async function loadOwnLang() {
   try {
     const res = await fetch("./ownLang.json");
@@ -451,27 +460,37 @@ function createCard(item, imageUrlMap = {}) {
       isFusionTarget ? langData.fusion_target : langData.fusion_none;
 
   let sellPriceDisplay = "";
+  let sellPriceIconDisplay = `<img src="../../img_base/coin.png" alt="">`;
   if (item.sellLegendaryToken || item.sellLegendaryMaterial) {
     const parts = [];
-    if (item.sellLegendaryToken) parts.push(`<img src="../../img_base/construction-token.png" class="effect-icon">x${formatNumber(item.sellLegendaryToken)}`);
-    if (item.sellLegendaryMaterial) parts.push(`<img src="../../img_base/upgrade-token.png" class="effect-icon">x${formatNumber(item.sellLegendaryMaterial)}`);
+    const icons = [];
+    if (item.sellLegendaryToken) {
+      icons.push(`<img src="../../img_base/construction-token.png" alt="">`);
+      parts.push(`x${formatNumber(item.sellLegendaryToken)}`);
+    }
+    if (item.sellLegendaryMaterial) {
+      icons.push(`<img src="../../img_base/upgrade-token.png" alt="">`);
+      parts.push(`x${formatNumber(item.sellLegendaryMaterial)}`);
+    }
+    sellPriceIconDisplay = icons.join("");
     sellPriceDisplay = parts.join("<br>");
   } else {
     const sellPriceRaw = item.sellC1 || "0";
     if (Number(sellPriceRaw) === 0 && item.sellRiftShard) {
-      sellPriceDisplay = `<img src="../../img_base/rift-shard.png" class="effect-icon">x${formatNumber(item.sellRiftShard)}`;
+      sellPriceIconDisplay = `<img src="../../img_base/rift-shard.png" alt="">`;
+      sellPriceDisplay = `x${formatNumber(item.sellRiftShard)}`;
     } else if (Number(sellPriceRaw) === 0 && item.sellSoldierBiscuit) {
-      sellPriceDisplay = `<img src="../../img_base/biscuit.png" class="effect-icon">x${formatNumber(item.sellSoldierBiscuit)}`;
+      sellPriceIconDisplay = `<img src="../../img_base/biscuit.png" alt="">`;
+      sellPriceDisplay = `x${formatNumber(item.sellSoldierBiscuit)}`;
     } else {
-      sellPriceDisplay = `<img src="../../img_base/coin.png" class="effect-icon">x${formatNumber(sellPriceRaw)}`;
+      sellPriceDisplay = `x${formatNumber(sellPriceRaw)}`;
     }
   }
 
   const id = item.wodID || "???";
-  const sources = [item.comment1, item.comment2].filter(Boolean);
-  const wodIDHTML = `<span class="wod-id" style="cursor:pointer;" onclick="navigator.clipboard.writeText('${id}')">${id}</span>`;
-  sources.unshift(`wodID: ${wodIDHTML}`);
-  if (item.maximumCount) sources.splice(1, 0, `Maximum count per castle: ${item.maximumCount}`);
+  const alwaysVisibleBadges = [];
+  if (item.maximumCount) alwaysVisibleBadges.push(`Max: ${item.maximumCount}`);
+  const devCommentBadges = [item.comment1, item.comment2].filter(Boolean);
 
   const effects = parseEffects(item.areaSpecificEffects || "");
   let effectsHTML = "";
@@ -479,28 +498,25 @@ function createCard(item, imageUrlMap = {}) {
     effectsHTML = `
       <hr>
       <div class="card-section card-effects">
-        <h5 class="card-section-title">${langData.label_effects}</h5>
         <div class="reward-effect-list">
           ${effects.map(e => `<div class="reward-effect-row">${e}</div>`).join("")}
         </div>
       </div>`;
   }
 
-  if (item.areaSpecificEffects && item.areaSpecificEffects.trim() !== "") {
-    sources.push(`Effect IDs: ${item.areaSpecificEffects}`);
-  }
-
-  let sourceHTML = "";
-  if (devCommentsEnabled && sources.length > 0) {
-    sourceHTML = `
-      <hr>
-      <div class="card-section card-sources">
-        <h4 class="card-section-title">${langData.label_developer_comments}</h4>
-        <div class="reward-effect-list">
-          ${sources.map(s => `<div class="reward-effect-row">${s}</div>`).join("")}
+  const devBadgesHTML = `<div class="deco-dev-badges" aria-label="Item ID${devCommentsEnabled ? " and developer comments" : ""}">
+        <div class="deco-dev-badge-row deco-dev-badge-row-id">
+          <span class="deco-dev-badge deco-dev-badge-id" role="button" tabindex="0" data-copy-deco-id="${escapeHtml(id)}" title="Copy ID #${escapeHtml(id)}">#${escapeHtml(id)}</span>
         </div>
+        ${(alwaysVisibleBadges.length > 0 || (devCommentsEnabled && devCommentBadges.length > 0))
+        ? `<div class="deco-dev-badge-row deco-dev-badge-row-comments">
+            ${[
+              ...alwaysVisibleBadges,
+              ...(devCommentsEnabled ? devCommentBadges : [])
+            ].map(badge => `<span class="deco-dev-badge" title="${escapeHtml(badge)}">${escapeHtml(badge)}</span>`).join("")}
+          </div>`
+        : ""}
       </div>`;
-  }
 
   const cleanedType = normalizeName(item.type);
   const effectStateClass = effects.length > 0 ? "has-effects" : "no-effects";
@@ -517,61 +533,48 @@ function createCard(item, imageUrlMap = {}) {
     : "";
 
   const safeName = name.replace(/'/g, "\\'");
+  const statCell = ({ label, value, icon, border = false }) => `
+                <div class="col-6 card-cell stat-cell${border ? " border-end" : ""}">
+                  <span class="stat-icon-box">${icon}</span>
+                  <span class="stat-text">
+                    <strong>${label}</strong>
+                    <span class="stat-value">${value}</span>
+                  </span>
+                </div>`;
 
   return `
   <div class="col-md-6 col-sm-12 d-flex flex-column" data-wod-id="${id}">
     <div class="box flex-fill ${effectStateClass}">
       <div class="box-content">
         <h2 class="deco-title">${name}</h2>
-        <hr>
+        <hr class="deco-title-divider">
         <div class="card-table">
           <div class="row g-0">
             <div class="col-4 card-cell border-end d-flex justify-content-center align-items-center position-relative" style="cursor:pointer;" data-modal-src="${imageUrl}" data-modal-caption="${safeName}">
               <div class="image-wrapper">
-                <img src="${imageUrl}" class="card-image w-100" loading="lazy" data-modal-src="${imageUrl}" data-modal-caption="${safeName}" ${composeAttrs}>
+                <img src="${imageUrl}" class="card-image" loading="lazy" data-modal-src="${imageUrl}" data-modal-caption="${safeName}" ${composeAttrs}>
               </div>
-              <span class="position-absolute bottom-0 end-0 p-1 rounded-circle m-1">
-                 <i class="bi bi-zoom-in"></i>
-              </span>
+              ${devBadgesHTML}
             </div>
             <div class="col-8 card-cell">
               <div class="row g-0">
-                <div class="col-6 card-cell border-end stat-cell">
-                  <strong>${langData.label_public_order}</strong>
-                  <span class="stat-value"><img src="../../img_base/po.png" class="effect-icon">${formatNumber(po)}</span>
-                </div>
-                <div class="col-6 card-cell stat-cell">
-                  <strong>${langData.label_po_per_tile}</strong>
-                  <span class="stat-value"><img src="../../img_base/po.png" class="effect-icon">${poPerTile}</span>
-                </div>
+                ${statCell({ label: "PO", value: formatNumber(po), icon: `<img src="../../img_base/po.png" alt="">`, border: true })}
+                ${statCell({ label: "PO/tile", value: poPerTile, icon: `<img src="../../img_base/po.png" alt="">` })}
               </div>
               <hr>
               <div class="row g-0">
-                <div class="col-6 card-cell border-end stat-cell">
-                  <strong>${langData.label_size}</strong>
-                  <span class="stat-value"><img src="../../img_base/size.png" class="effect-icon">${size}</span>
-                </div>
-                <div class="col-6 card-cell stat-cell">
-                  <strong>${langData.label_might_points}</strong>
-                  <span class="stat-value"><img src="../../img_base/might.png" class="effect-icon">${formatNumber(might)}</span>
-                </div>
+                ${statCell({ label: langData.label_size, value: size, icon: `<img src="../../img_base/size.png" alt="">`, border: true })}
+                ${statCell({ label: "Might", value: formatNumber(might), icon: `<img src="../../img_base/might.png" alt="">` })}
               </div>
               <hr>
               <div class="row g-0">
-                <div class="col-6 card-cell border-end stat-cell">
-                  <strong>${langData.label_sale_price}</strong>
-                  <span class="stat-value">${sellPriceDisplay}</span>
-                </div>
-                <div class="col-6 card-cell stat-cell">
-                  <strong>${langData.label_fusion}</strong>
-                  <span class="stat-value">${fusion}</span>
-                </div>
+                ${statCell({ label: "Sale", value: sellPriceDisplay, icon: sellPriceIconDisplay, border: true })}
+                ${statCell({ label: langData.label_fusion, value: fusion, icon: `<img src="../../img_base/fusion.png" alt="">` })}
               </div>
             </div>
           </div>
         </div>
         ${effectsHTML}
-        ${sourceHTML}
       </div>
     </div>
   </div>`;
@@ -783,6 +786,29 @@ function formatNumber(num) {
   return Number(num).toLocaleString(undefined);
 }
 
+async function copyDecoIdFromBadge(badge) {
+  const id = badge?.dataset?.copyDecoId;
+  if (!id) return;
+
+  try {
+    await navigator.clipboard.writeText(id);
+  } catch {
+    const input = document.createElement("textarea");
+    input.value = id;
+    input.style.position = "fixed";
+    input.style.opacity = "0";
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand("copy");
+    input.remove();
+  }
+
+  badge.classList.remove("is-copied");
+  void badge.offsetWidth;
+  badge.classList.add("is-copied");
+  window.setTimeout(() => badge.classList.remove("is-copied"), 700);
+}
+
 function setupEventListeners() {
   const searchInput = document.getElementById("searchInput");
   const searchButton = document.getElementById("searchButton");
@@ -792,7 +818,13 @@ function setupEventListeners() {
 
   function runSearch() {
     if (searchInput.disabled) return;
-    appliedSearchText = searchInput.value || "";
+    const value = searchInput.value.trim();
+    if (!value) {
+      searchInput.value = "";
+      if (!appliedSearchText) return;
+    }
+    if (value === appliedSearchText) return;
+    appliedSearchText = value;
     applyFiltersAndSorting();
   }
 
@@ -851,6 +883,26 @@ function setupEventListeners() {
   showFilter?.addEventListener("change", () => {
     applyFiltersAndSorting();
   });
+
+  document.addEventListener("click", (event) => {
+    const badge = event.target.closest("[data-copy-deco-id]");
+    if (!badge) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    copyDecoIdFromBadge(badge);
+  }, true);
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+
+    const badge = event.target.closest("[data-copy-deco-id]");
+    if (!badge) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    copyDecoIdFromBadge(badge);
+  }, true);
 
   searchFilters.forEach(cb => {
     cb.addEventListener("change", () => {

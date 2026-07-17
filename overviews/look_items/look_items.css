@@ -1,55 +1,130 @@
-.box-content hr {
-    width: 100%;
-    border: 0;
-    border-top: 1px solid white !important;
-    opacity: 1 !important;
+#cards {
+    --look-card-border: rgba(215, 155, 66, 0.52);
+    --look-card-divider: rgba(215, 155, 66, 0.34);
+    --look-card-bg: #60412c;
+    --look-text: #f7ead5;
+    position: relative;
+    z-index: 1;
+}
+
+#cards > [class*="col-"] {
+    padding: 4px 5px;
+}
+
+#cards .box {
+    background: var(--look-card-bg);
+    border: 1px solid var(--look-card-border);
+    border-radius: 8px;
+    color: var(--look-text);
+    margin-bottom: 2px;
+    overflow: hidden;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.045),
+        0 3px 8px rgba(0, 0, 0, 0.28);
+    transition: none;
+}
+
+#cards .box-content {
+    background: transparent;
+    border-radius: 0;
+    color: var(--look-text);
+}
+
+#cards .deco-title {
+    min-height: 0;
     margin: 0;
-    color: white;
+    padding: 5px 8px;
+    color: #f3c24a;
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.2;
+    text-align: center;
+    text-shadow: none;
 }
 
-.effect-icon {
-    width: 20px;
-    height: auto;
-    vertical-align: middle;
-    margin-right: 2px;
+#cards .look-grid {
+    border-top: 2px solid var(--look-card-divider) !important;
 }
 
-.bi-zoom-in {
-    font-size: 1.2rem;
-    color: white;
+#cards .border-end {
+    border-right: 1px solid var(--look-card-divider) !important;
 }
 
-.max-bonus {
-    font-style: italic;
-    color: rgb(234, 224, 224);
-    font-size: 12px;
+#cards .border-bottom {
+    border-bottom: 1px solid var(--look-card-divider) !important;
 }
 
-@media(max-width:768px) {
-    .max-bonus {
-        white-space: nowrap;
-    }
+#cards .look-cell {
+    display: flex;
+    min-height: 138px;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
 }
 
-.box-content img,
-.box-content canvas {
-    width: 70% !important;
-    max-width: 70%;
-    aspect-ratio: 1/1;
-    object-fit: contain;
+#cards .commander-grid .look-cell {
+    min-height: 190px;
+}
+
+#cards .look-image,
+#cards canvas.look-image {
     display: block;
-    margin-left: auto;
-    margin-right: auto;
+    width: auto !important;
+    max-width: 100%;
+    height: auto !important;
+    max-height: 170px;
+    object-fit: contain;
+    filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.32));
+}
+
+#cards .castellan-grid .look-image,
+#cards .castellan-grid canvas.look-image {
+    max-height: 118px;
 }
 
 .no-image-text {
-    color: #e2b33d !important;
-    text-align: center;
-    padding: 2rem;
-    font-weight: bold;
+    width: 100%;
+    min-height: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    height: 100%;
+    color: #e2b33d !important;
+    text-align: center;
+    padding: 1rem;
+    font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    #content {
+        padding-left: 2px;
+        padding-right: 2px;
+    }
+
+    #cards > [class*="col-"] {
+        padding-left: 1px;
+        padding-right: 1px;
+    }
+
+    #cards .deco-title {
+        font-size: 15px;
+    }
+
+    #cards .look-cell {
+        min-height: 122px;
+        padding: 7px;
+    }
+
+    #cards .commander-grid .look-cell {
+        min-height: 150px;
+    }
+
+    #cards .look-image,
+    #cards canvas.look-image {
+        max-height: 138px;
+    }
+
+    #cards .castellan-grid .look-image,
+    #cards .castellan-grid canvas.look-image {
+        max-height: 104px;
+    }
 }

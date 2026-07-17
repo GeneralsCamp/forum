@@ -1,18 +1,13 @@
 body {
-  background-color: #bd9a79;
   color: #433120;
 }
 
 h1 {
-  background-color: rgb(119, 80, 54);
-  color: #f3c24a;
-  padding: 4px;
   font-weight: bolder;
   text-align: center;
 }
 
 .container {
-  background-color: rgb(67, 51, 38);
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -41,13 +36,8 @@ h1 {
 }
 
 .note {
-  background-color: rgb(119, 80, 54);
-  color: white;
+  color: #f7ead5;
   font-weight: bolder;
-  padding: 5px;
-  border-radius: 10px;
-  margin: 0;
-  max-width: 100%;
 }
 
 .form-group {
@@ -64,18 +54,18 @@ label {
 .form-select,
 .form-select option {
   font-weight: bold;
-  background-color: #f3e0c2;
-  color: #3e2a16;
-  border: 2px solid #bd9a79;
-  border-radius: 8px;
+  background-color: var(--gf-input-bg);
+  color: var(--gf-input-text);
+  border: 1px solid rgba(215, 155, 66, 0.72);
+  border-radius: 7px;
 }
 
 .form-control:focus,
 .form-select:focus {
-  box-shadow: 0 0 0 0.2rem rgba(243, 194, 74, 0.5);
-  border-color: #f3c24a;
+  box-shadow: 0 0 0 2px rgba(215, 155, 66, 0.25), inset 0 1px 2px rgba(89, 56, 30, 0.16);
+  border-color: rgba(229, 184, 93, 0.88);
   outline: none;
-  background-color: #f3e0c2;
+  background-color: var(--gf-input-bg-focus);
 }
 
 .reward-card {

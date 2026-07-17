@@ -8,12 +8,11 @@
       "type_temporary": "Temporary",
       "type_appearance": "Appearance",
       "type_primary": "Primary",
-      "type_relic": "Relic"},
+      "type_relic": "Relic"
+    },
     "ui": {
       "public_order": "Public order",
       "effects": "Effects",
-      "dev_comments": "Developer comments",
-      "type": "Type",
       "removal_cost": "Removal Cost",
       "non_removable": "Non removable",
       "coins": "coins",
@@ -34,7 +33,8 @@
       "hours": "hours",
       "minute": "minute",
       "minutes": "minutes",
-      "can_be_placed_on": "Can be placed on"
+      "can_be_placed_on": "Can be placed on",
+      "expiration_time": "Expiration time"
     }
   },
   "de": {
@@ -46,12 +46,11 @@
       "type_temporary": "Temporär",
       "type_appearance": "Aussehen",
       "type_primary": "Primär",
-      "type_relic": "Relikt"},
+      "type_relic": "Relikt"
+    },
     "ui": {
       "public_order": "Öffentliche Ordnung",
       "effects": "Effekte",
-      "dev_comments": "Entwicklerkommentare",
-      "type": "Typ",
       "removal_cost": "Entfernungskosten",
       "non_removable": "Nicht entfernbar",
       "coins": "Münzen",
@@ -72,7 +71,8 @@
       "hours": "Stunden",
       "minute": "Minute",
       "minutes": "Minuten",
-      "can_be_placed_on": "Kann platziert werden auf"
+      "can_be_placed_on": "Kann platziert werden auf",
+      "expiration_time": "Ablaufzeit"
     }
   },
   "fr": {
@@ -84,12 +84,11 @@
       "type_temporary": "Temporaire",
       "type_appearance": "Apparence",
       "type_primary": "Primaire",
-      "type_relic": "Relique"},
+      "type_relic": "Relique"
+    },
     "ui": {
       "public_order": "Ordre public",
       "effects": "Effets",
-      "dev_comments": "Commentaires développeur",
-      "type": "Type",
       "removal_cost": "Coût de retrait",
       "non_removable": "Non retirable",
       "coins": "pièces",
@@ -110,7 +109,8 @@
       "hours": "heures",
       "minute": "minute",
       "minutes": "minutes",
-      "can_be_placed_on": "Peut être placé sur"
+      "can_be_placed_on": "Peut être placé sur",
+      "expiration_time": "Durée d’expiration"
     }
   },
   "hu": {
@@ -122,12 +122,11 @@
       "type_temporary": "Ideiglenes",
       "type_appearance": "Kinézet",
       "type_primary": "Elsődleges",
-      "type_relic": "Relikvia"},
+      "type_relic": "Relikvia"
+    },
     "ui": {
       "public_order": "Közrend",
       "effects": "Hatások",
-      "dev_comments": "Fejlesztői megjegyzések",
-      "type": "Típus",
       "removal_cost": "Eltávolítás költsége",
       "non_removable": "Nem eltávolítható",
       "coins": "érme",
@@ -148,7 +147,8 @@
       "hours": "óra",
       "minute": "perc",
       "minutes": "perc",
-      "can_be_placed_on": "Elhelyezhető itt"
+      "can_be_placed_on": "Elhelyezhető itt",
+      "expiration_time": "Lejárati idő"
     }
   },
   "es": {
@@ -160,12 +160,11 @@
       "type_temporary": "Temporal",
       "type_appearance": "Apariencia",
       "type_primary": "Primario",
-      "type_relic": "Reliquia"},
+      "type_relic": "Reliquia"
+    },
     "ui": {
       "public_order": "Orden público",
       "effects": "Efectos",
-      "dev_comments": "Comentarios del desarrollador",
-      "type": "Tipo",
       "removal_cost": "Costo de eliminación",
       "non_removable": "No removible",
       "coins": "monedas",
@@ -186,7 +185,8 @@
       "hours": "horas",
       "minute": "minuto",
       "minutes": "minutos",
-      "can_be_placed_on": "Se puede colocar en"
+      "can_be_placed_on": "Se puede colocar en",
+      "expiration_time": "Tiempo de caducidad"
     }
   },
   "ru": {
@@ -198,12 +198,11 @@
       "type_temporary": "Временный",
       "type_appearance": "Внешний вид",
       "type_primary": "Основной",
-      "type_relic": "Реликвия"},
+      "type_relic": "Реликвия"
+    },
     "ui": {
       "public_order": "Общественный порядок",
       "effects": "Эффекты",
-      "dev_comments": "Комментарии разработчика",
-      "type": "Тип",
       "removal_cost": "Стоимость удаления",
       "non_removable": "Нельзя удалить",
       "coins": "монеты",
@@ -224,7 +223,8 @@
       "hours": "часов",
       "minute": "минута",
       "minutes": "минут",
-      "can_be_placed_on": "Можно разместить на"
+      "can_be_placed_on": "Можно разместить на",
+      "expiration_time": "Срок действия"
     }
   },
   "ja": {
@@ -236,12 +236,11 @@
       "type_temporary": "一時",
       "type_appearance": "外観",
       "type_primary": "メイン",
-      "type_relic": "遺物"},
+      "type_relic": "遺物"
+    },
     "ui": {
       "public_order": "公共秩序",
       "effects": "効果",
-      "dev_comments": "開発者コメント",
-      "type": "タイプ",
       "removal_cost": "除去コスト",
       "non_removable": "除去不可",
       "coins": "コイン",
@@ -262,7 +261,8 @@
       "hours": "時間",
       "minute": "分",
       "minutes": "分",
-      "can_be_placed_on": "設置可能"
+      "can_be_placed_on": "設置可能",
+      "expiration_time": "有効期限"
     }
   },
   "pl": {
@@ -274,12 +274,11 @@
       "type_temporary": "Tymczasowy",
       "type_appearance": "Wygląd",
       "type_primary": "Główny",
-      "type_relic": "Relikt"},
+      "type_relic": "Relikt"
+    },
     "ui": {
       "public_order": "Ład publiczny",
       "effects": "Efekty",
-      "dev_comments": "Komentarze dewelopera",
-      "type": "Typ",
       "removal_cost": "Koszt usunięcia",
       "non_removable": "Nieusuwalne",
       "coins": "monety",
@@ -300,7 +299,8 @@
       "hours": "godzin",
       "minute": "minuta",
       "minutes": "minut",
-      "can_be_placed_on": "Można umieścić na"
+      "can_be_placed_on": "Można umieścić na",
+      "expiration_time": "Czas wygaśnięcia"
     }
   },
   "ro": {
@@ -312,12 +312,11 @@
       "type_temporary": "Temporar",
       "type_appearance": "Aspect",
       "type_primary": "Principal",
-      "type_relic": "Relicvă"},
+      "type_relic": "Relicvă"
+    },
     "ui": {
       "public_order": "Ordine publică",
       "effects": "Efecte",
-      "dev_comments": "Comentarii dezvoltator",
-      "type": "Tip",
       "removal_cost": "Cost eliminare",
       "non_removable": "Nu poate fi eliminat",
       "coins": "monede",
@@ -338,7 +337,8 @@
       "hours": "ore",
       "minute": "minut",
       "minutes": "minute",
-      "can_be_placed_on": "Poate fi plasat pe"
+      "can_be_placed_on": "Poate fi plasat pe",
+      "expiration_time": "Timp de expirare"
     }
   },
   "el": {
@@ -350,12 +350,11 @@
       "type_temporary": "Προσωρινό",
       "type_appearance": "Εμφάνιση",
       "type_primary": "Κύριο",
-      "type_relic": "Κειμήλιο"},
+      "type_relic": "Κειμήλιο"
+    },
     "ui": {
       "public_order": "Δημόσια τάξη",
       "effects": "Επιδράσεις",
-      "dev_comments": "Σχόλια προγραμματιστή",
-      "type": "Τύπος",
       "removal_cost": "Κόστος αφαίρεσης",
       "non_removable": "Δεν αφαιρείται",
       "coins": "νομίσματα",
@@ -376,7 +375,8 @@
       "hours": "ώρες",
       "minute": "λεπτό",
       "minutes": "λεπτά",
-      "can_be_placed_on": "Μπορεί να τοποθετηθεί σε"
+      "can_be_placed_on": "Μπορεί να τοποθετηθεί σε",
+      "expiration_time": "Χρόνος λήξης"
     }
   },
   "nl": {
@@ -388,12 +388,11 @@
       "type_temporary": "Tijdelijk",
       "type_appearance": "Uiterlijk",
       "type_primary": "Primair",
-      "type_relic": "Reliek"},
+      "type_relic": "Reliek"
+    },
     "ui": {
       "public_order": "Openbare orde",
       "effects": "Effecten",
-      "dev_comments": "Ontwikkelaarsopmerkingen",
-      "type": "Type",
       "removal_cost": "Verwijderkosten",
       "non_removable": "Niet verwijderbaar",
       "coins": "munten",
@@ -414,7 +413,8 @@
       "hours": "uur",
       "minute": "minuut",
       "minutes": "minuten",
-      "can_be_placed_on": "Kan geplaatst worden op"
+      "can_be_placed_on": "Kan geplaatst worden op",
+      "expiration_time": "Vervaltijd"
     }
   },
   "cs": {
@@ -426,12 +426,11 @@
       "type_temporary": "Dočasný",
       "type_appearance": "Vzhled",
       "type_primary": "Hlavní",
-      "type_relic": "Relikvie"},
+      "type_relic": "Relikvie"
+    },
     "ui": {
       "public_order": "Veřejný pořádek",
       "effects": "Efekty",
-      "dev_comments": "Komentáře vývojáře",
-      "type": "Typ",
       "removal_cost": "Cena odstranění",
       "non_removable": "Nelze odstranit",
       "coins": "mince",
@@ -452,7 +451,8 @@
       "hours": "hodin",
       "minute": "minuta",
       "minutes": "minut",
-      "can_be_placed_on": "Lze umístit na"
+      "can_be_placed_on": "Lze umístit na",
+      "expiration_time": "Doba platnosti"
     }
   },
   "ar": {
@@ -464,12 +464,11 @@
       "type_temporary": "مؤقت",
       "type_appearance": "المظهر",
       "type_primary": "أساسي",
-      "type_relic": "أثر"},
+      "type_relic": "أثر"
+    },
     "ui": {
       "public_order": "النظام العام",
       "effects": "التأثيرات",
-      "dev_comments": "تعليقات المطور",
-      "type": "النوع",
       "removal_cost": "تكلفة الإزالة",
       "non_removable": "غير قابل للإزالة",
       "coins": "عملات",
@@ -490,7 +489,8 @@
       "hours": "ساعات",
       "minute": "دقيقة",
       "minutes": "دقائق",
-      "can_be_placed_on": "يمكن وضعه على"
+      "can_be_placed_on": "يمكن وضعه على",
+      "expiration_time": "وقت الانتهاء"
     }
   },
   "it": {
@@ -502,12 +502,11 @@
       "type_temporary": "Temporaneo",
       "type_appearance": "Aspetto",
       "type_primary": "Primario",
-      "type_relic": "Reliquia"},
+      "type_relic": "Reliquia"
+    },
     "ui": {
       "public_order": "Ordine pubblico",
       "effects": "Effetti",
-      "dev_comments": "Commenti sviluppatore",
-      "type": "Tipo",
       "removal_cost": "Costo rimozione",
       "non_removable": "Non rimovibile",
       "coins": "monete",
@@ -528,7 +527,8 @@
       "hours": "ore",
       "minute": "minuto",
       "minutes": "minuti",
-      "can_be_placed_on": "Può essere posizionato su"
+      "can_be_placed_on": "Può essere posizionato su",
+      "expiration_time": "Tempo di scadenza"
     }
   },
   "bg": {
@@ -540,12 +540,11 @@
       "type_temporary": "Временен",
       "type_appearance": "Външен вид",
       "type_primary": "Основен",
-      "type_relic": "Реликва"},
+      "type_relic": "Реликва"
+    },
     "ui": {
       "public_order": "Обществен ред",
       "effects": "Ефекти",
-      "dev_comments": "Коментари на разработчика",
-      "type": "Тип",
       "removal_cost": "Цена за премахване",
       "non_removable": "Не може да се премахне",
       "coins": "монети",
@@ -566,7 +565,8 @@
       "hours": "часа",
       "minute": "минута",
       "minutes": "минути",
-      "can_be_placed_on": "Може да се постави върху"
+      "can_be_placed_on": "Може да се постави върху",
+      "expiration_time": "Срок на изтичане"
     }
   },
   "pt": {
@@ -578,12 +578,11 @@
       "type_temporary": "Temporário",
       "type_appearance": "Aparência",
       "type_primary": "Primário",
-      "type_relic": "Relíquia"},
+      "type_relic": "Relíquia"
+    },
     "ui": {
       "public_order": "Ordem pública",
       "effects": "Efeitos",
-      "dev_comments": "Comentários do desenvolvedor",
-      "type": "Tipo",
       "removal_cost": "Custo de remoção",
       "non_removable": "Não removível",
       "coins": "moedas",
@@ -604,7 +603,8 @@
       "hours": "horas",
       "minute": "minuto",
       "minutes": "minutos",
-      "can_be_placed_on": "Pode ser colocado em"
+      "can_be_placed_on": "Pode ser colocado em",
+      "expiration_time": "Tempo de expiração"
     }
   },
   "da": {
@@ -616,12 +616,11 @@
       "type_temporary": "Midlertidig",
       "type_appearance": "Udseende",
       "type_primary": "Primær",
-      "type_relic": "Relikvie"},
+      "type_relic": "Relikvie"
+    },
     "ui": {
       "public_order": "Offentlig orden",
       "effects": "Effekter",
-      "dev_comments": "Udviklerkommentarer",
-      "type": "Type",
       "removal_cost": "Fjernelsesomkostning",
       "non_removable": "Kan ikke fjernes",
       "coins": "mønter",
@@ -642,7 +641,8 @@
       "hours": "timer",
       "minute": "minut",
       "minutes": "minutter",
-      "can_be_placed_on": "Kan placeres på"
+      "can_be_placed_on": "Kan placeres på",
+      "expiration_time": "Udløbstid"
     }
   },
   "fi": {
@@ -654,12 +654,11 @@
       "type_temporary": "Väliaikainen",
       "type_appearance": "Ulkoasu",
       "type_primary": "Ensisijainen",
-      "type_relic": "Reliikki"},
+      "type_relic": "Reliikki"
+    },
     "ui": {
       "public_order": "Yleinen järjestys",
       "effects": "Vaikutukset",
-      "dev_comments": "Kehittäjän kommentit",
-      "type": "Tyyppi",
       "removal_cost": "Poistokustannus",
       "non_removable": "Ei poistettavissa",
       "coins": "kolikot",
@@ -680,7 +679,8 @@
       "hours": "tuntia",
       "minute": "minuutti",
       "minutes": "minuuttia",
-      "can_be_placed_on": "Voidaan sijoittaa rakennukseen"
+      "can_be_placed_on": "Voidaan sijoittaa rakennukseen",
+      "expiration_time": "Vanhenemisaika"
     }
   },
   "sv": {
@@ -692,12 +692,11 @@
       "type_temporary": "Tillfällig",
       "type_appearance": "Utseende",
       "type_primary": "Primär",
-      "type_relic": "Relik"},
+      "type_relic": "Relik"
+    },
     "ui": {
       "public_order": "Allmän ordning",
       "effects": "Effekter",
-      "dev_comments": "Utvecklarkommentarer",
-      "type": "Typ",
       "removal_cost": "Borttagningskostnad",
       "non_removable": "Kan inte tas bort",
       "coins": "mynt",
@@ -718,7 +717,8 @@
       "hours": "timmar",
       "minute": "minut",
       "minutes": "minuter",
-      "can_be_placed_on": "Kan placeras på"
+      "can_be_placed_on": "Kan placeras på",
+      "expiration_time": "Utgångstid"
     }
   },
   "no": {
@@ -730,12 +730,11 @@
       "type_temporary": "Midlertidig",
       "type_appearance": "Utseende",
       "type_primary": "Primær",
-      "type_relic": "Relikvie"},
+      "type_relic": "Relikvie"
+    },
     "ui": {
       "public_order": "Offentlig orden",
       "effects": "Effekter",
-      "dev_comments": "Utviklerkommentarer",
-      "type": "Type",
       "removal_cost": "Fjerningskostnad",
       "non_removable": "Kan ikke fjernes",
       "coins": "mynter",
@@ -756,7 +755,8 @@
       "hours": "timer",
       "minute": "minutt",
       "minutes": "minutter",
-      "can_be_placed_on": "Kan plasseres på"
+      "can_be_placed_on": "Kan plasseres på",
+      "expiration_time": "Utløpstid"
     }
   },
   "sk": {
@@ -768,12 +768,11 @@
       "type_temporary": "Dočasný",
       "type_appearance": "Vzhľad",
       "type_primary": "Hlavný",
-      "type_relic": "Relikvia"},
+      "type_relic": "Relikvia"
+    },
     "ui": {
       "public_order": "Verejný poriadok",
       "effects": "Efekty",
-      "dev_comments": "Komentáre vývojára",
-      "type": "Typ",
       "removal_cost": "Cena odstránenia",
       "non_removable": "Nedá sa odstrániť",
       "coins": "mince",
@@ -794,7 +793,8 @@
       "hours": "hodín",
       "minute": "minúta",
       "minutes": "minút",
-      "can_be_placed_on": "Možno umiestniť na"
+      "can_be_placed_on": "Možno umiestniť na",
+      "expiration_time": "Čas vypršania"
     }
   },
   "tr": {
@@ -806,12 +806,11 @@
       "type_temporary": "Geçici",
       "type_appearance": "Görünüm",
       "type_primary": "Birincil",
-      "type_relic": "Relik"},
+      "type_relic": "Relik"
+    },
     "ui": {
       "public_order": "Kamu düzeni",
       "effects": "Etkiler",
-      "dev_comments": "Geliştirici yorumları",
-      "type": "Tür",
       "removal_cost": "Kaldırma maliyeti",
       "non_removable": "Kaldırılamaz",
       "coins": "paralar",
@@ -832,7 +831,8 @@
       "hours": "saat",
       "minute": "dakika",
       "minutes": "dakika",
-      "can_be_placed_on": "Şuraya yerleştirilebilir"
+      "can_be_placed_on": "Şuraya yerleştirilebilir",
+      "expiration_time": "Süre bitimi"
     }
   },
   "ko": {
@@ -844,12 +844,11 @@
       "type_temporary": "임시",
       "type_appearance": "외형",
       "type_primary": "주요",
-      "type_relic": "유물"},
+      "type_relic": "유물"
+    },
     "ui": {
       "public_order": "공공 질서",
       "effects": "효과",
-      "dev_comments": "개발자 코멘트",
-      "type": "유형",
       "removal_cost": "제거 비용",
       "non_removable": "제거 불가",
       "coins": "코인",
@@ -870,7 +869,8 @@
       "hours": "시간",
       "minute": "분",
       "minutes": "분",
-      "can_be_placed_on": "배치 가능"
+      "can_be_placed_on": "배치 가능",
+      "expiration_time": "만료 시간"
     }
   },
   "lt": {
@@ -882,12 +882,11 @@
       "type_temporary": "Laikinas",
       "type_appearance": "Išvaizda",
       "type_primary": "Pagrindinis",
-      "type_relic": "Relikvija"},
+      "type_relic": "Relikvija"
+    },
     "ui": {
       "public_order": "Viešoji tvarka",
       "effects": "Efektai",
-      "dev_comments": "Kūrėjo komentarai",
-      "type": "Tipas",
       "removal_cost": "Pašalinimo kaina",
       "non_removable": "Negalima pašalinti",
       "coins": "monetos",
@@ -908,7 +907,8 @@
       "hours": "valandos",
       "minute": "minutė",
       "minutes": "minutės",
-      "can_be_placed_on": "Galima pastatyti ant"
+      "can_be_placed_on": "Galima pastatyti ant",
+      "expiration_time": "Galiojimo laikas"
     }
   }
 }

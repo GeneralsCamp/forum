@@ -149,11 +149,11 @@ function createLookCard(item, showFilter = null) {
             /\.(webp|png)$/i.test(url);
 
         if (!isRemoteItemAsset) {
-            return `<img src="${url}" alt="${name}" class="img-fluid">`;
+            return `<img src="${url}" alt="${name}" class="look-image">`;
         }
 
         const companion = deriveCompanionUrls(url);
-        return `<img src="${url}" alt="${name}" class="img-fluid" data-compose-asset="1" data-image-url="${companion.imageUrl}" data-json-url="${companion.jsonUrl}" data-js-url="${companion.jsUrl}">`;
+        return `<img src="${url}" alt="${name}" class="look-image" data-compose-asset="1" data-image-url="${companion.imageUrl}" data-json-url="${companion.jsonUrl}" data-js-url="${companion.jsUrl}">`;
     };
 
     let cardsHtml = "";
@@ -167,20 +167,20 @@ function createLookCard(item, showFilter = null) {
                 <div class="box-content">
                     <h2 class="deco-title">${name}</h2>
 
-                    <div class="row g-0 border-top castellan-grid">
-                        <div class="col-6 border-end border-bottom text-center p-4">
+                    <div class="row g-0 border-top look-grid castellan-grid">
+                        <div class="col-6 look-cell border-end border-bottom">
                             ${imgOrPlaceholder(mapObjects.castleUrl)}
                         </div>
 
-                        <div class="col-6 border-bottom text-center p-4">
+                        <div class="col-6 look-cell border-bottom">
                             ${imgOrPlaceholder(mapObjects.outpostUrl)}
                         </div>
 
-                        <div class="col-6 border-end text-center p-4">
+                        <div class="col-6 look-cell border-end">
                             ${imgOrPlaceholder(mapObjects.metroUrl)}
                         </div>
 
-                        <div class="col-6 text-center p-4">
+                        <div class="col-6 look-cell">
                             ${imgOrPlaceholder(mapObjects.capitalUrl)}
                         </div>
                     </div>
@@ -198,12 +198,12 @@ function createLookCard(item, showFilter = null) {
                 <div class="box-content">
                     <h2 class="deco-title">${name}</h2>
 
-                    <div class="row g-0 border-top commander-grid">
-                        <div class="col-6 border-end text-center p-4">
+                    <div class="row g-0 border-top look-grid commander-grid">
+                        <div class="col-6 look-cell border-end">
                             ${imgOrPlaceholder(movements.moveNormal)}
                         </div>
 
-                        <div class="col-6 text-center p-4">
+                        <div class="col-6 look-cell">
                             ${imgOrPlaceholder(movements.moveBoat)}
                         </div>
                     </div>
