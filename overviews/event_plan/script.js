@@ -1027,7 +1027,24 @@ function renderCalendar(events) {
     monthRow.className = "calendar-month-row";
     const monthLabel = document.createElement("th");
     monthLabel.className = "calendar-title-cell";
-    monthLabel.textContent = "Event";
+    monthLabel.rowSpan = 2;
+    const labelsOpenByDefault = window.matchMedia("(min-width: 992px)").matches;
+    if (labelsOpenByDefault) {
+        table.classList.add("calendar-event-labels-open");
+    }
+    const cornerToggle = document.createElement("button");
+    cornerToggle.className = "calendar-corner-toggle";
+    cornerToggle.type = "button";
+    cornerToggle.setAttribute("aria-label", labelsOpenByDefault ? "Hide event names" : "Show event names");
+    cornerToggle.setAttribute("aria-expanded", String(labelsOpenByDefault));
+    cornerToggle.disabled = !window.matchMedia("(min-width: 577px)").matches;
+    const cornerLogo = document.createElement("img");
+    cornerLogo.className = "calendar-corner-logo";
+    cornerLogo.src = "../../img_base/main_page/nav-logo.png";
+    cornerLogo.alt = "";
+    cornerLogo.setAttribute("aria-hidden", "true");
+    cornerToggle.appendChild(cornerLogo);
+    monthLabel.appendChild(cornerToggle);
     monthRow.appendChild(monthLabel);
     months.forEach(entry => {
         const th = document.createElement("th");
@@ -1045,14 +1062,13 @@ function renderCalendar(events) {
 
     const dayRow = document.createElement("tr");
     dayRow.className = "calendar-day-row";
-    const emptyTh = document.createElement("th");
-    emptyTh.className = "calendar-title-cell";
-    emptyTh.textContent = "";
-    dayRow.appendChild(emptyTh);
     dates.forEach((date, index) => {
         const th = document.createElement("th");
         th.textContent = String(date.getUTCDate());
         th.dataset.colIndex = String(index);
+        if (index > 0 && date.getUTCDate() === 1) {
+            th.classList.add("calendar-month-start");
+        }
         if (date.getTime() === todayUtc.getTime()) {
             th.classList.add("calendar-today");
         }
@@ -1063,25 +1079,42 @@ function renderCalendar(events) {
 
     const tbody = document.createElement("tbody");
     const palette = [
-        "#d96f6f",
-        "#d9a56f",
-        "#d6c36b",
-        "#6fa8d9",
-        "#7cc08a",
-        "#b48ad9",
-        "#d984b5",
-        "#8bd1d1",
-        "#9bc36f",
-        "#d9b06f",
-        "#c98a6f",
-        "#6f8ad9"
+        "#8f3f3f",
+        "#8f5a32",
+        "#746822",
+        "#356b96",
+        "#3f7d4c",
+        "#664685",
+        "#854065",
+        "#357a7a",
+        "#56782f",
+        "#84652f",
+        "#7f4c36",
+        "#445b96"
     ];
+
+    const getRangeColor = (entry, entryIndex, range, rangeIndex) => {
+        const lowerTitle = entry.title.toLowerCase();
+        let color = palette[entryIndex % palette.length];
+        if (lowerTitle === "ltpe") {
+            const base = "#445b96";
+            color = rangeIndex === 1 ? lightenColor(base, 0.33) : base;
+        }
+        if (range?.lightenAlt) {
+            color = lightenColor(color, 0.3);
+        }
+        if (lowerTitle === "berimond" && range?.label?.toLowerCase().includes("invasion")) {
+            color = lightenColor(color, 0.33);
+        }
+        return color;
+    };
 
     rangesByEvent.forEach((entry, idx) => {
         const tr = document.createElement("tr");
         const nameCell = document.createElement("th");
         nameCell.className = "calendar-event-name";
         const displayTitle = getDisplayTitle(entry.title);
+        nameCell.setAttribute("aria-label", displayTitle);
         const nameWrap = document.createElement("div");
         nameWrap.className = "calendar-event-name-wrap";
 
@@ -1099,8 +1132,10 @@ function renderCalendar(events) {
         }
 
         const titleSpan = document.createElement("span");
+        titleSpan.className = "calendar-event-label";
         titleSpan.textContent = displayTitle;
         nameWrap.appendChild(titleSpan);
+
         nameCell.appendChild(nameWrap);
         tr.appendChild(nameCell);
 
@@ -1108,50 +1143,69 @@ function renderCalendar(events) {
             const td = document.createElement("td");
             td.className = "calendar-cell";
             td.dataset.colIndex = String(index);
+            if (index > 0 && date.getUTCDate() === 1) {
+                td.classList.add("calendar-month-start");
+            }
             if (date.getTime() === todayUtc.getTime()) {
                 td.classList.add("calendar-today");
             }
             const dateTime = date.getTime();
             let active = false;
-            let edge = false;
-            let activeRangeIndex = -1;
-            let activeRange = null;
-            let invasionActive = false;
+            let halfStart = false;
+            let halfEnd = false;
+            const matchingRanges = [];
             entry.ranges.forEach((range, rangeIndex) => {
                 const startTime = normalizeUtcDate(range.start).getTime();
                 const endTime = normalizeUtcDate(range.end).getTime();
                 if (dateTime >= startTime && dateTime <= endTime) {
                     active = true;
-                    activeRangeIndex = rangeIndex;
-                    activeRange = range;
-                    if (range.label && range.label.toLowerCase().includes("invasion")) {
-                        invasionActive = true;
-                    }
                     const isStart = dateTime === startTime;
                     const isEnd = dateTime === endTime;
                     const trimmedStart = range.trimmedStart === true;
                     const trimmedEnd = range.trimmedEnd === true;
-                    if ((isStart && !trimmedStart) || (isEnd && !trimmedEnd)) {
-                        edge = true;
-                    }
+                    matchingRanges.push({
+                        range,
+                        rangeIndex,
+                        isStart,
+                        isEnd,
+                        trimmedStart,
+                        trimmedEnd
+                    });
+                    if (isStart && !trimmedStart) halfStart = true;
+                    if (isEnd && !trimmedEnd) halfEnd = true;
                 }
             });
             if (active) {
                 td.classList.add("active");
-                let color = palette[idx % palette.length];
-                const lowerTitle = entry.title.toLowerCase();
-                if (lowerTitle === "ltpe" && activeRangeIndex >= 0) {
-                    const base = "#6f8ad9";
-                    color = activeRangeIndex === 1 ? lightenColor(base, 0.33) : base;
+                const startMatch = matchingRanges.find(match => match.isStart && !match.trimmedStart);
+                const endMatch = matchingRanges.find(match => (
+                    match.isEnd
+                    && !match.trimmedEnd
+                    && match.rangeIndex !== startMatch?.rangeIndex
+                ));
+
+                if (startMatch && endMatch) {
+                    td.classList.add("calendar-color-transition");
+                    td.style.setProperty(
+                        "--event-left-color",
+                        getRangeColor(entry, idx, endMatch.range, endMatch.rangeIndex)
+                    );
+                    td.style.setProperty(
+                        "--event-right-color",
+                        getRangeColor(entry, idx, startMatch.range, startMatch.rangeIndex)
+                    );
+                } else {
+                    if (halfStart) td.classList.add("calendar-half-start");
+                    if (halfEnd) td.classList.add("calendar-half-end");
+                    const activeMatch = matchingRanges[matchingRanges.length - 1];
+                    const color = getRangeColor(
+                        entry,
+                        idx,
+                        activeMatch?.range,
+                        activeMatch?.rangeIndex ?? -1
+                    );
+                    td.style.setProperty("--event-color", color);
                 }
-                if (activeRange && activeRange.lightenAlt) {
-                    color = lightenColor(color, 0.3);
-                }
-                if (lowerTitle === "berimond" && invasionActive) {
-                    color = lightenColor(color, 0.33);
-                }
-                td.style.setProperty("--event-color", color);
-                td.textContent = edge ? "0,5" : "1";
             }
             tr.appendChild(td);
         });
@@ -1161,6 +1215,13 @@ function renderCalendar(events) {
     table.appendChild(tbody);
     wrapper.appendChild(table);
     container.appendChild(wrapper);
+
+    cornerToggle.addEventListener("click", () => {
+        if (!window.matchMedia("(min-width: 577px)").matches) return;
+        const isOpen = table.classList.toggle("calendar-event-labels-open");
+        cornerToggle.setAttribute("aria-expanded", String(isOpen));
+        cornerToggle.setAttribute("aria-label", isOpen ? "Hide event names" : "Show event names");
+    });
 
     requestAnimationFrame(() => {
         normalizeCalendarBodyRowHeights(tbody);
