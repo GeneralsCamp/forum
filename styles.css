@@ -963,15 +963,17 @@ html {
 
     .container {
         position: relative;
-        height: 100vh;
-        height: 100dvh;
-        min-height: 0;
-        overflow: hidden;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+        overflow: visible;
         padding-bottom: calc(55px + env(safe-area-inset-bottom, 0px));
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
     }
 
     .main-nav {
-        position: absolute;
+        position: fixed;
         left: 0;
         right: 0;
         bottom: 0;
@@ -993,11 +995,11 @@ html {
         display: flex;
         flex-direction: column;
 
-        flex: 1 1 auto;
-        min-height: 0;
+        flex: 0 0 auto;
+        min-height: auto;
 
         overflow-x: hidden;
-        overflow-y: auto;
+        overflow-y: visible;
 
         padding-bottom: 10px;
     }
