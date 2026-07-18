@@ -700,14 +700,15 @@ body {
 }
 
 .progress-bar {
-    background: #6b472f;
+    background: linear-gradient(90deg, #2f7f4d, #4fb36d);
     box-shadow: none;
 }
 
 .progress-text {
-    color: #f7ead5;
+    color: #ffffff;
     text-shadow: none;
     font-size: 12px;
+    font-weight: 800;
 }
 
 #log {
@@ -826,19 +827,23 @@ html {
 }
 
 #content > .collapse-area:last-child > .progress {
+    flex: 0 0 24px;
+    min-height: 24px;
     border: 1px solid rgba(215, 155, 66, 0.52);
     border-bottom: 1px solid rgba(215, 155, 66, 0.52);
     border-radius: 8px 8px 0 0;
-    background: transparent;
+    background: rgba(10, 13, 15, 0.42);
 }
 
 #content > .collapse-area:last-child > .collapse.show {
+    display: flex;
+    flex-direction: column;
     margin: 0;
     padding: 8px !important;
     border: 1px solid rgba(215, 155, 66, 0.52);
     border-top: 0;
     border-radius: 0 0 8px 8px;
-    background: transparent;
+    background: rgba(10, 13, 15, 0.42);
     box-shadow: none;
 }
 
@@ -882,4 +887,160 @@ html {
         width: calc(100% + 6px);
         margin-inline: -3px;
     }
+}
+
+/* 2026 semantic text console */
+#content > .collapse-area:last-child #log {
+    flex: 1 1 auto;
+    width: 100%;
+    height: auto;
+    overflow-y: auto;
+    padding: 6px 0;
+    background: transparent;
+    color: #dce7ea;
+    font-family: "Cascadia Code", "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    font-size: 12.5px;
+    font-weight: 500;
+    line-height: 1.45;
+    font-variant-numeric: tabular-nums;
+    box-shadow: none;
+}
+
+.log-line {
+    --log-accent: #70b8d4;
+    display: grid;
+    grid-template-columns: 76px 18px 78px minmax(0, 1fr);
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+    padding: 6px 12px 6px 10px;
+    border-left: 0;
+    border-bottom: 1px solid rgba(215, 155, 66, 0.24);
+    background: transparent;
+    animation: console-line-in 0.16s ease-out both;
+}
+
+.log-line:hover {
+    background: transparent;
+    border-bottom-color: rgba(215, 155, 66, 0.42);
+}
+
+.log-time {
+    color: #657780;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.log-icon {
+    color: var(--log-accent);
+    font-size: 13px;
+    font-weight: 900;
+    text-align: center;
+    text-shadow: 0 0 10px color-mix(in srgb, var(--log-accent) 35%, transparent);
+}
+
+.log-level {
+    color: var(--log-accent);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.075em;
+    white-space: nowrap;
+}
+
+.log-message {
+    min-width: 0;
+    color: #dce7ea;
+    overflow-wrap: anywhere;
+}
+
+.log-value {
+    color: #8bddea;
+    font-weight: 650;
+}
+
+.log-notice { --log-accent: #e0a84d; }
+.log-info { --log-accent: #67bfe5; }
+.log-process { --log-accent: #b492e6; }
+.log-download { --log-accent: #55cedd; }
+.log-success { --log-accent: #62d48b; }
+.log-skip { --log-accent: #87969e; }
+.log-cache { --log-accent: #9f9aea; }
+.log-warning { --log-accent: #e9bd55; }
+.log-error { --log-accent: #f06f74; }
+.log-stopped { --log-accent: #df9367; }
+
+.log-error .log-message {
+    color: #ffd2d2;
+}
+
+.log-warning .log-message {
+    color: #f4dfad;
+}
+
+.log-success .log-message {
+    color: #ccefd8;
+}
+
+@keyframes console-line-in {
+    from {
+        opacity: 0;
+        transform: translateY(3px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 700px) {
+    .log-line {
+        grid-template-columns: 64px 15px 64px minmax(0, 1fr);
+        gap: 5px;
+        padding-inline: 7px;
+    }
+
+    .log-time {
+        font-size: 10px;
+    }
+
+    .log-level {
+        font-size: 9px;
+        letter-spacing: 0.035em;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .log-line {
+        animation: none;
+    }
+}
+
+/* Keep log overflow inside the console instead of scrolling the page. */
+html,
+body {
+    height: 100%;
+    overflow: hidden;
+}
+
+.container {
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+}
+
+#content {
+    overflow: hidden;
+}
+
+#content > .collapse-area:last-child,
+#content > .collapse-area:last-child > .collapse.show,
+#content > .collapse-area:last-child #log {
+    min-height: 0;
+}
+
+#content > .collapse-area:last-child #log {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
 }

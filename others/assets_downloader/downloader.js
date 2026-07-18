@@ -12,14 +12,78 @@ const assetProxy = "https://my-proxy-8u49.onrender.com/";
 let folderHandle;
 let stopDownload = false;
 let currentIndex = 0;
+let downloadedAssetCount = 0;
 const SITE_CACHE_NAME = "gf-versioned-data";
 const SITE_META_PREFIX = "gf-cache-meta:";
 
 // --- Logging ---
-function log(msg) {
+const LOG_TYPES = {
+    notice: { icon: "§", label: "NOTICE" },
+    info: { icon: "●", label: "INFO" },
+    process: { icon: "◆", label: "PROCESS" },
+    download: { icon: "↓", label: "DOWNLOAD" },
+    success: { icon: "✓", label: "SUCCESS" },
+    skip: { icon: "–", label: "SKIPPED" },
+    cache: { icon: "◇", label: "CACHE" },
+    warning: { icon: "!", label: "WARNING" },
+    error: { icon: "×", label: "ERROR" },
+    stopped: { icon: "■", label: "STOPPED" }
+};
+
+function appendHighlightedLogText(container, message) {
+    const text = String(message ?? "");
+    const highlightPattern = /(Goodgame Studios|@[\w]+|https?:\/\/\S+|"[^"]+"|[\w./-]+\.(?:json|js|png|webp)\b|\b\d+\s*\/\s*\d+\b)/gi;
+    let lastIndex = 0;
+
+    for (const match of text.matchAll(highlightPattern)) {
+        if (match.index > lastIndex) {
+            container.append(document.createTextNode(text.slice(lastIndex, match.index)));
+        }
+        const value = document.createElement("span");
+        value.className = "log-value";
+        value.textContent = match[0];
+        container.appendChild(value);
+        lastIndex = match.index + match[0].length;
+    }
+
+    if (lastIndex < text.length) {
+        container.append(document.createTextNode(text.slice(lastIndex)));
+    }
+}
+
+function log(message, type = "info") {
     const logEl = document.getElementById("log");
-    const timestamp = new Date().toLocaleTimeString();
-    logEl.textContent += `[${timestamp}] ${msg}\n`;
+    if (!logEl) return;
+
+    const resolvedType = LOG_TYPES[type] ? type : "info";
+    const config = LOG_TYPES[resolvedType];
+    const line = document.createElement("div");
+    line.className = `log-line log-${resolvedType}`;
+
+    const timestamp = document.createElement("time");
+    timestamp.className = "log-time";
+    timestamp.dateTime = new Date().toISOString();
+    timestamp.textContent = new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+    });
+
+    const icon = document.createElement("span");
+    icon.className = "log-icon";
+    icon.setAttribute("aria-hidden", "true");
+    icon.textContent = config.icon;
+
+    const level = document.createElement("span");
+    level.className = "log-level";
+    level.textContent = config.label;
+
+    const text = document.createElement("span");
+    text.className = "log-message";
+    appendHighlightedLogText(text, message);
+
+    line.append(timestamp, icon, level, text);
+    logEl.appendChild(line);
     logEl.scrollTop = logEl.scrollHeight;
 }
 
@@ -94,7 +158,7 @@ async function getItemFile() {
     try {
         const dirHandle = await folderHandle.getDirectoryHandle("items", { create: true });
         await dirHandle.getFileHandle(fileName);
-        log(`Skipped (already exists): ${fileName}`);
+        log(`Already up to date — skipped: ${fileName}`, "skip");
         return;
     } catch { }
 
@@ -102,7 +166,7 @@ async function getItemFile() {
     await setSiteCachedJson(`items:empire:${version}`, items);
     const blob = jsonBlob(items);
     await saveFileInSubfolder("items", fileName, blob);
-    log(`The latest items file has been downloaded from GitHub raw, with version: ${version}`);
+    log(`Latest items data downloaded · Version ${version}`, "success");
 }
 
 async function getLangFile(selectedLang) {
@@ -120,7 +184,7 @@ async function getLangFile(selectedLang) {
         try {
             const dirHandle = await folderHandle.getDirectoryHandle("lang", { create: true });
             await dirHandle.getFileHandle(fileName);
-            log(`Skipped (already exists): ${fileName}`);
+            log(`Already up to date — skipped: ${fileName}`, "skip");
             continue;
         } catch { }
 
@@ -129,9 +193,9 @@ async function getLangFile(selectedLang) {
             await setSiteCachedJson(`lang:empire:${lang}:${version}`, langJson);
             const blob = jsonBlob(langJson);
             await saveFileInSubfolder("lang", fileName, blob);
-            log(`Downloaded language file: ${fileName}`);
+            log(`Language file downloaded: ${fileName}`, "success");
         } catch {
-            log(`Failed to download: ${fileName}`);
+            log(`Could not download language file: ${fileName}`, "error");
         }
     }
 }
@@ -151,13 +215,13 @@ async function getDllFile() {
     try {
         const dirHandle = await folderHandle.getDirectoryHandle("dll", { create: true });
         await dirHandle.getFileHandle(fileName);
-        log(`Skipped (already exists): ${fileName}`);
+        log(`Already up to date — skipped: ${fileName}`, "skip");
         return;
     } catch { }
 
     const blob = await fetchBlobFromRaw(DATA_URLS.empireDll);
     await saveFileInSubfolder("dll", fileName, blob);
-    log(`The latest DLL file has been downloaded from GitHub raw, with version: ${hash}`);
+    log(`Latest DLL downloaded · Version ${hash}`, "success");
 }
 
 async function getE4kExtraFiles() {
@@ -188,10 +252,10 @@ async function getE4kExtraFiles() {
     const fileName = `items-e4k-${itemVersion}.json`;
 
     if (await fileExistsInSubfolder("e4k", fileName)) {
-        log(`Skipped (already exists): ${fileName}`);
+        log(`Already up to date — skipped: ${fileName}`, "skip");
     } else {
         await saveFileInSubfolder("e4k", fileName, jsonBlob(itemsJson));
-        log(`Downloaded E4K items from GitHub raw: ${fileName}`);
+        log(`E4K items downloaded: ${fileName}`, "success");
     }
 
     await setSiteCachedJson(`items:e4k:${itemVersion}`, itemsJson);
@@ -202,14 +266,14 @@ async function getE4kExtraFiles() {
         itemVersion,
         versionsUrl: DATA_URLS.e4kVersions
     });
-    log(`Prepared site cache for E4K items: ${itemVersion} (app ${appVersion})`);
+    log(`E4K site cache prepared · Items ${itemVersion} · App ${appVersion}`, "cache");
 }
 
 // --- Get all asset URLs ---
 async function getAllAssets(usePng) {
     const base = "https://empire-html5.goodgamestudios.com/default/assets/itemassets/";
 
-    log("Loading DLL from GitHub raw data cache...");
+    log("Reading the asset list from the latest DLL data…", "process");
     const dllRes = await fetchFreshWithFallback(DATA_URLS.empireDll, 30000);
     const dllText = await dllRes.text();
 
@@ -226,7 +290,7 @@ async function getAllAssets(usePng) {
             return { path: relativePath, url: `${base}${relativePath}.${extension}`, ext: extension };
         });
 
-    log(`Found ${assets.length} assets to download (${extension}).`);
+    log(`Asset scan complete · ${assets.length} ${extension.toUpperCase()} files found`, "info");
     return assets;
 }
 
@@ -247,6 +311,8 @@ async function saveAssetCopyInSubfolder(subfolder, asset, blob) {
 }
 
 async function downloadAssets(assets, usePng, duplicateNewToNews = false) {
+    if (currentIndex === 0) downloadedAssetCount = 0;
+
     let completed = currentIndex;
     const errorLog = [];
     let currentConcurrency = 5;
@@ -282,15 +348,16 @@ async function downloadAssets(assets, usePng, duplicateNewToNews = false) {
                     const writable = await fileHandle.createWritable();
                     await writable.write(blob);
                     await writable.close();
+                    downloadedAssetCount++;
 
                     if (duplicateNewToNews) {
                         await saveAssetCopyInSubfolder("News", asset, blob);
                     }
 
-                    log(`Downloaded (${completed + 1}/${assets.length}): ${fileName}`);
+                    log(`Downloaded ${fileName} · ${completed + 1} / ${assets.length}`, "download");
                 } catch (err) {
                     errorLog.push(asset.url);
-                    log(`Failed after retries: ${asset.url}`);
+                    log(`Download failed after all retry attempts: ${asset.url}`, "error");
                 }
             }
 
@@ -303,10 +370,14 @@ async function downloadAssets(assets, usePng, duplicateNewToNews = false) {
     }
 
     if (errorLog.length > 0) {
-        log("=== The following files failed to download: ===");
-        errorLog.forEach(u => log(u));
+        log("Some files could not be downloaded:", "warning");
+        errorLog.forEach(u => log(u, "error"));
     } else if (!stopDownload) {
-        log("All new assets downloaded successfully.");
+        if (downloadedAssetCount === 0) {
+            log(`No new assets were needed · All ${assets.length} files are already up to date`, "skip");
+        } else {
+            log(`${downloadedAssetCount} new assets were downloaded successfully.`, "success");
+        }
     }
 }
 
@@ -380,8 +451,8 @@ document.getElementById("startDownload").addEventListener("click", async () => {
     const selects = document.querySelectorAll("#optAssets, #optItems, #optLang, #optDll, #optE4k, #duplicateNewToNews");
     selects.forEach(sel => sel.disabled = true);
 
-    if (currentIndex === 0) log("=== Download process started ===");
-    else log("=== Continuing download ===");
+    if (currentIndex === 0) log("Download process started.", "process");
+    else log("Download process resumed.", "process");
 
     const optAssets = document.getElementById("optAssets").value;
     const optItems = document.getElementById("optItems").value;
@@ -392,7 +463,7 @@ document.getElementById("startDownload").addEventListener("click", async () => {
 
     try {
         if (duplicateNewToNews) {
-            log("News duplicate is enabled. Newly downloaded assets will also be copied to the News folder.");
+            log("News copy enabled · New assets will also be saved in the News folder.", "info");
         }
 
         if (optItems === "items") {
@@ -411,7 +482,7 @@ document.getElementById("startDownload").addEventListener("click", async () => {
             try {
                 await getE4kExtraFiles();
             } catch (err) {
-                log(`E4K mobile extra files failed: ${err?.message || err}`);
+                log(`Could not prepare E4K mobile files: ${err?.message || err}`, "error");
             }
         }
 
@@ -423,9 +494,9 @@ document.getElementById("startDownload").addEventListener("click", async () => {
             if (currentIndex >= assets.length) currentIndex = 0;
         }
 
-        log("=== Download process finished ===");
+        log("Download process finished.", "success");
     } catch (err) {
-        log(`Download process failed: ${err?.message || err}`);
+        log(`The download process stopped because of an error: ${err?.message || err}`, "error");
     } finally {
         updateStartButtonText();
         document.getElementById("stopDownload").disabled = true;
@@ -437,7 +508,7 @@ document.getElementById("startDownload").addEventListener("click", async () => {
 
 document.getElementById("stopDownload").addEventListener("click", () => {
     stopDownload = true;
-    log("Download stopped by user.");
+    log("Download stopped by the user.", "stopped");
 });
 
 // --- Select folder ---
@@ -445,11 +516,11 @@ document.getElementById("selectFolder").addEventListener("click", async () => {
     try {
         folderHandle = await window.showDirectoryPicker();
         currentIndex = 0;
-        log(`Target folder "${folderHandle.name}" selected. Click 'Start Download' to begin.`);
+        log(`Target folder selected: "${folderHandle.name}" · Ready to start`, "success");
         document.getElementById("startDownload").disabled = false;
         updateStartButtonText();
     } catch (err) {
-        log("Folder selection canceled or not supported by this browser.");
+        log("No folder was selected, or this browser does not support folder access.", "warning");
     }
 });
 
@@ -457,13 +528,18 @@ document.getElementById("selectFolder").addEventListener("click", async () => {
 document.addEventListener("DOMContentLoaded", () => {
     loadGoogleAnalytics("G-8TGZRNFGRR");
 
+    log(
+        "All downloaded assets are the property of Goodgame Studios. Permission from the rights holder is required before use.",
+        "notice"
+    );
+
     if (!window.showDirectoryPicker) {
-        log("ERROR: This downloader only works on desktop browsers.");
+        log("Folder access is unavailable. Use a supported desktop browser.", "error");
         document.getElementById("selectFolder").disabled = true;
         document.getElementById("startDownload").disabled = true;
         document.getElementById("stopDownload").disabled = true;
     } else {
-        log("Please select a target folder to store the downloaded assets.");
+        log("Select a target folder to begin.", "info");
         updateStartButtonText();
     }
 });
