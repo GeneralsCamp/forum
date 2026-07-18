@@ -31,7 +31,7 @@ const FALLBACK_IMAGE = "../../img_base/placeholder.webp";
 initAutoHeight({
   contentSelector: "#content",
   subtractSelectors: [".page-title", ".patronage-toolbar"],
-  extraOffset: 18
+  extraOffset: 0
 });
 
 let simulatorModel = null;

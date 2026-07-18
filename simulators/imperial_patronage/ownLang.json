@@ -2,6 +2,7 @@
   "en": {
     "ui": {
       "donation_options": "Donation Options",
+      "page_title": "Imperial Patronage Simulator",
       "reset_sliders": "Reset Sliders",
       "reset_all": "Reset Progress",
       "total_used": "Total used",
@@ -16,6 +17,7 @@
   "ar": {
     "ui": {
       "donation_options": "خيارات التبرع",
+      "page_title": "محاكي الرعاية الإمبراطورية",
       "reset_sliders": "إعادة ضبط أشرطة التمرير",
       "reset_all": "إعادة ضبط التقدم",
       "total_used": "إجمالي المستخدم",
@@ -30,6 +32,7 @@
   "es": {
     "ui": {
       "donation_options": "Opciones de donación",
+      "page_title": "Simulador de Patronazgo Imperial",
       "reset_sliders": "Restablecer deslizadores",
       "reset_all": "Restablecer progreso",
       "total_used": "Total usado",
@@ -44,6 +47,7 @@
   "bg": {
     "ui": {
       "donation_options": "Опции за дарение",
+      "page_title": "Симулатор на Имперско покровителство",
       "reset_sliders": "Нулиране на плъзгачите",
       "reset_all": "Нулиране на напредъка",
       "total_used": "Общо използвано",
@@ -58,6 +62,7 @@
   "pt": {
     "ui": {
       "donation_options": "Opções de doação",
+      "page_title": "Simulador de Patrocínio Imperial",
       "reset_sliders": "Redefinir controles",
       "reset_all": "Redefinir progresso",
       "total_used": "Total usado",
@@ -72,6 +77,7 @@
   "cs": {
     "ui": {
       "donation_options": "Možnosti darování",
+      "page_title": "Simulátor Císařského patronátu",
       "reset_sliders": "Obnovit posuvníky",
       "reset_all": "Obnovit postup",
       "total_used": "Celkem použito",
@@ -86,6 +92,7 @@
   "de": {
     "ui": {
       "donation_options": "Spendenoptionen",
+      "page_title": "Simulator der Kaiserlichen Schirmherrschaft",
       "reset_sliders": "Regler zurücksetzen",
       "reset_all": "Fortschritt zurücksetzen",
       "total_used": "Insgesamt genutzt",
@@ -100,6 +107,7 @@
   "da": {
     "ui": {
       "donation_options": "Donationsmuligheder",
+      "page_title": "Simulator for Kejserligt protektorat",
       "reset_sliders": "Nulstil skydere",
       "reset_all": "Nulstil fremskridt",
       "total_used": "Samlet brugt",
@@ -114,6 +122,7 @@
   "fi": {
     "ui": {
       "donation_options": "Lahjoitusvaihtoehdot",
+      "page_title": "Keisarillisen suojeluksen simulaattori",
       "reset_sliders": "Nollaa liukusäätimet",
       "reset_all": "Nollaa edistyminen",
       "total_used": "Käytetty yhteensä",
@@ -128,6 +137,7 @@
   "fr": {
     "ui": {
       "donation_options": "Options de don",
+      "page_title": "Simulateur de Patronage Impérial",
       "reset_sliders": "Réinitialiser les curseurs",
       "reset_all": "Réinitialiser la progression",
       "total_used": "Total utilisé",
@@ -142,6 +152,7 @@
   "el": {
     "ui": {
       "donation_options": "Επιλογές δωρεάς",
+      "page_title": "Προσομοιωτής Αυτοκρατορικής Πατρωνίας",
       "reset_sliders": "Επαναφορά ρυθμιστών",
       "reset_all": "Επαναφορά προόδου",
       "total_used": "Συνολικά χρησιμοποιημένα",
@@ -156,6 +167,7 @@
   "hu": {
     "ui": {
       "donation_options": "Adományozási lehetőségek",
+      "page_title": "Császári Pártfogó Szimulátor",
       "reset_sliders": "Csúszkák nullázása",
       "reset_all": "Haladás nullázása",
       "total_used": "Összesen felhasználva",
@@ -170,6 +182,7 @@
   "it": {
     "ui": {
       "donation_options": "Opzioni di donazione",
+      "page_title": "Simulatore di Patrocinio Imperiale",
       "reset_sliders": "Reimposta cursori",
       "reset_all": "Reimposta progresso",
       "total_used": "Totale utilizzato",
@@ -184,6 +197,7 @@
   "ja": {
     "ui": {
       "donation_options": "寄付オプション",
+      "page_title": "帝国後援シミュレーター",
       "reset_sliders": "スライダーをリセット",
       "reset_all": "進行状況をリセット",
       "total_used": "合計使用量",
@@ -198,6 +212,7 @@
   "ko": {
     "ui": {
       "donation_options": "기부 옵션",
+      "page_title": "제국 후원 시뮬레이터",
       "reset_sliders": "슬라이더 초기화",
       "reset_all": "진행도 초기화",
       "total_used": "총 사용량",
@@ -212,6 +227,7 @@
   "lt": {
     "ui": {
       "donation_options": "Aukojimo parinktys",
+      "page_title": "Imperatoriškos globos simuliatorius",
       "reset_sliders": "Atstatyti slankiklius",
       "reset_all": "Atstatyti pažangą",
       "total_used": "Iš viso panaudota",
@@ -226,6 +242,7 @@
   "nl": {
     "ui": {
       "donation_options": "Donatieopties",
+      "page_title": "Simulator voor Keizerlijk Patronaat",
       "reset_sliders": "Schuifregelaars resetten",
       "reset_all": "Voortgang resetten",
       "total_used": "Totaal gebruikt",
@@ -240,6 +257,7 @@
   "no": {
     "ui": {
       "donation_options": "Donasjonsalternativer",
+      "page_title": "Simulator for Keiserlig beskyttelse",
       "reset_sliders": "Tilbakestill skyveknapper",
       "reset_all": "Tilbakestill fremdrift",
       "total_used": "Totalt brukt",
@@ -254,6 +272,7 @@
   "pl": {
     "ui": {
       "donation_options": "Opcje darowizny",
+      "page_title": "Symulator Cesarskiego Patronatu",
       "reset_sliders": "Reset suwaków",
       "reset_all": "Reset postępu",
       "total_used": "Łącznie wykorzystano",
@@ -268,6 +287,7 @@
   "ro": {
     "ui": {
       "donation_options": "Opțiuni de donație",
+      "page_title": "Simulator de Patronaj Imperial",
       "reset_sliders": "Resetează glisoarele",
       "reset_all": "Resetează progresul",
       "total_used": "Total folosit",
@@ -282,6 +302,7 @@
   "ru": {
     "ui": {
       "donation_options": "Варианты пожертвования",
+      "page_title": "Симулятор Императорского Покровительства",
       "reset_sliders": "Сбросить ползунки",
       "reset_all": "Сбросить прогресс",
       "total_used": "Всего использовано",
@@ -296,6 +317,7 @@
   "sv": {
     "ui": {
       "donation_options": "Donationsalternativ",
+      "page_title": "Simulator för Kejserligt beskydd",
       "reset_sliders": "Återställ reglage",
       "reset_all": "Återställ framsteg",
       "total_used": "Totalt använt",
@@ -310,6 +332,7 @@
   "sk": {
     "ui": {
       "donation_options": "Možnosti darovania",
+      "page_title": "Simulátor Cisárskeho patronátu",
       "reset_sliders": "Obnoviť posuvníky",
       "reset_all": "Obnoviť postup",
       "total_used": "Celkovo použité",
@@ -324,6 +347,7 @@
   "tr": {
     "ui": {
       "donation_options": "Bağış seçenekleri",
+      "page_title": "İmparatorluk Himayesi Simülatörü",
       "reset_sliders": "Kaydırıcıları sıfırla",
       "reset_all": "İlerlemeyi sıfırla",
       "total_used": "Toplam kullanılan",

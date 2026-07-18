@@ -256,8 +256,8 @@
 
 .schedule-footer-bar {
     grid-column: 1 / -1;
-    margin-top: 8px;
-    padding: 4px 5px;
+    margin-top: 0;
+    padding: 2px 5px 3px;
     background: #ead6b3;
     border-top: 1px solid #c7b08f;
     display: flex;
@@ -760,8 +760,23 @@
     clip-path: none;
 }
 
+.calendar-day-row .calendar-today {
+    background: linear-gradient(180deg, #f3c24a, #d39a32);
+    color: #24180e;
+    font-weight: 900;
+    text-shadow: none;
+}
+
 .calendar-today::after {
-    background: rgba(243, 194, 74, 0.2);
+    z-index: 2;
+    background: rgba(243, 194, 74, 0.1);
+    box-shadow:
+        inset 1px 0 0 rgba(255, 207, 83, 0.96),
+        inset -1px 0 0 rgba(255, 207, 83, 0.96);
+}
+
+.calendar-day-row .calendar-today::after {
+    background: transparent;
 }
 
 .calendar-selected::after {
@@ -769,11 +784,11 @@
 }
 
 .calendar-today-left-border {
-    border-left: 1px solid rgba(243, 194, 74, 0.88) !important;
+    border-left: 1px solid rgba(255, 207, 83, 0.96) !important;
 }
 
 .calendar-today-right-border {
-    border-right: 1px solid rgba(243, 194, 74, 0.88) !important;
+    border-right: 1px solid rgba(255, 207, 83, 0.96) !important;
 }
 
 @media (max-width: 576px) {
