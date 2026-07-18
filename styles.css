@@ -283,7 +283,9 @@ body {
 
     overflow-x: hidden;
     overflow-y: auto;
-    overscroll-behavior: contain;
+    overscroll-behavior-x: none;
+    overscroll-behavior-y: auto;
+    touch-action: pan-y;
     -webkit-overflow-scrolling: touch;
 }
 
