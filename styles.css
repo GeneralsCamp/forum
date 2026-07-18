@@ -1,8 +1,9 @@
 html,
 body {
     width: 100%;
-    height: 100%;
-    overflow: hidden;
+    min-height: 100%;
+    overflow-x: clip;
+    overflow-y: visible;
 }
 
 body {
@@ -21,8 +22,9 @@ body {
         margin: 0 !important;
         background-attachment: scroll;
         height: auto;
-        min-height: 100vh;
-        overflow: auto;
+        min-height: 100%;
+        overflow-x: clip;
+        overflow-y: visible;
     }
 }
 
@@ -947,8 +949,10 @@ html {
     body {
         margin: 0 !important;
         background-attachment: scroll;
-        height: 100%;
-        overflow: hidden;
+        height: auto;
+        min-height: 100%;
+        overflow-x: clip;
+        overflow-y: visible;
     }
 
     .now-card {
@@ -961,7 +965,7 @@ html {
         height: 100dvh;
         min-height: 0;
         overflow: hidden;
-        padding-bottom: 55px;
+        padding-bottom: calc(55px + env(safe-area-inset-bottom, 0px));
     }
 
     .main-nav {
@@ -974,7 +978,7 @@ html {
         width: 100%;
         margin-inline: 0;
 
-        padding: 8px;
+        padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px));
         gap: 8px;
 
         border-bottom: none;
