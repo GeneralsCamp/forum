@@ -6,7 +6,7 @@
   --builder-wood-dark: #332318;
   --builder-red: #d44646;
   --builder-green: #76d98b;
-  --builder-line: rgba(215, 155, 66, 0.34);
+  --builder-line: rgba(215, 155, 66, 0.38);
   --builder-line-strong: rgba(215, 155, 66, 0.52);
   --builder-panel: #60412c;
   --builder-panel-dark: #4f3625;
@@ -24,12 +24,15 @@
   display: grid;
   grid-template-columns: minmax(280px, 1fr) minmax(360px, 1fr);
   grid-template-rows: minmax(170px, 0.62fr) minmax(0, 1.38fr);
-  gap: 8px;
+  gap: 0;
   height: 100%;
   min-height: 0;
   max-height: 100%;
   margin-bottom: 8px;
   overflow: hidden;
+  background: rgba(32, 23, 17, 0.82);
+  border-top: 1px solid var(--builder-line-strong);
+  border-bottom: 1px solid var(--builder-line);
 }
 
 .mobile-builder-view-switch {
@@ -49,32 +52,34 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
-  background: var(--builder-panel);
-  border: 1px solid var(--builder-line-strong);
-  border-radius: 8px;
+  background: rgba(79, 54, 37, 0.86);
+  border: 0;
+  border-radius: 0;
   overflow: hidden;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.045),
-    0 3px 8px rgba(0, 0, 0, 0.28);
+  box-shadow: none;
 }
 
 .stats-panel {
   grid-column: 2 / 3;
   grid-row: 2 / 3;
+  border-top: 1px solid var(--builder-line-strong);
+  border-left: 1px solid var(--builder-line-strong);
 }
 
 .loadout-panel {
   grid-column: 2 / 3;
   grid-row: 1 / 2;
+  border-left: 1px solid var(--builder-line-strong);
 }
 
 .loadout-panel .panel-body {
-  background: radial-gradient(circle at top right, #956544 0%, #7a5437 42%, #6a472d 100%);
+  background: rgba(73, 49, 34, 0.84);
 }
 
 .filters-panel {
   grid-column: 1 / 2;
   grid-row: 2 / 3;
+  border-top: 1px solid var(--builder-line-strong);
 }
 
 .equipment-panel {
@@ -83,9 +88,11 @@
 }
 
 .panel-head {
-  padding: 6px 8px;
+  padding: 7px 10px;
   border-bottom: 1px solid var(--builder-line-strong);
-  background: var(--builder-panel-dark);
+  background: rgba(51, 35, 24, 0.96);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
   color: var(--builder-gold);
   font-size: 13px;
   font-weight: 800;
@@ -121,9 +128,9 @@
   width: 26px;
   height: 24px;
   padding: 0;
-  border: 1px solid rgba(215, 155, 66, 0.42);
+  border: 1px solid var(--builder-line);
   border-radius: 4px;
-  background: rgba(32, 23, 17, 0.28);
+  background: rgba(32, 23, 17, 0.52);
   color: var(--builder-cream);
   cursor: pointer;
 }
@@ -168,7 +175,7 @@
 .panel-filter-row {
   flex: 0 0 auto;
   z-index: 10;
-  background: var(--builder-panel-dark);
+  background: rgba(51, 35, 24, 0.96);
   border-bottom: 1px solid var(--builder-line);
   min-height: 28px;
 }
@@ -208,11 +215,11 @@
 }
 
 .filters-panel .panel-body {
-  background: transparent;
+  background: rgba(79, 54, 37, 0.86);
 }
 
 .filters-panel .panel-filter-row {
-  background: var(--builder-panel-dark);
+  background: rgba(51, 35, 24, 0.96);
   border-bottom: 1px solid var(--builder-line);
 }
 
@@ -405,11 +412,15 @@
   border: 0;
   border-bottom: 1px solid rgba(215, 155, 66, 0.22);
   border-radius: 0;
-  background: transparent;
+  background: rgba(79, 54, 37, 0.86);
   color: var(--builder-cream);
   font-size: 12px;
   font-weight: 700;
   line-height: 1.15;
+}
+
+.set-filter-row:nth-child(even) {
+  background: rgba(73, 49, 34, 0.84);
 }
 
 .set-filter-row span {
@@ -644,13 +655,22 @@
 
   .mobile-builder-view-switch {
     display: flex;
-    margin: 0 0 6px;
+    margin: 0 0 4px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--builder-line);
+    background: rgba(51, 35, 24, 0.92);
+  }
+
+  .mobile-builder-view-switch .custom-select {
+    min-height: 36px;
+    height: 36px;
   }
 
   .builder-shell {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 0;
     height: 100%;
     max-height: 100%;
     overflow: hidden;
@@ -663,6 +683,8 @@
   .filters-panel {
     grid-column: auto;
     grid-row: auto;
+    border-top: 0;
+    border-left: 0;
   }
 
   .builder-panel {
@@ -705,6 +727,7 @@
   .builder-shell.mobile-view-build .equipment-panel {
     order: 2;
     flex: 1 1 auto;
+    border-top: 1px solid var(--builder-line-strong);
   }
 
   .builder-shell.mobile-view-sets .filters-panel,
