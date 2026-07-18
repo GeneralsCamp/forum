@@ -1,6 +1,7 @@
 {
   "en": {
     "ui": {
+      "page_title": "GGE EQUIPMENT SET BUILDER",
       "all_wearers": "All wearers",
       "all_types": "All equipment types",
       "grouped_stats": "Grouped stats",
@@ -17,6 +18,7 @@
   },
   "de": {
     "ui": {
+      "page_title": "GGE-AUSRÜSTUNGSSET-ERSTELLER",
       "all_wearers": "Alle Träger",
       "all_types": "Alle Ausrüstungstypen",
       "grouped_stats": "Gruppierte Werte",
@@ -33,6 +35,7 @@
   },
   "fr": {
     "ui": {
+      "page_title": "CRÉATEUR D’ENSEMBLES D’ÉQUIPEMENT GGE",
       "all_wearers": "Tous les porteurs",
       "all_types": "Tous les types d'équipement",
       "grouped_stats": "Statistiques groupées",
@@ -49,6 +52,7 @@
   },
   "pl": {
     "ui": {
+      "page_title": "KREATOR ZESTAWÓW WYPOSAŻENIA GGE",
       "all_wearers": "Wszyscy użytkownicy",
       "all_types": "Wszystkie typy wyposażenia",
       "grouped_stats": "Pogrupowane statystyki",
@@ -65,6 +69,7 @@
   },
   "hu": {
     "ui": {
+      "page_title": "GGE FELSZERELÉSSZETT-ÉPÍTŐ",
       "all_wearers": "Minden viselő",
       "all_types": "Minden felszereléstípus",
       "grouped_stats": "Csoportosított statisztikák",
@@ -81,6 +86,7 @@
   },
   "ro": {
     "ui": {
+      "page_title": "CREATOR DE SETURI DE ECHIPAMENT GGE",
       "all_wearers": "Toți purtătorii",
       "all_types": "Toate tipurile de echipament",
       "grouped_stats": "Statistici grupate",
@@ -97,6 +103,7 @@
   },
   "es": {
     "ui": {
+      "page_title": "CREADOR DE CONJUNTOS DE EQUIPO GGE",
       "all_wearers": "Todos los portadores",
       "all_types": "Todos los tipos de equipo",
       "grouped_stats": "Estadísticas agrupadas",
@@ -113,6 +120,7 @@
   },
   "ru": {
     "ui": {
+      "page_title": "КОНСТРУКТОР КОМПЛЕКТОВ СНАРЯЖЕНИЯ GGE",
       "all_wearers": "Все носители",
       "all_types": "Все типы экипировки",
       "grouped_stats": "Сгруппированные характеристики",
@@ -129,6 +137,7 @@
   },
   "el": {
     "ui": {
+      "page_title": "ΔΗΜΙΟΥΡΓΟΣ ΣΕΤ ΕΞΟΠΛΙΣΜΟΥ GGE",
       "all_wearers": "Όλοι οι χρήστες",
       "all_types": "Όλοι οι τύποι εξοπλισμού",
       "grouped_stats": "Ομαδοποιημένα στατιστικά",
@@ -145,6 +154,7 @@
   },
   "nl": {
     "ui": {
+      "page_title": "GGE-UITRUSTINGSSETBOUWER",
       "all_wearers": "Alle dragers",
       "all_types": "Alle uitrustingstypen",
       "grouped_stats": "Gegroepeerde statistieken",
@@ -161,6 +171,7 @@
   },
   "cs": {
     "ui": {
+      "page_title": "TVŮRCE SAD VYBAVENÍ GGE",
       "all_wearers": "Všichni nositelé",
       "all_types": "Všechny typy vybavení",
       "grouped_stats": "Seskupené statistiky",
@@ -177,6 +188,7 @@
   },
   "ar": {
     "ui": {
+      "page_title": "منشئ أطقم المعدات في GGE",
       "all_wearers": "جميع المرتدين",
       "all_types": "جميع أنواع المعدات",
       "grouped_stats": "الإحصائيات المجمعة",
@@ -193,6 +205,7 @@
   },
   "it": {
     "ui": {
+      "page_title": "CREATORE DI SET DI EQUIPAGGIAMENTO GGE",
       "all_wearers": "Tutti gli utilizzatori",
       "all_types": "Tutti i tipi di equipaggiamento",
       "grouped_stats": "Statistiche raggruppate",
@@ -209,6 +222,7 @@
   },
   "ja": {
     "ui": {
+      "page_title": "GGE装備セットビルダー",
       "all_wearers": "すべての装備者",
       "all_types": "すべての装備タイプ",
       "grouped_stats": "グループ化されたステータス",
@@ -225,6 +239,7 @@
   },
   "bg": {
     "ui": {
+      "page_title": "КОНСТРУКТОР НА КОМПЛЕКТИ ЕКИПИРОВКА GGE",
       "all_wearers": "Всички носители",
       "all_types": "Всички видове екипировка",
       "grouped_stats": "Групирани статистики",
@@ -241,6 +256,7 @@
   },
   "pt": {
     "ui": {
+      "page_title": "CRIADOR DE CONJUNTOS DE EQUIPAMENTO GGE",
       "all_wearers": "Todos os utilizadores",
       "all_types": "Todos os tipos de equipamento",
       "grouped_stats": "Estatísticas agrupadas",
@@ -257,6 +273,7 @@
   },
   "da": {
     "ui": {
+      "page_title": "GGE-UDSTYRSSÆTBYGGER",
       "all_wearers": "Alle brugere",
       "all_types": "Alle udstyrstyper",
       "grouped_stats": "Grupperede statistikker",
@@ -273,6 +290,7 @@
   },
   "fi": {
     "ui": {
+      "page_title": "GGE-VARUSTESETTIEN RAKENTAJA",
       "all_wearers": "Kaikki käyttäjät",
       "all_types": "Kaikki varustetyypit",
       "grouped_stats": "Ryhmitellyt tilastot",
@@ -289,6 +307,7 @@
   },
   "ko": {
     "ui": {
+      "page_title": "GGE 장비 세트 빌더",
       "all_wearers": "모든 착용자",
       "all_types": "모든 장비 유형",
       "grouped_stats": "그룹화된 능력치",
@@ -305,6 +324,7 @@
   },
   "lt": {
     "ui": {
+      "page_title": "GGE ĮRANGOS RINKINIŲ KŪRĖJAS",
       "all_wearers": "Visi naudotojai",
       "all_types": "Visi įrangos tipai",
       "grouped_stats": "Sugrupuota statistika",
@@ -321,6 +341,7 @@
   },
   "no": {
     "ui": {
+      "page_title": "GGE-UTSTYRSSETTBYGGER",
       "all_wearers": "Alle brukere",
       "all_types": "Alle utstyrstyper",
       "grouped_stats": "Grupperte statistikker",
@@ -337,6 +358,7 @@
   },
   "sv": {
     "ui": {
+      "page_title": "GGE-UTRUSTNINGSSETBYGGARE",
       "all_wearers": "Alla användare",
       "all_types": "Alla utrustningstyper",
       "grouped_stats": "Grupperad statistik",
@@ -353,6 +375,7 @@
   },
   "sk": {
     "ui": {
+      "page_title": "TVORCA SÚPRAV VÝBAVY GGE",
       "all_wearers": "Všetci nositelia",
       "all_types": "Všetky typy vybavenia",
       "grouped_stats": "Zoskupené štatistiky",
@@ -369,6 +392,7 @@
   },
   "tr": {
     "ui": {
+      "page_title": "GGE EKİPMAN SETİ OLUŞTURUCU",
       "all_wearers": "Tüm kullanıcılar",
       "all_types": "Tüm ekipman türleri",
       "grouped_stats": "Gruplandırılmış istatistikler",

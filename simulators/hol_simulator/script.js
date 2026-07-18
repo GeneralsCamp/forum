@@ -1,423 +1,489 @@
+import { coreInit } from "../../overviews/shared/CoreInit.mjs";
+import { createLoader } from "../../overviews/shared/LoadingService.mjs";
+import { getInitialLanguage } from "../../overviews/shared/LanguageService.mjs";
+import { normalizeName } from "../../overviews/shared/RewardResolver.mjs";
 import { saveSimulatorData, loadSimulatorData } from "../../overviews/shared/GameSettings.mjs";
 
 const SIM_NAME = "hol";
-
-let selectedSlot = null;
-const skillDescriptions = {
-    //Attack
-    "o-1-1": "Gate protection reduction (-3%)",
-    "o-1-2": "Loot bonus (+6%)",
-    "o-1-3": "Honor (+5%)",
-    "o-1-4": "Melee strength in attack (+0,5%)",
-
-    "o-2-1": "Additional agents (+1)",
-    "o-2-2": "Reduced cooldown (+2%)",
-    "o-2-3": "Ranged strength in attack (+0.5%)",
-    "o-2-4": "Reduced movement costs (-18%)",
-    "o-2-5": "Chance of destroying a building (+1%)",
-
-    "o-3-1": "Units on the front (+5%)",
-    "o-3-2": "Additional fire damage (+5%)",
-    "o-3-3": "Experience (+4%)",
-    "o-3-4": "Melee strength in attack (+1%)",
-    "o-3-5": "Wall protection reduction (-3%)",
-
-    "o-4-1": "Strength on courtyard in attack (+1%)",
-    "o-4-2": "Outbound speed (+10%)",
-    "o-4-3": "Glory bonus in attack (+10%)",
-    "o-4-4": "Return speed from castle lords (+10%)",
-    "o-4-5": "Units on the flanks (+3%)",
-
-    "o-5-1": "Looting capacity (+500)",
-    "o-5-2": "Tool on the flanks (+2)",
-    "o-5-3": "Ranged strength in attack (+2%)",
-    "o-5-4": "6th wave of attack (+1)",
-    "o-5-5": "Moat protection reduction (-5%)",
-
-    //Defense
-    "d-1-1": "Gate protection (+3%)",
-    "d-1-2": "Resources lost reduction (-2%)",
-    "d-1-3": "Experience for construction (+5%)",
-    "d-1-4": "Melee strength in defense (+0,5%)",
-
-    "d-2-1": "City guards (+4%)",
-    "d-2-2": "Experience when defending (+3%)",
-    "d-2-3": "Ranged strength in defense (+0.5%)",
-    "d-2-4": "Occupations movement speed (+8%)",
-    "d-2-5": "Citizens/Population (+10%)",
-
-    "d-3-1": "Units on the castle wall (+0.5%)",
-    "d-3-2": "Reduced fire damage (+5%)",
-    "d-3-3": "Experience for attacking NPCs (+4%)",
-    "d-3-4": "Melee strength in defense (+1%)",
-    "d-3-5": "Wall protection (+6%)",
-
-    "d-4-1": "Strength on courtyard in defense (+0.5%)",
-    "d-4-2": "Chance for better equipment (+20%)",
-    "d-4-3": "Glory bonus in defense (+20%)",
-    "d-4-4": "Return speed from NPCs (+25%)",
-    "d-4-5": "Units on the castle wall (+1%)",
-
-    "d-5-1": "Safe storage (+500)",
-    "d-5-2": "Additional defense flank tool slot (+1)",
-    "d-5-3": "Ranged strength in defense (+2%)",
-    "d-5-4": "Strength on courtyard in defense (+6%)",
-    "d-5-5": "Moat protection (+5%)",
+const ROW_REQUIREMENTS = [0, 40, 80, 90, 90];
+const TREE_CONFIG = {
+    attack: { treeId: "0", containerId: "attack-container", specialGroups: [10, 26] },
+    defense: { treeId: "1", containerId: "defense-container", specialGroups: [36, 52] }
 };
 
-const saveState = () => {
-    const state = {
-        attack: [],
-        defense: []
-    };
-
-    ["attack", "defense"].forEach(stateType => {
-        states[stateType].rows.forEach((row, rowIndex) => {
-            const rowSlots = row.querySelectorAll(".slot");
-            const rowData = [];
-
-            rowSlots.forEach(slot => {
-                const badge = slot.querySelector(".badge");
-                const [current, max] = badge.textContent.split("/").map(Number);
-                rowData.push({ current, max });
-            });
-
-            state[stateType].push(rowData);
-        });
-    });
-
-    saveSimulatorData(SIM_NAME, state);
-};
-
-const loadState = () => {
-    const state = loadSimulatorData(SIM_NAME);
-    if (!state) return;
-
-    ["attack", "defense"].forEach(stateType => {
-        if (state[stateType]) {
-            states[stateType].rows.forEach((row, rowIndex) => {
-                const rowSlots = row.querySelectorAll(".slot");
-                const rowData = state[stateType][rowIndex] || [];
-
-                rowSlots.forEach((slot, slotIndex) => {
-                    const badge = slot.querySelector(".badge");
-                    const badgeBottom = slot.querySelector(".badge-bottom");
-                    const slotValue = badgeBottom ? parseInt(badgeBottom.textContent) : 0;
-
-                    if (rowData[slotIndex]) {
-                        const { current, max } = rowData[slotIndex];
-                        badge.textContent = `${current}/${max}`;
-                        states[stateType].totalPoints += current * slotValue;
-                    }
-                });
-            });
-        }
-    });
-
-    updateTotalPointsDisplay();
-};
-const maxPoints = 550;
-const rowRequirements = [0, 40, 80, 90, 90];
-
+const loader = createLoader();
+const currentLanguage = getInitialLanguage();
 const states = {
-    attack: {
-        totalPoints: 0,
-        rows: [...document.querySelectorAll("#attack-container .row-real")],
-        pointsPerRow: []
-    },
-    defense: {
-        totalPoints: 0,
-        rows: [...document.querySelectorAll("#defense-container .row-real")],
-        pointsPerRow: []
-    }
+    attack: { totalPoints: 0, rows: [], pointsPerRow: [] },
+    defense: { totalPoints: 0, rows: [], pointsPerRow: [] }
 };
 
+let lang = {};
+let ownLang = {};
+let maxPoints = 550;
 let currentState = "attack";
+let selectedSlot = null;
 
-const totalPointsDisplays = {
-    attack: document.getElementById("total-points-attack"),
-    defense: document.getElementById("total-points-defense")
-};
+function escapeHtml(value) {
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
 
-const updateTotalPointsDisplay = () => {
-    totalPointsDisplays.attack.textContent = states.attack.totalPoints;
-    totalPointsDisplays.defense.textContent = states.defense.totalPoints;
-};
+function getArray(data, keys) {
+    for (const key of keys) {
+        if (Array.isArray(data?.[key])) return data[key];
+    }
+    return [];
+}
 
-const calculatePointsPerRow = (state) => {
-    const pointsPerRow = [];
-    states[state].rows.forEach((row) => {
-        let rowPoints = 0;
-        const rowSlots = row.querySelectorAll(".slot");
+function gameText(key, fallback = "") {
+    return lang?.[String(key).toLowerCase()] || fallback;
+}
 
-        rowSlots.forEach(slot => {
-            const badge = slot.querySelector(".badge");
-            const badgeBottom = slot.querySelector(".badge-bottom");
-            const [current] = badge.textContent.split("/").map(Number);
-            const slotValue = badgeBottom ? Number(badgeBottom.textContent) : 0;
+async function loadOwnLang() {
+    try {
+        const response = await fetch("./ownLang.json");
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        ownLang = await response.json();
+    } catch (error) {
+        console.error("Error loading ownLang.json:", error);
+        ownLang = {};
+    }
+}
 
-            rowPoints += current * slotValue;
-        });
+function ui(key, fallback = "") {
+    const language = String(currentLanguage || "en").toLowerCase();
+    const baseLanguage = language.split("-")[0];
+    return ownLang?.[language]?.ui?.[key]
+        || ownLang?.[baseLanguage]?.ui?.[key]
+        || ownLang?.en?.ui?.[key]
+        || fallback;
+}
 
-        pointsPerRow.push(rowPoints);
+function formatNumber(value) {
+    const number = Number(value);
+    if (!Number.isFinite(number)) return String(value ?? "");
+    return new Intl.NumberFormat(currentLanguage, { maximumFractionDigits: 2 }).format(number);
+}
+
+function applyValue(template, value) {
+    return String(template || "").replace(/\{0(?:[^}]*)?\}/g, formatNumber(value));
+}
+
+function buildSkillGroups(rows, iconMap) {
+    const groups = new Map();
+
+    rows.forEach((row) => {
+        const groupId = String(row?.skillGroupID || "").trim();
+        if (!groupId) return;
+        if (!groups.has(groupId)) groups.set(groupId, []);
+        groups.get(groupId).push(row);
     });
 
-    states[state].pointsPerRow = pointsPerRow;
-};
+    return [...groups.entries()].map(([groupId, levels]) => {
+        levels.sort((a, b) => Number(a?.level || 0) - Number(b?.level || 0));
+        const first = levels[0] || {};
+        const name = gameText(`dialog_legendTemple_${groupId}_name`, `Skill ${groupId}`);
+        const shortTemplate = gameText(`dialog_legendTemple_${groupId}_desc_short`, "");
+        const longTemplate = gameText(`dialog_legendTemple_${groupId}_desc`, "");
+        const description = applyValue(shortTemplate || longTemplate, first?.effectValue ?? first?.totalEffectValue ?? "");
+        const costs = levels.map((level) => Number(level?.costSkillPoints || 0));
 
-const updateSlotStates = () => {
-    ["attack", "defense"].forEach(state => {
-        let pointsPerRow = states[state].pointsPerRow;
-        let isPreviousRowActive = true;
+        return {
+            id: Number(groupId),
+            treeId: String(first?.skillTreeID || "0"),
+            tier: Number(first?.tier || 0),
+            specialType: String(first?.specialType || ""),
+            maxLevel: Math.max(1, ...levels.map((level) => Number(level?.level || 1))),
+            costs,
+            name,
+            description: description || name,
+            iconUrl: iconMap?.[groupId] || ""
+        };
+    }).sort((a, b) => a.id - b.id);
+}
 
-        states[state].rows.forEach((row, index) => {
-            const rowSlots = row.querySelectorAll(".slot");
-            const rowSquares = row.querySelectorAll(".square");
-            const rowBigNumbers = row.querySelectorAll(".big-number");
-            const rowLines = row.querySelectorAll(".line-horizontal");
+function renderSkillSlot(skill) {
+    const displayedCost = skill.costs[0] || 0;
+    return `
+        <div class="skill-column text-center">
+            <div class="slot" data-skill-group="${skill.id}" data-level-costs="${escapeHtml(JSON.stringify(skill.costs))}"
+                data-skill-name="${escapeHtml(skill.name)}" data-skill-description="${escapeHtml(skill.description)}">
+                <div class="badge">0/${skill.maxLevel}</div>
+                <img src="${escapeHtml(skill.iconUrl)}" alt="${escapeHtml(skill.name)}" title="${escapeHtml(skill.name)}">
+                <div class="badge-bottom">${displayedCost}</div>
+            </div>
+        </div>`;
+}
 
-            if (index === 0 || (isPreviousRowActive && pointsPerRow[index - 1] >= rowRequirements[index])) {
-                rowSlots.forEach(slot => {
-                    slot.classList.remove("inactive");
+function renderTierRow(stateName, tier, skills) {
+    const spacing = tier === 1 ? "mb-4" : (tier === 2 || tier === 5 ? "mt-4 mb-2" : "mt-4 mb-4");
+    return `
+        <div class="row position-relative row-real ${spacing}" id="${stateName}-row-${tier}" data-tier="${tier}">
+            <div class="col-2 text-center">
+                <div class="square"><div class="big-number">${tier}</div></div>
+            </div>
+            <div class="col-10 skill-row-slots">
+                ${skills.map(renderSkillSlot).join("")}
+            </div>
+            <div class="line-horizontal"></div>
+        </div>`;
+}
 
-                    const badge = slot.querySelector(".badge");
-                    const badgeBottom = slot.querySelector(".badge-bottom");
-                    const [current, max] = badge.textContent.split("/").map(Number);
-                    const slotValue = badgeBottom ? parseInt(badgeBottom.textContent) : 0;
+function renderSpecialRow(skill, position) {
+    if (!skill) return "";
+    return `
+        <div class="row justify-content-left position-relative mb-4 special-row" data-special-position="${position}">
+            <div class="col-5 text-center"></div>
+            <div class="col-2 text-center extra${position}">
+                <div class="center-slot" data-skill-group="${skill.id}" data-skill-name="${escapeHtml(skill.name)}"
+                    data-skill-description="${escapeHtml(skill.description)}">
+                    <img src="${escapeHtml(skill.iconUrl)}" alt="${escapeHtml(skill.name)}">
+                </div>
+            </div>
+            <div class="line-horizontal"></div>
+        </div>`;
+}
 
-                    const totalAllocatedPoints = states.attack.totalPoints + states.defense.totalPoints;
+function renderTrees(skills) {
+    Object.entries(TREE_CONFIG).forEach(([stateName, config]) => {
+        const treeSkills = skills.filter((skill) => skill.treeId === config.treeId);
+        const regularSkills = treeSkills.filter((skill) => !skill.specialType);
+        const specials = config.specialGroups.map((id) => treeSkills.find((skill) => skill.id === id));
+        const html = [];
 
-                    if (totalAllocatedPoints + slotValue > maxPoints) {
-                        badgeBottom.classList.add("insufficient-points");
-                    } else {
-                        badgeBottom.classList.remove("insufficient-points");
-                    }
-
-                    if (current === max) {
-                        slot.classList.add("maxed");
-                    } else {
-                        slot.classList.remove("maxed");
-                    }
-                });
-                rowSquares.forEach(square => square.classList.remove("inactive"));
-                rowBigNumbers.forEach(bigNumber => bigNumber.classList.remove("inactive"));
-                rowLines.forEach(line => line.classList.remove("inactive"));
-                isPreviousRowActive = true;
-            } else {
-                rowSlots.forEach(slot => {
-                    slot.classList.add("inactive");
-                    slot.classList.remove("maxed");
-
-                    const badge = slot.querySelector(".badge");
-                    const badgeBottom = slot.querySelector(".badge-bottom");
-                    if (badge && badgeBottom) {
-                        const slotValue = parseInt(badgeBottom.textContent);
-                        const [current, max] = badge.textContent.split("/").map(Number);
-                        const pointsToRemove = current * slotValue;
-                        states[state].totalPoints -= pointsToRemove;
-                        badge.textContent = `0/${max}`;
-                        badgeBottom.classList.remove("insufficient-points");
-                    }
-                });
-                rowSquares.forEach(square => square.classList.add("inactive"));
-                rowBigNumbers.forEach(bigNumber => bigNumber.classList.add("inactive"));
-                rowLines.forEach(line => line.classList.add("inactive"));
-                isPreviousRowActive = false;
-            }
-        });
-
-        const extra1 = document.querySelector(`#${state}-container .extra1`);
-        const extra2 = document.querySelector(`#${state}-container .extra2`);
-        const line1 = extra1 ? extra1.closest(".row").querySelector(".line-horizontal") : null;
-        const line2 = extra2 ? extra2.closest(".row").querySelector(".line-horizontal") : null;
-
-        ["attack", "defense"].forEach(state => calculatePointsPerRow(state));
-        pointsPerRow = states[state].pointsPerRow;
-
-        const extra1Active = pointsPerRow[1] >= 80;
-        const extra2Active = pointsPerRow[4] >= 80;
-
-        if (extra1) {
-            const centerSlot1 = extra1.querySelector(".center-slot");
-            if (extra1Active) {
-                if (line1) line1.classList.remove("inactive");
-                if (centerSlot1) centerSlot1.classList.remove("inactive");
-            } else {
-                if (line1) line1.classList.add("inactive");
-                if (centerSlot1) centerSlot1.classList.add("inactive");
-            }
+        for (let tier = 1; tier <= 5; tier += 1) {
+            const tierSkills = regularSkills.filter((skill) => skill.tier === tier);
+            html.push(renderTierRow(stateName, tier, tierSkills));
+            if (tier === 2) html.push(renderSpecialRow(specials[0], 1));
+            if (tier === 5) html.push(renderSpecialRow(specials[1], 2));
         }
 
-        if (extra2) {
-            const centerSlot2 = extra2.querySelector(".center-slot");
-            if (extra2Active) {
-                if (line2) line2.classList.remove("inactive");
-                if (centerSlot2) centerSlot2.classList.remove("inactive");
-            } else {
-                if (line2) line2.classList.add("inactive");
-                if (centerSlot2) centerSlot2.classList.add("inactive");
-            }
-        }
+        document.getElementById(config.containerId).innerHTML = html.join("");
+        states[stateName].rows = [...document.querySelectorAll(`#${config.containerId} .row-real`)];
     });
+}
 
-    updateTotalPointsDisplay();
-};
-
-const allocatePoint = (slot, state, increment) => {
+function getSlotProgress(slot) {
     const badge = slot.querySelector(".badge");
-    const badgeBottom = slot.querySelector(".badge-bottom");
-    const [current, max] = badge.textContent.split("/").map(Number);
-    const pointValue = parseInt(badgeBottom.textContent);
+    const [current, max] = String(badge?.textContent || "0/0").split("/").map(Number);
+    return { badge, current: current || 0, max: max || 0 };
+}
 
-    const totalAllocatedPoints = states.attack.totalPoints + states.defense.totalPoints;
+function getSlotCosts(slot) {
+    try {
+        const costs = JSON.parse(slot.dataset.levelCosts || "[]");
+        return Array.isArray(costs) ? costs.map(Number) : [];
+    } catch {
+        return [];
+    }
+}
+
+function getAllocatedCost(slot, current = getSlotProgress(slot).current) {
+    return getSlotCosts(slot).slice(0, current).reduce((sum, cost) => sum + (Number(cost) || 0), 0);
+}
+
+function calculatePointsPerRow(stateName) {
+    states[stateName].pointsPerRow = states[stateName].rows.map((row) =>
+        [...row.querySelectorAll(".slot")].reduce((sum, slot) => sum + getAllocatedCost(slot), 0)
+    );
+}
+
+function recomputeTotals() {
+    Object.keys(states).forEach((stateName) => {
+        calculatePointsPerRow(stateName);
+        states[stateName].totalPoints = states[stateName].pointsPerRow.reduce((sum, points) => sum + points, 0);
+    });
+}
+
+function getTotalAllocatedPoints() {
+    return states.attack.totalPoints + states.defense.totalPoints;
+}
+
+function updatePointDisplays() {
+    const attackOption = document.getElementById("attack-option");
+    const defenseOption = document.getElementById("defense-option");
+    const attackLabel = gameText("dialog_legendTemple_tooltipAttack", "Attack");
+    const defenseLabel = gameText("dialog_legendTemple_tooltipDefence", "Defense");
+    const pointsTemplate = gameText("points", "{0} points");
+    attackOption.textContent = `${attackLabel} · ${applyValue(pointsTemplate, states.attack.totalPoints)}`;
+    defenseOption.textContent = `${defenseLabel} · ${applyValue(pointsTemplate, states.defense.totalPoints)}`;
+    document.getElementById("total-allocated-points").textContent = getTotalAllocatedPoints();
+}
+
+function resetLockedRow(row) {
+    row.querySelectorAll(".slot").forEach((slot) => {
+        const { badge, max } = getSlotProgress(slot);
+        if (badge) badge.textContent = `0/${max}`;
+    });
+}
+
+function setRowActive(row, active) {
+    row.classList.toggle("is-inactive", !active);
+    row.querySelectorAll(".slot, .square, .big-number, .line-horizontal").forEach((element) => {
+        element.classList.toggle("inactive", !active);
+    });
+    if (!active) resetLockedRow(row);
+}
+
+function updateSpecialStates(stateName) {
+    const container = document.getElementById(TREE_CONFIG[stateName].containerId);
+    [
+        { position: 1, sourceRow: 1 },
+        { position: 2, sourceRow: 4 }
+    ].forEach(({ position, sourceRow }) => {
+        const row = container.querySelector(`[data-special-position="${position}"]`);
+        if (!row) return;
+        const active = (states[stateName].pointsPerRow[sourceRow] || 0) >= 80;
+        row.classList.toggle("is-inactive", !active);
+        row.querySelectorAll(".center-slot, .line-horizontal").forEach((element) => {
+            element.classList.toggle("inactive", !active);
+        });
+    });
+}
+
+function updateSlotStates() {
+    Object.keys(states).forEach((stateName) => {
+        calculatePointsPerRow(stateName);
+        let previousRowsActive = true;
+
+        states[stateName].rows.forEach((row, index) => {
+            const active = index === 0
+                || (previousRowsActive && states[stateName].pointsPerRow[index - 1] >= ROW_REQUIREMENTS[index]);
+            setRowActive(row, active);
+            previousRowsActive = active;
+            calculatePointsPerRow(stateName);
+        });
+    });
+
+    recomputeTotals();
+
+    Object.keys(states).forEach((stateName) => {
+        updateSpecialStates(stateName);
+        states[stateName].rows.forEach((row) => {
+            row.querySelectorAll(".slot").forEach((slot) => {
+                const { current, max } = getSlotProgress(slot);
+                const costs = getSlotCosts(slot);
+                const nextCost = Number(costs[current] || 0);
+                slot.classList.toggle("maxed", current >= max);
+                slot.querySelector(".badge-bottom")?.classList.toggle(
+                    "insufficient-points",
+                    !slot.classList.contains("inactive")
+                        && current < max
+                        && getTotalAllocatedPoints() + nextCost > maxPoints
+                );
+            });
+        });
+    });
+
+    updatePointDisplays();
+}
+
+function getAllocations() {
+    const allocations = {};
+    document.querySelectorAll(".slot[data-skill-group]").forEach((slot) => {
+        allocations[slot.dataset.skillGroup] = getSlotProgress(slot).current;
+    });
+    return allocations;
+}
+
+function saveState() {
+    saveSimulatorData(SIM_NAME, {
+        version: 2,
+        currentView: currentState,
+        allocations: getAllocations()
+    });
+}
+
+function restoreVersionTwo(saved) {
+    Object.entries(saved?.allocations || {}).forEach(([groupId, value]) => {
+        const normalizedGroupId = String(Number(groupId));
+        if (!/^\d+$/.test(normalizedGroupId)) return;
+        const slot = document.querySelector(`.slot[data-skill-group="${normalizedGroupId}"]`);
+        if (!slot) return;
+        const { badge, max } = getSlotProgress(slot);
+        const current = Math.max(0, Math.min(max, Number(value) || 0));
+        badge.textContent = `${current}/${max}`;
+    });
+}
+
+function restoreLegacyState(saved) {
+    Object.keys(states).forEach((stateName) => {
+        states[stateName].rows.forEach((row, rowIndex) => {
+            const rowData = saved?.[stateName]?.[rowIndex] || [];
+            row.querySelectorAll(".slot").forEach((slot, slotIndex) => {
+                const { badge, max } = getSlotProgress(slot);
+                const current = Math.max(0, Math.min(max, Number(rowData?.[slotIndex]?.current) || 0));
+                badge.textContent = `${current}/${max}`;
+            });
+        });
+    });
+}
+
+function loadState() {
+    const saved = loadSimulatorData(SIM_NAME);
+    if (!saved) return;
+    if (Number(saved.version) >= 2 && saved.allocations) restoreVersionTwo(saved);
+    else restoreLegacyState(saved);
+    currentState = saved.currentView === "defense" ? "defense" : "attack";
+}
+
+function updateDetails(element) {
+    const name = element?.dataset?.skillName || "";
+    const description = element?.dataset?.skillDescription || "";
+    document.getElementById("details-text").textContent = description ? `${name}: ${description}` : name;
+}
+
+function allocatePoint(slot, increment) {
+    const stateName = slot.closest("#defense-container") ? "defense" : "attack";
+    const { badge, current, max } = getSlotProgress(slot);
+    const costs = getSlotCosts(slot);
 
     if (increment) {
-        if (current < max && totalAllocatedPoints + pointValue <= maxPoints) {
-            badge.textContent = `${current + 1}/${max}`;
-            states[state].totalPoints += pointValue;
-        }
+        const nextCost = Number(costs[current] || 0);
+        if (current >= max || getTotalAllocatedPoints() + nextCost > maxPoints) return;
+        badge.textContent = `${current + 1}/${max}`;
     } else {
-        if (current > 0) {
-            badge.textContent = `${current - 1}/${max}`;
-            states[state].totalPoints -= pointValue;
-        }
+        if (current <= 0) return;
+        badge.textContent = `${current - 1}/${max}`;
     }
 
-    calculatePointsPerRow(state);
     updateSlotStates();
-    saveState();
-    updateTotalAllocatedPoints();
     updateWarnings();
-};
+    saveState();
+    if (stateName !== currentState) switchView(stateName, false);
+}
 
+function switchView(stateName, persist = true) {
+    currentState = stateName;
+    document.getElementById("attack-container").classList.toggle("active", stateName === "attack");
+    document.getElementById("defense-container").classList.toggle("active", stateName === "defense");
+    document.getElementById("tree-select").value = stateName;
+    if (persist) saveState();
+}
 
-const switchView = (state) => {
-    currentState = state;
-    document.getElementById("attack-toggle").classList.remove("active-tab");
-    document.getElementById("defense-toggle").classList.remove("active-tab");
-    ["attack", "defense"].forEach(state => calculatePointsPerRow(state));
+function updateWarnings() {
+    document.querySelectorAll(".warning").forEach((warning) => warning.remove());
+
+    Object.keys(states).forEach((stateName) => {
+        const points = states[stateName].pointsPerRow;
+        const rowIndex = states[stateName].rows.findIndex((row, index) =>
+            index < states[stateName].rows.length - 1 && points[index] < ROW_REQUIREMENTS[index + 1]
+        );
+        if (rowIndex < 0) return;
+
+        const pointsNeeded = ROW_REQUIREMENTS[rowIndex + 1] - points[rowIndex];
+        const warning = document.createElement("div");
+        warning.className = "text-center warning";
+        warning.textContent = applyValue(
+            gameText(
+                "dialog_legendTemple_tierLocked",
+                "Allocate another {0} legendary points to the previous level to unlock this legendary skill."
+            ),
+            pointsNeeded
+        );
+        states[stateName].rows[rowIndex].after(warning);
+    });
+}
+
+function resetAll() {
+    document.querySelectorAll(".slot").forEach((slot) => {
+        const { badge, max } = getSlotProgress(slot);
+        badge.textContent = `0/${max}`;
+        slot.classList.remove("selected");
+    });
+    document.querySelectorAll(".center-slot.selected").forEach((slot) => slot.classList.remove("selected"));
+    selectedSlot = null;
     updateSlotStates();
-    if (state === "attack") {
-        document.getElementById("attack-container").classList.add("active");
-        document.getElementById("defense-container").classList.remove("active");
-        document.getElementById("attack-toggle").classList.add("active-tab");
-    } else {
-        document.getElementById("defense-container").classList.add("active");
-        document.getElementById("attack-container").classList.remove("active");
-        document.getElementById("defense-toggle").classList.add("active-tab");
-    }
-};
+    updateWarnings();
+    saveState();
+}
 
-document.getElementById("attack-toggle").addEventListener("click", () => switchView("attack"));
-document.getElementById("defense-toggle").addEventListener("click", () => switchView("defense"));
+function bindControls() {
+    document.getElementById("tree-select").addEventListener("change", (event) => switchView(event.target.value));
+    document.getElementById("reset-button").addEventListener("click", resetAll);
 
-document.querySelectorAll(".slot").forEach(slot => {
-    slot.addEventListener("click", () => {
-        if (slot.classList.contains("inactive")) return;
-
-        if (slot === selectedSlot) {
-            allocatePoint(slot, currentState, true);
+    document.querySelector(".scrollable-content").addEventListener("click", (event) => {
+        const special = event.target.closest(".center-slot");
+        if (special) {
+            if (!special.classList.contains("inactive")) {
+                selectedSlot?.classList.remove("selected");
+                selectedSlot = special;
+                special.classList.add("selected");
+                updateDetails(special);
+            }
             return;
         }
 
-        if (selectedSlot) {
-            selectedSlot.classList.remove("selected");
-        }
-
-        selectedSlot = slot;
-        selectedSlot.classList.add("selected");
-
-        const imgSrc = selectedSlot.querySelector("img").getAttribute("src");
-        const skillId = imgSrc.split("/").pop().split(".")[0];
-        const description = skillDescriptions[skillId] || "No description available.";
-        document.getElementById("details-text").textContent = description;
-    });
-
-    slot.addEventListener("contextmenu", (e) => {
-        e.preventDefault();
-        if (slot.classList.contains("inactive")) return;
-
+        const slot = event.target.closest(".slot");
+        if (!slot || slot.classList.contains("inactive")) return;
         if (slot === selectedSlot) {
-            allocatePoint(slot, currentState, false);
+            allocatePoint(slot, true);
+            return;
         }
+        selectedSlot?.classList.remove("selected");
+        selectedSlot = slot;
+        slot.classList.add("selected");
+        updateDetails(slot);
     });
-});
 
-document.getElementById("reset-button").addEventListener("click", () => {
-    ["attack", "defense"].forEach(state => {
-        states[state].rows.forEach(row => {
-            const rowSlots = row.querySelectorAll(".slot");
-
-            rowSlots.forEach(slot => {
-                const badge = slot.querySelector(".badge");
-                const badgeBottom = slot.querySelector(".badge-bottom");
-                const [current, max] = badge.textContent.split("/").map(Number);
-                const slotValue = badgeBottom ? parseInt(badgeBottom.textContent) : 0;
-
-                states[state].totalPoints -= current * slotValue;
-
-                badge.textContent = `0/${max}`;
-            });
-        });
-
-        calculatePointsPerRow(state);
-        updateSlotStates();
+    document.querySelector(".scrollable-content").addEventListener("contextmenu", (event) => {
+        const slot = event.target.closest(".slot");
+        if (!slot) return;
+        event.preventDefault();
+        if (!slot.classList.contains("inactive") && slot === selectedSlot) allocatePoint(slot, false);
     });
-    updateTotalAllocatedPoints();
-    updateWarnings();
-    saveState();
-});
 
-const updateTotalAllocatedPoints = () => {
-    const totalAllocatedPoints =
-        states.attack.totalPoints + states.defense.totalPoints;
-    document.getElementById("total-allocated-points").textContent =
-        totalAllocatedPoints;
-};
+}
 
-["attack", "defense"].forEach(state => {
-    calculatePointsPerRow(state);
-    updateSlotStates();
-    updateTotalAllocatedPoints();
-});
+function applyLanguageToStaticUi() {
+    const reset = gameText("dialog_legendTemple_reset", "Reset");
+    updatePointDisplays();
+    document.getElementById("total-allocated-label").textContent = `${ui("total_allocated_points", "Total Allocated Points")}:`;
+    document.getElementById("details-text").textContent = ui("skill_description_prompt", "Click on a skill to view its description.");
+    document.getElementById("reset-button-label").textContent = reset;
+    document.getElementById("reset-button").setAttribute("aria-label", reset);
+    document.documentElement.lang = currentLanguage;
+}
 
-const updateWarnings = () => {
-    document.querySelectorAll(".warning").forEach(warning => warning.remove());
+async function init() {
+    try {
+        await loadOwnLang();
+        await coreInit({
+            loader,
+            itemLabel: "Hall of Legends skills",
+            langCode: currentLanguage,
+            normalizeNameFn: normalizeName,
+            assets: { legendSkills: true },
+            onReady: async ({ lang: languageData, data, imageMaps }) => {
+                lang = languageData;
+                const legendSkills = getArray(data, ["legendskills", "legendSkills"]);
+                if (!legendSkills.length) throw new Error("Hall of Legends skill data is unavailable.");
 
-    ["attack", "defense"].forEach(state => {
-        const pointsPerRow = states[state].pointsPerRow;
-        let warningDisplayed = false;
+                const hallLevels = getArray(data, ["buildings"]).filter((building) =>
+                    String(building?.name || "").toLowerCase() === "legendtemple"
+                );
+                const dataMaxPoints = Math.max(0, ...hallLevels.map((building) => Number(building?.skillPoints || 0)));
+                if (dataMaxPoints > 0) maxPoints = dataMaxPoints;
 
-        states[state].rows.forEach((row, index) => {
-            if (warningDisplayed) return;
-
-            if (index < states[state].rows.length - 1) {
-                const requiredPoints = rowRequirements[index + 1];
-                const currentPoints = pointsPerRow[index];
-
-                if (currentPoints < requiredPoints) {
-                    const pointsNeeded = requiredPoints - currentPoints;
-
-                    const warningDiv = document.createElement("div");
-                    warningDiv.classList.add("text-center", "warning", "mb-3");
-                    warningDiv.innerHTML = `<span>Allocate another ${pointsNeeded} points to this level to unlock the next one!</span>`;
-
-                    row.parentNode.insertBefore(warningDiv, row.nextSibling);
-
-                    warningDisplayed = true;
-                }
+                const skillGroups = buildSkillGroups(legendSkills, imageMaps?.legendSkills || {});
+                renderTrees(skillGroups);
+                applyLanguageToStaticUi();
+                bindControls();
+                loadState();
+                updateSlotStates();
+                updateWarnings();
+                switchView(currentState, false);
             }
         });
-    });
-};
+    } catch (error) {
+        console.error(error);
+        loader.error("Hall of Legends data could not be loaded.", 30);
+    }
+}
 
-document.addEventListener('DOMContentLoaded', function () {
-    loadState();
-    calculatePointsPerRow('attack');
-    calculatePointsPerRow('defense');
-    updateSlotStates();
-    switchView("attack");
-    updateTotalAllocatedPoints();
-    updateWarnings();
-});
-["attack", "defense"].forEach(state => calculatePointsPerRow(state));
+init();

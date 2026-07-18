@@ -1,0 +1,146 @@
+{
+  "en": {
+    "ui": {
+      "total_allocated_points": "Total Allocated Points",
+      "skill_description_prompt": "Click on a skill to view its description."
+    }
+  },
+  "ar": {
+    "ui": {
+      "total_allocated_points": "إجمالي النقاط المخصصة",
+      "skill_description_prompt": "انقر على مهارة لعرض وصفها."
+    }
+  },
+  "es": {
+    "ui": {
+      "total_allocated_points": "Total de puntos asignados",
+      "skill_description_prompt": "Haz clic en una habilidad para ver su descripción."
+    }
+  },
+  "bg": {
+    "ui": {
+      "total_allocated_points": "Общо разпределени точки",
+      "skill_description_prompt": "Щракнете върху умение, за да видите описанието му."
+    }
+  },
+  "pt": {
+    "ui": {
+      "total_allocated_points": "Total de pontos atribuídos",
+      "skill_description_prompt": "Clique numa habilidade para ver a sua descrição."
+    }
+  },
+  "cs": {
+    "ui": {
+      "total_allocated_points": "Celkem přidělené body",
+      "skill_description_prompt": "Kliknutím na dovednost zobrazíte její popis."
+    }
+  },
+  "de": {
+    "ui": {
+      "total_allocated_points": "Insgesamt verteilte Punkte",
+      "skill_description_prompt": "Klicke auf eine Fähigkeit, um ihre Beschreibung anzuzeigen."
+    }
+  },
+  "da": {
+    "ui": {
+      "total_allocated_points": "Tildelte point i alt",
+      "skill_description_prompt": "Klik på en færdighed for at se dens beskrivelse."
+    }
+  },
+  "fi": {
+    "ui": {
+      "total_allocated_points": "Jaetut pisteet yhteensä",
+      "skill_description_prompt": "Näytä taidon kuvaus napsauttamalla sitä."
+    }
+  },
+  "fr": {
+    "ui": {
+      "total_allocated_points": "Total des points attribués",
+      "skill_description_prompt": "Cliquez sur une compétence pour afficher sa description."
+    }
+  },
+  "el": {
+    "ui": {
+      "total_allocated_points": "Σύνολο κατανεμημένων πόντων",
+      "skill_description_prompt": "Κάντε κλικ σε μια ικανότητα για να δείτε την περιγραφή της."
+    }
+  },
+  "hu": {
+    "ui": {
+      "total_allocated_points": "Összes kiosztott pont",
+      "skill_description_prompt": "Kattints egy képességre a leírásának megtekintéséhez."
+    }
+  },
+  "it": {
+    "ui": {
+      "total_allocated_points": "Punti assegnati totali",
+      "skill_description_prompt": "Fai clic su un'abilità per visualizzarne la descrizione."
+    }
+  },
+  "ja": {
+    "ui": {
+      "total_allocated_points": "割り当て済みポイント合計",
+      "skill_description_prompt": "スキルをクリックすると説明が表示されます。"
+    }
+  },
+  "ko": {
+    "ui": {
+      "total_allocated_points": "할당된 총 포인트",
+      "skill_description_prompt": "스킬을 클릭하면 설명을 볼 수 있습니다."
+    }
+  },
+  "lt": {
+    "ui": {
+      "total_allocated_points": "Iš viso paskirstyta taškų",
+      "skill_description_prompt": "Spustelėkite gebėjimą, kad pamatytumėte jo aprašymą."
+    }
+  },
+  "nl": {
+    "ui": {
+      "total_allocated_points": "Totaal toegewezen punten",
+      "skill_description_prompt": "Klik op een vaardigheid om de beschrijving te bekijken."
+    }
+  },
+  "no": {
+    "ui": {
+      "total_allocated_points": "Totalt tildelte poeng",
+      "skill_description_prompt": "Klikk på en ferdighet for å se beskrivelsen."
+    }
+  },
+  "pl": {
+    "ui": {
+      "total_allocated_points": "Łącznie przydzielone punkty",
+      "skill_description_prompt": "Kliknij umiejętność, aby zobaczyć jej opis."
+    }
+  },
+  "ro": {
+    "ui": {
+      "total_allocated_points": "Total puncte alocate",
+      "skill_description_prompt": "Apasă pe o abilitate pentru a-i vedea descrierea."
+    }
+  },
+  "ru": {
+    "ui": {
+      "total_allocated_points": "Всего распределено очков",
+      "skill_description_prompt": "Нажмите на навык, чтобы посмотреть его описание."
+    }
+  },
+  "sv": {
+    "ui": {
+      "total_allocated_points": "Totalt tilldelade poäng",
+      "skill_description_prompt": "Klicka på en färdighet för att visa dess beskrivning."
+    }
+  },
+  "sk": {
+    "ui": {
+      "total_allocated_points": "Celkom pridelené body",
+      "skill_description_prompt": "Kliknutím na schopnosť zobrazíte jej popis."
+    }
+  },
+  "tr": {
+    "ui": {
+      "total_allocated_points": "Toplam dağıtılan puan",
+      "skill_description_prompt": "Açıklamasını görmek için bir yeteneğe tıkla."
+    }
+  }
+}

@@ -10,539 +10,61 @@
     <link rel="icon" type="image/webp" href="../../img_base/favicon.ico">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css"
         rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="../../overviews/shared/shared.css">
     <link rel="stylesheet" href="./styles.css">
-  <meta property="og:title" content="Hall of Legends Simulator | Generals Forum">
-  <meta property="og:description" content="Try point allocations without spending rubies.">
-  <meta property="og:image" content="https://generalscamp.github.io/forum/img_base/main_page/hall-of-legends-simulator-icon.webp">
+    <meta property="og:title" content="Hall of Legends Simulator | Generals Forum">
+    <meta property="og:description" content="Try point allocations without spending rubies.">
+    <meta property="og:image"
+        content="https://generalscamp.github.io/forum/img_base/main_page/hall-of-legends-simulator-icon.webp">
 </head>
 
 <body>
-    <div class="container">
-        <a href="https://generalscamp.github.io/forum/" class="home-icon-link">
-            <div class="home-icon">
-                <i class="bi bi-house"></i>
+    <div class="container hol-simulator-page">
+        <div id="topButtonsContainer">
+            <a href="https://generalscamp.github.io/forum/" class="home-icon-link" aria-label="Home">
+                <div class="home-icon">
+                    <i class="bi bi-house"></i>
+                </div>
+            </a>
+        </div>
+
+        <div class="row note hol-filter-bar gx-1 gy-1 align-items-center">
+            <div class="col-6">
+                <select id="tree-select" class="form-select custom-select text-center" aria-label="Skill tree selector">
+                    <option id="attack-option" value="attack" selected>Attack · 0</option>
+                    <option id="defense-option" value="defense">Defense · 0</option>
+                </select>
             </div>
-        </a>
-        <!-- Details -->
-        <div class="details d-flex justify-content-center">
-            <span id="details-text">Click on a skill to view its description.</span>
-            <div id="reset-container">
-                <button id="reset-button">
-                    <i class="bi bi-arrow-counterclockwise"></i>
+            <div class="col-6">
+                <button id="reset-button" class="btn custom-select w-100" type="button" aria-label="Reset">
+                    <span id="reset-button-label">Reset</span>
                 </button>
             </div>
-        </div>
-        <!-- Total Points Display -->
-        <div class="text-center total-points-display">
-            <span>Total Allocated Points: <span id="total-allocated-points">0</span></span>
-        </div>
-        <!-- Toggle Sections -->
-        <div class="mb-1 text-center details2">
-            <div class="d-flex justify-content-between">
-                <span class="section-title" id="attack-toggle">Attack (<span id="total-points-attack">0</span>
-                    points)</span>
-                <div class="vertical-line"></div>
-                <span class="section-title" id="defense-toggle">Defense (<span id="total-points-defense">0</span>
-                    points)</span>
-            </div>
-        </div>
-
-        <div class="accordion scrollable-content">
-            <div id="attack-container" class="containerr active">
-                <!-- Row 1 -->
-                <div class="row justify-content-left position-relative row-real mb-4" id="row-1">
-                    <div class="col-2 text-center">
-                        <div class=" square">
-                            <div class="big-number">1</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/10</div>
-                            <img src="./img/o-1-1.webp" alt="">
-                            <div class="badge-bottom">3</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/10</div>
-                            <img src="./img/o-1-2.webp" alt="">
-                            <div class="badge-bottom">1</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/10</div>
-                            <img src="./img/o-1-3.webp" alt="">
-                            <div class="badge-bottom">2</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/10</div>
-                            <img src="./img/o-1-4.webp" alt="">
-                            <div class="badge-bottom">4</div>
-                        </div>
-                    </div>
-                    <div class="line-horizontal"></div>
-                </div>
-
-                <!-- Row 2 -->
-                <div class="row justify-content-left position-relative mt-4 row-real mb-2" id="row-2">
-                    <div class="col-2 text-center">
-                        <div class=" square">
-                            <div class="big-number">2</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/3</div>
-                            <img src="./img/o-2-1.webp" alt="">
-                            <div class="badge-bottom">15</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/10</div>
-                            <img src="./img/o-2-2.webp" alt="">
-                            <div class="badge-bottom">3</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/10</div>
-                            <img src="./img/o-2-3.webp" alt="">
-                            <div class="badge-bottom">8</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/5</div>
-                            <img src="./img/o-2-4.webp" alt="">
-                            <div class="badge-bottom">3</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/6</div>
-                            <img src="./img/o-2-5.webp" alt="">
-                            <div class="badge-bottom">5</div>
-                        </div>
-                    </div>
-                    <div class="line-horizontal"></div>
-                </div>
-
-                <!-- Extra 1 -->
-                <div class="row justify-content-left position-relative mb-4">
-                    <div class="col-5 text-center">
-                    </div>
-                    <div class="col-2 text-center extra1">
-                        <div class="center-slot">
-                            <img src="./img/o-extra1.webp" alt="">
-                        </div>
-                    </div>
-                    <div class="line-horizontal"></div>
-                </div>
-
-                <!-- Row 3 -->
-                <div class="row justify-content-left position-relative mt-4 row-real mb-4" id="row-3">
-                    <div class="col-2 text-center">
-                        <div class=" square">
-                            <div class="big-number">3</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/5</div>
-                            <img src="./img/o-3-1.webp" alt="">
-                            <div class="badge-bottom">15</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/5</div>
-                            <img src="./img/o-3-2.webp" alt="">
-                            <div class="badge-bottom">3</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/5</div>
-                            <img src="./img/o-3-3.webp" alt="">
-                            <div class="badge-bottom">1</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/8</div>
-                            <img src="./img/o-3-4.webp" alt="">
-                            <div class="badge-bottom">10</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/10</div>
-                            <img src="./img/o-3-5.webp" alt="">
-                            <div class="badge-bottom">5</div>
-                        </div>
-                    </div>
-                    <div class="line-horizontal"></div>
-                </div>
-
-                <!-- Row 4 -->
-                <div class="row justify-content-left position-relative mt-4 row-real mb-4" id="row-4">
-                    <div class="col-2 text-center">
-                        <div class=" square">
-                            <div class="big-number">4</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/10</div>
-                            <img src="./img/o-4-1.webp" alt="">
-                            <div class="badge-bottom">6</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/8</div>
-                            <img src="./img/o-4-2.webp" alt="">
-                            <div class="badge-bottom">5</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/5</div>
-                            <img src="./img/o-4-3.webp" alt="">
-                            <div class="badge-bottom">7</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/10</div>
-                            <img src="./img/o-4-4.webp" alt="">
-                            <div class="badge-bottom">2</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/10</div>
-                            <img src="./img/o-4-5.webp" alt="">
-                            <div class="badge-bottom">7</div>
-                        </div>
-                    </div>
-                    <div class="line-horizontal"></div>
-                </div>
-
-                <!-- Row 5 -->
-                <div class="row justify-content-left position-relative mt-4 row-real mb-2" id="row-5">
-                    <div class="col-2 text-center">
-                        <div class=" square">
-                            <div class="big-number">5</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/5</div>
-                            <img src="./img/o-5-1.webp" alt="">
-                            <div class="badge-bottom">3</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/5</div>
-                            <img src="./img/o-5-2.webp" alt="">
-                            <div class="badge-bottom">12</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/4</div>
-                            <img src="./img/o-5-3.webp" alt="">
-                            <div class="badge-bottom">15</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/1</div>
-                            <img src="./img/o-5-4.webp" alt="">
-                            <div class="badge-bottom">60</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/6</div>
-                            <img src="./img/o-5-5.webp" alt="">
-                            <div class="badge-bottom">5</div>
-                        </div>
-                    </div>
-                    <div class="line-horizontal"></div>
-                </div>
-
-                <!-- Extra 2 -->
-                <div class="row justify-content-left position-relative mb-4">
-                    <div class="col-5 text-center">
-                    </div>
-                    <div class="col-2 text-center extra2">
-                        <div class="center-slot">
-                            <img src="./img/o-extra2.webp" alt="">
-                        </div>
-                    </div>
-                    <div class="line-horizontal"></div>
+            <div class="col-12">
+                <div class="text-center total-points-display">
+                    <span><span id="total-allocated-label">Total Allocated Points:</span> <span id="total-allocated-points">0</span></span>
                 </div>
             </div>
-
-
-            <div id="defense-container" class="containerr">
-                <!-- Row 1 -->
-                <div class="row justify-content-left position-relative row-real mb-4" id="row-1">
-                    <div class="col-2 text-center">
-                        <div class=" square">
-                            <div class="big-number">1</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/10</div>
-                            <img src="./img/d-1-1.webp" alt="">
-                            <div class="badge-bottom">3</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/10</div>
-                            <img src="./img/d-1-2.webp" alt="">
-                            <div class="badge-bottom">2</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/10</div>
-                            <img src="./img/d-1-3.webp" alt="">
-                            <div class="badge-bottom">1</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/10</div>
-                            <img src="./img/d-1-4.webp" alt="">
-                            <div class="badge-bottom">4</div>
-                        </div>
-                    </div>
-                    <div class="line-horizontal"></div>
-                </div>
-
-                <!-- Row 2 -->
-                <div class="row justify-content-left position-relative mt-4 row-real mb-2" id="row-2">
-                    <div class="col-2 text-center">
-                        <div class=" square">
-                            <div class="big-number">2</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/10</div>
-                            <img src="./img/d-2-1.webp" alt="">
-                            <div class="badge-bottom">4</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/10</div>
-                            <img src="./img/d-2-2.webp" alt="">
-                            <div class="badge-bottom">1</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/10</div>
-                            <img src="./img/d-2-3.webp" alt="">
-                            <div class="badge-bottom">8</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/10</div>
-                            <img src="./img/d-2-4.webp" alt="">
-                            <div class="badge-bottom">3</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/10</div>
-                            <img src="./img/d-2-5.webp" alt="">
-                            <div class="badge-bottom">4</div>
-                        </div>
-                    </div>
-                    <div class="line-horizontal"></div>
-                </div>
-
-                <!-- Extra 1 -->
-                <div class="row justify-content-left position-relative mb-4">
-                    <div class="col-5 text-center">
-                    </div>
-                    <div class="col-2 text-center extra1">
-                        <div class="center-slot">
-                            <img src="./img/d-extra1.webp" alt="">
-                        </div>
-                    </div>
-                    <div class="line-horizontal"></div>
-                </div>
-
-                <!-- Row 3 -->
-                <div class="row justify-content-left position-relative mt-4 row-real mb-4" id="row-3">
-                    <div class="col-2 text-center">
-                        <div class=" square">
-                            <div class="big-number">3</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/10</div>
-                            <img src="./img/d-3-1.webp" alt="">
-                            <div class="badge-bottom">7</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/5</div>
-                            <img src="./img/d-3-2.webp" alt="">
-                            <div class="badge-bottom">2</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/5</div>
-                            <img src="./img/d-3-3.webp" alt="">
-                            <div class="badge-bottom">3</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/8</div>
-                            <img src="./img/d-3-4.webp" alt="">
-                            <div class="badge-bottom">10</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/5</div>
-                            <img src="./img/d-3-5.webp" alt="">
-                            <div class="badge-bottom">10</div>
-                        </div>
-                    </div>
-                    <div class="line-horizontal"></div>
-                </div>
-
-                <!-- Row 4 -->
-                <div class="row justify-content-left position-relative mt-4 row-real mb-4" id="row-4">
-                    <div class="col-2 text-center">
-                        <div class=" square">
-                            <div class="big-number">4</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/8</div>
-                            <img src="./img/d-4-1.webp" alt="">
-                            <div class="badge-bottom">10</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/5</div>
-                            <img src="./img/d-4-2.webp" alt="">
-                            <div class="badge-bottom">3</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/5</div>
-                            <img src="./img/d-4-3.webp" alt="">
-                            <div class="badge-bottom">6</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/10</div>
-                            <img src="./img/d-4-4.webp" alt="">
-                            <div class="badge-bottom">4</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/10</div>
-                            <img src="./img/d-4-5.webp" alt="">
-                            <div class="badge-bottom">6</div>
-                        </div>
-                    </div>
-                    <div class="line-horizontal"></div>
-                </div>
-
-                <!-- Row 5 -->
-                <div class="row justify-content-left position-relative mt-4 row-real mb-2" id="row-5">
-                    <div class="col-2 text-center">
-                        <div class=" square">
-                            <div class="big-number">5</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/5</div>
-                            <img src="./img/d-5-1.webp" alt="">
-                            <div class="badge-bottom">3</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/1</div>
-                            <img src="./img/d-5-2.webp" alt="">
-                            <div class="badge-bottom">60</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/4</div>
-                            <img src="./img/d-5-3.webp" alt="">
-                            <div class="badge-bottom">15</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/1</div>
-                            <img src="./img/d-5-4.webp" alt="">
-                            <div class="badge-bottom">60</div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <div class="slot">
-                            <div class="badge">0/6</div>
-                            <img src="./img/d-5-5.webp" alt="">
-                            <div class="badge-bottom">5</div>
-                        </div>
-                    </div>
-                    <div class="line-horizontal"></div>
-                </div>
-
-                <!-- Extra 2 -->
-                <div class="row justify-content-left position-relative mb-4">
-                    <div class="col-5 text-center">
-                    </div>
-                    <div class="col-2 text-center extra2">
-                        <div class="center-slot">
-                            <img src="./img/d-extra2.webp" alt="">
-                        </div>
-                    </div>
-                    <div class="line-horizontal"></div>
-                </div>
-            </div>
-
         </div>
+
+        <main id="content" class="container-fluid">
+            <section class="hol-shell">
+                <div class="hol-board">
+                    <div class="details d-flex justify-content-center">
+                        <span id="details-text">Click on a skill to view its description.</span>
+                    </div>
+
+                    <div class="accordion scrollable-content" aria-live="polite">
+                        <div id="attack-container" class="containerr active"></div>
+                        <div id="defense-container" class="containerr"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
-    </div>
+
     <script type="module" src="./script.js"></script>
-  <script type="module" src="../../overviews/shared/ConsentInit.mjs"></script>
+    <script type="module" src="../../overviews/shared/ConsentInit.mjs"></script>
 </body>
 
 </html>

@@ -462,6 +462,21 @@ function parseAllianceLayouts(text) {
     return map;
 }
 
+function parseLegendSkills(text) {
+
+    const regex =
+        /Dialogs\/legend\/SkillIcons\/LegendSkill_(\d+)\/LegendSkill_\1--\d+/g;
+
+    const map = {};
+
+    for (const m of text.matchAll(regex)) {
+        const id = String(m[1]);
+        map[id] = `${BASE}${m[0]}.webp`;
+    }
+
+    return map;
+}
+
 export async function loadImageMaps({
     decorations = false,
     constructions = false,
@@ -473,6 +488,7 @@ export async function loadImageMaps({
     generals = false,
     lootboxes = false,
     allianceLayouts = false,
+    legendSkills = false,
     buildings = false,
     normalizeNameFn
 }) {
@@ -573,6 +589,15 @@ export async function loadImageMaps({
 
         result.allianceLayouts =
             parsedCache.allianceLayouts;
+    }
+
+    if (legendSkills) {
+
+        parsedCache.legendSkills ??=
+            parseLegendSkills(text);
+
+        result.legendSkills =
+            parsedCache.legendSkills;
     }
 
     if (buildings) {
