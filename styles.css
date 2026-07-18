@@ -1027,6 +1027,14 @@ html {
         font-size: 15px;
     }
 
+    .version-info-download-link {
+        display: none;
+    }
+
+    .version-info-footer {
+        justify-content: flex-end;
+    }
+
     .settings-option {
         padding: 9px 10px;
     }

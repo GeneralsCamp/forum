@@ -14,7 +14,14 @@
       "e4k_mobile": "Empire: Four Kingdoms (Mobile)",
       "e4k_mobile_short": "E4K (Mobile)",
       "language": "Language",
-      "developer_comments": "Developer Comments"
+      "developer_comments": "Developer Comments",
+      "data_versions": "Data versions",
+      "empire_items": "Empire items",
+      "e4k_items": "E4K items",
+      "e4k_app": "E4K app",
+      "language_data": "Language data",
+      "assets_downloader": "Assets Downloader",
+      "data_updated": "Data updated · {date}"
     },
     "cards": {
       "decorations": {
@@ -115,7 +122,14 @@
       "e4k_mobile": "الإمبراطورية: الممالك الأربع (الجوال)",
       "e4k_mobile_short": "E4K (الجوال)",
       "language": "اللغة",
-      "developer_comments": "تعليقات المطورين"
+      "developer_comments": "تعليقات المطورين",
+      "data_versions": "إصدارات البيانات",
+      "empire_items": "عناصر Empire",
+      "e4k_items": "عناصر E4K",
+      "e4k_app": "تطبيق E4K",
+      "language_data": "بيانات اللغة",
+      "assets_downloader": "منزّل الأصول",
+      "data_updated": "تم تحديث البيانات · {date}"
     },
     "cards": {
       "decorations": {
@@ -216,7 +230,14 @@
       "e4k_mobile": "Imperio: Cuatro Reinos (Móvil)",
       "e4k_mobile_short": "E4K (móvil)",
       "language": "Idioma",
-      "developer_comments": "Comentarios del desarrollador"
+      "developer_comments": "Comentarios del desarrollador",
+      "data_versions": "Versiones de datos",
+      "empire_items": "Objetos de Empire",
+      "e4k_items": "Objetos de E4K",
+      "e4k_app": "Aplicación E4K",
+      "language_data": "Datos de idioma",
+      "assets_downloader": "Descargador de recursos",
+      "data_updated": "Datos actualizados · {date}"
     },
     "cards": {
       "decorations": {
@@ -317,7 +338,14 @@
       "e4k_mobile": "Империя: Четирите кралства (мобилен)",
       "e4k_mobile_short": "E4K (мобилен)",
       "language": "език",
-      "developer_comments": "Коментари на разработчици"
+      "developer_comments": "Коментари на разработчици",
+      "data_versions": "Версии на данните",
+      "empire_items": "Предмети в Empire",
+      "e4k_items": "Предмети в E4K",
+      "e4k_app": "Приложение E4K",
+      "language_data": "Езикови данни",
+      "assets_downloader": "Изтегляне на ресурси",
+      "data_updated": "Данните са обновени · {date}"
     },
     "cards": {
       "decorations": {
@@ -418,7 +446,14 @@
       "e4k_mobile": "Império: Quatro Reinos (Celular)",
       "e4k_mobile_short": "E4K (móvel)",
       "language": "Idioma",
-      "developer_comments": "Comentários do desenvolvedor"
+      "developer_comments": "Comentários do desenvolvedor",
+      "data_versions": "Versões dos dados",
+      "empire_items": "Itens do Empire",
+      "e4k_items": "Itens do E4K",
+      "e4k_app": "Aplicativo E4K",
+      "language_data": "Dados de idioma",
+      "assets_downloader": "Baixador de recursos",
+      "data_updated": "Dados atualizados · {date}"
     },
     "cards": {
       "decorations": {
@@ -519,7 +554,14 @@
       "e4k_mobile": "Empire: Four Kingdoms (mobil)",
       "e4k_mobile_short": "E4K (mobilní zařízení)",
       "language": "Jazyk",
-      "developer_comments": "Komentáře vývojářů"
+      "developer_comments": "Komentáře vývojářů",
+      "data_versions": "Verze dat",
+      "empire_items": "Předměty Empire",
+      "e4k_items": "Předměty E4K",
+      "e4k_app": "Aplikace E4K",
+      "language_data": "Jazyková data",
+      "assets_downloader": "Stahování assetů",
+      "data_updated": "Data aktualizována · {date}"
     },
     "cards": {
       "decorations": {
@@ -620,7 +662,14 @@
       "e4k_mobile": "Empire: Four Kingdoms (Mobil)",
       "e4k_mobile_short": "E4K (Mobil)",
       "language": "Sprache",
-      "developer_comments": "Entwicklerkommentare"
+      "developer_comments": "Entwicklerkommentare",
+      "data_versions": "Datenversionen",
+      "empire_items": "Empire-Gegenstände",
+      "e4k_items": "E4K-Gegenstände",
+      "e4k_app": "E4K-App",
+      "language_data": "Sprachdaten",
+      "assets_downloader": "Asset-Downloader",
+      "data_updated": "Daten aktualisiert · {date}"
     },
     "cards": {
       "decorations": {
@@ -721,7 +770,14 @@
       "e4k_mobile": "Empire: Four Kingdoms (mobil)",
       "e4k_mobile_short": "E4K (mobil)",
       "language": "Sprog",
-      "developer_comments": "Udviklerkommentarer"
+      "developer_comments": "Udviklerkommentarer",
+      "data_versions": "Dataversioner",
+      "empire_items": "Empire-genstande",
+      "e4k_items": "E4K-genstande",
+      "e4k_app": "E4K-app",
+      "language_data": "Sprogdata",
+      "assets_downloader": "Asset-downloader",
+      "data_updated": "Data opdateret · {date}"
     },
     "cards": {
       "decorations": {
@@ -822,7 +878,14 @@
       "e4k_mobile": "Empire: Four Kingdoms (mobiili)",
       "e4k_mobile_short": "E4K (mobiili)",
       "language": "Kieli",
-      "developer_comments": "Kehittäjien kommentit"
+      "developer_comments": "Kehittäjien kommentit",
+      "data_versions": "Dataversiot",
+      "empire_items": "Empire-esineet",
+      "e4k_items": "E4K-esineet",
+      "e4k_app": "E4K-sovellus",
+      "language_data": "Kielitiedot",
+      "assets_downloader": "Resurssien lataaja",
+      "data_updated": "Tiedot päivitetty · {date}"
     },
     "cards": {
       "decorations": {
@@ -923,7 +986,14 @@
       "e4k_mobile": "Empire: Quatre Royaumes (Mobile)",
       "e4k_mobile_short": "E4K (Mobile)",
       "language": "Langue",
-      "developer_comments": "Commentaires des développeurs"
+      "developer_comments": "Commentaires des développeurs",
+      "data_versions": "Versions des données",
+      "empire_items": "Objets Empire",
+      "e4k_items": "Objets E4K",
+      "e4k_app": "Application E4K",
+      "language_data": "Données linguistiques",
+      "assets_downloader": "Téléchargeur de ressources",
+      "data_updated": "Données mises à jour · {date}"
     },
     "cards": {
       "decorations": {
@@ -1024,7 +1094,14 @@
       "e4k_mobile": "Empire: Four Kingdoms (Κινητό)",
       "e4k_mobile_short": "E4K (Κινητό)",
       "language": "Γλώσσα",
-      "developer_comments": "Σχόλια προγραμματιστή"
+      "developer_comments": "Σχόλια προγραμματιστή",
+      "data_versions": "Εκδόσεις δεδομένων",
+      "empire_items": "Αντικείμενα Empire",
+      "e4k_items": "Αντικείμενα E4K",
+      "e4k_app": "Εφαρμογή E4K",
+      "language_data": "Γλωσσικά δεδομένα",
+      "assets_downloader": "Λήψη πόρων",
+      "data_updated": "Τα δεδομένα ενημερώθηκαν · {date}"
     },
     "cards": {
       "decorations": {
@@ -1125,7 +1202,14 @@
       "e4k_mobile": "Empire: Four Kingdoms (mobil)",
       "e4k_mobile_short": "E4K (mobil)",
       "language": "Nyelv",
-      "developer_comments": "Fejlesztői megjegyzések"
+      "developer_comments": "Fejlesztői megjegyzések",
+      "data_versions": "Adatverziók",
+      "empire_items": "Empire-elemek",
+      "e4k_items": "E4K-elemek",
+      "e4k_app": "E4K alkalmazás",
+      "language_data": "Nyelvi adatok",
+      "assets_downloader": "Assetletöltő",
+      "data_updated": "Adatok frissítve · {date}"
     },
     "cards": {
       "decorations": {
@@ -1226,7 +1310,14 @@
       "e4k_mobile": "Empire: Quattro Regni (Mobile)",
       "e4k_mobile_short": "E4K (mobile)",
       "language": "Lingua",
-      "developer_comments": "Commenti degli sviluppatori"
+      "developer_comments": "Commenti degli sviluppatori",
+      "data_versions": "Versioni dei dati",
+      "empire_items": "Oggetti Empire",
+      "e4k_items": "Oggetti E4K",
+      "e4k_app": "App E4K",
+      "language_data": "Dati della lingua",
+      "assets_downloader": "Downloader risorse",
+      "data_updated": "Dati aggiornati · {date}"
     },
     "cards": {
       "decorations": {
@@ -1327,7 +1418,14 @@
       "e4k_mobile": "Empire: Four Kingdoms (モバイル)",
       "e4k_mobile_short": "E4K (モバイル)",
       "language": "言語",
-      "developer_comments": "開発者のコメント"
+      "developer_comments": "開発者のコメント",
+      "data_versions": "データバージョン",
+      "empire_items": "Empireアイテム",
+      "e4k_items": "E4Kアイテム",
+      "e4k_app": "E4Kアプリ",
+      "language_data": "言語データ",
+      "assets_downloader": "アセットダウンローダー",
+      "data_updated": "データ更新 · {date}"
     },
     "cards": {
       "decorations": {
@@ -1428,7 +1526,14 @@
       "e4k_mobile": "Empire: Four Kingdoms (모바일)",
       "e4k_mobile_short": "E4K(모바일)",
       "language": "언어",
-      "developer_comments": "개발자 코멘트"
+      "developer_comments": "개발자 코멘트",
+      "data_versions": "데이터 버전",
+      "empire_items": "Empire 아이템",
+      "e4k_items": "E4K 아이템",
+      "e4k_app": "E4K 앱",
+      "language_data": "언어 데이터",
+      "assets_downloader": "에셋 다운로더",
+      "data_updated": "데이터 업데이트 · {date}"
     },
     "cards": {
       "decorations": {
@@ -1529,7 +1634,14 @@
       "e4k_mobile": "Imperija: keturios karalystės (mobilusis)",
       "e4k_mobile_short": "E4K (mobilusis)",
       "language": "Kalba",
-      "developer_comments": "Kūrėjų komentarai"
+      "developer_comments": "Kūrėjų komentarai",
+      "data_versions": "Duomenų versijos",
+      "empire_items": "Empire daiktai",
+      "e4k_items": "E4K daiktai",
+      "e4k_app": "E4K programėlė",
+      "language_data": "Kalbos duomenys",
+      "assets_downloader": "Išteklių atsisiuntimas",
+      "data_updated": "Duomenys atnaujinti · {date}"
     },
     "cards": {
       "decorations": {
@@ -1630,7 +1742,14 @@
       "e4k_mobile": "Empire: Vier koninkrijken (mobiel)",
       "e4k_mobile_short": "E4K (mobiel)",
       "language": "Taal",
-      "developer_comments": "Opmerkingen van ontwikkelaars"
+      "developer_comments": "Opmerkingen van ontwikkelaars",
+      "data_versions": "Gegevensversies",
+      "empire_items": "Empire-items",
+      "e4k_items": "E4K-items",
+      "e4k_app": "E4K-app",
+      "language_data": "Taalgegevens",
+      "assets_downloader": "Assets-downloader",
+      "data_updated": "Gegevens bijgewerkt · {date}"
     },
     "cards": {
       "decorations": {
@@ -1731,7 +1850,14 @@
       "e4k_mobile": "Empire: Four Kingdoms (mobil)",
       "e4k_mobile_short": "E4K (mobil)",
       "language": "Språk",
-      "developer_comments": "Utviklerkommentarer"
+      "developer_comments": "Utviklerkommentarer",
+      "data_versions": "Dataversjoner",
+      "empire_items": "Empire-gjenstander",
+      "e4k_items": "E4K-gjenstander",
+      "e4k_app": "E4K-app",
+      "language_data": "Språkdata",
+      "assets_downloader": "Ressursnedlasting",
+      "data_updated": "Data oppdatert · {date}"
     },
     "cards": {
       "decorations": {
@@ -1832,7 +1958,14 @@
       "e4k_mobile": "Imperium: Cztery Królestwa (mobilne)",
       "e4k_mobile_short": "E4K (mobilny)",
       "language": "Język",
-      "developer_comments": "Komentarze deweloperów"
+      "developer_comments": "Komentarze deweloperów",
+      "data_versions": "Wersje danych",
+      "empire_items": "Przedmioty Empire",
+      "e4k_items": "Przedmioty E4K",
+      "e4k_app": "Aplikacja E4K",
+      "language_data": "Dane językowe",
+      "assets_downloader": "Pobieranie zasobów",
+      "data_updated": "Dane zaktualizowano · {date}"
     },
     "cards": {
       "decorations": {
@@ -1933,7 +2066,14 @@
       "e4k_mobile": "Empire: Four Kingdoms (Mobil)",
       "e4k_mobile_short": "E4K (mobil)",
       "language": "Limba",
-      "developer_comments": "Comentariile dezvoltatorilor"
+      "developer_comments": "Comentariile dezvoltatorilor",
+      "data_versions": "Versiuni de date",
+      "empire_items": "Obiecte Empire",
+      "e4k_items": "Obiecte E4K",
+      "e4k_app": "Aplicația E4K",
+      "language_data": "Date lingvistice",
+      "assets_downloader": "Descărcător de resurse",
+      "data_updated": "Date actualizate · {date}"
     },
     "cards": {
       "decorations": {
@@ -2034,7 +2174,14 @@
       "e4k_mobile": "Империя: Четыре королевства (мобильный)",
       "e4k_mobile_short": "E4K (мобильный)",
       "language": "Язык",
-      "developer_comments": "Комментарии разработчиков"
+      "developer_comments": "Комментарии разработчиков",
+      "data_versions": "Версии данных",
+      "empire_items": "Предметы Empire",
+      "e4k_items": "Предметы E4K",
+      "e4k_app": "Приложение E4K",
+      "language_data": "Языковые данные",
+      "assets_downloader": "Загрузчик ресурсов",
+      "data_updated": "Данные обновлены · {date}"
     },
     "cards": {
       "decorations": {
@@ -2135,7 +2282,14 @@
       "e4k_mobile": "Empire: Four Kingdoms (mobil)",
       "e4k_mobile_short": "E4K (mobil)",
       "language": "Språk",
-      "developer_comments": "Utvecklarens kommentarer"
+      "developer_comments": "Utvecklarens kommentarer",
+      "data_versions": "Dataversioner",
+      "empire_items": "Empire-föremål",
+      "e4k_items": "E4K-föremål",
+      "e4k_app": "E4K-app",
+      "language_data": "Språkdata",
+      "assets_downloader": "Resursnedladdare",
+      "data_updated": "Data uppdaterad · {date}"
     },
     "cards": {
       "decorations": {
@@ -2236,7 +2390,14 @@
       "e4k_mobile": "Empire: Four Kingdoms (mobil)",
       "e4k_mobile_short": "E4K (mobil)",
       "language": "Jazyk",
-      "developer_comments": "Komentáre vývojárov"
+      "developer_comments": "Komentáre vývojárov",
+      "data_versions": "Verzie údajov",
+      "empire_items": "Predmety Empire",
+      "e4k_items": "Predmety E4K",
+      "e4k_app": "Aplikácia E4K",
+      "language_data": "Jazykové údaje",
+      "assets_downloader": "Sťahovanie assetov",
+      "data_updated": "Údaje aktualizované · {date}"
     },
     "cards": {
       "decorations": {
@@ -2337,7 +2498,14 @@
       "e4k_mobile": "İmparatorluk: Dört Krallık (Mobil)",
       "e4k_mobile_short": "E4K (Mobil)",
       "language": "Dil",
-      "developer_comments": "Geliştirici Yorumları"
+      "developer_comments": "Geliştirici Yorumları",
+      "data_versions": "Veri sürümleri",
+      "empire_items": "Empire öğeleri",
+      "e4k_items": "E4K öğeleri",
+      "e4k_app": "E4K uygulaması",
+      "language_data": "Dil verileri",
+      "assets_downloader": "Varlık indirici",
+      "data_updated": "Veriler güncellendi · {date}"
     },
     "cards": {
       "decorations": {

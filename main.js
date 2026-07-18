@@ -100,6 +100,8 @@ function applyHomeTranslations() {
     });
 
     setText("#settingsModalTitle", "settings", "Settings");
+    setText("#versionInfoModalTitle", "data_versions", "Data versions");
+    setText("#versionInfoDownloaderLabel", "assets_downloader", "Assets Downloader");
 
     const settingsButton = document.getElementById("openSettingsBtn");
     if (settingsButton) {
@@ -304,22 +306,22 @@ function buildVersionRows(manifest) {
     return [
         {
             icon: "bi-box",
-            label: "Empire items",
+            label: translate("empire_items", "Empire items"),
             value: readManifestValue(manifest, ["empire", "itemVersion"])
         },
         {
             icon: "bi-phone",
-            label: "E4K items",
+            label: translate("e4k_items", "E4K items"),
             value: readManifestValue(manifest, ["e4k", "itemVersion"])
         },
         {
             icon: "bi-cloud-download",
-            label: "E4K app",
+            label: translate("e4k_app", "E4K app"),
             value: e4kStoreVersion
         },
         {
             icon: "bi-translate",
-            label: "Language data",
+            label: translate("language_data", "Language data"),
             value: readManifestValue(manifest, ["language", "version"])
         }
     ];
@@ -365,7 +367,9 @@ function renderVersionInfo(manifest) {
 
     const updatedAt = formatManifestDate(readManifestValue(manifest, ["updatedAt"]));
     updated.hidden = !updatedAt;
-    updated.textContent = updatedAt ? `Data updated · ${updatedAt}` : "";
+    updated.textContent = updatedAt
+        ? translate("data_updated", "Data updated · {date}", { date: updatedAt })
+        : "";
     status.hidden = true;
 }
 
