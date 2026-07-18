@@ -6,7 +6,6 @@
       "overviews": "Overviews",
       "calculators": "Calculators",
       "simulators": "Simulators",
-      "others": "Others",
       "contact_intro": "Questions or suggestions?",
       "settings": "Settings",
       "game": "Game",
@@ -66,12 +65,6 @@
       "currencies": {
         "name": "Currencies Overview"
       },
-      "assets_downloader": {
-        "name": "Assets Downloader"
-      },
-      "empire_duels": {
-        "name": "Empire Duels"
-      },
       "food_production": {
         "name": "Food Production Calculator"
       },
@@ -114,7 +107,6 @@
       "overviews": "لمحات عامة",
       "calculators": "الآلات الحاسبة",
       "simulators": "محاكيات",
-      "others": "أخرى",
       "contact_intro": "أسئلة أو اقتراحات؟",
       "settings": "الإعدادات",
       "game": "لعبة",
@@ -174,12 +166,6 @@
       "currencies": {
         "name": "نظرة عامة على العملات"
       },
-      "assets_downloader": {
-        "name": "منزّل الأصول"
-      },
-      "empire_duels": {
-        "name": "إمباير دويلز"
-      },
       "food_production": {
         "name": "حاسبة إنتاج الغذاء"
       },
@@ -222,7 +208,6 @@
       "overviews": "Resúmenes",
       "calculators": "Calculadoras",
       "simulators": "Simuladores",
-      "others": "Otros",
       "contact_intro": "¿Preguntas o sugerencias?",
       "settings": "Configuración",
       "game": "juego",
@@ -282,12 +267,6 @@
       "currencies": {
         "name": "Descripción General De Las Monedas"
       },
-      "assets_downloader": {
-        "name": "Descargador de recursos"
-      },
-      "empire_duels": {
-        "name": "Empire Duels"
-      },
       "food_production": {
         "name": "Calculadora De Producción De Alimentos"
       },
@@ -330,7 +309,6 @@
       "overviews": "Прегледи",
       "calculators": "Калкулатори",
       "simulators": "Симулатори",
-      "others": "Други",
       "contact_intro": "Въпроси или предложения?",
       "settings": "Настройки",
       "game": "Игра",
@@ -390,12 +368,6 @@
       "currencies": {
         "name": "Преглед На Валутите"
       },
-      "assets_downloader": {
-        "name": "Изтегляне на ресурси"
-      },
-      "empire_duels": {
-        "name": "Empire Duels"
-      },
       "food_production": {
         "name": "Калкулатор За Производство На Храна"
       },
@@ -438,7 +410,6 @@
       "overviews": "Visão geral",
       "calculators": "Calculadoras",
       "simulators": "Simuladores",
-      "others": "Outros",
       "contact_intro": "Dúvidas ou sugestões?",
       "settings": "Configurações",
       "game": "Jogo",
@@ -498,12 +469,6 @@
       "currencies": {
         "name": "Visão Geral Das Moedas"
       },
-      "assets_downloader": {
-        "name": "Baixador de ativos"
-      },
-      "empire_duels": {
-        "name": "Empire Duels"
-      },
       "food_production": {
         "name": "Calculadora De Produção De Alimentos"
       },
@@ -546,7 +511,6 @@
       "overviews": "Přehledy",
       "calculators": "Kalkulačky",
       "simulators": "Simulátory",
-      "others": "Ostatní",
       "contact_intro": "Máte dotazy nebo návrhy?",
       "settings": "Nastavení",
       "game": "Hra",
@@ -606,12 +570,6 @@
       "currencies": {
         "name": "Přehled Měn"
       },
-      "assets_downloader": {
-        "name": "Stahování assetů"
-      },
-      "empire_duels": {
-        "name": "Empire Duels"
-      },
       "food_production": {
         "name": "Kalkulačka Výroby Potravin"
       },
@@ -654,7 +612,6 @@
       "overviews": "Übersichten",
       "calculators": "Taschenrechner",
       "simulators": "Simulatoren",
-      "others": "Sonstiges",
       "contact_intro": "Fragen oder Anregungen?",
       "settings": "Einstellungen",
       "game": "Spiel",
@@ -714,12 +671,6 @@
       "currencies": {
         "name": "Währungsübersicht"
       },
-      "assets_downloader": {
-        "name": "Asset-Downloader"
-      },
-      "empire_duels": {
-        "name": "Empire Duels"
-      },
       "food_production": {
         "name": "Rechner Für Die Lebensmittelproduktion"
       },
@@ -762,7 +713,6 @@
       "overviews": "Oversigter",
       "calculators": "Lommeregnere",
       "simulators": "Simulatorer",
-      "others": "Andre",
       "contact_intro": "Spørgsmål eller forslag?",
       "settings": "Indstillinger",
       "game": "Spil",
@@ -822,12 +772,6 @@
       "currencies": {
         "name": "Valutaoversigt"
       },
-      "assets_downloader": {
-        "name": "Asset-downloader"
-      },
-      "empire_duels": {
-        "name": "Empire Duels"
-      },
       "food_production": {
         "name": "Fødevareproduktion Lommeregner"
       },
@@ -870,7 +814,6 @@
       "overviews": "Yleiskatsaukset",
       "calculators": "Laskimet",
       "simulators": "Simulaattorit",
-      "others": "Muut",
       "contact_intro": "Kysymyksiä tai ehdotuksia?",
       "settings": "Asetukset",
       "game": "Peli",
@@ -930,12 +873,6 @@
       "currencies": {
         "name": "Valuuttojen Yleiskatsaus"
       },
-      "assets_downloader": {
-        "name": "Assettilataaja"
-      },
-      "empire_duels": {
-        "name": "Empire Duels"
-      },
       "food_production": {
         "name": "Elintarvikkeiden Tuotannon Laskin"
       },
@@ -978,7 +915,6 @@
       "overviews": "Aperçus",
       "calculators": "Calculatrices",
       "simulators": "Simulateurs",
-      "others": "Autres",
       "contact_intro": "Des questions ou des suggestions ?",
       "settings": "Paramètres",
       "game": "Jeu",
@@ -1038,12 +974,6 @@
       "currencies": {
         "name": "Aperçu Des Monnaies"
       },
-      "assets_downloader": {
-        "name": "Téléchargeur d’assets"
-      },
-      "empire_duels": {
-        "name": "Empire Duels"
-      },
       "food_production": {
         "name": "Calculateur De Production Alimentaire"
       },
@@ -1086,7 +1016,6 @@
       "overviews": "Επισκοπήσεις",
       "calculators": "Αριθμομηχανές",
       "simulators": "Προσομοιωτές",
-      "others": "Άλλα",
       "contact_intro": "Ερωτήσεις ή προτάσεις;",
       "settings": "Ρυθμίσεις",
       "game": "Παιχνίδι",
@@ -1146,12 +1075,6 @@
       "currencies": {
         "name": "Επισκόπηση Νομισμάτων"
       },
-      "assets_downloader": {
-        "name": "Πρόγραμμα λήψης στοιχείων"
-      },
-      "empire_duels": {
-        "name": "Empire Duels"
-      },
       "food_production": {
         "name": "Υπολογιστής Παραγωγής Τροφίμων"
       },
@@ -1194,7 +1117,6 @@
       "overviews": "Áttekintések",
       "calculators": "Számológépek",
       "simulators": "Szimulátorok",
-      "others": "Egyéb",
       "contact_intro": "Kérdések vagy javaslatok?",
       "settings": "Beállítások",
       "game": "Játék",
@@ -1254,12 +1176,6 @@
       "currencies": {
         "name": "Pénznemek Áttekintése"
       },
-      "assets_downloader": {
-        "name": "Assetletöltő"
-      },
-      "empire_duels": {
-        "name": "Empire Duels"
-      },
       "food_production": {
         "name": "Élelmiszer-Termelési Kalkulátor"
       },
@@ -1302,7 +1218,6 @@
       "overviews": "Panoramica",
       "calculators": "Calcolatrici",
       "simulators": "Simulatori",
-      "others": "Altri",
       "contact_intro": "Domande o suggerimenti?",
       "settings": "Impostazioni",
       "game": "Gioco",
@@ -1362,12 +1277,6 @@
       "currencies": {
         "name": "Panoramica Delle Valute"
       },
-      "assets_downloader": {
-        "name": "Downloader di asset"
-      },
-      "empire_duels": {
-        "name": "Empire Duels"
-      },
       "food_production": {
         "name": "Calcolatore Della Produzione Alimentare"
       },
@@ -1410,7 +1319,6 @@
       "overviews": "概要",
       "calculators": "電卓",
       "simulators": "シミュレータ",
-      "others": "その他",
       "contact_intro": "ご質問またはご提案はありますか?",
       "settings": "設定",
       "game": "ゲーム",
@@ -1470,12 +1378,6 @@
       "currencies": {
         "name": "通貨の概要"
       },
-      "assets_downloader": {
-        "name": "アセットダウンローダー"
-      },
-      "empire_duels": {
-        "name": "Empire Duels"
-      },
       "food_production": {
         "name": "食糧生産計算機"
       },
@@ -1518,7 +1420,6 @@
       "overviews": "개요",
       "calculators": "계산기",
       "simulators": "시뮬레이터",
-      "others": "기타",
       "contact_intro": "질문이나 제안이 있으신가요?",
       "settings": "설정",
       "game": "게임",
@@ -1578,12 +1479,6 @@
       "currencies": {
         "name": "통화 개요"
       },
-      "assets_downloader": {
-        "name": "에셋 다운로더"
-      },
-      "empire_duels": {
-        "name": "Empire Duels"
-      },
       "food_production": {
         "name": "식량 생산 계산기"
       },
@@ -1626,7 +1521,6 @@
       "overviews": "Apžvalgos",
       "calculators": "Skaičiuoklės",
       "simulators": "Simuliatoriai",
-      "others": "Kita",
       "contact_intro": "Turite klausimų ar pasiūlymų?",
       "settings": "Nustatymai",
       "game": "Žaidimas",
@@ -1686,12 +1580,6 @@
       "currencies": {
         "name": "Valiutų Apžvalga"
       },
-      "assets_downloader": {
-        "name": "Išteklių atsisiuntimo programa"
-      },
-      "empire_duels": {
-        "name": "Empire Duels"
-      },
       "food_production": {
         "name": "Maisto Gamybos Skaičiuoklė"
       },
@@ -1734,7 +1622,6 @@
       "overviews": "Overzichten",
       "calculators": "Rekenmachines",
       "simulators": "Simulatoren",
-      "others": "Overige",
       "contact_intro": "Vragen of suggesties?",
       "settings": "Instellingen",
       "game": "Spel",
@@ -1794,12 +1681,6 @@
       "currencies": {
         "name": "Valutaoverzicht"
       },
-      "assets_downloader": {
-        "name": "Assetdownloader"
-      },
-      "empire_duels": {
-        "name": "Empire Duels"
-      },
       "food_production": {
         "name": "Voedselproductiecalculator"
       },
@@ -1842,7 +1723,6 @@
       "overviews": "Oversikter",
       "calculators": "Kalkulatorer",
       "simulators": "Simulatorer",
-      "others": "Andre",
       "contact_intro": "Spørsmål eller forslag?",
       "settings": "Innstillinger",
       "game": "Spill",
@@ -1902,12 +1782,6 @@
       "currencies": {
         "name": "Valutaoversikt"
       },
-      "assets_downloader": {
-        "name": "Asset-nedlaster"
-      },
-      "empire_duels": {
-        "name": "Empire Duels"
-      },
       "food_production": {
         "name": "Matproduksjonskalkulator"
       },
@@ -1950,7 +1824,6 @@
       "overviews": "Przeglądy",
       "calculators": "Kalkulatory",
       "simulators": "Symulatory",
-      "others": "Inne",
       "contact_intro": "Pytania lub sugestie?",
       "settings": "Ustawienia",
       "game": "Gra",
@@ -2010,12 +1883,6 @@
       "currencies": {
         "name": "Przegląd Walut"
       },
-      "assets_downloader": {
-        "name": "Pobieranie assetów"
-      },
-      "empire_duels": {
-        "name": "Empire Duels"
-      },
       "food_production": {
         "name": "Kalkulator Produkcji Żywności"
       },
@@ -2058,7 +1925,6 @@
       "overviews": "Prezentare de ansamblu",
       "calculators": "Calculatoare",
       "simulators": "Simulatoare",
-      "others": "Altele",
       "contact_intro": "Întrebări sau sugestii?",
       "settings": "Setări",
       "game": "Joc",
@@ -2118,12 +1984,6 @@
       "currencies": {
         "name": "Prezentare Generală A Monedelor"
       },
-      "assets_downloader": {
-        "name": "Descărcător de resurse"
-      },
-      "empire_duels": {
-        "name": "Empire Duels"
-      },
       "food_production": {
         "name": "Calculator De Producție Alimentară"
       },
@@ -2166,7 +2026,6 @@
       "overviews": "Обзоры",
       "calculators": "Калькуляторы",
       "simulators": "Симуляторы",
-      "others": "Прочее",
       "contact_intro": "Вопросы или предложения?",
       "settings": "Настройки",
       "game": "Игра",
@@ -2226,12 +2085,6 @@
       "currencies": {
         "name": "Обзор Валют"
       },
-      "assets_downloader": {
-        "name": "Загрузчик ресурсов"
-      },
-      "empire_duels": {
-        "name": "Empire Duels"
-      },
       "food_production": {
         "name": "Калькулятор Производства Продуктов Питания"
       },
@@ -2274,7 +2127,6 @@
       "overviews": "Översikter",
       "calculators": "Miniräknare",
       "simulators": "Simulatorer",
-      "others": "Övriga",
       "contact_intro": "Frågor eller förslag?",
       "settings": "Inställningar",
       "game": "Spel",
@@ -2334,12 +2186,6 @@
       "currencies": {
         "name": "Valutaöversikt"
       },
-      "assets_downloader": {
-        "name": "Asset-nedladdare"
-      },
-      "empire_duels": {
-        "name": "Empire Duels"
-      },
       "food_production": {
         "name": "Kalkylator För Livsmedelsproduktion"
       },
@@ -2382,7 +2228,6 @@
       "overviews": "Prehľady",
       "calculators": "Kalkulačky",
       "simulators": "Simulátory",
-      "others": "Ostatné",
       "contact_intro": "Máte otázky alebo návrhy?",
       "settings": "Nastavenia",
       "game": "Hra",
@@ -2442,12 +2287,6 @@
       "currencies": {
         "name": "Prehľad Mien"
       },
-      "assets_downloader": {
-        "name": "Sťahovanie assetov"
-      },
-      "empire_duels": {
-        "name": "Empire Duels"
-      },
       "food_production": {
         "name": "Kalkulačka Výroby Potravín"
       },
@@ -2490,7 +2329,6 @@
       "overviews": "Genel Bakış",
       "calculators": "Hesap makineleri",
       "simulators": "Simülatörler",
-      "others": "Diğer",
       "contact_intro": "Sorularınız veya önerileriniz mi var?",
       "settings": "Ayarlar",
       "game": "Oyun",
@@ -2549,12 +2387,6 @@
       },
       "currencies": {
         "name": "Para Birimlerine Genel Bakış"
-      },
-      "assets_downloader": {
-        "name": "Varlık İndirici"
-      },
-      "empire_duels": {
-        "name": "Empire Duels"
       },
       "food_production": {
         "name": "Gıda Üretim Hesaplayıcısı"

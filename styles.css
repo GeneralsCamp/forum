@@ -72,10 +72,9 @@ body {
 }
 
 .nav-settings-btn {
-    width: auto;
+    width: 36px;
     height: 36px;
-    padding: 0 10px;
-    gap: 7px;
+    padding: 0;
     border-radius: 7px;
     border: 1px solid rgba(215, 155, 66, 0.42);
     background: rgba(215, 155, 66, 0.07);
@@ -101,13 +100,8 @@ body {
     outline-offset: 2px;
 }
 
-.nav-settings-label {
-    font-size: 11px;
-    font-weight: 900;
-    line-height: 1;
-    letter-spacing: 0.55px;
-    text-transform: uppercase;
-    white-space: nowrap;
+.nav-info-btn {
+    font-size: 16px;
 }
 
 .main-nav-brand-cluster {
@@ -441,13 +435,6 @@ html {
     object-fit: contain;
 }
 
-@media (max-width: 1023.98px) {
-    #othersHeader,
-    #others {
-        display: none !important;
-    }
-}
-
 @keyframes category-icon-wiggle {
     0%, 100% { transform: translateX(0); }
     25% { transform: translateX(-2px); }
@@ -669,6 +656,151 @@ html {
     border-color: rgba(243, 194, 74, 0.82);
 }
 
+.version-info-modal {
+    --gf-modal-width: min(420px, calc(100% - 20px));
+    --gf-modal-shell-bg: #4f3625;
+    --gf-modal-shell-border: rgba(215, 155, 66, 0.62);
+    --gf-modal-head-bg: linear-gradient(100deg, #503724, #704a2f);
+    --gf-modal-head-border: rgba(215, 155, 66, 0.48);
+    --gf-modal-body-bg: #60412c;
+}
+
+.version-info-modal-card {
+    max-height: min(680px, calc(100dvh - 24px));
+}
+
+.version-info-body {
+    overflow-y: auto;
+}
+
+.version-info-status {
+    min-height: 62px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: rgba(247, 234, 213, 0.78);
+    font-weight: 700;
+}
+
+.version-info-status[hidden] {
+    display: none;
+}
+
+.version-info-status.is-error {
+    color: #e9a56f;
+}
+
+.version-info-loader {
+    width: 15px;
+    height: 15px;
+    border: 2px solid rgba(243, 194, 74, 0.22);
+    border-top-color: #f3c24a;
+    border-radius: 50%;
+    animation: version-info-spin 0.75s linear infinite;
+}
+
+@keyframes version-info-spin {
+    to { transform: rotate(360deg); }
+}
+
+.version-info-list {
+    display: grid;
+}
+
+.version-info-row {
+    min-height: 48px;
+    padding: 7px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid rgba(215, 155, 66, 0.3);
+}
+
+.version-info-identity {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #f7ead5;
+    font-weight: 800;
+}
+
+.version-info-identity i {
+    width: 22px;
+    color: #e5b85d;
+    font-size: 17px;
+    text-align: center;
+}
+
+.version-info-value-wrap {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    text-align: right;
+}
+
+.version-info-value {
+    color: #b9f2d0;
+    background: transparent;
+    padding: 0;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 17px;
+    line-height: 1.1;
+    font-weight: 900;
+    overflow-wrap: anywhere;
+}
+
+.version-info-value.unavailable {
+    color: #d99572;
+    font-family: inherit;
+    font-size: 12px;
+}
+
+.version-info-footer {
+    min-height: 34px;
+    padding: 5px 12px 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.version-info-download-link {
+    display: inline-flex;
+    align-items: center;
+    color: #d9ad58;
+    font-size: 11px;
+    font-weight: 800;
+    text-decoration: none;
+    transition: color 0.18s ease;
+}
+
+.version-info-download-link:hover {
+    color: #f3c24a;
+    text-decoration: none;
+}
+
+.version-info-download-link:focus-visible {
+    outline: 1px solid rgba(243, 194, 74, 0.72);
+    outline-offset: 3px;
+}
+
+.version-info-updated {
+    color: rgba(247, 234, 213, 0.56);
+    font-size: 11px;
+    font-weight: 700;
+    text-align: right;
+}
+
+.version-info-updated[hidden] {
+    display: none;
+}
+
 .settings-options {
     display: grid;
     gap: 0;
@@ -874,10 +1006,25 @@ html {
     }
 
     .nav-settings-btn {
-        width: auto;
+        width: 36px;
         height: 36px;
-        padding-inline: 9px;
+        padding-inline: 0;
         flex-basis: auto;
+    }
+
+    .version-info-row {
+        min-height: 46px;
+        padding: 6px 9px;
+        gap: 8px;
+    }
+
+    .version-info-identity {
+        gap: 7px;
+        font-size: 13px;
+    }
+
+    .version-info-value {
+        font-size: 15px;
     }
 
     .settings-option {

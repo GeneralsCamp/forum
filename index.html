@@ -42,9 +42,12 @@
                 <i class="bi bi-search nav-search-icon" aria-hidden="true"></i>
                 <div id="searchSuggestions" class="search-suggestions"></div>
             </div>
+            <button id="openVersionInfoBtn" class="nav-settings-btn nav-info-btn" type="button"
+                aria-label="Open data versions">
+                <i class="bi bi-info-circle-fill" aria-hidden="true"></i>
+            </button>
             <button id="openSettingsBtn" class="nav-settings-btn" type="button" aria-label="Open settings">
                 <i class="bi bi-gear-fill" aria-hidden="true"></i>
-                <span class="nav-settings-label">Settings</span>
             </button>
         </nav>
 
@@ -64,10 +67,6 @@
                 <div class="category-grid"></div>
             </div>
 
-            <h2 id="othersHeader" class="collapse-header"><span class="header-title">OTHERS</span></h2>
-            <div id="others" class="category-wrapper">
-                <div class="category-grid"></div>
-            </div>
         </main>
 
         <div id="settingsModal" class="gf-modal settings-modal" aria-hidden="true">
@@ -103,6 +102,33 @@
                             </label>
                         </div>
                     </section>
+                </div>
+            </div>
+        </div>
+
+        <div id="versionInfoModal" class="gf-modal version-info-modal" aria-hidden="true">
+            <div class="gf-modal-backdrop" data-close-modal="1"></div>
+            <div class="gf-modal-card version-info-modal-card" role="dialog" aria-modal="true"
+                aria-labelledby="versionInfoModalTitle">
+                <div class="gf-modal-head version-info-modal-head">
+                    <h3 id="versionInfoModalTitle" class="gf-modal-title">Data versions</h3>
+                    <button id="closeVersionInfoBtn" class="gf-modal-close" type="button"
+                        aria-label="Close data versions">
+                        <i class="bi bi-x-lg" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="gf-modal-body version-info-body">
+                    <div id="versionInfoStatus" class="version-info-status" role="status">
+                        <span class="version-info-loader" aria-hidden="true"></span>
+                        <span>Loading current versions…</span>
+                    </div>
+                    <div id="versionInfoList" class="version-info-list" aria-live="polite"></div>
+                    <div class="version-info-footer">
+                        <a class="version-info-download-link" href="./others/assets_downloader/index.html">
+                            <span>Assets Downloader</span>
+                        </a>
+                        <div id="versionInfoUpdated" class="version-info-updated" hidden></div>
+                    </div>
                 </div>
             </div>
         </div>

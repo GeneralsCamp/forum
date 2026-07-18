@@ -5,9 +5,11 @@ import {
 } from "./overviews/shared/GameSettings.mjs";
 import { availableLanguages, getInitialLanguage } from "./overviews/shared/LanguageService.mjs";
 import { initCustomModal } from "./overviews/shared/ModalService.mjs";
+import { getDataManifest } from "./overviews/shared/DataService.mjs";
 let uiSettings = readHomeSettings();
 let currentLanguage = getSavedSiteLanguage();
 let ownLang = {};
+let versionManifest = null;
 
 const categories = {
     overviews: [
@@ -44,11 +46,6 @@ const categories = {
         { key: "equipment_builder", name: "Equipment Set Builder", icon: "main_page/equipment-icon.webp", link: "./simulators/equipment_builder/index.html", disabled: false },
         { key: "castle_layout", name: "Castle Layout Simulator", icon: "main_page/layout-icon.webp", link: "./simulators/layout_editor/index.html", disabled: false },
         { key: "hall_of_legends", name: "Hall of Legends Simulator", icon: "main_page/hall-of-legends-simulator-icon.webp", link: "./simulators/hol_simulator/index.html", disabled: false },
-    ],
-
-    others: [
-        { key: "assets_downloader", name: "Assets Downloader", icon: "main_page/layout-icon.webp", link: "./others/assets_downloader/index.html", disabled: false },
-        { key: "empire_duels", name: "Empire Duels", icon: "main_page/empire-duels-icon.webp", link: "./empire_duels/index.html", disabled: false }
     ]
 };
 
@@ -95,15 +92,13 @@ function applyHomeTranslations() {
     const sectionKeys = [
         ["overviews", "overviews", "OVERVIEWS"],
         ["calculators", "calculators", "CALCULATORS"],
-        ["simulators", "simulators", "SIMULATORS"],
-        ["others", "others", "OTHERS"]
+        ["simulators", "simulators", "SIMULATORS"]
     ];
     sectionKeys.forEach(([id, key, fallback]) => {
         const title = document.querySelector(`#${id}`)?.previousElementSibling?.querySelector(".header-title");
         if (title) title.textContent = translate(key, fallback).toUpperCase();
     });
 
-    setText(".nav-settings-label", "settings", "Settings");
     setText("#settingsModalTitle", "settings", "Settings");
 
     const settingsButton = document.getElementById("openSettingsBtn");
@@ -217,15 +212,13 @@ function rerenderMainSections() {
     renderCategory(categories.overviews, "overviews");
     renderCategory(categories.calculators, "calculators");
     renderCategory(categories.simulators, "simulators");
-    renderCategory(categories.others, "others");
 }
 
 function getAllCategoryItems() {
     return [
         ...categories.overviews,
         ...categories.simulators,
-        ...categories.calculators,
-        ...categories.others
+        ...categories.calculators
     ].filter(item => !item.disabled && item.link).map(localizeItem);
 }
 
@@ -294,6 +287,138 @@ function setupSettingsModal() {
     window.addEventListener("resize", syncGameOptionLabels);
     syncGameOptionLabels();
 
+}
+
+function readManifestValue(source, path) {
+    let value = source;
+    for (const key of path) {
+        if (value == null) return "";
+        value = value[key];
+    }
+    return value == null ? "" : String(value).trim();
+}
+
+function buildVersionRows(manifest) {
+    const e4kStoreVersion = readManifestValue(manifest, ["e4k", "appStoreVersion"]);
+
+    return [
+        {
+            icon: "bi-box",
+            label: "Empire items",
+            value: readManifestValue(manifest, ["empire", "itemVersion"])
+        },
+        {
+            icon: "bi-phone",
+            label: "E4K items",
+            value: readManifestValue(manifest, ["e4k", "itemVersion"])
+        },
+        {
+            icon: "bi-cloud-download",
+            label: "E4K app",
+            value: e4kStoreVersion
+        },
+        {
+            icon: "bi-translate",
+            label: "Language data",
+            value: readManifestValue(manifest, ["language", "version"])
+        }
+    ];
+}
+
+function formatManifestDate(value) {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "";
+    try {
+        return new Intl.DateTimeFormat(currentLanguage, {
+            dateStyle: "medium",
+            timeStyle: "short"
+        }).format(date);
+    } catch {
+        return date.toLocaleString();
+    }
+}
+
+function renderVersionInfo(manifest) {
+    const list = document.getElementById("versionInfoList");
+    const status = document.getElementById("versionInfoStatus");
+    const updated = document.getElementById("versionInfoUpdated");
+    if (!list || !status || !updated) return;
+
+    list.replaceChildren(...buildVersionRows(manifest).map((row) => {
+        const item = document.createElement("div");
+        item.className = "version-info-row";
+
+        const identity = document.createElement("div");
+        identity.className = "version-info-identity";
+        identity.innerHTML = `<i class="bi ${row.icon}" aria-hidden="true"></i><span>${row.label}</span>`;
+
+        const valueWrap = document.createElement("div");
+        valueWrap.className = "version-info-value-wrap";
+        const value = document.createElement("code");
+        value.className = row.value ? "version-info-value" : "version-info-value unavailable";
+        value.textContent = row.value || "Unavailable";
+        valueWrap.appendChild(value);
+
+        item.append(identity, valueWrap);
+        return item;
+    }));
+
+    const updatedAt = formatManifestDate(readManifestValue(manifest, ["updatedAt"]));
+    updated.hidden = !updatedAt;
+    updated.textContent = updatedAt ? `Data updated · ${updatedAt}` : "";
+    status.hidden = true;
+}
+
+function renderVersionInfoError() {
+    const status = document.getElementById("versionInfoStatus");
+    const list = document.getElementById("versionInfoList");
+    const updated = document.getElementById("versionInfoUpdated");
+    if (!status || !list || !updated) return;
+    list.replaceChildren();
+    updated.hidden = true;
+    status.hidden = false;
+    status.classList.add("is-error");
+    status.innerHTML = '<i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i><span>Version data is currently unavailable.</span>';
+}
+
+function setupVersionInfoModal() {
+    const openBtn = document.getElementById("openVersionInfoBtn");
+    const modal = document.getElementById("versionInfoModal");
+    if (!openBtn || !modal) return;
+
+    const versionModal = initCustomModal({ modalId: "versionInfoModal", closeAnimMs: 190 });
+    let loadingPromise = null;
+
+    const loadVersions = async () => {
+        if (versionManifest) {
+            renderVersionInfo(versionManifest);
+            return;
+        }
+        if (loadingPromise) return loadingPromise;
+
+        loadingPromise = getDataManifest()
+            .then((manifest) => {
+                versionManifest = manifest;
+                renderVersionInfo(versionManifest);
+            })
+            .catch((error) => {
+                console.error("Homepage version info load error:", error);
+                renderVersionInfoError();
+            })
+            .finally(() => {
+                loadingPromise = null;
+            });
+        return loadingPromise;
+    };
+
+    openBtn.addEventListener("click", () => {
+        versionModal.open();
+        void loadVersions();
+    });
+
+    window.addEventListener("home-language-change", () => {
+        if (versionManifest) renderVersionInfo(versionManifest);
+    });
 }
 
 function setupSearch() {
@@ -473,6 +598,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     currentLanguage = getSavedSiteLanguage();
     applyHomeTranslations();
     setupSettingsModal();
+    setupVersionInfoModal();
     rerenderMainSections();
     setupSearch();
 });
