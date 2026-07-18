@@ -228,7 +228,7 @@ function applyGameChoiceLanguage() {
   if (text) {
     text.textContent = ui(
       "game_choice_text",
-      "E4K and EM games may use different data. Please choose your game."
+      "EM (computer) and E4K (mobile) games may use different data. Choose your game."
     );
   }
   if (continueBtn) continueBtn.textContent = ui("continue", "Continue");

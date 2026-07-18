@@ -477,3 +477,65 @@
     display: none;
 }
 
+.event-plan-game-choice-modal {
+  --gf-modal-width: min(430px, calc(100% - 20px));
+  --gf-modal-shell-bg: #4f3625;
+  --gf-modal-head-bg: linear-gradient(100deg, #503724, #704a2f);
+  --gf-modal-body-bg: #60412c;
+}
+
+.event-plan-game-choice-card {
+  min-width: var(--gf-modal-width);
+  max-width: var(--gf-modal-width);
+}
+
+.event-plan-game-choice-body {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+.event-plan-game-choice-body p {
+  margin: 0;
+  color: #f7edd7;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.event-plan-game-choice-body select,
+.event-plan-game-choice-body button {
+  width: 100%;
+}
+
+.event-plan-game-choice-body select {
+  min-height: 38px;
+  border: 1px solid rgba(215, 155, 66, 0.72);
+  border-radius: 6px;
+  background-color: #f0d7ae;
+  color: #56391f;
+  font-weight: 900;
+  box-shadow: inset 0 1px 2px rgba(89, 56, 30, 0.18);
+}
+
+.event-plan-game-choice-body select:focus {
+  background-color: #f5dfba;
+  color: #4b311b;
+  border-color: rgba(243, 194, 74, 0.95);
+  box-shadow: 0 0 0 2px rgba(215, 155, 66, 0.25), inset 0 1px 2px rgba(89, 56, 30, 0.16);
+}
+
+.event-plan-game-choice-body button {
+  min-height: 40px;
+  border: 1px solid rgba(215, 155, 66, 0.72);
+  border-radius: 7px;
+  background: #f3c24a;
+  color: #433120;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.event-plan-game-choice-body button:hover,
+.event-plan-game-choice-body button:focus-visible {
+  background: #ffd369;
+  color: #3a281b;
+}

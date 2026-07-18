@@ -205,10 +205,6 @@
   box-shadow: var(--gf-modal-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
-.patronage-game-choice-modal .gf-modal-title {
-  text-transform: uppercase;
-}
-
 .patronage-game-choice-modal-body {
   display: grid;
   gap: 12px;

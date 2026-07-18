@@ -1,3 +1,29 @@
+import { getSelectedGameSource, setSelectedGameSource } from "../shared/GameSettings.mjs";
+import { getInitialLanguage } from "../shared/LanguageService.mjs";
+
+let ownLang = {};
+const currentLanguage = getInitialLanguage();
+
+async function loadOwnLang() {
+    try {
+        const response = await fetch("./ownLang.json");
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        ownLang = await response.json();
+    } catch (error) {
+        console.error("Error loading ownLang.json:", error);
+        ownLang = {};
+    }
+}
+
+function ui(key, fallback) {
+    const language = String(currentLanguage || "en").toLowerCase();
+    const baseLanguage = language.split("-")[0];
+    return ownLang?.[language]?.ui?.[key]
+        || ownLang?.[baseLanguage]?.ui?.[key]
+        || ownLang?.en?.ui?.[key]
+        || fallback;
+}
+
 const eventSources = {
     empire: {
         label: "Empire (Computer)",
@@ -1198,12 +1224,72 @@ function normalizeCalendarBodyRowHeights(tbody) {
 }
 
 function getSelectedGameKey() {
-    try {
-        const settings = JSON.parse(localStorage.getItem("gf_home_settings") || "{}");
-        return settings.selectedGame === "e4k" ? "e4k" : "empire";
-    } catch {
-        return "empire";
+    return getSelectedGameSource();
+}
+
+function syncGameChoiceOptionLabels(select) {
+    const empireOption = select?.querySelector('option[value="empire"]');
+    const e4kOption = select?.querySelector('option[value="e4k"]');
+    const isMobile = window.matchMedia("(max-width: 700px)").matches;
+    if (empireOption) empireOption.textContent = isMobile ? "EM (Browser)" : "Empire (Browser)";
+    if (e4kOption) e4kOption.textContent = isMobile ? "E4K (Mobile)" : "Empire: Four Kingdoms (Mobile)";
+}
+
+function applyGameChoiceLanguage() {
+    const title = document.getElementById("eventPlanGameChoiceTitle");
+    const text = document.getElementById("eventPlanGameChoiceText");
+    const select = document.getElementById("eventPlanGameChoiceSelect");
+    const continueButton = document.getElementById("eventPlanGameChoiceContinue");
+    const titleText = ui("game_choice_title", "Choose game");
+
+    if (title) title.textContent = titleText;
+    if (text) {
+        text.textContent = ui(
+            "game_choice_text",
+            "EM (computer) and E4K (mobile) games may use different data. Choose your game."
+        );
     }
+    if (select) select.setAttribute("aria-label", titleText);
+    if (continueButton) continueButton.textContent = ui("continue", "Continue");
+}
+
+function showInitialGameChoiceIfNeeded() {
+    const seenKey = "gf_event_plan_game_choice_seen";
+    if (localStorage.getItem(seenKey) === "1") return Promise.resolve();
+    const modal = document.getElementById("eventPlanGameChoiceModal");
+    const select = document.getElementById("eventPlanGameChoiceSelect");
+    const continueButton = document.getElementById("eventPlanGameChoiceContinue");
+    if (!modal || !select || !continueButton) {
+        localStorage.setItem(seenKey, "1");
+        return Promise.resolve();
+    }
+    applyGameChoiceLanguage();
+    syncGameChoiceOptionLabels(select);
+    select.value = getSelectedGameSource();
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.classList.add("gf-modal-open");
+    return new Promise(resolve => {
+        const close = () => {
+            localStorage.setItem(seenKey, "1");
+            modal.classList.remove("open");
+            modal.setAttribute("aria-hidden", "true");
+            document.body.classList.remove("gf-modal-open");
+            resolve();
+        };
+        select.addEventListener("change", () => {
+            const previous = getSelectedGameSource();
+            const next = setSelectedGameSource(select.value);
+            if (next !== previous) {
+                localStorage.setItem(seenKey, "1");
+                window.location.reload();
+                return;
+            }
+            close();
+        }, { once: true });
+        continueButton.addEventListener("click", close, { once: true });
+        window.addEventListener("resize", () => syncGameChoiceOptionLabels(select));
+    });
 }
 
 function getSelectedViewKey() {
@@ -1294,10 +1380,11 @@ function handleResize() {
 }
 
 window.addEventListener("resize", handleResize);
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", async () => {
     handleResize();
     setupSelectors();
-    preloadAllEvents().then(() => {
-        renderCurrentView();
-    });
+    await loadOwnLang();
+    await showInitialGameChoiceIfNeeded();
+    await preloadAllEvents();
+    renderCurrentView();
 });

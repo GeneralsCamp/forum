@@ -138,6 +138,10 @@ function parseBuildings(text, normalize) {
         const key = normalize(candidate);
         if (!key) return;
         map[key] ??= {};
+        map[key].candidates ??= [];
+        if (!map[key].candidates.some(entry => entry.url === url)) {
+            map[key].candidates.push({ url, path: url.slice(BASE.length) });
+        }
         map[key].placedUrl ??= url;
     }
 

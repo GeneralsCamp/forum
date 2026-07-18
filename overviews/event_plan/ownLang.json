@@ -1,0 +1,170 @@
+{
+  "en": {
+    "ui": {
+      "game_choice_title": "Choose game",
+      "game_choice_text": "EM (computer) and E4K (mobile) games may use different data. Choose your game.",
+      "continue": "Continue"
+    }
+  },
+  "ar": {
+    "ui": {
+      "game_choice_title": "اختر اللعبة",
+      "game_choice_text": "قد تستخدم ألعاب EM (الكمبيوتر) وE4K (الجوال) بيانات مختلفة. اختر لعبتك.",
+      "continue": "متابعة"
+    }
+  },
+  "es": {
+    "ui": {
+      "game_choice_title": "Elegir juego",
+      "game_choice_text": "Los juegos EM (ordenador) y E4K (móvil) pueden usar datos diferentes. Elige tu juego.",
+      "continue": "Continuar"
+    }
+  },
+  "bg": {
+    "ui": {
+      "game_choice_title": "Изберете игра",
+      "game_choice_text": "Игрите EM (компютър) и E4K (мобилна) може да използват различни данни. Изберете вашата игра.",
+      "continue": "Продължи"
+    }
+  },
+  "pt": {
+    "ui": {
+      "game_choice_title": "Escolher jogo",
+      "game_choice_text": "Os jogos EM (computador) e E4K (mobile) podem usar dados diferentes. Escolha seu jogo.",
+      "continue": "Continuar"
+    }
+  },
+  "cs": {
+    "ui": {
+      "game_choice_title": "Vyberte hru",
+      "game_choice_text": "Hry EM (počítač) a E4K (mobil) mohou používat odlišná data. Vyberte svou hru.",
+      "continue": "Pokračovat"
+    }
+  },
+  "de": {
+    "ui": {
+      "game_choice_title": "Spiel auswählen",
+      "game_choice_text": "EM- (Computer) und E4K-Spiele (Mobilgerät) können unterschiedliche Daten verwenden. Wähle dein Spiel.",
+      "continue": "Fortfahren"
+    }
+  },
+  "da": {
+    "ui": {
+      "game_choice_title": "Vælg spil",
+      "game_choice_text": "EM-spil (computer) og E4K-spil (mobil) kan bruge forskellige data. Vælg dit spil.",
+      "continue": "Fortsæt"
+    }
+  },
+  "fi": {
+    "ui": {
+      "game_choice_title": "Valitse peli",
+      "game_choice_text": "EM- (tietokone) ja E4K-pelit (mobiili) voivat käyttää eri tietoja. Valitse pelisi.",
+      "continue": "Jatka"
+    }
+  },
+  "fr": {
+    "ui": {
+      "game_choice_title": "Choisir le jeu",
+      "game_choice_text": "Les jeux EM (ordinateur) et E4K (mobile) peuvent utiliser des données différentes. Choisissez votre jeu.",
+      "continue": "Continuer"
+    }
+  },
+  "el": {
+    "ui": {
+      "game_choice_title": "Επιλογή παιχνιδιού",
+      "game_choice_text": "Τα παιχνίδια EM (υπολογιστής) και E4K (κινητό) ενδέχεται να χρησιμοποιούν διαφορετικά δεδομένα. Επιλέξτε το παιχνίδι σας.",
+      "continue": "Συνέχεια"
+    }
+  },
+  "hu": {
+    "ui": {
+      "game_choice_title": "Játék kiválasztása",
+      "game_choice_text": "Az EM (számítógépes) és az E4K (mobilos) játékok eltérő adatokat használhatnak. Válaszd ki a játékodat.",
+      "continue": "Folytatás"
+    }
+  },
+  "it": {
+    "ui": {
+      "game_choice_title": "Scegli gioco",
+      "game_choice_text": "I giochi EM (computer) ed E4K (mobile) possono usare dati diversi. Scegli il tuo gioco.",
+      "continue": "Continua"
+    }
+  },
+  "ja": {
+    "ui": {
+      "game_choice_title": "ゲームを選択",
+      "game_choice_text": "EM（コンピューター）とE4K（モバイル）のゲームでは異なるデータが使用される場合があります。ゲームを選択してください。",
+      "continue": "続行"
+    }
+  },
+  "ko": {
+    "ui": {
+      "game_choice_title": "게임 선택",
+      "game_choice_text": "EM(컴퓨터) 및 E4K(모바일) 게임은 서로 다른 데이터를 사용할 수 있습니다. 게임을 선택하세요.",
+      "continue": "계속"
+    }
+  },
+  "lt": {
+    "ui": {
+      "game_choice_title": "Pasirinkite žaidimą",
+      "game_choice_text": "EM (kompiuterio) ir E4K (mobilieji) žaidimai gali naudoti skirtingus duomenis. Pasirinkite savo žaidimą.",
+      "continue": "Tęsti"
+    }
+  },
+  "nl": {
+    "ui": {
+      "game_choice_title": "Kies spel",
+      "game_choice_text": "EM- (computer) en E4K-spellen (mobiel) kunnen verschillende gegevens gebruiken. Kies je spel.",
+      "continue": "Doorgaan"
+    }
+  },
+  "no": {
+    "ui": {
+      "game_choice_title": "Velg spill",
+      "game_choice_text": "EM- (datamaskin) og E4K-spill (mobil) kan bruke forskjellige data. Velg spillet ditt.",
+      "continue": "Fortsett"
+    }
+  },
+  "pl": {
+    "ui": {
+      "game_choice_title": "Wybierz grę",
+      "game_choice_text": "Gry EM (komputer) i E4K (mobile) mogą używać różnych danych. Wybierz swoją grę.",
+      "continue": "Kontynuuj"
+    }
+  },
+  "ro": {
+    "ui": {
+      "game_choice_title": "Alege jocul",
+      "game_choice_text": "Jocurile EM (computer) și E4K (mobil) pot folosi date diferite. Alege jocul tău.",
+      "continue": "Continuă"
+    }
+  },
+  "ru": {
+    "ui": {
+      "game_choice_title": "Выберите игру",
+      "game_choice_text": "Игры EM (компьютер) и E4K (мобильная версия) могут использовать разные данные. Выберите свою игру.",
+      "continue": "Продолжить"
+    }
+  },
+  "sv": {
+    "ui": {
+      "game_choice_title": "Välj spel",
+      "game_choice_text": "EM- (dator) och E4K-spel (mobil) kan använda olika data. Välj ditt spel.",
+      "continue": "Fortsätt"
+    }
+  },
+  "sk": {
+    "ui": {
+      "game_choice_title": "Vyberte hru",
+      "game_choice_text": "Hry EM (počítač) a E4K (mobil) môžu používať odlišné údaje. Vyberte svoju hru.",
+      "continue": "Pokračovať"
+    }
+  },
+  "tr": {
+    "ui": {
+      "game_choice_title": "Oyun seç",
+      "game_choice_text": "EM (bilgisayar) ve E4K (mobil) oyunları farklı veriler kullanabilir. Oyununu seç.",
+      "continue": "Devam et"
+    }
+  }
+}
