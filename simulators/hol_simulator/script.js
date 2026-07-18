@@ -3,6 +3,7 @@ import { createLoader } from "../../overviews/shared/LoadingService.mjs";
 import { getInitialLanguage } from "../../overviews/shared/LanguageService.mjs";
 import { normalizeName } from "../../overviews/shared/RewardResolver.mjs";
 import { saveSimulatorData, loadSimulatorData } from "../../overviews/shared/GameSettings.mjs";
+import { handleAutoHeight, initAutoHeight } from "../../overviews/shared/ResizeService.mjs";
 
 const SIM_NAME = "hol";
 const ROW_REQUIREMENTS = [0, 40, 80, 90, 90];
@@ -23,6 +24,14 @@ let ownLang = {};
 let maxPoints = 550;
 let currentState = "attack";
 let selectedSlot = null;
+
+const AUTO_HEIGHT_OPTIONS = {
+    contentSelector: "#content",
+    subtractSelectors: [".hol-filter-bar"],
+    extraOffset: 0
+};
+
+initAutoHeight(AUTO_HEIGHT_OPTIONS);
 
 function escapeHtml(value) {
     return String(value ?? "")
@@ -125,7 +134,7 @@ function renderTierRow(stateName, tier, skills) {
     return `
         <div class="row position-relative row-real ${spacing}" id="${stateName}-row-${tier}" data-tier="${tier}">
             <div class="col-2 text-center">
-                <div class="square"><div class="big-number">${tier}</div></div>
+                <div class="square"><div class="big-number"><span>${tier}</span></div></div>
             </div>
             <div class="col-10 skill-row-slots">
                 ${skills.map(renderSkillSlot).join("")}
@@ -210,8 +219,11 @@ function updatePointDisplays() {
     const attackLabel = gameText("dialog_legendTemple_tooltipAttack", "Attack");
     const defenseLabel = gameText("dialog_legendTemple_tooltipDefence", "Defense");
     const pointsTemplate = gameText("points", "{0} points");
-    attackOption.textContent = `${attackLabel} · ${applyValue(pointsTemplate, states.attack.totalPoints)}`;
-    defenseOption.textContent = `${defenseLabel} · ${applyValue(pointsTemplate, states.defense.totalPoints)}`;
+    const compact = window.matchMedia("(max-width: 768px)").matches;
+    const attackPoints = compact ? formatNumber(states.attack.totalPoints) : applyValue(pointsTemplate, states.attack.totalPoints);
+    const defensePoints = compact ? formatNumber(states.defense.totalPoints) : applyValue(pointsTemplate, states.defense.totalPoints);
+    attackOption.textContent = `${attackLabel} · ${attackPoints}`;
+    defenseOption.textContent = `${defenseLabel} · ${defensePoints}`;
     document.getElementById("total-allocated-points").textContent = getTotalAllocatedPoints();
 }
 
@@ -336,6 +348,7 @@ function updateDetails(element) {
     const name = element?.dataset?.skillName || "";
     const description = element?.dataset?.skillDescription || "";
     document.getElementById("details-text").textContent = description ? `${name}: ${description}` : name;
+    requestAnimationFrame(() => handleAutoHeight(AUTO_HEIGHT_OPTIONS));
 }
 
 function allocatePoint(slot, increment) {
@@ -406,6 +419,7 @@ function resetAll() {
 function bindControls() {
     document.getElementById("tree-select").addEventListener("change", (event) => switchView(event.target.value));
     document.getElementById("reset-button").addEventListener("click", resetAll);
+    window.addEventListener("resize", updatePointDisplays);
 
     document.querySelector(".scrollable-content").addEventListener("click", (event) => {
         const special = event.target.closest(".center-slot");
@@ -448,6 +462,7 @@ function applyLanguageToStaticUi() {
     document.getElementById("reset-button-label").textContent = reset;
     document.getElementById("reset-button").setAttribute("aria-label", reset);
     document.documentElement.lang = currentLanguage;
+    requestAnimationFrame(() => handleAutoHeight(AUTO_HEIGHT_OPTIONS));
 }
 
 async function init() {

@@ -40,9 +40,14 @@
                     <span id="reset-button-label">Reset</span>
                 </button>
             </div>
-            <div class="col-12">
+            <div class="col-12 total-points-col">
                 <div class="text-center total-points-display">
                     <span><span id="total-allocated-label">Total Allocated Points:</span> <span id="total-allocated-points">0</span></span>
+                </div>
+            </div>
+            <div class="col-12 description-col">
+                <div class="details d-flex justify-content-center">
+                    <span id="details-text">Click on a skill to view its description.</span>
                 </div>
             </div>
         </div>
@@ -50,10 +55,6 @@
         <main id="content" class="container-fluid">
             <section class="hol-shell">
                 <div class="hol-board">
-                    <div class="details d-flex justify-content-center">
-                        <span id="details-text">Click on a skill to view its description.</span>
-                    </div>
-
                     <div class="accordion scrollable-content" aria-live="polite">
                         <div id="attack-container" class="containerr active"></div>
                         <div id="defense-container" class="containerr"></div>

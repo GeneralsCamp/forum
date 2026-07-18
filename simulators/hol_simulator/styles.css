@@ -11,18 +11,21 @@
 }
 
 body {
-    height: 100%;
+    height: auto;
     min-height: 100vh;
-    overflow: hidden;
+    overflow-x: clip;
+    overflow-y: visible;
     font-family: Arial, sans-serif;
 }
 
 html {
-    height: 100%;
-    overflow: hidden;
+    min-height: 100%;
+    overflow-x: clip;
+    overflow-y: visible;
 }
 
 .hol-simulator-page {
+    height: 100vh;
     height: 100dvh;
     min-height: 0;
     max-width: 1180px;
@@ -44,7 +47,37 @@ html {
     margin-right: 0 !important;
     margin-bottom: 0 !important;
     margin-left: 0 !important;
-    padding-bottom: 0;
+    padding: 8px 0 0;
+    position: relative;
+    z-index: 30;
+}
+
+.hol-filter-bar > .col-6:first-child {
+    padding-left: 10px;
+}
+
+.hol-filter-bar > .col-6:nth-child(2) {
+    padding-right: 10px;
+}
+
+.total-points-col,
+.description-col {
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+}
+
+.description-col {
+    width: 100%;
+    margin-right: 0;
+    margin-left: 0;
+}
+
+.description-col .details {
+    width: 100%;
+    min-width: 100%;
+    max-width: none;
+    margin-right: 0;
+    margin-left: 0;
 }
 
 .hol-shell {
@@ -83,6 +116,7 @@ html {
     align-items: center;
     justify-content: center;
     background: var(--hol-head);
+    border-top: 1px solid var(--hol-line-strong);
     border-bottom: 1px solid var(--hol-line-strong);
     font-size: 13px;
     font-weight: 600;
@@ -358,14 +392,35 @@ html {
     width: 62px;
     height: 62px;
     margin-top: 0;
+    padding: 4px;
+    border: 0;
+    background: #daa20b;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.38);
     clip-path: polygon(14% 0, 86% 0, 100% 14%, 100% 86%, 86% 100%, 14% 100%, 0 86%, 0 14%);
 }
 
 .big-number {
+    width: 100%;
+    height: 100%;
+    padding: 3px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    background: #704a22;
     color: #493422;
     font-size: 25px;
     font-weight: 800;
     line-height: 1;
+    clip-path: polygon(18% 0, 82% 0, 100% 18%, 100% 82%, 82% 100%, 18% 100%, 0 82%, 0 18%);
+}
+
+.big-number > span {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    background: #f5ead7;
+    clip-path: polygon(18% 0, 82% 0, 100% 18%, 100% 82%, 82% 100%, 18% 100%, 0 82%, 0 18%);
 }
 
 .center-slot {
@@ -498,6 +553,14 @@ html {
         height: 31px;
     }
 
+    .slot .badge {
+        left: 3px;
+        width: calc(100% - 6px);
+        padding-right: 0;
+        padding-left: 0;
+        font-size: 10px;
+    }
+
     .square {
         width: 48px;
         height: 48px;
@@ -529,6 +592,10 @@ html {
     .slot img {
         width: 27px;
         height: 27px;
+    }
+
+    .slot .badge {
+        font-size: 9px;
     }
 
     .square {
