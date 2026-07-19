@@ -118,8 +118,14 @@ function buildCreateJsStubs() {
   return { Bitmap, Container, MovieClip, LoadQueue };
 }
 
-function drawNode(ctx, node) {
+function isDynamicColorLayer(node) {
+  const className = String(node?.constructor?.__fname || "");
+  return /banner[_-]?colors/i.test(className) || /_Cc[0-9a-f]/i.test(className);
+}
+
+function drawNode(ctx, node, { skipDynamicColorLayers = false } = {}) {
   if (!node) return;
+  if (skipDynamicColorLayers && isDynamicColorLayer(node)) return;
 
   const x = Number(node.x || 0);
   const y = Number(node.y || 0);
@@ -141,7 +147,7 @@ function drawNode(ctx, node) {
   }
 
   if (Array.isArray(node.children)) {
-    node.children.forEach(child => drawNode(ctx, child));
+    node.children.forEach(child => drawNode(ctx, child, { skipDynamicColorLayers }));
   }
 
   ctx.restore();
@@ -196,8 +202,9 @@ function expandBounds(bounds, x, y) {
   bounds.maxY = Math.max(bounds.maxY, y);
 }
 
-function measureNodeBounds(node, parentMatrix, bounds) {
+function measureNodeBounds(node, parentMatrix, bounds, { skipDynamicColorLayers = false } = {}) {
   if (!node) return;
+  if (skipDynamicColorLayers && isDynamicColorLayer(node)) return;
   const matrix = multiplyMatrix(parentMatrix, getNodeMatrix(node));
 
   if (node.sourceRect && node.image) {
@@ -214,7 +221,12 @@ function measureNodeBounds(node, parentMatrix, bounds) {
   }
 
   if (Array.isArray(node.children)) {
-    node.children.forEach((child) => measureNodeBounds(child, matrix, bounds));
+    node.children.forEach((child) => measureNodeBounds(
+      child,
+      matrix,
+      bounds,
+      { skipDynamicColorLayers }
+    ));
   }
 }
 
@@ -354,16 +366,40 @@ export async function composeAssetToDataUrl({
   imageUrl,
   maxWidth = null,
   maxHeight = null,
-  padding = 0
+  padding = 0,
+  localizeSingleFrame = false,
+  skipDynamicColorLayers = false
 }) {
-  const cacheKey = `${jsonUrl}|${jsUrl}|${imageUrl}|${maxWidth}|${maxHeight}|${padding}`;
+  const cacheKey = `${jsonUrl}|${jsUrl}|${imageUrl}|${maxWidth}|${maxHeight}|${padding}|${localizeSingleFrame}|${skipDynamicColorLayers}`;
   if (composedCache.has(cacheKey)) return composedCache.get(cacheKey);
 
   const task = (async () => {
     const jsonText = await fetchText(jsonUrl);
     const atlasJson = parseJsonSafely(jsonText);
     if (isSingleFrameAtlas(atlasJson)) {
-      return imageUrl;
+      if (!localizeSingleFrame) return imageUrl;
+      const singleImage = await loadImage(imageUrl);
+      const naturalWidth = Math.max(1, singleImage.naturalWidth || singleImage.width || 1);
+      const naturalHeight = Math.max(1, singleImage.naturalHeight || singleImage.height || 1);
+      const fitWidth = Number.isFinite(maxWidth) && Number(maxWidth) > 0
+        ? Math.max(1, Number(maxWidth) - padding)
+        : Number.POSITIVE_INFINITY;
+      const fitHeight = Number.isFinite(maxHeight) && Number(maxHeight) > 0
+        ? Math.max(1, Number(maxHeight) - padding)
+        : Number.POSITIVE_INFINITY;
+      const scale = Math.min(1, fitWidth / naturalWidth, fitHeight / naturalHeight);
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.max(1, Math.round(naturalWidth * scale + padding));
+      canvas.height = Math.max(1, Math.round(naturalHeight * scale + padding));
+      const context = canvas.getContext("2d");
+      context.drawImage(
+        singleImage,
+        padding / 2,
+        padding / 2,
+        naturalWidth * scale,
+        naturalHeight * scale
+      );
+      return canvas.toDataURL("image/png");
     }
 
     const [jsCode, atlasImage] = await Promise.all([
@@ -379,7 +415,7 @@ export async function composeAssetToDataUrl({
       maxX: Number.NEGATIVE_INFINITY,
       maxY: Number.NEGATIVE_INFINITY
     };
-    measureNodeBounds(root, createIdentityMatrix(), measured);
+    measureNodeBounds(root, createIdentityMatrix(), measured, { skipDynamicColorLayers });
 
     const hasMeasuredBounds = Number.isFinite(measured.minX) && Number.isFinite(measured.maxX);
     const fallbackW = Number(atlasJson?.sourceSize?.w || 600);
@@ -405,7 +441,7 @@ export async function composeAssetToDataUrl({
     ctx.translate(padding / 2, padding / 2);
     ctx.scale(scale, scale);
     ctx.translate(offsetX, offsetY);
-    drawNode(ctx, root);
+    drawNode(ctx, root, { skipDynamicColorLayers });
     ctx.restore();
 
     return canvas.toDataURL("image/png");

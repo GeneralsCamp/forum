@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GGE Castle Layout Editor</title>
+  <link rel="icon" href="../../img_base/favicon.ico">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="../../overviews/shared/modal.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="castle-app">
+    <section class="board-shell" aria-label="Castle layout">
+      <canvas id="castleCanvas"></canvas>
+    </section>
+    <div id="buildingsModal" class="gf-modal castle-buildings-modal" aria-hidden="true">
+      <div class="gf-modal-backdrop" data-close-modal="1"></div>
+      <div class="gf-modal-card castle-buildings-modal-card" role="dialog" aria-modal="true"
+        aria-labelledby="buildingsModalTitle">
+        <div class="gf-modal-head">
+          <h2 id="buildingsModalTitle" class="gf-modal-title">Buildings</h2>
+          <button id="sidebarClose" class="gf-modal-close" type="button" aria-label="Close buildings">
+            <i class="bi bi-x-lg" aria-hidden="true"></i>
+          </button>
+        </div>
+        <div class="gf-modal-body castle-buildings-modal-body">
+          <div class="building-filter-bar">
+            <input id="buildingSearch" class="form-control custom-input" type="search"
+              placeholder="Search by name" aria-label="Search by name">
+            <div class="dropdown size-filter-dropdown">
+              <button id="sizeDropdown" class="btn btn-custom dropdown-toggle w-100" type="button"
+                aria-expanded="false" aria-controls="sizeFilters">Size Filter</button>
+              <ul id="sizeFilters" class="dropdown-menu dropdown-menu-custom w-100" hidden></ul>
+            </div>
+            <select id="expansionSelect" class="form-select custom-select text-center" aria-label="Castle expansions">
+              <option value="0">Expansions: 0</option>
+              <option value="1">Expansions: 1</option>
+              <option value="2">Expansions: 2</option>
+              <option value="3">Expansions: 3</option>
+            </select>
+          </div>
+          <div id="buildingList" class="building-list" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="savesModal" class="gf-modal castle-saves-modal" aria-hidden="true">
+      <div class="gf-modal-backdrop" data-close-modal="1"></div>
+      <div class="gf-modal-card castle-saves-modal-card" role="dialog" aria-modal="true"
+        aria-labelledby="savesModalTitle">
+        <div class="gf-modal-head">
+          <h2 id="savesModalTitle" class="gf-modal-title">Save &amp; Load Layouts</h2>
+          <button class="gf-modal-close" type="button" aria-label="Close saves">
+            <i class="bi bi-x-lg" aria-hidden="true"></i>
+          </button>
+        </div>
+        <div class="gf-modal-body castle-saves-modal-body">
+          <div class="layout-save-bar">
+            <input id="layoutNameInput" class="form-control slot-name" type="text"
+              placeholder="Name your layout before saving" aria-label="Layout name">
+            <button id="saveLayoutButton" class="save-button" type="button">Save</button>
+          </div>
+          <div class="saved-layouts-head" aria-hidden="true">
+            <span>Name</span>
+            <span>Active</span>
+            <span>Update</span>
+            <span>Delete</span>
+          </div>
+          <div id="savedLayoutsList" class="saved-layouts-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="bottom-buttons-container d-flex justify-content-center align-items-center" aria-label="Editor navigation">
+      <button id="sidebarToggle" class="btn" type="button" aria-label="Open buildings">
+        <i class="bi bi-hammer fs-1" aria-hidden="true"></i>
+      </button>
+      <div class="vr mx-2" aria-hidden="true"></div>
+      <button id="savesToggle" class="btn" type="button" aria-label="Open saves">
+        <i class="bi bi-save fs-1" aria-hidden="true"></i>
+      </button>
+      <div class="vr mx-2" aria-hidden="true"></div>
+      <button id="overviewToggle" class="btn" type="button" aria-label="Switch to overview">
+        <i class="bi bi-grid-3x3-gap fs-1" aria-hidden="true"></i>
+      </button>
+      <div class="vr mx-2" aria-hidden="true"></div>
+      <button class="btn" type="button" onclick="window.location.href='../../index.html';" aria-label="Home">
+        <i class="bi bi-house fs-1" aria-hidden="true"></i>
+      </button>
+    </nav>
+  </main>
+  <script type="module" src="script.js"></script>
+</body>
+</html>
