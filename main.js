@@ -340,6 +340,34 @@ function formatManifestDate(value) {
     }
 }
 
+function renderVersionInfoPlaceholders() {
+    const list = document.getElementById("versionInfoList");
+    const status = document.getElementById("versionInfoStatus");
+    const updated = document.getElementById("versionInfoUpdated");
+    if (!list || !status || !updated) return;
+
+    status.hidden = true;
+    updated.hidden = true;
+    list.replaceChildren(...buildVersionRows({}).map((row) => {
+        const item = document.createElement("div");
+        item.className = "version-info-row";
+
+        const identity = document.createElement("div");
+        identity.className = "version-info-identity";
+        identity.innerHTML = `<i class="bi ${row.icon}" aria-hidden="true"></i><span>${row.label}</span>`;
+
+        const valueWrap = document.createElement("div");
+        valueWrap.className = "version-info-value-wrap";
+        const value = document.createElement("code");
+        value.className = "version-info-value version-info-placeholder";
+        value.textContent = "####";
+        valueWrap.appendChild(value);
+
+        item.append(identity, valueWrap);
+        return item;
+    }));
+}
+
 function renderVersionInfo(manifest) {
     const list = document.getElementById("versionInfoList");
     const status = document.getElementById("versionInfoStatus");
@@ -417,6 +445,7 @@ function setupVersionInfoModal() {
 
     openBtn.addEventListener("click", () => {
         versionModal.open();
+        if (!versionManifest) renderVersionInfoPlaceholders();
         void loadVersions();
     });
 

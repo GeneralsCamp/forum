@@ -754,6 +754,11 @@ html {
     overflow-wrap: anywhere;
 }
 
+.version-info-placeholder {
+    color: rgba(247, 237, 215, 0.62);
+    letter-spacing: 0.08em;
+}
+
 .version-info-value.unavailable {
     color: #d99572;
     font-family: inherit;
