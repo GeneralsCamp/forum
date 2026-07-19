@@ -55,6 +55,7 @@ function applyPageTranslations() {
 
 const canvas = document.getElementById("castleCanvas");
 const ctx = canvas.getContext("2d");
+const CAN_HOVER_BUILDINGS = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 const board = document.querySelector(".board-shell");
 const list = document.getElementById("buildingList");
 const search = document.getElementById("buildingSearch");
@@ -105,7 +106,8 @@ const state = {
   images: new Map(),
   terrainImage: null,
   pointer: null,
-  drag: null
+  drag: null,
+  hoveredBuilding: null
 };
 
 const MIN_CAMERA_SCALE = .45;
@@ -184,6 +186,7 @@ const TERRAIN_FRAMES = {
 };
 
 const terrainImage = new Image();
+let outerGrassPattern = null;
 const terrainReady = new Promise(resolve => {
   terrainImage.onload = () => {
     state.terrainImage = terrainImage;
@@ -603,17 +606,18 @@ function draw() {
   if (state.mode !== "overview") {
     state.buildings.forEach(drawBuildingGroundShadow);
   }
-  // Draw the placement footprint first. The building artwork must stay above
-  // this translucent overlay; otherwise the diagonal edges cut through tall
-  // sprites and make their orientation look incorrect while dragging.
-  if (state.drag?.building) drawDragPreview(state.drag.building);
   state.buildings
     .filter(building => building !== state.drag?.building)
     .sort(compareBuildingDepth)
     .forEach(drawBuilding);
-  if (state.drag?.building) drawBuilding(state.drag.building);
+  if (state.drag?.building) {
+    drawDragPreview(state.drag.building);
+    drawBuilding(state.drag.building);
+  }
   if (state.mode === "overview") {
-    state.buildings.forEach(drawOverviewBuildingLabel);
+    state.buildings
+      .filter(building => building !== state.drag?.building)
+      .forEach(drawOverviewBuildingLabel);
   }
 }
 
@@ -671,37 +675,32 @@ function getRegionScreenBounds(region) {
 
 function drawOuterGrass(rect) {
   const frame = TERRAIN_FRAMES.outerGrass;
-  const sourceScale = state.tileW * state.scale / 80;
-  const tileWidth = frame.sw * sourceScale;
-  const tileHeight = frame.sh * sourceScale;
-  if (tileWidth < 1 || tileHeight < 1) return;
+  if (!outerGrassPattern) {
+    const grassTile = document.createElement("canvas");
+    grassTile.width = frame.sw;
+    grassTile.height = frame.sh;
+    const grassContext = grassTile.getContext("2d");
+    grassContext.drawImage(
+      state.terrainImage,
+      frame.sx, frame.sy, frame.sw, frame.sh,
+      0, 0, frame.sw, frame.sh
+    );
+    grassContext.fillStyle = "rgba(10, 16, 6, .36)";
+    grassContext.fillRect(0, 0, frame.sw, frame.sh);
+    outerGrassPattern = ctx.createPattern(grassTile, "repeat");
+  }
+  if (!outerGrassPattern) return;
 
-  const firstRow = Math.floor(-state.panY / tileHeight) - 1;
-  const lastRow = Math.ceil((rect.height - state.panY) / tileHeight) + 1;
+  const sourceScale = state.tileW * state.scale / 80;
+  outerGrassPattern.setTransform(new DOMMatrix([
+    sourceScale, 0,
+    0, sourceScale,
+    state.panX, state.panY
+  ]));
 
   ctx.save();
   ctx.imageSmoothingEnabled = true;
-  for (let row = firstRow; row <= lastRow; row++) {
-    const rowOffset = Math.abs(row % 2) * tileWidth / 2;
-    const firstColumn = Math.floor((-state.panX - rowOffset) / tileWidth) - 1;
-    const lastColumn = Math.ceil((rect.width - state.panX - rowOffset) / tileWidth) + 1;
-    const y = state.panY + row * tileHeight;
-
-    for (let column = firstColumn; column <= lastColumn; column++) {
-      const x = state.panX + rowOffset + column * tileWidth;
-      const mirrored = Math.abs(row + column) % 2 === 1;
-      ctx.save();
-      ctx.translate(x + tileWidth / 2, y);
-      if (mirrored) ctx.scale(-1, 1);
-      ctx.drawImage(
-        state.terrainImage,
-        frame.sx, frame.sy, frame.sw, frame.sh,
-        -tileWidth / 2, 0, tileWidth + 1, tileHeight + 1
-      );
-      ctx.restore();
-    }
-  }
-  ctx.fillStyle = "rgba(10, 16, 6, .48)";
+  ctx.fillStyle = outerGrassPattern;
   ctx.fillRect(0, 0, rect.width, rect.height);
   ctx.restore();
 }
@@ -914,18 +913,36 @@ function fitOverviewLabel(value, maxWidth) {
 function drawBuilding(building) {
   const { corners, center, bottom, image, width, height } = getBuildingGeometry(building);
   if (state.mode === "overview") {
-    ctx.save();
-    ctx.globalAlpha = .68;
-    ctx.fillStyle = categoryColor(building.groundType);
-    ctx.beginPath(); ctx.moveTo(corners[0].x, corners[0].y);
-    corners.slice(1).forEach(point => ctx.lineTo(point.x, point.y)); ctx.closePath();
-    ctx.fill();
-    ctx.restore();
-    ctx.strokeStyle = "rgba(247, 234, 213, .82)"; ctx.lineWidth = 1; ctx.stroke();
+    const isDragged = state.drag?.building === building;
+    if (!isDragged) {
+      ctx.save();
+      ctx.globalAlpha = .68;
+      ctx.fillStyle = categoryColor(building.groundType);
+      ctx.beginPath(); ctx.moveTo(corners[0].x, corners[0].y);
+      corners.slice(1).forEach(point => ctx.lineTo(point.x, point.y)); ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+      ctx.strokeStyle = "rgba(247, 234, 213, .82)"; ctx.lineWidth = 1; ctx.stroke();
+    }
+    if (isDragged && image?.complete && image.naturalWidth) {
+      ctx.save();
+      ctx.globalAlpha = .62;
+      if (isBuildingAssetFlipped(building)) {
+        ctx.translate(center.x, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(image, -width / 2, bottom.y - height, width, height);
+      } else {
+        ctx.drawImage(image, center.x - width / 2, bottom.y - height, width, height);
+      }
+      ctx.restore();
+    }
     return;
   }
   if (image?.complete && image.naturalWidth) {
     ctx.save();
+    if (CAN_HOVER_BUILDINGS && state.hoveredBuilding === building && !state.drag) {
+      ctx.filter = "drop-shadow(0 0 5px rgba(255, 255, 255, .68)) drop-shadow(0 0 10px rgba(255, 255, 255, .36))";
+    }
     if (isBuildingAssetFlipped(building)) {
       ctx.translate(center.x, 0);
       ctx.scale(-1, 1);
@@ -1062,8 +1079,15 @@ function drawDragPreview(building) {
   ctx.save();
   ctx.beginPath(); ctx.moveTo(corners[0].x, corners[0].y);
   corners.slice(1).forEach(point => ctx.lineTo(point.x, point.y)); ctx.closePath();
-  ctx.fillStyle = valid ? "rgba(93, 202, 116, .24)" : "rgba(218, 76, 61, .28)";
-  ctx.strokeStyle = valid ? "#72e38a" : "#ff7365"; ctx.lineWidth = 2; ctx.fill(); ctx.stroke();
+  ctx.fillStyle = valid
+    ? "rgba(47, 255, 46, .58)"
+    : "rgba(255, 54, 35, .62)";
+  ctx.strokeStyle = valid
+    ? "#58ff55"
+    : "#ff493b";
+  ctx.lineWidth = 2;
+  ctx.fill();
+  ctx.stroke();
   ctx.restore();
 }
 
@@ -1751,6 +1775,7 @@ function handleTouchPointerEnd(event) {
 
 canvas.addEventListener("pointerdown", event => {
   if (event.pointerType === "touch") {
+    state.hoveredBuilding = null;
     handleTouchPointerDown(event);
     return;
   }
@@ -1779,7 +1804,16 @@ canvas.addEventListener("pointermove", event => {
     handleTouchPointerMove(event);
     return;
   }
-  if (!state.drag || !state.pointer) return;
+  if (!state.drag || !state.pointer) {
+    const hoveredBuilding = CAN_HOVER_BUILDINGS && state.mode === "normal"
+      ? buildingAt(event.clientX, event.clientY)
+      : null;
+    if (hoveredBuilding !== state.hoveredBuilding) {
+      state.hoveredBuilding = hoveredBuilding;
+      draw();
+    }
+    return;
+  }
   if (state.drag.pan) {
     state.panX = state.pointer.panX + event.clientX - state.pointer.x;
     state.panY = state.pointer.panY + event.clientY - state.pointer.y;
@@ -1801,11 +1835,21 @@ canvas.addEventListener("pointerup", event => {
     const b = state.drag.building;
     if (!validPosition(b, b.x, b.y)) { b.x = state.drag.x; b.y = state.drag.y; }
   }
-  state.pointer = null; state.drag = null; canvas.classList.remove("is-dragging"); canvas.releasePointerCapture?.(event.pointerId); draw();
+  state.pointer = null;
+  state.drag = null;
+  state.hoveredBuilding = CAN_HOVER_BUILDINGS && state.mode === "normal"
+    ? buildingAt(event.clientX, event.clientY)
+    : null;
+  canvas.classList.remove("is-dragging"); canvas.releasePointerCapture?.(event.pointerId); draw();
   if (cameraWasMoved) flushCameraSave();
 });
 canvas.addEventListener("pointercancel", event => {
   if (event.pointerType === "touch") handleTouchPointerEnd(event);
+});
+canvas.addEventListener("pointerleave", event => {
+  if (event.pointerType === "touch" || state.drag || !state.hoveredBuilding) return;
+  state.hoveredBuilding = null;
+  draw();
 });
 
 canvas.addEventListener("contextmenu", event => {
@@ -1815,6 +1859,7 @@ canvas.addEventListener("contextmenu", event => {
   if (!building) return;
   const index = state.buildings.indexOf(building);
   if (index !== -1) state.buildings.splice(index, 1);
+  if (state.hoveredBuilding === building) state.hoveredBuilding = null;
   draw();
 });
 
@@ -1827,6 +1872,7 @@ canvas.addEventListener("dblclick", event => {
 
 overviewToggle.addEventListener("click", () => {
   state.mode = state.mode === "normal" ? "overview" : "normal";
+  state.hoveredBuilding = null;
   syncViewToggle();
   saveCameraState();
   draw();
