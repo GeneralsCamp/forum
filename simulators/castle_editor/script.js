@@ -147,7 +147,7 @@ const LEGACY_CATALOG_WOD_IDS = new Set([
   "1619", "1865", "1940", "226", "158", "1845", "1788", "1819",
   "3136", "3111", "3059", "3039", "63", "1422", "589", "253",
   "556", "196", "3137", "3072", "3097", "257", "256", "834",
-  "2988", "150", "4254", "4396", "4259", "2910", "4263", "2987",
+  "2988", "150", "4254", "4396", "4259", "2910", "4263", "3675", "2987",
   "2989", "2992", "225", "3116", "1880", "495", "493", "224",
   "490", "2827", "2359", "2843", "3187", "3110", "3162", "3191"
 ]);
@@ -1111,7 +1111,6 @@ function validCustomDecorationWodIds(ids) {
   buildings.forEach(item => {
     const wodId = String(item.wodID ?? "");
     if (!requested.has(wodId) || valid.has(wodId)) return;
-    if (String(item.buildingGroundType || "").toUpperCase() !== "DECO") return;
     if (!buildingImage(imageMaps, item, itemLevel(item))) return;
     valid.add(wodId);
   });
@@ -1124,14 +1123,16 @@ function rebuildBuildingCatalog() {
   const { buildings, imageMaps, lang } = catalogSourceContext;
   const customIds = new Set(customDecorationWodIds());
   const wantedIds = new Set([...LEGACY_CATALOG_WOD_IDS, ...customIds]);
+  const maxDecoDistrict = buildings
+    .filter(item => String(item.name || "").toLowerCase() === "decodistrict2x2")
+    .sort((a, b) => itemLevel(b) - itemLevel(a))
+    .find(item => buildingImage(imageMaps, item, itemLevel(item)));
+  if (maxDecoDistrict?.wodID != null) wantedIds.add(String(maxDecoDistrict.wodID));
   const byWodId = new Map();
 
   buildings.forEach(item => {
     const wodId = String(item.wodID ?? "");
     if (!wantedIds.has(wodId) || byWodId.has(wodId)) return;
-    if (customIds.has(wodId)
-      && !LEGACY_CATALOG_WOD_IDS.has(wodId)
-      && String(item.buildingGroundType || "").toUpperCase() !== "DECO") return;
     const image = buildingImage(imageMaps, item, itemLevel(item));
     if (!image) return;
     byWodId.set(wodId, {
