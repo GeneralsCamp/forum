@@ -1,12 +1,47 @@
 import { saveCalculatorData, loadCalculatorData } from "../../overviews/shared/GameSettings.mjs";
+import { getLangVersion, loadLanguage } from "../../overviews/shared/DataService.mjs";
+import { initCalculatorI18n } from "../shared/CalculatorI18n.mjs";
+
+const { language, t, formatNumber } = await initCalculatorI18n();
+
+let gameLang = {};
+try {
+    gameLang = await loadLanguage(language, await getLangVersion());
+} catch (error) {
+    console.warn("Food production in-game translations could not be loaded:", error);
+}
+
+function getGameText(key, fallback) {
+    return gameLang[key] || fallback;
+}
+
+function applyGameTranslations() {
+    document.querySelectorAll("[data-game-lang]").forEach((element) => {
+        element.textContent = getGameText(element.dataset.gameLang, element.textContent.trim());
+    });
+
+    document.querySelectorAll("select option").forEach((option) => {
+        const text = option.textContent.trim();
+        const levelMatch = /^Level\s+(\d+)$/.exec(text);
+        if (levelMatch) {
+            option.textContent = t("level", { value: levelMatch[1] });
+        } else if (text === "None") {
+            option.textContent = getGameText("generals_abilities_desc_attack_1018", "None");
+        } else if (text === "Inactive") {
+            option.textContent = getGameText("status_inactive", "Inactive");
+        } else if (text === "Disabled") {
+            option.textContent = getGameText("dialog_shapeshifter_hardcoreMode_state_disabled", "Disabled");
+        } else if (text === "No") {
+            option.textContent = getGameText("commons_no", "No");
+        } else if (text === "Yes") {
+            option.textContent = getGameText("commons_yes", "Yes");
+        } else if (text === "Lower") {
+            option.textContent = t("lower_title");
+        }
+    });
+}
 
 const CALC_NAME = "food_production";
-
-// --- EVENT LISTENERS (INITIALIZATION) ---
-window.addEventListener('DOMContentLoaded', (event) => {
-    LocationModify();
-    Calculate();
-});
 
 // --- GLOBAL DOM REFERENCES ---
 const selectLocation = document.getElementById("location")
@@ -154,59 +189,46 @@ function CalculateBonuses() {
     }
 
     // --- Output ---
-    document.getElementById("percentBonus").innerHTML = Math.round(percentBonus * 100).toLocaleString() + "%";
-    document.getElementById("constBonus").innerHTML = constBonus.toLocaleString() + "&nbsp;/ hour";
+    document.getElementById("percentBonus").textContent = `${formatNumber(Math.round(percentBonus * 100))}%`;
+    document.getElementById("constBonus").textContent = `${formatNumber(constBonus)} /h`;
 }
 
 // --- BUILDING GENERATION ---
 function generateBuildingCards() {
     const buildingsData = [
-        { id: "b1", name: "Conservatory", type: "conservatory", imgSrc: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/RelicFarm/RelicFarmGreen_Building_Level3/RelicFarmGreen_Building_Level3--1573728046260.webp" },
-        { id: "b2", name: "Conservatory", type: "conservatory", imgSrc: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/RelicFarm/RelicFarmGreen_Building_Level3/RelicFarmGreen_Building_Level3--1573728046260.webp" },
-        { id: "b3", name: "Greenhouse", type: "greenhouse", imgSrc: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/RelicFarm/RelicFarm_Building_Level3/RelicFarm_Building_Level3--1573584429307.webp" },
-        { id: "b4", name: "Greenhouse", type: "greenhouse", imgSrc: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/RelicFarm/RelicFarm_Building_Level3/RelicFarm_Building_Level3--1573584429307.webp" },
-        { id: "b5", name: "Granary", type: "granary", imgSrc: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/LegendFarm/LegendFarm_Building_Level9/LegendFarm_Building_Level9--1573584429307.webp" },
-        { id: "b6", name: "Granary", type: "granary", imgSrc: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/LegendFarm/LegendFarm_Building_Level9/LegendFarm_Building_Level9--1573584429307.webp" },
-        { id: "b7", name: "Granary", type: "granary", imgSrc: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/LegendFarm/LegendFarm_Building_Level9/LegendFarm_Building_Level9--1573584429307.webp" },
-        { id: "b8", name: "Granary", type: "granary", imgSrc: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/LegendFarm/LegendFarm_Building_Level9/LegendFarm_Building_Level9--1573584429307.webp" },
-        { id: "b9", name: "Granary", type: "granary", imgSrc: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/LegendFarm/LegendFarm_Building_Level9/LegendFarm_Building_Level9--1573584429307.webp" },
-        { id: "b10", name: "Granary", type: "granary", imgSrc: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/LegendFarm/LegendFarm_Building_Level9/LegendFarm_Building_Level9--1573584429307.webp" },
-        { id: "b11", name: "Granary", type: "granary", imgSrc: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/LegendFarm/LegendFarm_Building_Level9/LegendFarm_Building_Level9--1573584429307.webp" },
-        { id: "b12", name: "Granary", type: "granary", imgSrc: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/LegendFarm/LegendFarm_Building_Level9/LegendFarm_Building_Level9--1573584429307.webp" },
+        { id: "b1", name: getGameText("RelicFarmGreen_name", "Relic conservatory"), type: "conservatory", imgSrc: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/RelicFarm/RelicFarmGreen_Building_Level3/RelicFarmGreen_Building_Level3--1573728046260.webp" },
+        { id: "b2", name: getGameText("RelicFarmGreen_name", "Relic conservatory"), type: "conservatory", imgSrc: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/RelicFarm/RelicFarmGreen_Building_Level3/RelicFarmGreen_Building_Level3--1573728046260.webp" },
+        { id: "b3", name: getGameText("RelicFarm_name", "Relic greenhouse"), type: "greenhouse", imgSrc: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/RelicFarm/RelicFarm_Building_Level3/RelicFarm_Building_Level3--1573584429307.webp" },
+        { id: "b4", name: getGameText("RelicFarm_name", "Relic greenhouse"), type: "greenhouse", imgSrc: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/RelicFarm/RelicFarm_Building_Level3/RelicFarm_Building_Level3--1573584429307.webp" },
+        ...Array.from({ length: 8 }, (_, index) => ({ id: `b${index + 5}`, name: getGameText("legendFarm_name", "Granary"), type: "granary", imgSrc: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Building/LegendFarm/LegendFarm_Building_Level9/LegendFarm_Building_Level9--1573584429307.webp" })),
     ];
 
     const container = document.getElementById("buildings-container");
     container.innerHTML = "";
 
     buildingsData.forEach((building, index) => {
-        let buildingCard;
-        if (window.innerWidth <= 768) {
-            buildingCard = `
-            <div class="col-12" id="card-${building.id}" data-prodIndex="${index + 1}">
+        const buildingCard = `
+            <div class="col-12 col-xl-6 building-card-column" id="card-${building.id}" data-prodIndex="${index + 1}">
                 <div class="box" data-index="${index}">
                     <div class="box-icon">
-                        <img src="${building.imgSrc}" class="img-fluid">
+                        <img src="${building.imgSrc}" class="img-fluid" alt="">
                     </div>
                     <div class="box-content">
                         <h2>
-                            ${building.name}
+                            <span class="building-name">${building.name}</span>
                             <select class="fixSelector levelSelector" name="${building.id}lvl" id="${building.id}lvl" onchange="updateBuilding('${building.id}')">
                                 ${generateLevelOptions(building.type)}
                             </select>
                         </h2>
-                        <div class="row box-text">
-                            <div class="col-12">
-                                <p>Productivity: <span id="${building.id}prod">-</span></p>
-                            </div>
-                            <div class="col-12 mb-1">
-                                <p>Production: <span id="${building.id}lbl">-</span></p>
-                            </div>
-                            <div class="col-12 mb-1">
+                        <div class="box-text">
+                            <p class="building-productivity">${getGameText("dialog_listOverview_tabResourceProductivity_tt", "Productivity")}: <span id="${building.id}prod">-</span></p>
+                            <p class="building-production">${getGameText("dialog_researchTower_blueprintsCategory4_title", "Production")}: <span id="${building.id}lbl">-</span></p>
+                            <div class="building-control building-primary-item">
                                 <select class="fixSelector" name="${building.id}elem" id="${building.id}elem" onchange="updateBuilding('${building.id}')">
                                     ${generatePrimaryOptions()}
                                 </select>
                             </div>
-                            <div class="col-12">
+                            <div class="building-control building-relic-item">
                                 <select class="fixSelector" name="${building.id}relicElem" id="${building.id}relicElem" onchange="updateBuilding('${building.id}')">
                                     ${generateRelicOptions()}
                                 </select>
@@ -216,43 +238,6 @@ function generateBuildingCards() {
                 </div>
             </div>
         `;
-        } else {
-            buildingCard = `
-            <div class="col-md-6 col-lg-6 col-sm-12" id="card-${building.id}" data-prodIndex="${index + 1}">
-                <div class="box" data-index="${index}">
-                    <div class="box-icon">
-                        <img src="${building.imgSrc}" class="img-fluid">
-                    </div>
-                    <div class="box-content">
-                        <h2>
-                            ${building.name}
-                            <select class="fixSelector levelSelector" name="${building.id}lvl" id="${building.id}lvl" onchange="updateBuilding('${building.id}')">
-                                ${generateLevelOptions(building.type)}
-                            </select>
-                        </h2>
-                        <div class="row box-text">
-                            <div class="col-6 mb-2">
-                                <p>Productivity: <span id="${building.id}prod">-</span></p>
-                            </div>
-                            <div class="col-6 mb-2">
-                                <select class="fixSelector" name="${building.id}elem" id="${building.id}elem" onchange="updateBuilding('${building.id}')">
-                                    ${generatePrimaryOptions()}
-                                </select>
-                            </div>
-                            <div class="col-6">
-                                <p>Production: <span id="${building.id}lbl">-</span></p>
-                            </div>
-                            <div class="col-6">
-                                <select class="fixSelector" name="${building.id}relicElem" id="${building.id}relicElem" onchange="updateBuilding('${building.id}')">
-                                    ${generateRelicOptions()}
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-        }
         container.innerHTML += buildingCard;
     });
     buildingsData.forEach((building) => updateBuilding(building.id));
@@ -385,7 +370,7 @@ function generateLevelOptions(buildingType) {
             { value: 720, label: "Level 40" }
         ];
     }
-    return levels.map(level => `<option value="${level.value}">${level.label}</option>`).join("");
+    return levels.map((level, index) => `<option value="${level.value}">${index === 0 ? getGameText("generals_abilities_desc_attack_1018", "None") : t("level", { value: index })}</option>`).join("");
 }
 
 function generatePrimaryOptions() {
@@ -423,7 +408,9 @@ function generatePrimaryOptions() {
         { value: 427, label: "Base 44" },
         { value: 439, label: "Base 45" },
     ];
-    return options.map(option => `<option value="${option.value}">${option.label}</option>`).join("");
+    const basic = getGameText("toolType_basic", "Basic");
+    const none = getGameText("generals_abilities_desc_attack_1018", "None");
+    return options.map((option, index) => `<option value="${option.value}">${index === 0 ? none : `${basic} ${index + 14}`}</option>`).join("");
 }
 
 function generateRelicOptions() {
@@ -470,7 +457,13 @@ function generateRelicOptions() {
         { value: 3900, label: "Premium 29" },
         { value: 4000, label: "Premium 30" }
     ];
-    return options.map(option => `<option value="${option.value}">${option.label}</option>`).join("");
+    return options.map((option, index) => {
+        const relicName = getGameText("relicequip_dialog_category_relic", "Relic");
+        const premiumName = getGameText("premium", "Premium");
+        if (index === 0) return `<option value="${option.value}">${getGameText("generals_abilities_desc_attack_1018", "None")}</option>`;
+        if (index <= 10) return `<option value="${option.value}">${relicName} ${index}</option>`;
+        return `<option value="${option.value}">${premiumName} ${index - 10}</option>`;
+    }).join("");
 }
 
 // --- PRODUCTION CALCULATIONS ---
@@ -561,7 +554,7 @@ function updateBuildings() {
 
         const labelElement = document.getElementById(`${building.id}lbl`);
         if (labelElement) {
-            labelElement.textContent = `${production.toLocaleString()}/h`;
+            labelElement.textContent = `${formatNumber(production)}/h`;
         }
 
         return total + production;
@@ -592,8 +585,7 @@ function updateBuildings() {
 
     let totalProductionWithBonuses = totalProduction + cast + decobonus + tcibonus + res1;
 
-    document.getElementById("finalProduction").innerHTML =
-        `<span class="result-label">TOTAL FOOD PRODUCTION:</span><span class="result-value">${totalProductionWithBonuses.toLocaleString()} / hour</span>`;
+    document.getElementById("finalProduction").textContent = `${formatNumber(totalProductionWithBonuses)} /h`;
 }
 
 export function updateBuilding() {
@@ -622,12 +614,20 @@ function loadFromCache() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+function initializeCalculator() {
+    applyGameTranslations();
+    generateBuildingCards();
     loadFromCache();
+    LocationModify();
+    Calculate();
     document.querySelectorAll('input, select').forEach(input => {
         input.addEventListener('change', saveToCache);
     });
-});
+}
 
 // --- INITIALIZATION ---
-generateBuildingCards();
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializeCalculator, { once: true });
+} else {
+    initializeCalculator();
+}

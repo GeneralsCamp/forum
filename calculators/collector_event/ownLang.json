@@ -1,0 +1,314 @@
+{
+  "en": {
+    "ui": {
+      "page_title": "Collector Event Calculator",
+      "input": "Input",
+      "target_points": "How many points do you want at the end?",
+      "target_points_placeholder": "e.g. 80,000",
+      "days_remaining": "Days remaining until the event ends",
+      "days_remaining_placeholder": "e.g. 4 days",
+      "results": "Results",
+      "result_empty": "Enter the target points and remaining days.",
+      "result_value": "You need {value} points now to reach the target at the end."
+    }
+  },
+  "ar": {
+    "ui": {
+      "page_title": "حاسبة حدث التجميع",
+      "input": "المدخلات",
+      "target_points": "كم عدد النقاط التي تريدها عند نهاية الحدث؟",
+      "target_points_placeholder": "مثال: 80,000",
+      "days_remaining": "الأيام المتبقية حتى نهاية الحدث",
+      "days_remaining_placeholder": "مثال: 4 أيام",
+      "results": "النتائج",
+      "result_empty": "أدخل عدد النقاط المستهدف والأيام المتبقية.",
+      "result_value": "تحتاج الآن إلى {value} نقطة للوصول إلى الهدف عند نهاية الحدث."
+    }
+  },
+  "es": {
+    "ui": {
+      "page_title": "Calculadora del evento de colección",
+      "input": "Datos",
+      "target_points": "¿Cuántos puntos quieres tener al final?",
+      "target_points_placeholder": "p. ej., 80.000",
+      "days_remaining": "Días restantes hasta que termine el evento",
+      "days_remaining_placeholder": "p. ej., 4 días",
+      "results": "Resultados",
+      "result_empty": "Introduce los puntos objetivo y los días restantes.",
+      "result_value": "Ahora necesitas {value} puntos para alcanzar el objetivo al final."
+    }
+  },
+  "bg": {
+    "ui": {
+      "page_title": "Калкулатор за събитието за събиране",
+      "input": "Входни данни",
+      "target_points": "Колко точки искате да имате в края?",
+      "target_points_placeholder": "напр. 80 000",
+      "days_remaining": "Оставащи дни до края на събитието",
+      "days_remaining_placeholder": "напр. 4 дни",
+      "results": "Резултати",
+      "result_empty": "Въведете целевите точки и оставащите дни.",
+      "result_value": "Сега са ви нужни {value} точки, за да достигнете целта в края."
+    }
+  },
+  "pt": {
+    "ui": {
+      "page_title": "Calculadora do evento de coleção",
+      "input": "Dados",
+      "target_points": "Quantos pontos pretende ter no final?",
+      "target_points_placeholder": "ex.: 80 000",
+      "days_remaining": "Dias restantes até ao fim do evento",
+      "days_remaining_placeholder": "ex.: 4 dias",
+      "results": "Resultados",
+      "result_empty": "Introduza os pontos pretendidos e os dias restantes.",
+      "result_value": "Precisa agora de {value} pontos para atingir o objetivo no final."
+    }
+  },
+  "cs": {
+    "ui": {
+      "page_title": "Kalkulačka sběratelské události",
+      "input": "Vstup",
+      "target_points": "Kolik bodů chcete mít na konci?",
+      "target_points_placeholder": "např. 80 000",
+      "days_remaining": "Počet dní zbývajících do konce události",
+      "days_remaining_placeholder": "např. 4 dny",
+      "results": "Výsledky",
+      "result_empty": "Zadejte cílový počet bodů a zbývající dny.",
+      "result_value": "Nyní potřebujete {value} bodů, abyste na konci dosáhli cíle."
+    }
+  },
+  "de": {
+    "ui": {
+      "page_title": "Sammelevent-Rechner",
+      "input": "Eingabe",
+      "target_points": "Wie viele Punkte möchtest du am Ende haben?",
+      "target_points_placeholder": "z. B. 80.000",
+      "days_remaining": "Verbleibende Tage bis zum Ende des Events",
+      "days_remaining_placeholder": "z. B. 4 Tage",
+      "results": "Ergebnisse",
+      "result_empty": "Gib die Zielpunktzahl und die verbleibenden Tage ein.",
+      "result_value": "Du benötigst jetzt {value} Punkte, um das Ziel am Ende zu erreichen."
+    }
+  },
+  "da": {
+    "ui": {
+      "page_title": "Beregner til samlerbegivenhed",
+      "input": "Input",
+      "target_points": "Hvor mange point vil du have til sidst?",
+      "target_points_placeholder": "f.eks. 80.000",
+      "days_remaining": "Dage tilbage, indtil begivenheden slutter",
+      "days_remaining_placeholder": "f.eks. 4 dage",
+      "results": "Resultater",
+      "result_empty": "Indtast målpoint og resterende dage.",
+      "result_value": "Du skal bruge {value} point nu for at nå målet til sidst."
+    }
+  },
+  "fi": {
+    "ui": {
+      "page_title": "Keräilytapahtuman laskuri",
+      "input": "Syöttötiedot",
+      "target_points": "Kuinka monta pistettä haluat tapahtuman loppuun mennessä?",
+      "target_points_placeholder": "esim. 80 000",
+      "days_remaining": "Tapahtuman päättymiseen jäljellä olevat päivät",
+      "days_remaining_placeholder": "esim. 4 päivää",
+      "results": "Tulokset",
+      "result_empty": "Anna tavoitepisteet ja jäljellä olevat päivät.",
+      "result_value": "Tarvitset nyt {value} pistettä saavuttaaksesi tavoitteen tapahtuman loppuun mennessä."
+    }
+  },
+  "fr": {
+    "ui": {
+      "page_title": "Calculateur d'événement de collecte",
+      "input": "Données",
+      "target_points": "Combien de points souhaitez-vous avoir à la fin ?",
+      "target_points_placeholder": "p. ex. 80 000",
+      "days_remaining": "Jours restants avant la fin de l'événement",
+      "days_remaining_placeholder": "p. ex. 4 jours",
+      "results": "Résultats",
+      "result_empty": "Saisissez le nombre de points visé et les jours restants.",
+      "result_value": "Il vous faut maintenant {value} points pour atteindre l'objectif à la fin."
+    }
+  },
+  "el": {
+    "ui": {
+      "page_title": "Υπολογιστής εκδήλωσης συλλογής",
+      "input": "Στοιχεία",
+      "target_points": "Πόσους πόντους θέλετε να έχετε στο τέλος;",
+      "target_points_placeholder": "π.χ. 80.000",
+      "days_remaining": "Ημέρες που απομένουν μέχρι το τέλος της εκδήλωσης",
+      "days_remaining_placeholder": "π.χ. 4 ημέρες",
+      "results": "Αποτελέσματα",
+      "result_empty": "Εισαγάγετε τους πόντους-στόχο και τις ημέρες που απομένουν.",
+      "result_value": "Χρειάζεστε τώρα {value} πόντους για να φτάσετε τον στόχο στο τέλος."
+    }
+  },
+  "hu": {
+    "ui": {
+      "page_title": "Gyűjtőesemény-kalkulátor",
+      "input": "Adatok",
+      "target_points": "Hány pontot szeretnél az esemény végére?",
+      "target_points_placeholder": "pl. 80 000",
+      "days_remaining": "Az esemény végéig hátralévő napok",
+      "days_remaining_placeholder": "pl. 4 nap",
+      "results": "Eredmények",
+      "result_empty": "Add meg a célpontszámot és a hátralévő napokat.",
+      "result_value": "Most {value} pontra van szükséged, hogy az esemény végére elérd a célt."
+    }
+  },
+  "it": {
+    "ui": {
+      "page_title": "Calcolatore dell'evento di raccolta",
+      "input": "Dati",
+      "target_points": "Quanti punti vuoi avere alla fine?",
+      "target_points_placeholder": "es. 80.000",
+      "days_remaining": "Giorni rimanenti alla fine dell'evento",
+      "days_remaining_placeholder": "es. 4 giorni",
+      "results": "Risultati",
+      "result_empty": "Inserisci i punti obiettivo e i giorni rimanenti.",
+      "result_value": "Ora ti servono {value} punti per raggiungere l'obiettivo alla fine."
+    }
+  },
+  "ja": {
+    "ui": {
+      "page_title": "収集イベント計算機",
+      "input": "入力",
+      "target_points": "終了時に何ポイント獲得したいですか？",
+      "target_points_placeholder": "例：80,000",
+      "days_remaining": "イベント終了までの残り日数",
+      "days_remaining_placeholder": "例：4日",
+      "results": "結果",
+      "result_empty": "目標ポイントと残り日数を入力してください。",
+      "result_value": "終了時に目標を達成するには、現在 {value} ポイント必要です。"
+    }
+  },
+  "ko": {
+    "ui": {
+      "page_title": "수집 이벤트 계산기",
+      "input": "입력",
+      "target_points": "이벤트 종료 시 몇 포인트를 원하시나요?",
+      "target_points_placeholder": "예: 80,000",
+      "days_remaining": "이벤트 종료까지 남은 일수",
+      "days_remaining_placeholder": "예: 4일",
+      "results": "결과",
+      "result_empty": "목표 포인트와 남은 일수를 입력하세요.",
+      "result_value": "종료 시 목표를 달성하려면 현재 {value}포인트가 필요합니다."
+    }
+  },
+  "lt": {
+    "ui": {
+      "page_title": "Rinkimo įvykio skaičiuoklė",
+      "input": "Duomenys",
+      "target_points": "Kiek taškų norite turėti pabaigoje?",
+      "target_points_placeholder": "pvz., 80 000",
+      "days_remaining": "Iki įvykio pabaigos likusios dienos",
+      "days_remaining_placeholder": "pvz., 4 dienos",
+      "results": "Rezultatai",
+      "result_empty": "Įveskite norimą taškų skaičių ir likusias dienas.",
+      "result_value": "Dabar reikia {value} taškų, kad pabaigoje pasiektumėte tikslą."
+    }
+  },
+  "nl": {
+    "ui": {
+      "page_title": "Verzamelevenement-calculator",
+      "input": "Invoer",
+      "target_points": "Hoeveel punten wil je aan het einde hebben?",
+      "target_points_placeholder": "bijv. 80.000",
+      "days_remaining": "Resterende dagen tot het einde van het evenement",
+      "days_remaining_placeholder": "bijv. 4 dagen",
+      "results": "Resultaten",
+      "result_empty": "Vul het gewenste puntenaantal en de resterende dagen in.",
+      "result_value": "Je hebt nu {value} punten nodig om het doel aan het einde te bereiken."
+    }
+  },
+  "no": {
+    "ui": {
+      "page_title": "Kalkulator for samlerarrangement",
+      "input": "Inndata",
+      "target_points": "Hvor mange poeng vil du ha til slutt?",
+      "target_points_placeholder": "f.eks. 80 000",
+      "days_remaining": "Dager igjen til arrangementet avsluttes",
+      "days_remaining_placeholder": "f.eks. 4 dager",
+      "results": "Resultater",
+      "result_empty": "Angi målpoeng og gjenværende dager.",
+      "result_value": "Du trenger {value} poeng nå for å nå målet til slutt."
+    }
+  },
+  "pl": {
+    "ui": {
+      "page_title": "Kalkulator wydarzenia kolekcjonerskiego",
+      "input": "Dane",
+      "target_points": "Ile punktów chcesz mieć na koniec?",
+      "target_points_placeholder": "np. 80 000",
+      "days_remaining": "Dni pozostałe do końca wydarzenia",
+      "days_remaining_placeholder": "np. 4 dni",
+      "results": "Wyniki",
+      "result_empty": "Wprowadź docelową liczbę punktów i pozostałe dni.",
+      "result_value": "Potrzebujesz teraz {value} punktów, aby osiągnąć cel na koniec."
+    }
+  },
+  "ro": {
+    "ui": {
+      "page_title": "Calculator pentru evenimentul de colectare",
+      "input": "Date",
+      "target_points": "Câte puncte vrei să ai la final?",
+      "target_points_placeholder": "de ex. 80.000",
+      "days_remaining": "Zile rămase până la încheierea evenimentului",
+      "days_remaining_placeholder": "de ex. 4 zile",
+      "results": "Rezultate",
+      "result_empty": "Introdu punctajul țintă și zilele rămase.",
+      "result_value": "Ai nevoie acum de {value} puncte pentru a atinge ținta la final."
+    }
+  },
+  "ru": {
+    "ui": {
+      "page_title": "Калькулятор события по сбору",
+      "input": "Исходные данные",
+      "target_points": "Сколько очков вы хотите иметь к концу?",
+      "target_points_placeholder": "например, 80 000",
+      "days_remaining": "Дней до окончания события",
+      "days_remaining_placeholder": "например, 4 дня",
+      "results": "Результаты",
+      "result_empty": "Укажите целевое количество очков и оставшиеся дни.",
+      "result_value": "Сейчас вам нужно {value} очков, чтобы достичь цели к концу события."
+    }
+  },
+  "sv": {
+    "ui": {
+      "page_title": "Kalkylator för samlarevenemang",
+      "input": "Inmatning",
+      "target_points": "Hur många poäng vill du ha i slutet?",
+      "target_points_placeholder": "t.ex. 80 000",
+      "days_remaining": "Dagar kvar tills evenemanget slutar",
+      "days_remaining_placeholder": "t.ex. 4 dagar",
+      "results": "Resultat",
+      "result_empty": "Ange målpoäng och återstående dagar.",
+      "result_value": "Du behöver {value} poäng nu för att nå målet i slutet."
+    }
+  },
+  "sk": {
+    "ui": {
+      "page_title": "Kalkulačka zberateľskej udalosti",
+      "input": "Vstup",
+      "target_points": "Koľko bodov chcete mať na konci?",
+      "target_points_placeholder": "napr. 80 000",
+      "days_remaining": "Počet dní zostávajúcich do konca udalosti",
+      "days_remaining_placeholder": "napr. 4 dni",
+      "results": "Výsledky",
+      "result_empty": "Zadajte cieľový počet bodov a zostávajúce dni.",
+      "result_value": "Teraz potrebujete {value} bodov, aby ste na konci dosiahli cieľ."
+    }
+  },
+  "tr": {
+    "ui": {
+      "page_title": "Toplama etkinliği hesaplayıcısı",
+      "input": "Giriş",
+      "target_points": "Etkinliğin sonunda kaç puan istiyorsunuz?",
+      "target_points_placeholder": "örn. 80.000",
+      "days_remaining": "Etkinliğin bitmesine kalan gün",
+      "days_remaining_placeholder": "örn. 4 gün",
+      "results": "Sonuçlar",
+      "result_empty": "Hedef puanı ve kalan gün sayısını girin.",
+      "result_value": "Etkinliğin sonunda hedefe ulaşmak için şu anda {value} puana ihtiyacınız var."
+    }
+  }
+}

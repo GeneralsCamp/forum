@@ -19,11 +19,10 @@
 
 <body>
     <div class="container">
+        <h1 data-i18n="page_title">ATTACK SPEED & DETECTION</h1>
         <div class="row">
-            <div class="col-12">
-                <h1>ATTACK SPEED & DETECTION</h1>
-            </div>
-            <a href="https://generalscamp.github.io/forum/" class="home-icon-link">
+            <a href="https://generalscamp.github.io/forum/" class="home-icon-link" aria-label="Back to homepage"
+                data-i18n-aria-label="back_home">
                 <div class="home-icon">
                     <i class="bi bi-house"></i>
                 </div>
@@ -32,45 +31,45 @@
             <!-- ATTACK PARAMETERS -->
             <div class="col-12 collapse-area mb-2">
                 <h2 class="collapse-header">
-                    <span class="header-title">ATTACK PARAMETERS</span>
+                    <span class="header-title" data-i18n="attack_parameters">ATTACK PARAMETERS</span>
                 </h2>
                 <div class="collapse show">
                     <form class="calculator-bonuses-form row" onsubmit="return false;">
                         <div class="col-md-4 col-6 form-group">
-                            <label for="distance">Attack Distance</label>
+                            <label for="distance" data-i18n="attack_distance">Attack Distance</label>
                             <input type="number" id="distance" step="0.1" value="100" class="form-control">
                         </div>
                         <div class="col-md-4 col-6 form-group">
-                            <label for="speed">Attack Speed</label>
+                            <label for="speed" data-i18n="attack_speed">Attack Speed</label>
                             <input type="number" id="speed" step="1" value="1" class="form-control"
-                                placeholder="slowest unit">
+                                placeholder="slowest unit" data-i18n-placeholder="slowest_unit">
                         </div>
                         <div class="col-md-4 col-6  form-group">
-                            <label for="distance">Army Size</label>
+                            <label for="attackerUnits" data-i18n="army_size">Army Size</label>
                             <input type="number" id="attackerUnits" value="1" min="1" max="100000" class="form-control"
                                 step="1">
                         </div>
                         <div class="col-md-4 col-6 form-group">
-                            <label for="playerLevel">Player Level</label>
+                            <label for="playerLevel" data-i18n="player_level">Player Level</label>
                             <input type="number" id="playerLevel" step="1" value="25" min="0" max="1020"
                                 class="form-control">
                         </div>
                         <div class="col-md-4 col-6 form-group">
-                            <label for="stableLevel">Stable Level</label>
+                            <label for="stableLevel" data-i18n="stable_level">Stable Level</label>
                             <select id="stableLevel" class="form-select">
-                                <option value="0">No Stable</option>
-                                <option value="1">Level1 (0%)</option>
-                                <option value="2">Level2 (60%)</option>
-                                <option value="3">Level3 (120%)</option>
+                                <option value="0" data-i18n="no_stable">No Stable</option>
+                                <option value="1" data-i18n="level" data-i18n-value="1" data-i18n-suffix=" (0%)">Level 1 (0%)</option>
+                                <option value="2" data-i18n="level" data-i18n-value="2" data-i18n-suffix=" (60%)">Level 2 (60%)</option>
+                                <option value="3" data-i18n="level" data-i18n-value="3" data-i18n-suffix=" (120%)">Level 3 (120%)</option>
                             </select>
                         </div>
                         <div class="col-md-4 col-6 form-group">
-                            <label for="horseType">Horse Type</label>
+                            <label for="horseType" data-i18n="horse_type">Horse Type</label>
                             <select id="horseType" class="form-select">
-                                <option value="none">None</option>
-                                <option value="Horse">Horse</option>
-                                <option value="Warhorse">Warhorse</option>
-                                <option value="Courser">Courser</option>
+                                <option value="none" data-i18n="none">None</option>
+                                <option value="Horse" data-i18n="horse">Horse</option>
+                                <option value="Warhorse" data-i18n="warhorse">Warhorse</option>
+                                <option value="Courser" data-i18n="courser">Courser</option>
                             </select>
                         </div>
                     </form>
@@ -80,24 +79,24 @@
             <!-- BONUSES -->
             <div class="col-12 collapse-area mb-2">
                 <h2 class="collapse-header">
-                    <span class="header-title">BONUSES</span>
+                    <span class="header-title" data-i18n="bonuses">BONUSES</span>
                 </h2>
                 <div class="collapse show">
                     <form class="calculator-bonuses-form row" onsubmit="return false;">
                         <div class="col-md-4 col-6 form-group">
-                            <label for="commander">Commander</label>
+                            <label for="commander" data-i18n="commander">Commander</label>
                             <input type="number" id="commander" step="1" max="100" min="0" placeholder="max.100%"
                                 class="form-control">
                         </div>
                         <div class="col-md-4 col-6 form-group">
-                            <label for="glory">Glory Title</label>
+                            <label for="glory" data-i18n="glory_title">Glory Title</label>
                             <select id="glory" class="form-select">
                                 <option value="0">0%</option>
                                 <option value="20">20%</option>
                             </select>
                         </div>
                         <div class="col-md-4 col-6 form-group">
-                            <label for="vip">VIP Level</label>
+                            <label for="vip" data-i18n="vip_level">VIP Level</label>
                             <select id="vip" class="form-select">
                                 <option value="0" selected>0%</option>
                                 <option value="20">20%</option>
@@ -109,7 +108,7 @@
                             </select>
                         </div>
                         <div class="col-md-4 col-6 form-group">
-                            <label for="global">Global Bonus</label>
+                            <label for="global" data-i18n="global_bonus">Global Bonus</label>
                             <select id="global" class="form-select">
                                 <option value="0" selected>0%</option>
                                 <option value="10">10%</option>
@@ -117,7 +116,7 @@
                             </select>
                         </div>
                         <div class="col-md-4 col-6 form-group">
-                            <label for="hol">HoL Bonus</label>
+                            <label for="hol" data-i18n="hol_bonus">HoL Bonus</label>
                             <select id="hol" class="form-select">
                                 <option value="0" selected>0%</option>
                                 <option value="10">10%</option>
@@ -131,10 +130,10 @@
                             </select>
                         </div>
                         <div class="col-md-4 col-6 form-group">
-                            <label for="war">Alliance War Bonus</label>
+                            <label for="war" data-i18n="alliance_war_bonus">Alliance War Bonus</label>
                             <select id="war" class="form-select">
-                                <option value="0" selected>No</option>
-                                <option value="100">Yes</option>
+                                <option value="0" selected data-i18n="no">No</option>
+                                <option value="100" data-i18n="yes">Yes</option>
                             </select>
                         </div>
                     </form>
@@ -144,22 +143,22 @@
             <!-- TROOP DETECTION CALCULATOR -->
             <div class="col-12 collapse-area mb-2">
                 <h2 class="collapse-header">
-                    <span class="header-title">OTHER PARAMETERS</span>
+                    <span class="header-title" data-i18n="other_parameters">OTHER PARAMETERS</span>
                 </h2>
                 <div class="collapse show">
                     <form class="calculator-bonuses-form row" onsubmit="return false;">
                         <div class="col-md-4 col-6 form-group">
-                            <label for="speed">Late Detection</label>
+                            <label for="laterDetection" data-i18n="late_detection">Late Detection</label>
                             <input type="number" id="laterDetection" min="0" max="2100" step="1" class="form-control"
                                 placeholder="max.210%">
                         </div>
                         <div class="col-md-4 col-6 form-group">
-                            <label for="playerLevel">Early Detection</label>
+                            <label for="earlyDetection" data-i18n="early_detection">Early Detection</label>
                             <input type="number" id="earlyDetection" min="0" max="2100" step="1" class="form-control"
                                 placeholder="max.210%">
                         </div>
                         <div class="col-md-4 col-6 form-group">
-                            <label for="sightBonus">Watch Tower Bonus</label>
+                            <label for="sightBonus" data-i18n="watchtower_bonus">Watch Tower Bonus</label>
                             <input type="number" id="sightBonus" step="1" max="100" min="0" class="form-control"
                                 placeholder="max.100%">
                         </div>
@@ -170,14 +169,14 @@
             <!-- RESULTS -->
             <div class="col-12 collapse-area result mb-2">
                 <h2 class="collapse-header">
-                    <span class="header-title">RESULTS</span>
+                    <span class="header-title" data-i18n="results">RESULTS</span>
                 </h2>
                 <div class="collapse show results">
-                    <p>Travel time: <span id="arrivalTime">00:00:00</span></p>
+                    <p><span class="result-label" data-i18n="travel_time">Travel time</span><span id="arrivalTime">00:00:00</span></p>
                     <hr>
-                    <p>Army detection after: <span id="detectionTimeAfter" class="alert-time">00:00:00</span></p>
+                    <p><span class="result-label" data-i18n="army_detection_after">Army detection after</span><span id="detectionTimeAfter" class="alert-time">00:00:00</span></p>
                     <hr>
-                    <p>Appear of the horn with: <span id="detectionTime" class="alert-time">00:00:00</span></p>
+                    <p><span class="result-label" data-i18n="horn_appears_with">Horn appears with</span><span id="detectionTime" class="alert-time">00:00:00</span></p>
 
                 </div>
             </div>

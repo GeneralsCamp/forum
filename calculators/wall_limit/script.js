@@ -1,4 +1,7 @@
 import { saveCalculatorData, loadCalculatorData } from "../../overviews/shared/GameSettings.mjs";
+import { initCalculatorI18n } from "../shared/CalculatorI18n.mjs";
+
+const { t, formatNumber } = await initCalculatorI18n();
 
 const CALC_NAME = "wall_limit";
 
@@ -41,9 +44,9 @@ function calculateDefenders() {
 
   totalDefenders += (totalDefenders * totalPercentageBonus / 100);
 
-  document.getElementById("total-percentage-bonus").innerHTML = totalPercentageBonus.toFixed(2) + " %";
-  document.getElementById("total-soldiers-bonus").innerHTML = totalSoldiersBonus.toFixed(0) + " units";
-  document.getElementById("total-defenders").innerHTML = totalDefenders.toFixed(0) + " units";
+  document.getElementById("total-percentage-bonus").textContent = `${formatNumber(totalPercentageBonus, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} %`;
+  document.getElementById("total-soldiers-bonus").textContent = t("unit_value", { value: formatNumber(Math.round(totalSoldiersBonus)) });
+  document.getElementById("total-defenders").textContent = t("unit_value", { value: formatNumber(Math.round(totalDefenders)) });
 }
 
 /*** SAVE TO LOCAL STORAGE ***/
@@ -69,11 +72,19 @@ function loadFromLocalStorage() {
 
 window.calculateDefenders = calculateDefenders;
 
-document.addEventListener('DOMContentLoaded', loadFromLocalStorage);
+function initializeCalculator() {
+  loadFromLocalStorage();
 
-document.querySelectorAll('input, select').forEach(input => {
-  input.addEventListener('change', () => {
-    saveToLocalStorage();
-    calculateDefenders();
+  document.querySelectorAll('input, select').forEach(input => {
+    input.addEventListener('change', () => {
+      saveToLocalStorage();
+      calculateDefenders();
+    });
   });
-});
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initializeCalculator, { once: true });
+} else {
+  initializeCalculator();
+}

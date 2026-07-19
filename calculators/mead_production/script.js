@@ -1,4 +1,39 @@
 import { saveCalculatorData, loadCalculatorData } from "../../overviews/shared/GameSettings.mjs";
+import { getLangVersion, loadLanguage } from "../../overviews/shared/DataService.mjs";
+import { initCalculatorI18n } from "../shared/CalculatorI18n.mjs";
+
+const { language, t, formatNumber } = await initCalculatorI18n();
+
+let gameLang = {};
+try {
+    gameLang = await loadLanguage(language, await getLangVersion());
+} catch (error) {
+    console.warn("Mead production in-game translations could not be loaded:", error);
+}
+
+function getGameText(key, fallback) {
+    return gameLang[key] || fallback;
+}
+
+function applyGameTranslations() {
+    document.querySelectorAll("[data-game-lang]").forEach((element) => {
+        element.textContent = getGameText(element.dataset.gameLang, element.textContent.trim());
+    });
+
+    document.querySelectorAll("select option").forEach((option) => {
+        const text = option.textContent.trim();
+        const levelMatch = /^Level\s+(\d+)$/.exec(text);
+        if (levelMatch) {
+            option.textContent = t("level", { value: levelMatch[1] });
+        } else if (text === "No") {
+            option.textContent = getGameText("commons_no", t("no"));
+        } else if (text === "Yes") {
+            option.textContent = getGameText("commons_yes", t("yes"));
+        }
+    });
+}
+
+applyGameTranslations();
 
 const CALC_NAME = "mead_production";
 
@@ -63,7 +98,7 @@ function calculate() {
     const ApercentBonuses = Aoverseer + Aresearch + Agardens + Acoat + AstormsTitle + Acast;
     const BaseHoneyProd = (apiaryLvl + AbaseElem) * apiaryAmount;
     const finalHoney = Math.floor(BaseHoneyProd * PObonus * (1 + ApercentBonuses) + ArelicElem * apiaryAmount + Deco);
-    honeyProdLabel.textContent = finalHoney.toLocaleString();
+    honeyProdLabel.textContent = formatNumber(finalHoney);
 
     /*** MEAD CALCULATION ***/
     const breweryLvl = parseInt(document.getElementById("breweryLvl").value) || 1;
@@ -84,19 +119,19 @@ function calculate() {
     let finalMeadValue = Math.floor((workload * baseMeadProd * PObonus * (1 + percentBonuses) + relicElem + decoMead) * 10) / 10;
 
     if (finalMeadValue % 1 === 0) {
-        meadLabel.textContent = finalMeadValue.toLocaleString();
+        meadLabel.textContent = formatNumber(finalMeadValue);
     } else {
-        meadLabel.textContent = finalMeadValue.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+        meadLabel.textContent = formatNumber(finalMeadValue, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
     }
 
-    foodLabel.textContent = Math.round(baseFood[breweryLvl - 1] * workload).toLocaleString();
-    honeyLabel.textContent = Math.round(baseHoney[breweryLvl - 1] * workload).toLocaleString();
+    foodLabel.textContent = formatNumber(Math.round(baseFood[breweryLvl - 1] * workload));
+    honeyLabel.textContent = formatNumber(Math.round(baseHoney[breweryLvl - 1] * workload));
 
     /*** UNITS HOLD CALCULATION ***/
     const dist = parseFloat(document.getElementById("dist").value) || 0;
     const consumption = 2 * (1 - dist);
     const unitsHold = Math.floor(finalMeadValue / consumption);
-    unitsHoldLabel.textContent = unitsHold.toLocaleString();
+    unitsHoldLabel.textContent = formatNumber(unitsHold);
 }
 
 /*** LOCAL STORAGE HANDLING ***/
@@ -116,10 +151,7 @@ function loadFromCache() {
     }
 }
 
-window.calculate = calculate;
-
-/*** INITIALIZATION ***/
-document.addEventListener('DOMContentLoaded', () => {
+function initializeCalculator() {
     loadFromCache();
     workload = parseInt(input.value || 0) / 100;
     calculate();
@@ -129,4 +161,13 @@ document.addEventListener('DOMContentLoaded', () => {
             saveToCache();
         });
     });
-});
+}
+
+window.calculate = calculate;
+
+/*** INITIALIZATION ***/
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializeCalculator, { once: true });
+} else {
+    initializeCalculator();
+}

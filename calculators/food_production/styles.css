@@ -82,8 +82,8 @@ body {
 }
 
 .calculator-bonuses-form .form-group {
-  min-height: 74px;
-  padding: 8px 10px;
+  min-height: 0;
+  padding: 7px 10px;
   border-right: 1px solid rgba(215, 155, 66, 0.34);
   border-bottom: 1px solid rgba(215, 155, 66, 0.34);
   background: #60412c;
@@ -95,7 +95,7 @@ body {
 
 .calculator-bonuses-form label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 4px;
   color: #e6d1af;
   font-size: 0.78rem;
   font-weight: 800;
@@ -157,7 +157,7 @@ body {
   min-height: 76px;
   flex-direction: column;
   justify-content: center;
-  gap: 6px;
+  gap: 3px;
   margin: 0;
   padding: 10px 12px;
   border-right: 1px solid rgba(215, 155, 66, 0.34);
@@ -190,7 +190,7 @@ body {
 
 .results .result-value {
   display: block;
-  margin-top: 6px;
+  margin-top: 0;
   color: #fff4de;
   font-size: 1.05rem;
   font-weight: 900;
@@ -212,11 +212,15 @@ body {
 }
 
 #buildings-container .box {
-  background: rgba(96, 65, 44, 0.94);
+  background: #60412c;
 }
 
 #buildings-container .box-content {
   background: transparent;
+}
+
+.building-card-column {
+  min-width: 0;
 }
 
 .buildings-header {
@@ -234,6 +238,8 @@ body {
 
 .box {
   display: flex;
+  min-width: 0;
+  height: calc(100% - 6px);
   align-items: stretch;
   border-radius: 8px;
   margin-bottom: 6px;
@@ -257,7 +263,7 @@ body {
   align-items: center;
   border-right: 1px solid rgba(215, 155, 66, 0.42);
   margin: 0;
-  background: linear-gradient(180deg, #4f3625, #3f2b1e);
+  background: #60412c;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
@@ -271,12 +277,14 @@ body {
 }
 
 .box-content {
+  display: flex;
   flex: 1;
+  min-width: 0;
   flex-direction: column;
   justify-content: space-between;
   position: relative;
   background-color: #60412c;
-  min-height: 100px;
+  min-height: 114px;
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
@@ -286,22 +294,85 @@ body {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 8px;
-  min-height: 34px;
+  height: 36px;
+  min-height: 36px;
   font-size: 16px;
   margin: 0;
   font-weight: 900;
   color: #f3c24a;
-  padding: 5px 8px;
-  background: #4f3625;
+  padding: 3px 8px;
+  background: #60412c;
   border-bottom: 1px solid rgba(215, 155, 66, 0.34);
   text-shadow: 0 2px 3px rgba(0, 0, 0, 0.32);
 }
 
+.building-name {
+  display: -webkit-box;
+  min-width: 0;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
 .box-text {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-areas:
+    "productivity production"
+    "primary relic";
+  grid-template-rows: 40px 38px;
+  align-items: stretch;
+  gap: 0;
+  flex: 1;
   margin: 0;
-  padding: 7px 8px;
+  padding: 0;
   border-top: 0;
-  row-gap: 6px;
+}
+
+.box-text > * {
+  min-width: 0;
+}
+
+.building-productivity {
+  grid-area: productivity;
+}
+
+.building-production {
+  grid-area: production;
+}
+
+.building-primary-item {
+  grid-area: primary;
+}
+
+.building-relic-item {
+  grid-area: relic;
+}
+
+.building-productivity,
+.building-production,
+.building-control {
+  display: flex;
+  align-items: center;
+  padding: 5px 8px;
+  overflow: hidden;
+}
+
+.building-productivity,
+.building-production {
+  column-gap: 4px;
+}
+
+.building-productivity,
+.building-production {
+  border-bottom: 1px solid rgba(215, 155, 66, 0.28);
+}
+
+.building-production,
+.building-relic-item {
+  border-left: 1px solid rgba(215, 155, 66, 0.28);
 }
 
 .box-text p {
@@ -375,9 +446,11 @@ body {
   box-shadow: inset 0 1px 2px rgba(89, 56, 30, 0.18);
 }
 
-.box-text .fixSelector {
+.building-control .fixSelector {
   display: block;
-  margin-left: auto;
+  width: 100%;
+  max-width: none;
+  margin: 0;
 }
 
 .levelSelector {
@@ -426,6 +499,10 @@ body {
     padding-inline: 6px;
   }
 
+  .box-icon {
+    flex-basis: 72px;
+  }
+
   .fixSelector {
     width: 100%;
     min-height: 24px;
@@ -439,21 +516,7 @@ body {
   }
 
   .box-text {
-    display: grid;
-    grid-template-columns: 1fr;
-    padding: 6px;
-  }
-
-  .box-text > [class*="col-"] {
-    width: 100%;
-    max-width: 100%;
-    padding-inline: 0;
-    margin-bottom: 0 !important;
-  }
-
-  .box-text .fixSelector {
-    width: min(100%, 150px);
-    margin-left: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .box-content p {
@@ -475,7 +538,7 @@ body {
   }
 
   .calculator-bonuses-form .form-group {
-    min-height: 68px;
+    min-height: 0;
     padding: 7px;
   }
 

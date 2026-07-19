@@ -20,11 +20,8 @@
 <body>
 
     <div class="container">
+        <h1 data-i18n="page_title">COLLECTOR EVENT CALCULATOR</h1>
         <div class="row">
-            <div class="col-12">
-                <h1>COLLECTOR EVENT CALCULATOR</h1>
-            </div>
-
             <a href="https://generalscamp.github.io/forum/" class="home-icon-link">
                 <div class="home-icon">
                     <i class="bi bi-house"></i>
@@ -33,20 +30,22 @@
 
             <div class="col-12 collapse-area mb-2">
                 <h2 class="collapse-header">
-                    <span class="header-title">INPUT</span>
+                    <span class="header-title" data-i18n="input">INPUT</span>
                 </h2>
                 <div class="collapse show">
                     <form class="calculator-bonuses-form">
 
                         <div class="col-12 form-group">
-                            <label for="pointsTarget">How many points you want at the end:</label>
-                            <input type="number" id="pgge-points" class="form-control" placeholder="e.g., 80000" min="0"
+                            <label for="pgge-points" data-i18n="target_points">How many points do you want at the end?</label>
+                            <input type="number" id="pgge-points" class="form-control" placeholder="e.g., 80000"
+                                data-i18n-placeholder="target_points_placeholder" min="0"
                                 max="100000" step="1000">
                         </div>
 
                         <div class="col-12 form-group">
-                            <label for="remainingTime">Days left until the end of the event:</label>
-                            <input type="number" id="pgge-time" class="form-control" placeholder="e.g., 4 days" min="0"
+                            <label for="pgge-time" data-i18n="days_remaining">Days left until the end of the event:</label>
+                            <input type="number" id="pgge-time" class="form-control" placeholder="e.g., 4 days"
+                                data-i18n-placeholder="days_remaining_placeholder" min="0"
                                 max="7" step="1">
                         </div>
 
@@ -56,10 +55,10 @@
 
             <div class="col-12 collapse-area">
                 <h2 class="collapse-header">
-                    <span class="header-title">RESULTS</span>
+                    <span class="header-title" data-i18n="results">RESULTS</span>
                 </h2>
                 <div class="collapse show results">
-                    <p class="il" id="result">You need X points now to reach the target at the end.</p>
+                    <p class="il" id="result" data-i18n="result_empty">Enter the target points and remaining days.</p>
                 </div>
             </div>
 

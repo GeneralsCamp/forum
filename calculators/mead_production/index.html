@@ -19,11 +19,10 @@
 
 <body>
   <div class="container">
+    <h1 data-i18n="page_title">BREWERY SIMULATOR</h1>
     <div class="row">
-      <div class="col-12">
-        <h1>BREWERY SIMULATOR</h1>
-      </div>
-      <a href="https://generalscamp.github.io/forum/" class="home-icon-link">
+      <a href="https://generalscamp.github.io/forum/" class="home-icon-link" aria-label="Back to homepage"
+        data-i18n-aria-label="back_home">
         <div class="home-icon">
           <i class="bi bi-house"></i>
         </div>
@@ -31,13 +30,13 @@
 
       <div class="col-12 collapse-area mb-2">
         <h2 class="collapse-header">
-          <span class="header-title">HONEY PRODUCTION BONUSES</span>
+          <span class="header-title" data-game-lang="honeyproduction">HONEY PRODUCTION</span>
         </h2>
         <div class="collapse show">
           <form id="bonuses-form" class="calculator-bonuses-form" onchange="calculate()">
             <div class="row">
               <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                <label for="apiaryAmount">Number of apiaries</label>
+                <label for="apiaryAmount" data-i18n="number_of_apiaries">Number of apiaries</label>
                 <select class="form-select" name="apiaryAmount" id="apiaryAmount">
                   <option value="0">0</option>
                   <option value="1">1</option>
@@ -58,7 +57,7 @@
                 </select>
               </div>
               <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                <label for="apiaryLvl">Apiaries level</label>
+                <label for="apiaryLvl" data-i18n="relic_apiary_level">Relic apiary level</label>
                 <select class="form-select" name="apiaryLvl" id="apiaryLvl">
                   <option value="250">1</option>
                   <option value="275">2</option>
@@ -78,18 +77,18 @@
                 </select>
               </div>
               <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                <label for="Apo">Public order</label>
+                <label for="po" data-game-lang="publicOrder">Public order</label>
                 <input class="form-control" type="number" value="0" min="0" id="po" placeholder="e.g. 124000">
               </div>
               <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                <label for="Aoverseer">Honey overseer</label>
+                <label for="Aoverseer" data-i18n="honey_overseer">Honey overseer</label>
                 <select class="form-select" name="Aoverseer" id="Aoverseer">
-                  <option value="0">No</option>
-                  <option value="0.25">Yes</option>
+                  <option value="0" data-game-lang="commons_no">No</option>
+                  <option value="0.25" data-game-lang="commons_yes">Yes</option>
                 </select>
               </div>
               <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                <label for="Aresearch">Honey pots research</label>
+                <label for="Aresearch" data-game-lang="research_139_title">Honey pots</label>
                 <select class="form-select" name="Aresearch" id="Aresearch">
                   <option value="0">No</option>
                   <option value="0.04">Level 1</option>
@@ -100,7 +99,7 @@
                 </select>
               </div>
               <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                <label for="Agardens">Honey gardens</label>
+                <label for="Agardens" data-game-lang="honeygardens_name">Relic honey gardens</label>
                 <select class="form-select" name="Agardens" id="Agardens">
                   <option value="0">No</option>
                   <option value="0.1">Level 1</option>
@@ -114,7 +113,7 @@
                 </select>
               </div>
               <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                <label for="Acoat">Coat of arms bonus</label>
+                <label for="Acoat" data-i18n="coat_of_arms_bonus">Coat of arms bonus</label>
                 <select class="form-select" name="Acoat" id="Acoat">
                   <option value="0">0%</option>
                   <option value="0.02">2%</option>
@@ -130,14 +129,14 @@
                 </select>
               </div>
               <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                <label for="AstormsTitle">Storm title</label>
+                <label for="AstormsTitle" data-i18n="storm_title">Storm title</label>
                 <select class="form-select" name="AstormsTitle" id="AstormsTitle">
-                  <option value="0">No</option>
-                  <option value="0.25">The Hive Master</option>
+                  <option value="0" data-game-lang="commons_no">No</option>
+                  <option value="0.25" data-game-lang="playerTitle_52">the Hive Master</option>
                 </select>
               </div>
               <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                <label for="AbaseElem">Primary item</label>
+                <label for="AbaseElem" data-game-lang="ci_primary_honeyProduction">Honey production build item</label>
                 <select class="form-select" name="AbaseElem" id="AbaseElem">
                   <option value="0">No</option>
                   <option value="30">Level 1</option>
@@ -168,7 +167,7 @@
                 </select>
               </div>
               <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                <label for="ArelicElem">Relic item</label>
+                <label for="ArelicElem" data-game-lang="ci_secondary_unboostedHoneyProduction">Relic honey production build item</label>
                 <select class="form-select" name="ArelicElem" id="ArelicElem">
                   <option value="0">No</option>
                   <option value="2200">Level 1</option>
@@ -194,7 +193,7 @@
                 </select>
               </div>
               <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                <label for="Acast">Castellan bonus</label>
+                <label for="Acast" data-i18n="castellan_bonus">Castellan bonus</label>
                 <select class="form-select" name="Acast" id="Acast">
                   <option value="0">No</option>
                   <option value="0.01">1%</option>
@@ -231,7 +230,7 @@
               </div>
 
               <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                <label for="Acast">Effect deco</label>
+                <label for="deco" data-game-lang="filter_decoType_effect">Effect decorations</label>
                 <input class="form-control" required type="number" name="deco" id="deco" placeholder="e.g. 2500"
                   min="0">
               </div>
@@ -241,14 +240,14 @@
       </div>
       <div class="col-12 collapse-area mb-2">
         <h2 class="collapse-header">
-          <span class="header-title">MEAD PRODUCTION BONUSES</span>
+          <span class="header-title" data-game-lang="meadproduction">MEAD PRODUCTION</span>
         </h2>
         <div class="calculator">
           <div class="collapse show">
             <form class="calculator-bonuses-form" onchange="calculate()" onSubmit="return false;">
               <div class="row">
                 <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                  <label for="breweryLvl">Brewery level</label>
+                  <label for="breweryLvl" data-i18n="brewery_level">Brewery level</label>
                   <select class="form-select" name="breweryLvl" id="breweryLvl">
                     <option value="1">1</option>
                     <option value="2">2</option>
@@ -283,7 +282,7 @@
                   </select>
                 </div>
                 <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                  <label for="dist">Distillery</label>
+                  <label for="dist" data-game-lang="meaddistillery_name">Relic mead distillery</label>
                   <select class="form-select" name="dist" id="dist">
                     <option value="0">No</option>
                     <option value="0.05">Level 1</option>
@@ -297,14 +296,14 @@
                   </select>
                 </div>
                 <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                  <label for="overseer">Mead overseer</label>
+                  <label for="overseer" data-i18n="mead_overseer">Mead overseer</label>
                   <select class="form-select" name="overseer" id="overseer">
-                    <option value="0">No</option>
-                    <option value="0.25">Yes</option>
+                    <option value="0" data-game-lang="commons_no">No</option>
+                    <option value="0.25" data-game-lang="commons_yes">Yes</option>
                   </select>
                 </div>
                 <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                  <label for="research">Research (NT)</label>
+                  <label for="research" data-game-lang="research_140_title">Northman tankards</label>
                   <select class="form-select" name="research" id="research">
                     <option value="0">No</option>
                     <option value="0.04">Level 1</option>
@@ -315,7 +314,7 @@
                   </select>
                 </div>
                 <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                  <label for="barrel">Barrel workshop</label>
+                  <label for="barrel" data-game-lang="barrelworkshop_name">Relic barrel workshop</label>
                   <select class="form-select" name="barrel" id="barrel">
                     <option value="0">No</option>
                     <option value="0.1">Level 1</option>
@@ -329,12 +328,12 @@
                   </select>
                 </div>
                 <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                  <label for="meadBonus">Effect deco bonus</label>
+                  <label for="meadBonus" data-i18n="effect_deco_bonus">Effect decoration bonus</label>
                   <input type="number" id="meadBonus" name="meadBonus" class="form-control" min="0" max="50" step="0.1"
                     value="0">
                 </div>
                 <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                  <label for="coat">Coat of arms bonus</label>
+                  <label for="coat" data-i18n="coat_of_arms_bonus">Coat of arms bonus</label>
                   <select class="form-select" name="coat" id="coat">
                     <option value="0">0%</option>
                     <option value="0.02">2%</option>
@@ -350,14 +349,14 @@
                   </select>
                 </div>
                 <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                  <label for="stormsTitle">Storm title</label>
+                  <label for="stormsTitle" data-i18n="storm_title">Storm title</label>
                   <select class="form-select" name="stormsTitle" id="stormsTitle">
-                    <option value="0">No</option>
-                    <option value="0.25">the Voracious</option>
+                    <option value="0" data-game-lang="commons_no">No</option>
+                    <option value="0.25" data-game-lang="playerTitle_51">the Voracious</option>
                   </select>
                 </div>
                 <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                  <label for="baseElem">Primary item</label>
+                  <label for="baseElem" data-game-lang="ci_primary_meadProduction">Mead production build item</label>
                   <select class="form-select" name="baseElem" id="baseElem">
                     <option value="0">No</option>
                     <option value="70">Level 1</option>
@@ -388,7 +387,7 @@
                   </select>
                 </div>
                 <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                  <label for="relicElem">Relic item</label>
+                  <label for="relicElem" data-game-lang="ci_secondary_unboostedMeadProduction">Relic mead production build item</label>
                   <select class="form-select" name="relicElem" id="relicElem">
                     <option value="0">No</option>
                     <option value="10200">Level 1</option>
@@ -414,16 +413,16 @@
                   </select>
                 </div>
                 <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                  <label for="cast">Castellan Bonus (%)</label>
+                  <label for="cast" data-i18n="castellan_bonus">Castellan bonus (%)</label>
                   <input type="number" id="cast" name="cast" class="form-control" min="0" max="25" step="0.1" value="0">
                 </div>
                 <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                  <label for="">Effect deco</label>
+                  <label for="decoMead" data-game-lang="filter_decoType_effect">Effect decorations</label>
                   <input class="form-control" required type="number" name="decoMead" id="decoMead"
                     placeholder="e.g. 10000" min="0">
                 </div>
                 <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                  <label for="ratio">Production ratio</label>
+                  <label for="productionInput" data-i18n="production_ratio">Production ratio</label>
                   <div class="brewery-production-control-input">
                     <input class="form-control" type="number" min="0" max="100" value="0" id="productionInput">
                   </div>
@@ -436,17 +435,17 @@
 
       <div class="col-12 collapse-area mb-2 result">
         <h2 class="collapse-header">
-          <span class="header-title">RESULTS</span>
+          <span class="header-title" data-i18n="results">RESULTS</span>
         </h2>
         <div class="collapse show">
           <form class="calculator-bonuses-form row" onsubmit="return false;">
             <div class="collapse show results">
-              <p class="il result-line">TOTAL HONEY PRODUCTION: <span><i id="honeyProd">0</i> /hour</span></p>
+              <p class="il result-line"><span class="result-label" data-game-lang="honeyProductionPerHour">Honey production per hour</span><span><i id="honeyProd">0</i> <span data-i18n="per_hour">/hour</span></span></p>
               <hr>
-              <p class="result-line">TOTAL MEAD PRODUCTION: <span><i id="food">0</i> food + <i id="honey">0</i> honey =
-                  <i id="mead">0</i> mead</span></p>
+              <p class="result-line"><span class="result-label" data-game-lang="meadproduction_total_desc">Total mead production per hour</span><span><i id="food">0</i> <span data-game-lang="food">food</span> + <i id="honey">0</i> <span data-game-lang="honey">honey</span> =
+                  <i id="mead">0</i> <span data-game-lang="mead">mead</span></span></p>
               <hr>
-              <p class="il result-line">NUMBER OF UNITS YOU CAN KEEP: <span><i id="unitsHold">0</i></span></p>
+              <p class="il result-line"><span class="result-label" data-i18n="units_can_keep">Number of units you can keep</span><span><i id="unitsHold">0</i></span></p>
             </div>
           </form>
         </div>

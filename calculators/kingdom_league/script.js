@@ -1,4 +1,15 @@
 import { saveCalculatorData, loadCalculatorData } from "../../overviews/shared/GameSettings.mjs";
+import { getLangVersion, loadLanguage } from "../../overviews/shared/DataService.mjs";
+import { initCalculatorI18n } from "../shared/CalculatorI18n.mjs";
+
+const { language, t, formatNumber } = await initCalculatorI18n();
+
+let gameLang = {};
+try {
+    gameLang = await loadLanguage(language, await getLangVersion());
+} catch (error) {
+    console.warn("Kingdom League in-game translations could not be loaded:", error);
+}
 
 const CALC_NAME = "kingdom_league";
 
@@ -27,17 +38,23 @@ const TITLES = [
 ];
 
 const RANK_STEP_POINTS = 2000;
-const STORAGE_PREFIX = "kingdom_league_";
-
 const MEDALS = [
-    { key: "gold", name: "Gold", points: 1000 },
-    { key: "silver", name: "Silver", points: 950 },
-    { key: "bronze", name: "Bronze", points: 850 },
-    { key: "glass", name: "Glass", points: 700 },
-    { key: "copper", name: "Copper", points: 500 },
-    { key: "stone", name: "Stone", points: 300 },
-    { key: "wood", name: "Wood", points: 100 }
+    { key: "gold", langKey: "seasonLeague_goldMedal_name", name: "Gold medal", points: 1000 },
+    { key: "silver", langKey: "seasonLeague_silverMedal_name", name: "Silver medal", points: 950 },
+    { key: "bronze", langKey: "seasonLeague_bronzeMedal_name", name: "Bronze medal", points: 850 },
+    { key: "glass", langKey: "seasonLeague_glasMedal_name", name: "Glass medal", points: 700 },
+    { key: "copper", langKey: "seasonLeague_copperMedal_name", name: "Copper medal", points: 500 },
+    { key: "stone", langKey: "seasonLeague_stoneMedal_name", name: "Stone medal", points: 300 },
+    { key: "wood", langKey: "seasonLeague_woodMedal_name", name: "Wood medal", points: 100 }
 ];
+
+function getGameText(key, fallback) {
+    return gameLang[key] || fallback;
+}
+
+document.querySelectorAll("[data-game-lang]").forEach((element) => {
+    element.textContent = getGameText(element.dataset.gameLang, element.textContent.trim());
+});
 
 const medalInputs = MEDALS.map((medal) => ({
     ...medal,
@@ -68,10 +85,6 @@ function sanitizeValue(value) {
     return parsed;
 }
 
-function formatNumber(value) {
-    return value.toLocaleString("en-US");
-}
-
 function getTotalPoints() {
     return medalInputs.reduce((sum, medal) => {
         const count = sanitizeValue(medal.el.value);
@@ -87,7 +100,7 @@ function getCurrentRank(totalPoints) {
 
 function buildMinimumMedalAdvice(pointsNeeded) {
     if (pointsNeeded <= 0) {
-        return "No additional medal needed.";
+        return t("no_additional_medal");
     }
 
     const maxMedal = MEDALS[0].points;
@@ -122,7 +135,7 @@ function buildMinimumMedalAdvice(pointsNeeded) {
     }
 
     if (bestSum < 0) {
-        return "No medal combination found.";
+        return t("no_combination_found");
     }
 
     const counts = new Array(MEDALS.length).fill(0);
@@ -136,16 +149,26 @@ function buildMinimumMedalAdvice(pointsNeeded) {
     }
 
     const parts = counts
-        .map((count, index) => ({ count, name: MEDALS[index].name }))
+        .map((count, index) => ({
+            count,
+            name: getGameText(MEDALS[index].langKey, MEDALS[index].name)
+        }))
         .filter((x) => x.count > 0)
-        .map((x) => `${x.count}x ${x.name}`);
+        .map((x) => `${formatNumber(x.count)}× ${x.name}`);
 
     const overflow = bestSum - pointsNeeded;
     if (overflow > 0) {
-        return `${parts.join(" + ")} (${formatNumber(bestSum)} points, +${formatNumber(overflow)} points over)`;
+        return t("advice_over", {
+            medals: parts.join(" + "),
+            total: formatNumber(bestSum),
+            overflow: formatNumber(overflow)
+        });
     }
 
-    return `${parts.join(" + ")} (${formatNumber(bestSum)} points exact)`;
+    return t("advice_exact", {
+        medals: parts.join(" + "),
+        total: formatNumber(bestSum)
+    });
 }
 
 function saveToLocalStorage() {
@@ -170,22 +193,28 @@ function loadFromLocalStorage() {
 function calculate() {
     const totalPoints = getTotalPoints();
     const currentRank = getCurrentRank(totalPoints);
-    const currentTitle = TITLES[currentRank - 1];
+    const currentTitle = getGameText(`seasonLeague_rank_${currentRank}`, TITLES[currentRank - 1]);
 
-    currentTitleEl.textContent = `${currentTitle} (Rank ${currentRank})`;
+    currentTitleEl.textContent = t("rank_format", {
+        title: currentTitle,
+        rank: formatNumber(currentRank)
+    });
 
     if (currentRank >= TITLES.length) {
-        nextTitleEl.textContent = "Next title: Maximum rank reached";
-        medalAdviceEl.textContent = "Already at max title.";
+        nextTitleEl.textContent = t("maximum_rank_reached");
+        medalAdviceEl.textContent = t("already_max_title");
         return;
     }
 
     const nextRank = currentRank + 1;
-    const nextTitle = TITLES[nextRank - 1];
+    const nextTitle = getGameText(`seasonLeague_rank_${nextRank}`, TITLES[nextRank - 1]);
     const pointsForNext = (nextRank - 1) * RANK_STEP_POINTS;
     const pointsNeeded = Math.max(0, pointsForNext - totalPoints);
 
-    nextTitleEl.textContent = `${nextTitle} (Rank ${nextRank})`;
+    nextTitleEl.textContent = t("rank_format", {
+        title: nextTitle,
+        rank: formatNumber(nextRank)
+    });
     medalAdviceEl.textContent = buildMinimumMedalAdvice(pointsNeeded);
 }
 

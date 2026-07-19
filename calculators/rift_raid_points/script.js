@@ -7,6 +7,9 @@ import {
   logResolvedDataUrls
 } from "../../overviews/shared/DataService.mjs";
 import { createLoader } from "../../overviews/shared/LoadingService.mjs";
+import { initCalculatorI18n } from "../shared/CalculatorI18n.mjs";
+
+const { language, t, formatNumber } = await initCalculatorI18n();
 
 let raidBossData = {};
 let langData = {};
@@ -30,11 +33,27 @@ function getLangValue(key) {
   return langData[key] || langData[String(key).toLowerCase()] || null;
 }
 
+function getGameText(key, fallback) {
+  return getLangValue(key) || fallback;
+}
+
+function applyGameTranslations() {
+  const courtyard = getGameText("dialog_battleLogDetail_courtyard", t("courtyard"));
+  const walls = getGameText("wall", t("walls"));
+  const riftPoints = getGameText("currency_name_RiftPoint", t("rift_points"));
+  const courtyardOption = document.querySelector('#area option[value="courtyard"]');
+  const wallsOption = document.querySelector('#area option[value="walls"]');
+
+  if (courtyardOption) courtyardOption.textContent = courtyard;
+  if (wallsOption) wallsOption.textContent = walls;
+  document.getElementById("riftPointsLabel").textContent = riftPoints;
+}
+
 function normalizeBossName(rawName, bossId) {
   const name = String(rawName || "").trim();
   const langName = getLangValue(`are_boss_name_${name}`);
   if (langName) return String(langName).trim();
-  return name || `Raid Boss ${bossId}`;
+  return name || t("raid_boss_fallback", { id: bossId });
 }
 
 function buildRaidBossData(items) {
@@ -71,7 +90,7 @@ function buildRaidBossData(items) {
 
     if (!result[bossId]) {
       result[bossId] = {
-        name: `Raid Boss ${bossId}`,
+        name: t("raid_boss_fallback", { id: bossId }),
         levels: {}
       };
     }
@@ -116,16 +135,16 @@ function refreshAreaLabels(levelData) {
   const wallsOption = Array.from(areaSelect.options).find(opt => opt.value === "walls");
 
   if (!levelData) {
-    if (courtyardOption) courtyardOption.textContent = "Courtyard";
-    if (wallsOption) wallsOption.textContent = "Walls";
+    if (courtyardOption) courtyardOption.textContent = getGameText("dialog_battleLogDetail_courtyard", t("courtyard"));
+    if (wallsOption) wallsOption.textContent = getGameText("wall", t("walls"));
     return;
   }
 
   if (courtyardOption) {
-    courtyardOption.textContent = `Courtyard (${levelData.courtyardPointFactor})`;
+    courtyardOption.textContent = `${getGameText("dialog_battleLogDetail_courtyard", t("courtyard"))} (${formatNumber(levelData.courtyardPointFactor)})`;
   }
   if (wallsOption) {
-    wallsOption.textContent = `Walls (${levelData.wallPointFactor})`;
+    wallsOption.textContent = `${getGameText("wall", t("walls"))} (${formatNumber(levelData.wallPointFactor)})`;
   }
 }
 
@@ -172,7 +191,7 @@ function calculateRiftPoints() {
   if (!levelData) {
     document.getElementById("courtyardTroops").value = "";
     document.getElementById("wallTroops").value = "";
-    document.getElementById("points").innerHTML = "0";
+    document.getElementById("points").textContent = "0";
     refreshAreaLabels(null);
     return;
   }
@@ -187,14 +206,14 @@ function calculateRiftPoints() {
   const totalDefeated = defeated + defeatedReserve;
 
   if (troopsForArea <= 0 || totalDefeated <= 0 || pointFactor <= 0) {
-    document.getElementById("points").innerHTML = "0";
+    document.getElementById("points").textContent = "0";
     return;
   }
 
   const ratio = Math.min(totalDefeated / troopsForArea, 1);
   const basePoints = Math.ceil(ratio * pointFactor + Number.EPSILON);
   const points = Math.ceil(basePoints * (1 + riftPointBonus / 100) + Number.EPSILON);
-  document.getElementById("points").innerHTML = points;
+  document.getElementById("points").textContent = formatNumber(points);
 }
 
 function setSectionsVisible(visible) {
@@ -241,15 +260,15 @@ function populateLevelSelectForBoss() {
     const option = document.createElement("option");
     option.value = String(level);
     option.textContent = hasLevelPointMultiplier
-      ? `Level ${level} (${multiplierText})`
-      : `Level ${level}`;
+      ? `${getGameText("level", t("level"))} ${formatNumber(level)} (${multiplierText})`
+      : `${getGameText("level", t("level"))} ${formatNumber(level)}`;
     levelSelect.appendChild(option);
   });
 
   if (levels.length === 0) {
     const option = document.createElement("option");
     option.value = "";
-    option.textContent = "No levels";
+    option.textContent = t("no_levels");
     levelSelect.appendChild(option);
     levelSelect.disabled = true;
     return;
@@ -323,17 +342,18 @@ async function loadLiveData() {
   ]);
 
   await logResolvedDataUrls({
-    langCode: "en",
+    langCode: language,
     itemVersion,
     langVersion
   });
 
   const [items, lang] = await Promise.all([
     loadItems(itemVersion),
-    loadLanguage("en", langVersion)
+    loadLanguage(language, langVersion)
   ]);
 
   langData = lang || {};
+  applyGameTranslations();
   const builtData = buildRaidBossData(items);
   if (Object.keys(builtData).length === 0) {
     throw new Error("No raid boss data in items.");
@@ -354,7 +374,7 @@ async function init() {
     setSectionsVisible(true);
   } catch (err) {
     console.error("Rift raid live data load failed:", err);
-    loader.error("Something went wrong...", 30);
+    loader.error(t("loading_error"), 30);
   }
 }
 

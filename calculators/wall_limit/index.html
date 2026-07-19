@@ -19,10 +19,8 @@
 
 <body>
   <div class="container">
+    <h1 data-i18n="page_title">WALL LIMIT CALCULATOR</h1>
     <div class="row">
-      <div class="col-12">
-        <h1>WALL LIMIT CALCULATOR</h1>
-      </div>
       <a href="https://generalscamp.github.io/forum/" class="home-icon-link">
         <div class="home-icon">
           <i class="bi bi-house"></i>
@@ -30,28 +28,28 @@
       </a>
       <div class="col-12 collapse-area mb-2">
         <h2 class="collapse-header">
-          <span class="header-title">TOWERS</span>
+          <span class="header-title" data-i18n="towers">TOWERS</span>
         </h2>
         <div class="collapse show">
           <form class="calculator-bonuses-form row" onsubmit="return false;">
             <div class="col-6 col-lg-3 form-group">
-              <label for="towers">Tower amount</label>
+              <label for="towers" data-i18n="tower_amount">Tower amount</label>
               <input type="number" id="towers" min="0" max="23" value="0" class="form-control"
                 onchange="calculateDefenders()">
             </div>
             <div class="col-6 col-lg-3 form-group">
-              <label for="level">Tower level</label>
+              <label for="level" data-i18n="tower_level">Tower level</label>
               <select name="level" id="level" class="form-select" onchange="calculateDefenders()">
-                <option value="0">Level 0</option>
-                <option value="1">Level 1</option>
-                <option value="2">Level 2</option>
-                <option value="3">Level 3</option>
-                <option value="4">Level 4</option>
-                <option value="5">Level 5</option>
-                <option value="6">Level 6</option>
-                <option value="7">Level 7</option>
-                <option value="8">Level 8</option>
-                <option value="9">Level 9</option>
+                <option value="0" data-i18n="level" data-i18n-value="0">Level 0</option>
+                <option value="1" data-i18n="level" data-i18n-value="1">Level 1</option>
+                <option value="2" data-i18n="level" data-i18n-value="2">Level 2</option>
+                <option value="3" data-i18n="level" data-i18n-value="3">Level 3</option>
+                <option value="4" data-i18n="level" data-i18n-value="4">Level 4</option>
+                <option value="5" data-i18n="level" data-i18n-value="5">Level 5</option>
+                <option value="6" data-i18n="level" data-i18n-value="6">Level 6</option>
+                <option value="7" data-i18n="level" data-i18n-value="7">Level 7</option>
+                <option value="8" data-i18n="level" data-i18n-value="8">Level 8</option>
+                <option value="9" data-i18n="level" data-i18n-value="9">Level 9</option>
               </select>
             </div>
             <div class="col-sm-0 col-lg-6"></div>
@@ -61,42 +59,42 @@
 
       <div class="col-12 collapse-area mb-2">
         <h2 class="collapse-header">
-          <span class="header-title">BONUSES</span>
+          <span class="header-title" data-i18n="bonuses">BONUSES</span>
         </h2>
         <div class="collapse show">
           <form class="calculator-bonuses-form row" onsubmit="return false;">
             <div class="col-md-3 col-6 col-sm-4 form-group">
-              <label for="temp_items">Temp items (unit)</label>
+              <label for="temp_items" data-i18n="temporary_items">Temp items (unit)</label>
               <input type="number" value="0" id="temp_items" class="form-control" min="0">
             </div>
 
             <div class="col-md-3 col-6 col-sm-4 form-group">
-              <label for="constant_items">Constant items (unit)</label>
+              <label for="constant_items" data-i18n="permanent_items">Constant items (unit)</label>
               <input type="number" value="0" id="constant_items" class="form-control" min="0">
             </div>
 
             <div class="col-md-3 col-6 col-sm-4 form-group">
-              <label for="tools">Tools (%)</label>
+              <label for="tools" data-i18n="tools">Tools (%)</label>
               <input type="number" value="0" id="tools" class="form-control" min="0" max="40" step="0.1">
             </div>
 
             <div class="col-md-3 col-6 col-sm-4 form-group">
-              <label for="equipment1">Equipments (%)</label>
+              <label for="equipment1" data-i18n="equipment">Equipments (%)</label>
               <input type="number" value="0" id="equipment1" class="form-control" min="0" step="0.1">
             </div>
 
             <div class="col-md-3 col-6 col-sm-4 form-group">
-              <label for="hol">Hall of Legends (%)</label>
+              <label for="hol" data-i18n="hall_of_legends">Hall of Legends (%)</label>
               <input type="number" value="0" id="hol" class="form-control" min="0" step="0.1">
             </div>
 
             <div class="col-md-3 col-6 col-sm-4 form-group">
-              <label for="generals">Generals (%)</label>
+              <label for="generals" data-i18n="generals">Generals (%)</label>
               <input type="number" value="0" id="generals" class="form-control" min="0" step="0.1">
             </div>
 
             <div class="col-md-3 col-6 col-sm-4 form-group">
-              <label for="deco">Effect decos (%)</label>
+              <label for="deco" data-i18n="effect_decorations">Effect decos (%)</label>
               <input type="number" value="0" id="deco" class="form-control" min="0" step="0.1">
             </div>
           </form>
@@ -105,14 +103,14 @@
 
       <div class="col-12 collapse-area result">
         <h2 class="collapse-header">
-          <span class="header-title">RESULTS</span>
+          <span class="header-title" data-i18n="results">RESULTS</span>
         </h2>
         <div class="collapse show results">
-          <p>WALL UNIT LIMIT: <span id="total-defenders">0</span></p>
+          <p><span class="result-label" data-i18n="wall_unit_limit">WALL UNIT LIMIT</span> <span id="total-defenders">0</span></p>
           <hr>
-          <p>All bonuses: <span id="total-percentage-bonus">-</span></p>
+          <p><span class="result-label" data-i18n="all_bonuses">All bonuses</span> <span id="total-percentage-bonus">-</span></p>
           <hr>
-          <p>All bonuses: <span id="total-soldiers-bonus">-</span></p>
+          <p><span class="result-label" data-i18n="all_bonuses">All bonuses</span> <span id="total-soldiers-bonus">-</span></p>
         </div>
       </div>
     </div>

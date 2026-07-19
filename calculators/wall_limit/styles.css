@@ -80,8 +80,8 @@ body {
 }
 
 .calculator-bonuses-form .form-group {
-  min-height: 74px;
-  padding: 8px 10px;
+  min-height: 0;
+  padding: 7px 10px;
   border-right: 1px solid rgba(215, 155, 66, 0.34);
   border-bottom: 1px solid rgba(215, 155, 66, 0.34);
   background: #60412c;
@@ -93,7 +93,7 @@ body {
 
 .calculator-bonuses-form label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 4px;
   color: #e6d1af;
   font-size: 0.78rem;
   font-weight: 800;
@@ -158,7 +158,7 @@ body {
   border-right: 0;
 }
 
-.results span {
+.results span:not(.result-label) {
   color: #fff4de;
   font-size: 1.05rem;
   font-weight: 900;
@@ -196,7 +196,7 @@ body {
   }
 
   .calculator-bonuses-form .form-group {
-    min-height: 68px;
+    min-height: 0;
     padding: 7px;
   }
 

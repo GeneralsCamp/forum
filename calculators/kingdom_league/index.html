@@ -20,50 +20,48 @@
 
 <body>
     <div class="container">
+        <h1 data-i18n="page_title">KINGDOM LEAGUE CALCULATOR</h1>
         <div class="row">
-            <div class="col-12">
-                <h1>KINGDOM LEAGUE CALCULATOR</h1>
-            </div>
-
-            <a href="https://generalscamp.github.io/forum/" class="home-icon-link" aria-label="Back to homepage">
+            <a href="https://generalscamp.github.io/forum/" class="home-icon-link" aria-label="Back to homepage"
+                data-i18n-aria-label="back_home">
                 <div class="home-icon">
                     <i class="bi bi-house"></i>
                 </div>
             </a>
 
             <div class="col-12 collapse-area mb-2">
-                <h2 class="collapse-header"><span class="header-title">MEDAL INPUT</span></h2>
+                <h2 class="collapse-header"><span class="header-title" data-i18n="medal_input">MEDAL INPUT</span></h2>
                 <div class="collapse show">
                     <form id="leagueForm" class="calculator-bonuses-form row" onsubmit="return false;">
                         <div class="col-6 col-md-4 col-xl-3 form-group">
-                            <label for="gold">Gold medal</label>
+                            <label for="gold" data-game-lang="seasonLeague_goldMedal_name">Gold medal</label>
                             <input id="gold" type="number" class="form-control medal-input" min="0" step="1" value="0">
                         </div>
                         <div class="col-6 col-md-4 col-xl-3 form-group">
-                            <label for="silver">Silver medal</label>
+                            <label for="silver" data-game-lang="seasonLeague_silverMedal_name">Silver medal</label>
                             <input id="silver" type="number" class="form-control medal-input" min="0" step="1"
                                 value="0">
                         </div>
                         <div class="col-6 col-md-4 col-xl-3 form-group">
-                            <label for="bronze">Bronze medal</label>
+                            <label for="bronze" data-game-lang="seasonLeague_bronzeMedal_name">Bronze medal</label>
                             <input id="bronze" type="number" class="form-control medal-input" min="0" step="1"
                                 value="0">
                         </div>
                         <div class="col-6 col-md-4 col-xl-3 form-group">
-                            <label for="glass">Glass medal</label>
+                            <label for="glass" data-game-lang="seasonLeague_glasMedal_name">Glass medal</label>
                             <input id="glass" type="number" class="form-control medal-input" min="0" step="1" value="0">
                         </div>
                         <div class="col-6 col-md-4 col-xl-3 form-group">
-                            <label for="copper">Copper medal</label>
+                            <label for="copper" data-game-lang="seasonLeague_copperMedal_name">Copper medal</label>
                             <input id="copper" type="number" class="form-control medal-input" min="0" step="1"
                                 value="0">
                         </div>
                         <div class="col-6 col-md-4 col-xl-3 form-group">
-                            <label for="stone">Stone medal</label>
+                            <label for="stone" data-game-lang="seasonLeague_stoneMedal_name">Stone medal</label>
                             <input id="stone" type="number" class="form-control medal-input" min="0" step="1" value="0">
                         </div>
                         <div class="col-6 col-md-4 col-xl-3 form-group">
-                            <label for="wood">Wood medal</label>
+                            <label for="wood" data-game-lang="seasonLeague_woodMedal_name">Wood medal</label>
                             <input id="wood" type="number" class="form-control medal-input" min="0" step="1" value="0">
                         </div>
                     </form>
@@ -71,13 +69,13 @@
             </div>
 
             <div class="col-12 collapse-area result mb-2">
-                <h2 class="collapse-header"><span class="header-title">RESULTS</span></h2>
+                <h2 class="collapse-header"><span class="header-title" data-i18n="results">RESULTS</span></h2>
                 <div class="collapse show results" id="resultPanel">
-                    <p>Current title: <span id="currentTitle">Brawler (Rank 1)</span></p>
+                    <p><span class="result-label" data-i18n="current_title">Current title</span><span id="currentTitle">Brawler (Rank 1)</span></p>
                     <hr>
-                    <p>Next title: <span id="nextTitle">Wild brawler (Rank 2)</span></p>
+                    <p><span class="result-label" data-i18n="next_title">Next title</span><span id="nextTitle">Wild brawler (Rank 2)</span></p>
                     <hr>
-                    <p>Minimum medals to rank up: <span id="medalAdvice">2x Gold</span></p>
+                    <p><span class="result-label" data-i18n="minimum_medals">Minimum medals to rank up</span><span id="medalAdvice">2x Gold</span></p>
                 </div>
             </div>
         </div>

@@ -44,6 +44,7 @@ h1 {
   color: #f3c24a;
   font-size: 1.35rem;
   font-weight: 900;
+  text-transform: uppercase;
   text-align: left;
   text-shadow: 0 2px 3px rgba(0, 0, 0, 0.42);
   box-shadow: 0 5px 14px rgba(0, 0, 0, 0.22);
@@ -100,6 +101,27 @@ h2 {
 
 .header-title {
   margin: 0;
+  text-transform: uppercase;
+}
+
+.results .result-label::after {
+  content: ":";
+}
+
+.calculator-bonuses-form .form-group {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.calculator-bonuses-form label {
+  margin-bottom: 4px;
+}
+
+.calculator-bonuses-form .form-group > .form-control,
+.calculator-bonuses-form .form-group > .form-select,
+.calculator-bonuses-form .form-group > .brewery-production-control-input {
+  margin-top: auto;
 }
 
 .collapse-area {

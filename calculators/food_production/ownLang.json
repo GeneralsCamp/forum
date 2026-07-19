@@ -1,0 +1,458 @@
+{
+  "en": {
+    "ui": {
+      "page_title": "Food Production Calculator",
+      "results": "Results",
+      "percentage_bonus": "Percentage bonus",
+      "fixed_bonus": "Fixed production bonus",
+      "bonuses": "Bonuses",
+      "location": "Location",
+      "main_castle": "Main castle",
+      "food_outpost_6": "Food outpost 6",
+      "food_outpost_8": "Food outpost 8",
+      "kingdoms": "Kingdoms",
+      "villages_bonus": "Resource village bonus",
+      "food_production_tci": "Food production TCI",
+      "buildings_items": "Buildings & items",
+      "level": "Level {value}",
+      "lower_title": "Lower title"
+    }
+  },
+  "ar": {
+    "ui": {
+      "page_title": "حاسبة إنتاج الطعام",
+      "results": "النتائج",
+      "percentage_bonus": "مكافأة النسبة المئوية",
+      "fixed_bonus": "مكافأة الإنتاج الثابتة",
+      "bonuses": "المكافآت",
+      "location": "الموقع",
+      "main_castle": "القلعة الرئيسية",
+      "food_outpost_6": "بؤرة طعام 6",
+      "food_outpost_8": "بؤرة طعام 8",
+      "kingdoms": "الممالك",
+      "villages_bonus": "مكافأة قرى الموارد",
+      "food_production_tci": "عنصر بناء مؤقت لإنتاج الطعام",
+      "buildings_items": "المباني والعناصر",
+      "level": "المستوى {value}",
+      "lower_title": "لقب أدنى"
+    }
+  },
+  "es": {
+    "ui": {
+      "page_title": "Calculadora de producción de comida",
+      "results": "Resultados",
+      "percentage_bonus": "Bonificación porcentual",
+      "fixed_bonus": "Bonificación fija de producción",
+      "bonuses": "Bonificaciones",
+      "location": "Ubicación",
+      "main_castle": "Castillo principal",
+      "food_outpost_6": "Puesto de comida 6",
+      "food_outpost_8": "Puesto de comida 8",
+      "kingdoms": "Reinos",
+      "villages_bonus": "Bonificación de poblados de recursos",
+      "food_production_tci": "Objeto de construcción temporal de producción de comida",
+      "buildings_items": "Edificios y objetos",
+      "level": "Nivel {value}",
+      "lower_title": "Título inferior"
+    }
+  },
+  "bg": {
+    "ui": {
+      "page_title": "Калкулатор за производство на храна",
+      "results": "Резултати",
+      "percentage_bonus": "Процентен бонус",
+      "fixed_bonus": "Фиксиран производствен бонус",
+      "bonuses": "Бонуси",
+      "location": "Местоположение",
+      "main_castle": "Главен замък",
+      "food_outpost_6": "Хранителен пост 6",
+      "food_outpost_8": "Хранителен пост 8",
+      "kingdoms": "Кралства",
+      "villages_bonus": "Бонус от ресурсни села",
+      "food_production_tci": "Временен строителен предмет за производство на храна",
+      "buildings_items": "Сгради и предмети",
+      "level": "Ниво {value}",
+      "lower_title": "По-ниска титла"
+    }
+  },
+  "pt": {
+    "ui": {
+      "page_title": "Calculadora de produção de comida",
+      "results": "Resultados",
+      "percentage_bonus": "Bónus percentual",
+      "fixed_bonus": "Bónus fixo de produção",
+      "bonuses": "Bónus",
+      "location": "Localização",
+      "main_castle": "Castelo principal",
+      "food_outpost_6": "Posto avançado de comida 6",
+      "food_outpost_8": "Posto avançado de comida 8",
+      "kingdoms": "Reinos",
+      "villages_bonus": "Bónus de aldeias de recursos",
+      "food_production_tci": "Item de construção temporário de produção de comida",
+      "buildings_items": "Edifícios e itens",
+      "level": "Nível {value}",
+      "lower_title": "Título inferior"
+    }
+  },
+  "cs": {
+    "ui": {
+      "page_title": "Kalkulačka produkce jídla",
+      "results": "Výsledky",
+      "percentage_bonus": "Procentní bonus",
+      "fixed_bonus": "Pevný bonus produkce",
+      "bonuses": "Bonusy",
+      "location": "Umístění",
+      "main_castle": "Hlavní hrad",
+      "food_outpost_6": "Potravinová základna 6",
+      "food_outpost_8": "Potravinová základna 8",
+      "kingdoms": "Království",
+      "villages_bonus": "Bonus surovinových vesnic",
+      "food_production_tci": "Dočasný konstrukční předmět produkce jídla",
+      "buildings_items": "Budovy a předměty",
+      "level": "Úroveň {value}",
+      "lower_title": "Nižší titul"
+    }
+  },
+  "de": {
+    "ui": {
+      "page_title": "Nahrungsproduktionsrechner",
+      "results": "Ergebnisse",
+      "percentage_bonus": "Prozentualer Bonus",
+      "fixed_bonus": "Fester Produktionsbonus",
+      "bonuses": "Boni",
+      "location": "Standort",
+      "main_castle": "Hauptburg",
+      "food_outpost_6": "Nahrungs-Außenposten 6",
+      "food_outpost_8": "Nahrungs-Außenposten 8",
+      "kingdoms": "Königreiche",
+      "villages_bonus": "Rohstoffdorf-Bonus",
+      "food_production_tci": "Temporäres Nahrungsproduktions-Konstruktionselement",
+      "buildings_items": "Gebäude & Konstruktionselemente",
+      "level": "Stufe {value}",
+      "lower_title": "Niedrigerer Titel"
+    }
+  },
+  "da": {
+    "ui": {
+      "page_title": "Kalkulator for fødevareproduktion",
+      "results": "Resultater",
+      "percentage_bonus": "Procentbonus",
+      "fixed_bonus": "Fast produktionsbonus",
+      "bonuses": "Bonusser",
+      "location": "Placering",
+      "main_castle": "Hovedborg",
+      "food_outpost_6": "Madforpost 6",
+      "food_outpost_8": "Madforpost 8",
+      "kingdoms": "Kongeriger",
+      "villages_bonus": "Bonus fra ressourcelandsbyer",
+      "food_production_tci": "Midlertidig byggegenstand til fødevareproduktion",
+      "buildings_items": "Bygninger og genstande",
+      "level": "Niveau {value}",
+      "lower_title": "Lavere titel"
+    }
+  },
+  "fi": {
+    "ui": {
+      "page_title": "Ruoantuotantolaskuri",
+      "results": "Tulokset",
+      "percentage_bonus": "Prosenttibonus",
+      "fixed_bonus": "Kiinteä tuotantobonus",
+      "bonuses": "Bonukset",
+      "location": "Sijainti",
+      "main_castle": "Päälinna",
+      "food_outpost_6": "Ruokaetuvartio 6",
+      "food_outpost_8": "Ruokaetuvartio 8",
+      "kingdoms": "Valtakunnat",
+      "villages_bonus": "Resurssikylien bonus",
+      "food_production_tci": "Ruoantuotannon väliaikainen rakennusesine",
+      "buildings_items": "Rakennukset ja esineet",
+      "level": "Taso {value}",
+      "lower_title": "Alempi arvonimi"
+    }
+  },
+  "fr": {
+    "ui": {
+      "page_title": "Calculateur de production de nourriture",
+      "results": "Résultats",
+      "percentage_bonus": "Bonus en pourcentage",
+      "fixed_bonus": "Bonus fixe de production",
+      "bonuses": "Bonus",
+      "location": "Emplacement",
+      "main_castle": "Château principal",
+      "food_outpost_6": "Avant-poste de nourriture 6",
+      "food_outpost_8": "Avant-poste de nourriture 8",
+      "kingdoms": "Royaumes",
+      "villages_bonus": "Bonus des villages à ressources",
+      "food_production_tci": "Objet de construction temporaire de production de nourriture",
+      "buildings_items": "Bâtiments et objets",
+      "level": "Niveau {value}",
+      "lower_title": "Titre inférieur"
+    }
+  },
+  "el": {
+    "ui": {
+      "page_title": "Υπολογιστής παραγωγής τροφής",
+      "results": "Αποτελέσματα",
+      "percentage_bonus": "Ποσοστιαίο μπόνους",
+      "fixed_bonus": "Σταθερό μπόνους παραγωγής",
+      "bonuses": "Μπόνους",
+      "location": "Τοποθεσία",
+      "main_castle": "Κύριο κάστρο",
+      "food_outpost_6": "Φυλάκιο τροφής 6",
+      "food_outpost_8": "Φυλάκιο τροφής 8",
+      "kingdoms": "Βασίλεια",
+      "villages_bonus": "Μπόνους χωριών πόρων",
+      "food_production_tci": "Προσωρινό αντικείμενο κατασκευής παραγωγής τροφής",
+      "buildings_items": "Κτίρια και αντικείμενα",
+      "level": "Επίπεδο {value}",
+      "lower_title": "Χαμηλότερος τίτλος"
+    }
+  },
+  "hu": {
+    "ui": {
+      "page_title": "Élelmiszer-termelési kalkulátor",
+      "results": "Eredmények",
+      "percentage_bonus": "Százalékos bónusz",
+      "fixed_bonus": "Fix termelési bónusz",
+      "bonuses": "Bónuszok",
+      "location": "Helyszín",
+      "main_castle": "Fővár",
+      "food_outpost_6": "6-os élelmiszer-erőd",
+      "food_outpost_8": "8-as élelmiszer-erőd",
+      "kingdoms": "Királyságok",
+      "villages_bonus": "Nyersanyagfalvak bónusza",
+      "food_production_tci": "Élelmiszer-termelési ideiglenes építési elem",
+      "buildings_items": "Épületek és építési elemek",
+      "level": "{value}. szint",
+      "lower_title": "Alacsonyabb cím"
+    }
+  },
+  "it": {
+    "ui": {
+      "page_title": "Calcolatore della produzione di cibo",
+      "results": "Risultati",
+      "percentage_bonus": "Bonus percentuale",
+      "fixed_bonus": "Bonus fisso di produzione",
+      "bonuses": "Bonus",
+      "location": "Posizione",
+      "main_castle": "Castello principale",
+      "food_outpost_6": "Avamposto di cibo 6",
+      "food_outpost_8": "Avamposto di cibo 8",
+      "kingdoms": "Regni",
+      "villages_bonus": "Bonus dei villaggi di risorse",
+      "food_production_tci": "Oggetto di costruzione temporaneo per la produzione di cibo",
+      "buildings_items": "Edifici e oggetti",
+      "level": "Livello {value}",
+      "lower_title": "Titolo inferiore"
+    }
+  },
+  "ja": {
+    "ui": {
+      "page_title": "食料生産計算機",
+      "results": "結果",
+      "percentage_bonus": "割合ボーナス",
+      "fixed_bonus": "固定生産ボーナス",
+      "bonuses": "ボーナス",
+      "location": "場所",
+      "main_castle": "本城",
+      "food_outpost_6": "食料前哨基地6",
+      "food_outpost_8": "食料前哨基地8",
+      "kingdoms": "王国",
+      "villages_bonus": "資源村ボーナス",
+      "food_production_tci": "食料生産用一時建設アイテム",
+      "buildings_items": "建物とアイテム",
+      "level": "レベル{value}",
+      "lower_title": "下位の称号"
+    }
+  },
+  "ko": {
+    "ui": {
+      "page_title": "식량 생산 계산기",
+      "results": "결과",
+      "percentage_bonus": "백분율 보너스",
+      "fixed_bonus": "고정 생산 보너스",
+      "bonuses": "보너스",
+      "location": "위치",
+      "main_castle": "본성",
+      "food_outpost_6": "식량 전초기지 6",
+      "food_outpost_8": "식량 전초기지 8",
+      "kingdoms": "왕국",
+      "villages_bonus": "자원 마을 보너스",
+      "food_production_tci": "식량 생산 임시 건설 아이템",
+      "buildings_items": "건물 및 아이템",
+      "level": "레벨 {value}",
+      "lower_title": "하위 칭호"
+    }
+  },
+  "lt": {
+    "ui": {
+      "page_title": "Maisto gamybos skaičiuoklė",
+      "results": "Rezultatai",
+      "percentage_bonus": "Procentinė premija",
+      "fixed_bonus": "Fiksuota gamybos premija",
+      "bonuses": "Premijos",
+      "location": "Vieta",
+      "main_castle": "Pagrindinė pilis",
+      "food_outpost_6": "Maisto postas 6",
+      "food_outpost_8": "Maisto postas 8",
+      "kingdoms": "Karalystės",
+      "villages_bonus": "Išteklių kaimų premija",
+      "food_production_tci": "Laikinas maisto gamybos statybos elementas",
+      "buildings_items": "Pastatai ir elementai",
+      "level": "Lygis {value}",
+      "lower_title": "Žemesnis titulas"
+    }
+  },
+  "nl": {
+    "ui": {
+      "page_title": "Voedselproductiecalculator",
+      "results": "Resultaten",
+      "percentage_bonus": "Procentuele bonus",
+      "fixed_bonus": "Vaste productiebonus",
+      "bonuses": "Bonussen",
+      "location": "Locatie",
+      "main_castle": "Hoofdkasteel",
+      "food_outpost_6": "Voedselvoorpost 6",
+      "food_outpost_8": "Voedselvoorpost 8",
+      "kingdoms": "Koninkrijken",
+      "villages_bonus": "Grondstoffendorpenbonus",
+      "food_production_tci": "Tijdelijk constructie-item voor voedselproductie",
+      "buildings_items": "Gebouwen en items",
+      "level": "Niveau {value}",
+      "lower_title": "Lagere titel"
+    }
+  },
+  "no": {
+    "ui": {
+      "page_title": "Kalkulator for matproduksjon",
+      "results": "Resultater",
+      "percentage_bonus": "Prosentbonus",
+      "fixed_bonus": "Fast produksjonsbonus",
+      "bonuses": "Bonuser",
+      "location": "Plassering",
+      "main_castle": "Hovedborg",
+      "food_outpost_6": "Matutpost 6",
+      "food_outpost_8": "Matutpost 8",
+      "kingdoms": "Kongeriker",
+      "villages_bonus": "Bonus fra ressurslandsbyer",
+      "food_production_tci": "Midlertidig konstruksjonsgjenstand for matproduksjon",
+      "buildings_items": "Bygninger og gjenstander",
+      "level": "Nivå {value}",
+      "lower_title": "Lavere tittel"
+    }
+  },
+  "pl": {
+    "ui": {
+      "page_title": "Kalkulator produkcji żywności",
+      "results": "Wyniki",
+      "percentage_bonus": "Premia procentowa",
+      "fixed_bonus": "Stała premia produkcyjna",
+      "bonuses": "Premie",
+      "location": "Lokalizacja",
+      "main_castle": "Zamek główny",
+      "food_outpost_6": "Posterunek żywnościowy 6",
+      "food_outpost_8": "Posterunek żywnościowy 8",
+      "kingdoms": "Królestwa",
+      "villages_bonus": "Premia wiosek z zasobami",
+      "food_production_tci": "Tymczasowy element konstrukcyjny produkcji żywności",
+      "buildings_items": "Budynki i elementy",
+      "level": "Poziom {value}",
+      "lower_title": "Niższy tytuł"
+    }
+  },
+  "ro": {
+    "ui": {
+      "page_title": "Calculator producție hrană",
+      "results": "Rezultate",
+      "percentage_bonus": "Bonus procentual",
+      "fixed_bonus": "Bonus fix de producție",
+      "bonuses": "Bonusuri",
+      "location": "Locație",
+      "main_castle": "Castel principal",
+      "food_outpost_6": "Avanpost de hrană 6",
+      "food_outpost_8": "Avanpost de hrană 8",
+      "kingdoms": "Regate",
+      "villages_bonus": "Bonusul satelor de resurse",
+      "food_production_tci": "Obiect temporar de construcție pentru producția de hrană",
+      "buildings_items": "Clădiri și obiecte",
+      "level": "Nivel {value}",
+      "lower_title": "Titlu inferior"
+    }
+  },
+  "ru": {
+    "ui": {
+      "page_title": "Калькулятор производства еды",
+      "results": "Результаты",
+      "percentage_bonus": "Процентный бонус",
+      "fixed_bonus": "Фиксированный бонус производства",
+      "bonuses": "Бонусы",
+      "location": "Местоположение",
+      "main_castle": "Главный замок",
+      "food_outpost_6": "Продовольственный аванпост 6",
+      "food_outpost_8": "Продовольственный аванпост 8",
+      "kingdoms": "Королевства",
+      "villages_bonus": "Бонус ресурсных деревень",
+      "food_production_tci": "Временный строительный предмет для производства еды",
+      "buildings_items": "Здания и предметы",
+      "level": "Уровень {value}",
+      "lower_title": "Более низкий титул"
+    }
+  },
+  "sv": {
+    "ui": {
+      "page_title": "Kalkylator för matproduktion",
+      "results": "Resultat",
+      "percentage_bonus": "Procentbonus",
+      "fixed_bonus": "Fast produktionsbonus",
+      "bonuses": "Bonusar",
+      "location": "Plats",
+      "main_castle": "Huvudslott",
+      "food_outpost_6": "Matutpost 6",
+      "food_outpost_8": "Matutpost 8",
+      "kingdoms": "Kungariken",
+      "villages_bonus": "Bonus från resursbyar",
+      "food_production_tci": "Tillfälligt konstruktionsföremål för matproduktion",
+      "buildings_items": "Byggnader och föremål",
+      "level": "Nivå {value}",
+      "lower_title": "Lägre titel"
+    }
+  },
+  "sk": {
+    "ui": {
+      "page_title": "Kalkulačka produkcie jedla",
+      "results": "Výsledky",
+      "percentage_bonus": "Percentuálny bonus",
+      "fixed_bonus": "Pevný bonus produkcie",
+      "bonuses": "Bonusy",
+      "location": "Umiestnenie",
+      "main_castle": "Hlavný hrad",
+      "food_outpost_6": "Potravinová základňa 6",
+      "food_outpost_8": "Potravinová základňa 8",
+      "kingdoms": "Kráľovstvá",
+      "villages_bonus": "Bonus surovinových dedín",
+      "food_production_tci": "Dočasný konštrukčný predmet produkcie jedla",
+      "buildings_items": "Budovy a predmety",
+      "level": "Úroveň {value}",
+      "lower_title": "Nižší titul"
+    }
+  },
+  "tr": {
+    "ui": {
+      "page_title": "Yiyecek üretimi hesaplayıcısı",
+      "results": "Sonuçlar",
+      "percentage_bonus": "Yüzde bonusu",
+      "fixed_bonus": "Sabit üretim bonusu",
+      "bonuses": "Bonuslar",
+      "location": "Konum",
+      "main_castle": "Ana kale",
+      "food_outpost_6": "Yiyecek karakolu 6",
+      "food_outpost_8": "Yiyecek karakolu 8",
+      "kingdoms": "Krallıklar",
+      "villages_bonus": "Kaynak köyleri bonusu",
+      "food_production_tci": "Yiyecek üretimi geçici inşa öğesi",
+      "buildings_items": "Binalar ve öğeler",
+      "level": "Seviye {value}",
+      "lower_title": "Alt unvan"
+    }
+  }
+}

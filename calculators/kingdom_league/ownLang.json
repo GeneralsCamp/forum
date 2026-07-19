@@ -1,0 +1,434 @@
+{
+  "en": {
+    "ui": {
+      "page_title": "Kingdom League Calculator",
+      "back_home": "Back to homepage",
+      "medal_input": "Medal input",
+      "results": "Results",
+      "current_title": "Current title",
+      "next_title": "Next title",
+      "minimum_medals": "Minimum medals to rank up",
+      "rank_format": "{title} (Rank {rank})",
+      "maximum_rank_reached": "Maximum rank reached",
+      "already_max_title": "Already at the maximum title.",
+      "no_additional_medal": "No additional medal needed.",
+      "no_combination_found": "No medal combination found.",
+      "advice_over": "{medals} ({total} points, +{overflow} points over)",
+      "advice_exact": "{medals} ({total} points exactly)"
+    }
+  },
+  "ar": {
+    "ui": {
+      "page_title": "حاسبة دوري الممالك",
+      "back_home": "العودة إلى الصفحة الرئيسية",
+      "medal_input": "إدخال الميداليات",
+      "results": "النتائج",
+      "current_title": "اللقب الحالي",
+      "next_title": "اللقب التالي",
+      "minimum_medals": "الحد الأدنى من الميداليات للترقية",
+      "rank_format": "{title} (الرتبة {rank})",
+      "maximum_rank_reached": "تم بلوغ أعلى رتبة",
+      "already_max_title": "أنت بالفعل عند أعلى لقب.",
+      "no_additional_medal": "لا حاجة إلى ميدالية إضافية.",
+      "no_combination_found": "لم يتم العثور على مجموعة ميداليات.",
+      "advice_over": "{medals} ({total} نقطة، زيادة {overflow} نقطة)",
+      "advice_exact": "{medals} ({total} نقطة بالضبط)"
+    }
+  },
+  "es": {
+    "ui": {
+      "page_title": "Calculadora de la Liga de los Reinos",
+      "back_home": "Volver a la página principal",
+      "medal_input": "Medallas",
+      "results": "Resultados",
+      "current_title": "Título actual",
+      "next_title": "Siguiente título",
+      "minimum_medals": "Medallas mínimas para ascender",
+      "rank_format": "{title} (Rango {rank})",
+      "maximum_rank_reached": "Rango máximo alcanzado",
+      "already_max_title": "Ya tienes el título máximo.",
+      "no_additional_medal": "No necesitas ninguna medalla adicional.",
+      "no_combination_found": "No se encontró ninguna combinación de medallas.",
+      "advice_over": "{medals} ({total} puntos, sobran {overflow})",
+      "advice_exact": "{medals} ({total} puntos exactos)"
+    }
+  },
+  "bg": {
+    "ui": {
+      "page_title": "Калкулатор за Лигата на кралствата",
+      "back_home": "Към началната страница",
+      "medal_input": "Въвеждане на медали",
+      "results": "Резултати",
+      "current_title": "Текуща титла",
+      "next_title": "Следваща титла",
+      "minimum_medals": "Минимални медали за повишение",
+      "rank_format": "{title} (Ранг {rank})",
+      "maximum_rank_reached": "Достигнат е максималният ранг",
+      "already_max_title": "Вече сте с максималната титла.",
+      "no_additional_medal": "Не е необходим допълнителен медал.",
+      "no_combination_found": "Не е намерена комбинация от медали.",
+      "advice_over": "{medals} ({total} точки, {overflow} в повече)",
+      "advice_exact": "{medals} (точно {total} точки)"
+    }
+  },
+  "pt": {
+    "ui": {
+      "page_title": "Calculadora da Liga dos Reinos",
+      "back_home": "Voltar à página inicial",
+      "medal_input": "Introdução de medalhas",
+      "results": "Resultados",
+      "current_title": "Título atual",
+      "next_title": "Próximo título",
+      "minimum_medals": "Mínimo de medalhas para subir",
+      "rank_format": "{title} (Posição {rank})",
+      "maximum_rank_reached": "Posição máxima alcançada",
+      "already_max_title": "Já atingiu o título máximo.",
+      "no_additional_medal": "Não é necessária outra medalha.",
+      "no_combination_found": "Não foi encontrada uma combinação de medalhas.",
+      "advice_over": "{medals} ({total} pontos, {overflow} a mais)",
+      "advice_exact": "{medals} ({total} pontos exatos)"
+    }
+  },
+  "cs": {
+    "ui": {
+      "page_title": "Kalkulačka Ligy království",
+      "back_home": "Zpět na hlavní stránku",
+      "medal_input": "Zadané medaile",
+      "results": "Výsledky",
+      "current_title": "Aktuální titul",
+      "next_title": "Další titul",
+      "minimum_medals": "Minimum medailí pro postup",
+      "rank_format": "{title} (Hodnost {rank})",
+      "maximum_rank_reached": "Dosažena nejvyšší hodnost",
+      "already_max_title": "Již máte nejvyšší titul.",
+      "no_additional_medal": "Není potřeba žádná další medaile.",
+      "no_combination_found": "Nebyla nalezena kombinace medailí.",
+      "advice_over": "{medals} ({total} bodů, o {overflow} více)",
+      "advice_exact": "{medals} (přesně {total} bodů)"
+    }
+  },
+  "de": {
+    "ui": {
+      "page_title": "Königreich-Liga-Rechner",
+      "back_home": "Zurück zur Startseite",
+      "medal_input": "Medaillen eingeben",
+      "results": "Ergebnisse",
+      "current_title": "Aktueller Titel",
+      "next_title": "Nächster Titel",
+      "minimum_medals": "Mindestmedaillen für den Aufstieg",
+      "rank_format": "{title} (Rang {rank})",
+      "maximum_rank_reached": "Höchster Rang erreicht",
+      "already_max_title": "Du hast bereits den höchsten Titel.",
+      "no_additional_medal": "Keine weitere Medaille erforderlich.",
+      "no_combination_found": "Keine Medaillenkombination gefunden.",
+      "advice_over": "{medals} ({total} Punkte, {overflow} Punkte darüber)",
+      "advice_exact": "{medals} (genau {total} Punkte)"
+    }
+  },
+  "da": {
+    "ui": {
+      "page_title": "Kongerigeliga-beregner",
+      "back_home": "Tilbage til forsiden",
+      "medal_input": "Indtast medaljer",
+      "results": "Resultater",
+      "current_title": "Nuværende titel",
+      "next_title": "Næste titel",
+      "minimum_medals": "Mindste antal medaljer til oprykning",
+      "rank_format": "{title} (Rang {rank})",
+      "maximum_rank_reached": "Højeste rang nået",
+      "already_max_title": "Du har allerede den højeste titel.",
+      "no_additional_medal": "Ingen yderligere medalje nødvendig.",
+      "no_combination_found": "Ingen medaljekombination fundet.",
+      "advice_over": "{medals} ({total} point, {overflow} point over)",
+      "advice_exact": "{medals} (præcis {total} point)"
+    }
+  },
+  "fi": {
+    "ui": {
+      "page_title": "Valtakuntaliigan laskuri",
+      "back_home": "Takaisin etusivulle",
+      "medal_input": "Mitalit",
+      "results": "Tulokset",
+      "current_title": "Nykyinen arvonimi",
+      "next_title": "Seuraava arvonimi",
+      "minimum_medals": "Nousuun tarvittavat vähimmäismitalit",
+      "rank_format": "{title} (Sija {rank})",
+      "maximum_rank_reached": "Korkein sija saavutettu",
+      "already_max_title": "Olet jo korkeimmassa arvonimessä.",
+      "no_additional_medal": "Lisämitalia ei tarvita.",
+      "no_combination_found": "Mitaliyhdistelmää ei löytynyt.",
+      "advice_over": "{medals} ({total} pistettä, {overflow} yli)",
+      "advice_exact": "{medals} (tasan {total} pistettä)"
+    }
+  },
+  "fr": {
+    "ui": {
+      "page_title": "Calculateur de la Ligue des royaumes",
+      "back_home": "Retour à l'accueil",
+      "medal_input": "Saisie des médailles",
+      "results": "Résultats",
+      "current_title": "Titre actuel",
+      "next_title": "Titre suivant",
+      "minimum_medals": "Médailles minimales pour progresser",
+      "rank_format": "{title} (Rang {rank})",
+      "maximum_rank_reached": "Rang maximal atteint",
+      "already_max_title": "Vous avez déjà le titre maximal.",
+      "no_additional_medal": "Aucune médaille supplémentaire requise.",
+      "no_combination_found": "Aucune combinaison de médailles trouvée.",
+      "advice_over": "{medals} ({total} points, {overflow} en trop)",
+      "advice_exact": "{medals} (exactement {total} points)"
+    }
+  },
+  "el": {
+    "ui": {
+      "page_title": "Υπολογιστής Λίγκας Βασιλείων",
+      "back_home": "Επιστροφή στην αρχική σελίδα",
+      "medal_input": "Εισαγωγή μεταλλίων",
+      "results": "Αποτελέσματα",
+      "current_title": "Τρέχων τίτλος",
+      "next_title": "Επόμενος τίτλος",
+      "minimum_medals": "Ελάχιστα μετάλλια για άνοδο",
+      "rank_format": "{title} (Βαθμός {rank})",
+      "maximum_rank_reached": "Επιτεύχθηκε ο μέγιστος βαθμός",
+      "already_max_title": "Έχετε ήδη τον μέγιστο τίτλο.",
+      "no_additional_medal": "Δεν χρειάζεται επιπλέον μετάλλιο.",
+      "no_combination_found": "Δεν βρέθηκε συνδυασμός μεταλλίων.",
+      "advice_over": "{medals} ({total} πόντοι, {overflow} επιπλέον)",
+      "advice_exact": "{medals} (ακριβώς {total} πόντοι)"
+    }
+  },
+  "hu": {
+    "ui": {
+      "page_title": "Királyságok Liga kalkulátor",
+      "back_home": "Vissza a főoldalra",
+      "medal_input": "Érmek megadása",
+      "results": "Eredmények",
+      "current_title": "Jelenlegi cím",
+      "next_title": "Következő cím",
+      "minimum_medals": "A ranglépéshez szükséges legkevesebb érem",
+      "rank_format": "{title} ({rank}. rang)",
+      "maximum_rank_reached": "Elérted a legmagasabb rangot",
+      "already_max_title": "Már a legmagasabb címmel rendelkezel.",
+      "no_additional_medal": "Nincs szükség további éremre.",
+      "no_combination_found": "Nem található megfelelő éremkombináció.",
+      "advice_over": "{medals} ({total} pont, {overflow} ponttal több)",
+      "advice_exact": "{medals} (pontosan {total} pont)"
+    }
+  },
+  "it": {
+    "ui": {
+      "page_title": "Calcolatore della Lega dei Regni",
+      "back_home": "Torna alla pagina iniziale",
+      "medal_input": "Medaglie",
+      "results": "Risultati",
+      "current_title": "Titolo attuale",
+      "next_title": "Titolo successivo",
+      "minimum_medals": "Medaglie minime per avanzare",
+      "rank_format": "{title} (Rango {rank})",
+      "maximum_rank_reached": "Rango massimo raggiunto",
+      "already_max_title": "Hai già il titolo massimo.",
+      "no_additional_medal": "Non serve un'altra medaglia.",
+      "no_combination_found": "Nessuna combinazione di medaglie trovata.",
+      "advice_over": "{medals} ({total} punti, {overflow} in eccesso)",
+      "advice_exact": "{medals} ({total} punti esatti)"
+    }
+  },
+  "ja": {
+    "ui": {
+      "page_title": "王国リーグ計算機",
+      "back_home": "ホームページに戻る",
+      "medal_input": "メダル入力",
+      "results": "結果",
+      "current_title": "現在の称号",
+      "next_title": "次の称号",
+      "minimum_medals": "昇格に必要な最少メダル",
+      "rank_format": "{title}（ランク{rank}）",
+      "maximum_rank_reached": "最高ランクに到達",
+      "already_max_title": "すでに最高の称号です。",
+      "no_additional_medal": "追加のメダルは必要ありません。",
+      "no_combination_found": "メダルの組み合わせが見つかりません。",
+      "advice_over": "{medals}（{total}ポイント、{overflow}ポイント超過）",
+      "advice_exact": "{medals}（ちょうど{total}ポイント）"
+    }
+  },
+  "ko": {
+    "ui": {
+      "page_title": "왕국 리그 계산기",
+      "back_home": "홈페이지로 돌아가기",
+      "medal_input": "메달 입력",
+      "results": "결과",
+      "current_title": "현재 칭호",
+      "next_title": "다음 칭호",
+      "minimum_medals": "승급에 필요한 최소 메달",
+      "rank_format": "{title} (랭크 {rank})",
+      "maximum_rank_reached": "최고 랭크 달성",
+      "already_max_title": "이미 최고 칭호입니다.",
+      "no_additional_medal": "추가 메달이 필요하지 않습니다.",
+      "no_combination_found": "메달 조합을 찾지 못했습니다.",
+      "advice_over": "{medals} ({total}포인트, {overflow}포인트 초과)",
+      "advice_exact": "{medals} (정확히 {total}포인트)"
+    }
+  },
+  "lt": {
+    "ui": {
+      "page_title": "Karalysčių lygos skaičiuoklė",
+      "back_home": "Grįžti į pradžios puslapį",
+      "medal_input": "Medalių įvestis",
+      "results": "Rezultatai",
+      "current_title": "Dabartinis titulas",
+      "next_title": "Kitas titulas",
+      "minimum_medals": "Mažiausiai medalių pakilimui",
+      "rank_format": "{title} ({rank} rangas)",
+      "maximum_rank_reached": "Pasiektas aukščiausias rangas",
+      "already_max_title": "Jau turite aukščiausią titulą.",
+      "no_additional_medal": "Papildomo medalio nereikia.",
+      "no_combination_found": "Medalių derinys nerastas.",
+      "advice_over": "{medals} ({total} taškų, {overflow} per daug)",
+      "advice_exact": "{medals} (lygiai {total} taškų)"
+    }
+  },
+  "nl": {
+    "ui": {
+      "page_title": "Koninkrijkencompetitie-calculator",
+      "back_home": "Terug naar de startpagina",
+      "medal_input": "Medailles invoeren",
+      "results": "Resultaten",
+      "current_title": "Huidige titel",
+      "next_title": "Volgende titel",
+      "minimum_medals": "Minimale medailles voor promotie",
+      "rank_format": "{title} (Rang {rank})",
+      "maximum_rank_reached": "Hoogste rang bereikt",
+      "already_max_title": "Je hebt de hoogste titel al bereikt.",
+      "no_additional_medal": "Geen extra medaille nodig.",
+      "no_combination_found": "Geen medaillecombinatie gevonden.",
+      "advice_over": "{medals} ({total} punten, {overflow} te veel)",
+      "advice_exact": "{medals} (precies {total} punten)"
+    }
+  },
+  "no": {
+    "ui": {
+      "page_title": "Kongerikenes liga-kalkulator",
+      "back_home": "Tilbake til startsiden",
+      "medal_input": "Medaljer",
+      "results": "Resultater",
+      "current_title": "Nåværende tittel",
+      "next_title": "Neste tittel",
+      "minimum_medals": "Minste antall medaljer for opprykk",
+      "rank_format": "{title} (Rang {rank})",
+      "maximum_rank_reached": "Høyeste rang nådd",
+      "already_max_title": "Du har allerede den høyeste tittelen.",
+      "no_additional_medal": "Ingen ekstra medalje nødvendig.",
+      "no_combination_found": "Fant ingen medaljekombinasjon.",
+      "advice_over": "{medals} ({total} poeng, {overflow} poeng over)",
+      "advice_exact": "{medals} (nøyaktig {total} poeng)"
+    }
+  },
+  "pl": {
+    "ui": {
+      "page_title": "Kalkulator Ligi Królestw",
+      "back_home": "Powrót do strony głównej",
+      "medal_input": "Wprowadź medale",
+      "results": "Wyniki",
+      "current_title": "Aktualny tytuł",
+      "next_title": "Następny tytuł",
+      "minimum_medals": "Minimalna liczba medali do awansu",
+      "rank_format": "{title} (Ranga {rank})",
+      "maximum_rank_reached": "Osiągnięto najwyższą rangę",
+      "already_max_title": "Masz już najwyższy tytuł.",
+      "no_additional_medal": "Nie potrzeba dodatkowego medalu.",
+      "no_combination_found": "Nie znaleziono kombinacji medali.",
+      "advice_over": "{medals} ({total} pkt, o {overflow} za dużo)",
+      "advice_exact": "{medals} (dokładnie {total} pkt)"
+    }
+  },
+  "ro": {
+    "ui": {
+      "page_title": "Calculator Liga Regatelor",
+      "back_home": "Înapoi la pagina principală",
+      "medal_input": "Introducere medalii",
+      "results": "Rezultate",
+      "current_title": "Titlu actual",
+      "next_title": "Titlul următor",
+      "minimum_medals": "Numărul minim de medalii pentru promovare",
+      "rank_format": "{title} (Rang {rank})",
+      "maximum_rank_reached": "Rang maxim atins",
+      "already_max_title": "Ai deja titlul maxim.",
+      "no_additional_medal": "Nu este necesară nicio medalie suplimentară.",
+      "no_combination_found": "Nu a fost găsită nicio combinație de medalii.",
+      "advice_over": "{medals} ({total} puncte, {overflow} în plus)",
+      "advice_exact": "{medals} (exact {total} puncte)"
+    }
+  },
+  "ru": {
+    "ui": {
+      "page_title": "Калькулятор Лиги королевств",
+      "back_home": "Вернуться на главную",
+      "medal_input": "Ввод медалей",
+      "results": "Результаты",
+      "current_title": "Текущий титул",
+      "next_title": "Следующий титул",
+      "minimum_medals": "Минимум медалей для повышения",
+      "rank_format": "{title} (Ранг {rank})",
+      "maximum_rank_reached": "Достигнут максимальный ранг",
+      "already_max_title": "У вас уже максимальный титул.",
+      "no_additional_medal": "Дополнительная медаль не требуется.",
+      "no_combination_found": "Комбинация медалей не найдена.",
+      "advice_over": "{medals} ({total} очков, на {overflow} больше)",
+      "advice_exact": "{medals} (ровно {total} очков)"
+    }
+  },
+  "sv": {
+    "ui": {
+      "page_title": "Kalkylator för Rikenas liga",
+      "back_home": "Tillbaka till startsidan",
+      "medal_input": "Ange medaljer",
+      "results": "Resultat",
+      "current_title": "Nuvarande titel",
+      "next_title": "Nästa titel",
+      "minimum_medals": "Minsta antal medaljer för avancemang",
+      "rank_format": "{title} (Rang {rank})",
+      "maximum_rank_reached": "Högsta rang uppnådd",
+      "already_max_title": "Du har redan den högsta titeln.",
+      "no_additional_medal": "Ingen ytterligare medalj behövs.",
+      "no_combination_found": "Ingen medaljkombination hittades.",
+      "advice_over": "{medals} ({total} poäng, {overflow} över)",
+      "advice_exact": "{medals} (exakt {total} poäng)"
+    }
+  },
+  "sk": {
+    "ui": {
+      "page_title": "Kalkulačka Ligy kráľovstiev",
+      "back_home": "Späť na hlavnú stránku",
+      "medal_input": "Zadané medaily",
+      "results": "Výsledky",
+      "current_title": "Aktuálny titul",
+      "next_title": "Ďalší titul",
+      "minimum_medals": "Minimum medailí na postup",
+      "rank_format": "{title} (Hodnosť {rank})",
+      "maximum_rank_reached": "Dosiahnutá najvyššia hodnosť",
+      "already_max_title": "Už máte najvyšší titul.",
+      "no_additional_medal": "Nie je potrebná ďalšia medaila.",
+      "no_combination_found": "Nenašla sa kombinácia medailí.",
+      "advice_over": "{medals} ({total} bodov, o {overflow} viac)",
+      "advice_exact": "{medals} (presne {total} bodov)"
+    }
+  },
+  "tr": {
+    "ui": {
+      "page_title": "Krallık Ligi hesaplayıcısı",
+      "back_home": "Ana sayfaya dön",
+      "medal_input": "Madalya girişi",
+      "results": "Sonuçlar",
+      "current_title": "Mevcut unvan",
+      "next_title": "Sonraki unvan",
+      "minimum_medals": "Rütbe atlamak için en az madalya",
+      "rank_format": "{title} (Rütbe {rank})",
+      "maximum_rank_reached": "En yüksek rütbeye ulaşıldı",
+      "already_max_title": "Zaten en yüksek unvandasınız.",
+      "no_additional_medal": "Ek madalya gerekmiyor.",
+      "no_combination_found": "Madalya kombinasyonu bulunamadı.",
+      "advice_over": "{medals} ({total} puan, {overflow} puan fazla)",
+      "advice_exact": "{medals} (tam {total} puan)"
+    }
+  }
+}

@@ -27,20 +27,20 @@
             </div>
         </a>
 
-        <h1>FOOD PRODUCTION CALCULATOR</h1>
+        <h1 data-i18n="page_title">FOOD PRODUCTION CALCULATOR</h1>
 
         <div class="col-12 collapse-area mb-2 result">
             <h2 class="collapse-header">
-                <span class="header-title">RESULTS</span>
+                <span class="header-title" data-i18n="results">RESULTS</span>
             </h2>
             <div class="collapse show">
                 <form class="calculator-bonuses-form row" onsubmit="return false;">
                     <div class="collapse show results">
-                        <p class="il"><span id="finalProduction">TOTAL FOOD PRODUCTION: 0 /hour</span></p>
+                        <p class="il"><span class="result-label" data-game-lang="foodProductionPerHour">Food production per hour</span><span class="result-value" id="finalProduction">0 /hour</span></p>
                         <hr>
-                        <p>All bonuses: <span id="percentBonus">-</span></p>
+                        <p><span class="result-label" data-i18n="percentage_bonus">Percentage bonus</span><span id="percentBonus">-</span></p>
                         <hr>
-                        <p>All bonuses: <span id="constBonus">-</span></p>
+                        <p><span class="result-label" data-i18n="fixed_bonus">Fixed production bonus</span><span id="constBonus">-</span></p>
                     </div>
                 </form>
             </div>
@@ -48,28 +48,28 @@
 
         <div class="col-12 collapse-area mb-2">
             <h2 class="collapse-header">
-                <span class="header-title">BONUSES</span>
+                <span class="header-title" data-i18n="bonuses">BONUSES</span>
             </h2>
             <div class="collapse show">
                 <form id="bonuses-form" class="calculator-bonuses-form" onchange="Calculate()">
                     <div class="row">
                         <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                            <label for="">Location</label>
+                            <label for="location" data-i18n="location">Location</label>
                             <select id="location" class="form-select" onclick="LocationModify()">
-                                <option value="main">Main Castle</option>
-                                <option value="op6">Food outpost 6</option>
-                                <option value="op8">Food outpost 8</option>
-                                <option value="kingdom">Kingdoms</option>
+                                <option value="main" data-i18n="main_castle">Main Castle</option>
+                                <option value="op6" data-i18n="food_outpost_6">Food outpost 6</option>
+                                <option value="op8" data-i18n="food_outpost_8">Food outpost 8</option>
+                                <option value="kingdom" data-i18n="kingdoms">Kingdoms</option>
                             </select>
                         </div>
                         <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                            <label for="">Villages Bonus</label>
+                            <label for="villages" data-i18n="villages_bonus">Villages bonus</label>
                             <input required type="number" name="villages" id="villages" class="form-select"
                                 placeholder="e.g. 400%" min="0">
                         </div>
 
                         <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                            <label for="">Plow Research</label>
+                            <label for="res1" data-game-lang="research_47_title">Plow</label>
                             <select name="res1" id="res1" class="form-select">
                                 <option value="0">None</option>
                                 <option value="32">Level 1</option>
@@ -79,7 +79,7 @@
                         </div>
 
                         <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                            <label for="">TFC Rot. Research</label>
+                            <label for="res2" data-game-lang="research_14_title">Three-field crop rotation</label>
                             <select name="res2" id="res2" class="form-select">
                                 <option value="0">None</option>
                                 <option value="0.04">Level 1</option>
@@ -91,13 +91,13 @@
                         </div>
 
                         <div class="col-md-3 col-6 col-sm-4 form-group">
-                            <label for="">Public Order</label>
+                            <label for="po" data-game-lang="publicOrder">Public order</label>
                             <input class="form-control" required type="number" name="po" id="po"
                                 placeholder="e.g. 87600" min="0" step="1000">
                         </div>
 
                         <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                            <label for="">Coat of arms bonus</label>
+                            <label for="coat" data-game-lang="emblem">Coat of arms</label>
                             <select class="form-select" name="coat" id="coat">
                                 <option value="0">0%</option>
                                 <option value="0.02">2%</option>
@@ -114,7 +114,7 @@
                         </div>
 
                         <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                            <label for="">VIP Level</label><br>
+                            <label for="vip-main" data-game-lang="dialog_VipScreen_tooltip_v2">VIP</label>
                             <select class="form-select" name="vip" id="vip-main">
                                 <option value="0">Inactive</option>
                                 <option value="0">Level 1</option>
@@ -157,7 +157,7 @@
                         </div>
 
                         <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                            <label for="">Hunting</label><br>
+                            <label for="hunt-green" data-game-lang="dialog_hunter_title">Hunting</label>
                             <select class="form-select" name="hunt" id="hunt-green">
                                 <option value="0.00">Disabled</option>
                                 <option value="0.20">120%</option>
@@ -169,41 +169,41 @@
                         </div>
 
                         <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                            <label for="">Castellan Bonus</label>
+                            <label for="cast" data-game-lang="equipment_itemType_baron">Castellan</label>
                             <input class="form-control" type="number" name="cast" id="cast" placeholder="e.g. 2500"
                                 min="0" max="20000" step="100">
                         </div>
 
                         <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                            <label for="">Effect Deco Bonus</label>
+                            <label for="deco1" data-game-lang="filter_decoType_effect">Effect decorations</label>
                             <input class="form-control" type="number" name="deco1" id="deco1" placeholder="e.g. 15000"
                                 min="0" step="1000">
                         </div>
 
                         <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                            <label for="">Effect Deco Bonus</label>
+                            <label for="deco2"><span data-game-lang="filter_decoType_effect">Effect decorations</span> (%)</label>
                             <input class="form-control" type="number" name="deco2" id="deco2" placeholder="e.g. 40%"
                                 min="0" step="5">
                         </div>
 
                         <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                            <label for="">Food Production TCI</label>
+                            <label for="foodTCI" data-i18n="food_production_tci">Food production TCI</label>
                             <input class="form-control" type="number" name="foodTCI" id="foodTCI"
                                 placeholder="e.g. 15000" min="0" step="1000">
                         </div>
 
                         <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                            <label for="">Gallantry Title</label>
+                            <label for="beri" data-game-lang="nobilityTitles_singular">Gallantry title</label>
                             <select class="form-select" name="beri" id="beri">
                                 <option value="0">Lower</option>
-                                <option value="widowmaker">the Widowmaker</option>
-                                <option value="deathclaw">the Deathclaw</option>
-                                <option value="weaponmaster">Weapon Master</option>
+                                <option value="widowmaker" data-game-lang="playerTitle_108">the Widowmaker</option>
+                                <option value="deathclaw" data-game-lang="playerTitle_111">the Deathclaw</option>
+                                <option value="weaponmaster" data-game-lang="playerTitle_113">Weapon Master</option>
                             </select>
                         </div>
 
                         <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                            <label for="">Overseer</label>
+                            <label for="overseer" data-game-lang="overseer">Overseer</label>
                             <select class="form-select" name="overseer" id="overseer">
                                 <option value="0">No</option>
                                 <option value="0.25">Yes</option>
@@ -211,7 +211,7 @@
                         </div>
 
                         <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                            <label for="">Player Subscription</label>
+                            <label for="sub" data-game-lang="dialog_subscriptionHelp_playerSubscription_header">Player subscription</label>
                             <select class="form-select" name="sub" id="sub">
                                 <option value="0">No</option>
                                 <option value="0.1">Yes</option>
@@ -219,7 +219,7 @@
                         </div>
 
                         <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                            <label for="">Flour Mill</label>
+                            <label for="mill" data-game-lang="mill_name">Flour mill</label>
                             <select class="form-select" name="mill" id="mill">
                                 <option value="0">None</option>
                                 <option value="0.10">Level 1</option>
@@ -239,7 +239,7 @@
 
         <div class="collapse-area buildings-header">
             <h2 class="collapse-header">
-                <span class="header-title">BUILDINGS & ITEMS</span>
+                <span class="header-title" data-i18n="buildings_items">BUILDINGS &amp; ITEMS</span>
             </h2>
         </div>
 

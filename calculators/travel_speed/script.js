@@ -1,4 +1,7 @@
 import { saveCalculatorData, loadCalculatorData } from "../../overviews/shared/GameSettings.mjs";
+import { initCalculatorI18n } from "../shared/CalculatorI18n.mjs";
+
+await initCalculatorI18n();
 
 const CALC_NAME = "travel_speed";
 
@@ -157,9 +160,7 @@ function loadInputs() {
     }
 }
 
-window.render = render;
-
-document.addEventListener('DOMContentLoaded', () => {
+function initializeCalculator() {
     loadInputs();
     render();
 
@@ -167,4 +168,12 @@ document.addEventListener('DOMContentLoaded', () => {
         el.addEventListener('input', render);
         el.addEventListener('change', render);
     });
-});
+}
+
+window.render = render;
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializeCalculator, { once: true });
+} else {
+    initializeCalculator();
+}

@@ -1,4 +1,7 @@
 import { saveCalculatorData, loadCalculatorData } from "../../overviews/shared/GameSettings.mjs";
+import { initCalculatorI18n } from "../shared/CalculatorI18n.mjs";
+
+const { t, formatNumber } = await initCalculatorI18n();
 
 const CALC_NAME = "collector_event";
 
@@ -42,7 +45,7 @@ function calculate() {
     time = numTime.value;
 
     if (points === "" || time === "") {
-        lblResult.innerHTML = "You need X points now to reach the target at the end.";
+        lblResult.textContent = t("result_empty");
         return;
     }
 
@@ -70,18 +73,32 @@ function calculate() {
         points / Math.pow(1.35, time)
     ) + 1;
 
-    lblResult.innerHTML =
-        "You need <strong>" + targetScore.toLocaleString() +
-        "</strong> points now to reach the target at the end.";
+    const valueToken = "__CALCULATOR_VALUE__";
+    const resultParts = t("result_value", { value: valueToken }).split(valueToken);
+    const beforeValue = (resultParts[0] || "").replace(/ $/, "\u00a0");
+    const afterValue = resultParts.slice(1).join(valueToken).replace(/^ /, "\u00a0");
+    const strong = document.createElement("strong");
+    strong.textContent = formatNumber(targetScore);
+    lblResult.replaceChildren(
+        document.createTextNode(beforeValue),
+        strong,
+        document.createTextNode(afterValue)
+    );
 }
 
-window.calculate = calculate;
-
-document.addEventListener('DOMContentLoaded', () => {
+function initializeCalculator() {
     loadFromCache();
     calculate();
 
     document.querySelectorAll('input, select').forEach(el => {
         el.addEventListener('input', () => { calculate(); saveToCache(); });
     });
-});
+}
+
+window.calculate = calculate;
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializeCalculator, { once: true });
+} else {
+    initializeCalculator();
+}

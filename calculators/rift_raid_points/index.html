@@ -21,61 +21,58 @@
 
 <body>
   <div class="container">
+    <h1 data-i18n="page_title">RIFT RAID POINT CALCULATOR</h1>
     <div class="row">
-      <div class="col-12">
-        <h1>RIFT RAID POINT CALCULATOR</h1>
-      </div>
-
       <div id="loadingBox" class="col-12 loading-message" style="display:none;"></div>
 
       <!-- INPUTS -->
       <div id="inputsSection" class="col-12 collapse-area mb-2" style="display:none;">
         <h2 class="collapse-header">
-          <span class="header-title">INPUTS</span>
+          <span class="header-title" data-i18n="inputs">INPUTS</span>
         </h2>
         <div class="collapse show">
           <form class="calculator-bonuses-form row" onsubmit="return false;">
 
             <div class="col-6 col-lg-4 col-md-4 form-group">
-              <label for="raidBoss">Raid boss</label>
+              <label for="raidBoss" data-i18n="raid_boss">Raid boss</label>
               <select id="raidBoss" class="form-select"></select>
             </div>
 
             <div class="col-6 col-lg-4 col-md-4 form-group">
-              <label for="level">Boss level</label>
+              <label for="level" data-i18n="boss_level">Boss level</label>
               <select id="level" class="form-select"></select>
             </div>
 
             <div class="col-6 col-lg-4 col-md-4 form-group">
-              <label for="area">Area</label>
+              <label for="area" data-i18n="area">Area</label>
               <select id="area" class="form-select">
-                <option value="courtyard">Courtyard</option>
-                <option value="walls">Walls</option>
+                <option value="courtyard" data-i18n="courtyard">Courtyard</option>
+                <option value="walls" data-i18n="walls">Walls</option>
               </select>
             </div>
 
-            <div class="col-6 col-lg-4 col-md-4 form-group disabled-input" id="courtyardBox">
-              <label for="courtyardTroops">Courtyard troops</label>
+            <div class="col-6 col-lg-3 form-group disabled-input" id="courtyardBox">
+              <label for="courtyardTroops" data-i18n="courtyard_troops">Courtyard troops</label>
               <input type="number" id="courtyardTroops" class="form-control" readonly>
             </div>
 
-            <div class="col-6 col-lg-4 col-md-4 form-group disabled-input" id="wallBox">
-              <label for="wallTroops">Wall troops</label>
+            <div class="col-6 col-lg-3 form-group disabled-input" id="wallBox">
+              <label for="wallTroops" data-i18n="wall_troops">Wall troops</label>
               <input type="number" id="wallTroops" class="form-control" readonly>
             </div>
 
-            <div class="col-12 col-lg-4 col-md-4 form-group">
-              <label for="defeated">Defeated troops</label>
+            <div class="col-6 col-lg-3 form-group">
+              <label for="defeated" data-i18n="defeated_troops">Defeated troops</label>
               <input type="number" id="defeated" class="form-control" min="0" value="20000">
             </div>
 
-            <div class="col-12 col-lg-4 col-md-4 form-group">
-              <label for="defeatedReserve">Defeated reserve units</label>
+            <div class="col-6 col-lg-3 form-group">
+              <label for="defeatedReserve" data-i18n="defeated_reserve_units">Defeated reserve units</label>
               <input type="number" id="defeatedReserve" class="form-control" min="0" max="10000000" value="0">
             </div>
 
-            <div class="col-12 col-lg-4 col-md-4 form-group">
-              <label for="riftPointBonus">Rift Point bonus (%)</label>
+            <div class="col-6 col-lg-3 form-group">
+              <label for="riftPointBonus" data-i18n="rift_point_bonus">Rift Point bonus (%)</label>
               <input type="number" id="riftPointBonus" class="form-control" min="0" step="10" value="0">
             </div>
           </form>
@@ -86,17 +83,18 @@
       <!-- RESULTS -->
       <div id="resultsSection" class="col-12 collapse-area result" style="display:none;">
         <h2 class="collapse-header">
-          <span class="header-title">RESULTS</span>
+          <span class="header-title" data-i18n="results">RESULTS</span>
         </h2>
         <div class="collapse show results">
-          <p>RIFT POINTS: <span id="points">0</span></p>
+          <p><span class="result-label" id="riftPointsLabel" data-i18n="rift_points">RIFT POINTS</span><span id="points">0</span></p>
         </div>
       </div>
 
     </div>
   </div>
 
-  <a href="https://generalscamp.github.io/forum/" class="home-icon-link">
+  <a href="https://generalscamp.github.io/forum/" class="home-icon-link" aria-label="Back to homepage"
+    data-i18n-aria-label="back_home">
     <div class="home-icon">
       <i class="bi bi-house"></i>
     </div>
