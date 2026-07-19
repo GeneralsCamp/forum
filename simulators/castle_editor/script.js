@@ -108,6 +108,8 @@ const state = {
   drag: null
 };
 
+const MIN_CAMERA_SCALE = .45;
+const MAX_CAMERA_SCALE = 2.5;
 const TOUCH_LONG_PRESS_MS = 400;
 const TOUCH_DELETE_PRESS_MS = 700;
 const TOUCH_DOUBLE_TAP_MS = 280;
@@ -255,7 +257,12 @@ function clampView() {
   const verticalAllowance = rect.width >= 981
     ? Math.min(360, Math.max(160, rect.height * .32))
     : Math.min(220, Math.max(84, rect.height * .18));
-  const upwardCameraAllowance = Math.min(400, verticalAllowance * 1.18);
+  const isDesktopView = rect.width >= 981;
+  const zoomedUpwardExtension = Math.max(0, state.scale - 1) * (isDesktopView ? 260 : 120);
+  const upwardCameraAllowance = Math.min(
+    rect.height * (isDesktopView ? 1.15 : .78),
+    verticalAllowance * (isDesktopView ? 1.35 : 1.25) + zoomedUpwardExtension
+  );
   const downwardCameraAllowance = Math.max(54, verticalAllowance * .65);
   state.panX = clampAxis(state.panX, rect.width, bounds.minX, bounds.maxX, horizontalAllowance);
   state.panY = clampAxis(
@@ -279,7 +286,7 @@ function restoreCameraState() {
 
   state.panX = panX;
   state.panY = panY;
-  state.scale = Math.max(.35, Math.min(2.5, scale));
+  state.scale = Math.max(MIN_CAMERA_SCALE, Math.min(MAX_CAMERA_SCALE, scale));
   cameraRestored = true;
 }
 
@@ -1441,7 +1448,7 @@ async function prebuildCatalogAssets(workerCount = 4) {
 canvas.addEventListener("wheel", event => {
   event.preventDefault();
   const before = screenToGrid(event.clientX, event.clientY);
-  state.scale = Math.max(.35, Math.min(2.5, state.scale * (event.deltaY < 0 ? 1.1 : .9)));
+  state.scale = Math.max(MIN_CAMERA_SCALE, Math.min(MAX_CAMERA_SCALE, state.scale * (event.deltaY < 0 ? 1.1 : .9)));
   const after = iso(before.x, before.y); const rect = canvas.getBoundingClientRect();
   state.panX += event.clientX - rect.left - after.x;
   state.panY += event.clientY - rect.top - after.y;
@@ -1635,7 +1642,7 @@ function handleTouchPointerMove(event) {
     if (pointers.length < 2 || gesture?.type !== "pinch") return;
     const midpoint = touchMidpoint(pointers[0], pointers[1]);
     const rect = canvas.getBoundingClientRect();
-    state.scale = Math.max(.35, Math.min(2.5,
+    state.scale = Math.max(MIN_CAMERA_SCALE, Math.min(MAX_CAMERA_SCALE,
       gesture.startScale * touchDistance(pointers[0], pointers[1]) / gesture.startDistance));
     state.panX = midpoint.x - rect.left - gesture.anchorX * state.scale;
     state.panY = midpoint.y - rect.top - gesture.anchorY * state.scale;
