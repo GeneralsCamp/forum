@@ -139,8 +139,6 @@ restoreActiveLayoutState();
 restoreCameraState();
 restoreViewState();
 
-// Exact items selected from the legacy layout editor's catalog. Names, sizes,
-// translations and assets are still resolved from the current items payload.
 const LEGACY_CATALOG_WOD_IDS = new Set([
   "586", "553", "776", "1958", "2027", "3139", "3141", "474",
   "2998", "756", "2895", "2177", "3082", "3092", "481", "1639",
@@ -600,7 +598,6 @@ function draw() {
     .filter(building => building !== state.drag?.building)
     .sort(compareBuildingDepth)
     .forEach(drawBuilding);
-  // The item being moved must remain above every other sprite.
   if (state.drag?.building) drawBuilding(state.drag.building);
   if (state.mode === "overview") {
     state.buildings.forEach(drawOverviewBuildingLabel);
@@ -878,8 +875,6 @@ function drawBuilding(building) {
     return;
   }
   if (image?.complete && image.naturalWidth) {
-    // The bottom vertex is the in-game ground anchor. Using .98 here made
-    // every image overshoot the footprint by a few pixels.
     ctx.save();
     if (isBuildingAssetFlipped(building)) {
       ctx.translate(center.x, 0);
@@ -1021,12 +1016,10 @@ function drawDragPreview(building) {
 }
 
 function categoryColor(groundType) {
-  // Keep overview mode compatible with the original layout editor. The
-  // category comes directly from items.buildings[].buildingGroundType.
   switch (String(groundType || "").toUpperCase()) {
-    case "DECO": return "#6f4477";     // rgb(111, 68, 119)
-    case "CIVIL": return "#b7c535";    // rgb(183, 197, 53)
-    case "MILITARY": return "#3d828d"; // rgb(61, 130, 141)
+    case "DECO": return "#6f4477";
+    case "CIVIL": return "#b7c535";
+    case "MILITARY": return "#3d828d";
     default: return "#808080";
   }
 }
@@ -1380,7 +1373,6 @@ async function ensureComposedImage(item) {
       }
       item.composed = true;
     } catch (error) {
-      // Some static images have no companion atlas. The original image remains usable.
       console.debug("Building asset composition skipped", item.name, error);
     } finally {
       item.compositionPromise = null;
@@ -1710,6 +1702,14 @@ canvas.addEventListener("pointerdown", event => {
     handleTouchPointerDown(event);
     return;
   }
+  if (event.button === 1) {
+    event.preventDefault();
+    state.pointer = { x: event.clientX, y: event.clientY, panX: state.panX, panY: state.panY };
+    state.drag = { pan: true };
+    canvas.setPointerCapture(event.pointerId);
+    canvas.classList.add("is-dragging");
+    return;
+  }
   if (event.button !== 0) return;
   const point = screenToGrid(event.clientX, event.clientY);
   const building = buildingAt(event.clientX, event.clientY);
@@ -1718,6 +1718,9 @@ canvas.addEventListener("pointerdown", event => {
     ? { building, x: building.x, y: building.y, offsetX: point.x - building.x, offsetY: point.y - building.y }
     : { pan: true };
   canvas.setPointerCapture(event.pointerId); canvas.classList.add("is-dragging");
+});
+canvas.addEventListener("auxclick", event => {
+  if (event.button === 1) event.preventDefault();
 });
 canvas.addEventListener("pointermove", event => {
   if (event.pointerType === "touch") {
@@ -1782,12 +1785,12 @@ function setBuildingsPanel(panel) {
   buildingCatalogView.hidden = showingCustomDecorations;
   customDecoForm.hidden = !showingCustomDecorations;
   buildingsModalTitle.textContent = showingCustomDecorations
-    ? ui("custom_decorations", "Custom decorations")
+    ? ui("custom_decorations", "Custom buildings")
     : ui("buildings", "Buildings");
   customDecoToggle.dataset.panel = showingCustomDecorations ? "custom-decorations" : "catalog";
   customDecoToggle.setAttribute("aria-label", showingCustomDecorations
     ? ui("back_to_buildings", "Back to buildings")
-    : ui("add_custom_decoration", "Add custom decoration"));
+    : ui("add_custom_decoration", "Add custom building"));
   const icon = customDecoToggle.querySelector("i");
   if (icon) icon.className = `bi ${showingCustomDecorations ? "bi-arrow-left" : "bi-plus-lg"}`;
 }
@@ -1803,7 +1806,7 @@ function addCustomDecoIdRow(value = "", focus = false) {
   input.inputMode = "numeric";
   input.placeholder = ui("wod_id", "WOD ID");
   input.value = value;
-  input.setAttribute("aria-label", ui("decoration_wod_id", "Decoration WOD ID"));
+  input.setAttribute("aria-label", ui("decoration_wod_id", "Building WOD ID"));
   input.addEventListener("input", () => {
     if (input.value && row === customDecoRows.lastElementChild) addCustomDecoIdRow();
   });
@@ -1829,7 +1832,8 @@ function addCustomDecoIdRow(value = "", focus = false) {
   remove.type = "button";
   remove.setAttribute("aria-label", ui("remove_wod_id", "Remove WOD ID"));
   remove.innerHTML = '<i class="bi bi-x-lg" aria-hidden="true"></i>';
-  remove.addEventListener("click", () => {
+  remove.addEventListener("click", event => {
+    event.stopPropagation();
     row.remove();
     const lastInput = customDecoRows.lastElementChild?.querySelector(".custom-deco-id-input");
     if (!lastInput || lastInput.value) addCustomDecoIdRow("", true);
