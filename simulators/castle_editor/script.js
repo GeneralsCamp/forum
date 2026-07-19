@@ -20,6 +20,11 @@ const overviewToggle = document.getElementById("overviewToggle");
 const expansionSelect = document.getElementById("expansionSelect");
 const sidebarToggle = document.getElementById("sidebarToggle");
 const savesToggle = document.getElementById("savesToggle");
+const customDecoToggle = document.getElementById("customDecoToggle");
+const buildingsModalTitle = document.getElementById("buildingsModalTitle");
+const buildingCatalogView = document.getElementById("buildingCatalogView");
+const customDecoForm = document.getElementById("customDecoForm");
+const customDecoRows = document.getElementById("customDecoRows");
 const layoutNameInput = document.getElementById("layoutNameInput");
 const saveLayoutButton = document.getElementById("saveLayoutButton");
 const savedLayoutsList = document.getElementById("savedLayoutsList");
@@ -49,6 +54,7 @@ const state = {
   worldSize: 180,
   unlocked: 60,
   expansionLevel: 0,
+  customDecorationWodIds: [],
   buildings: [],
   buildingCatalog: [],
   images: new Map(),
@@ -60,6 +66,7 @@ const state = {
 let persistedState = loadSimulatorData(SIM_NAME) || {};
 let cameraRestored = false;
 let cameraSaveTimer = 0;
+let catalogSourceContext = null;
 
 const loader = createLoader();
 // The initial castle is a 3×3 group of 20×20 sectors. Each expansion step
@@ -295,6 +302,7 @@ function restoreActiveLayoutState() {
   const layout = savedLayouts().find(item => String(item.id) === activeId);
   if (!layout) return;
   state.expansionLevel = normalizeExpansionLevel(layout.expansionLevel);
+  state.customDecorationWodIds = parseWodIdList(layout.customDecorationWodIds);
   expansionSelect.value = String(state.expansionLevel);
   state.buildings = (Array.isArray(layout.buildings) ? layout.buildings : [])
     .map(normalizeSavedBuilding)
@@ -307,6 +315,7 @@ function currentLayoutSnapshot(id, name) {
     id,
     name,
     expansionLevel: state.expansionLevel,
+    customDecorationWodIds: customDecorationWodIds(),
     updatedAt: Date.now(),
     buildings: state.buildings.map(normalizeSavedBuilding).filter(Boolean)
   };
@@ -348,6 +357,7 @@ async function preparePlacedBuildingImages() {
 function applySavedLayout(layout) {
   if (!layout) return;
   state.expansionLevel = normalizeExpansionLevel(layout.expansionLevel);
+  state.customDecorationWodIds = parseWodIdList(layout.customDecorationWodIds);
   expansionSelect.value = String(state.expansionLevel);
   state.buildings = (Array.isArray(layout.buildings) ? layout.buildings : [])
     .map(normalizeSavedBuilding)
@@ -355,6 +365,10 @@ function applySavedLayout(layout) {
     .filter(isBuildingInsideUnlockedArea);
   state.drag = null;
   state.pointer = null;
+  rebuildBuildingCatalog();
+  populateSizeFilter();
+  renderCatalog();
+  void prebuildCatalogAssets();
   hydratePlacedBuildingImages();
   clampView();
   saveCameraState();
@@ -400,6 +414,26 @@ function updateSavedLayout(id) {
   persistedState = { ...persistedState, layouts: updatedLayouts };
   saveCameraState();
   renderSavedLayouts();
+}
+
+function saveCustomDecorationsToActiveLayout(removedWodIds = new Set()) {
+  const activeId = String(persistedState?.activeLayoutId || "");
+  if (!activeId) return;
+  let changed = false;
+  const layouts = savedLayouts().map(layout => {
+    if (String(layout.id) !== activeId) return layout;
+    changed = true;
+    return {
+      ...layout,
+      customDecorationWodIds: customDecorationWodIds(),
+      buildings: (Array.isArray(layout.buildings) ? layout.buildings : [])
+        .filter(building => !removedWodIds.has(String(building.id))),
+      updatedAt: Date.now()
+    };
+  });
+  if (!changed) return;
+  persistedState = { ...persistedState, layouts };
+  saveCameraState();
 }
 
 function deleteSavedLayout(id) {
@@ -964,6 +998,65 @@ async function placeDefaultKeep() {
   loadImage(item);
 }
 
+function parseWodIdList(value) {
+  return Array.from(new Set(String(value || "")
+    .split(/[\s,;]+/)
+    .map(id => id.trim())
+    .filter(id => /^\d+$/.test(id))));
+}
+
+function customDecorationWodIds() {
+  return parseWodIdList(state.customDecorationWodIds);
+}
+
+function validCustomDecorationWodIds(ids) {
+  const requestedIds = parseWodIdList(ids);
+  if (!catalogSourceContext || !requestedIds.length) return [];
+  const requested = new Set(requestedIds);
+  const valid = new Set();
+  const { buildings, imageMaps } = catalogSourceContext;
+
+  buildings.forEach(item => {
+    const wodId = String(item.wodID ?? "");
+    if (!requested.has(wodId) || valid.has(wodId)) return;
+    if (String(item.buildingGroundType || "").toUpperCase() !== "DECO") return;
+    if (!buildingImage(imageMaps, item, itemLevel(item))) return;
+    valid.add(wodId);
+  });
+
+  return requestedIds.filter(id => valid.has(id));
+}
+
+function rebuildBuildingCatalog() {
+  if (!catalogSourceContext) return;
+  const { buildings, imageMaps, lang } = catalogSourceContext;
+  const customIds = new Set(customDecorationWodIds());
+  const wantedIds = new Set([...LEGACY_CATALOG_WOD_IDS, ...customIds]);
+  const byWodId = new Map();
+
+  buildings.forEach(item => {
+    const wodId = String(item.wodID ?? "");
+    if (!wantedIds.has(wodId) || byWodId.has(wodId)) return;
+    if (customIds.has(wodId)
+      && !LEGACY_CATALOG_WOD_IDS.has(wodId)
+      && String(item.buildingGroundType || "").toUpperCase() !== "DECO") return;
+    const image = buildingImage(imageMaps, item, itemLevel(item));
+    if (!image) return;
+    byWodId.set(wodId, {
+      id: item.wodID,
+      name: localizedBuildingName(item, lang),
+      group: item.group || item.type,
+      groundType: item.buildingGroundType,
+      width: item.width,
+      height: item.height,
+      image,
+      level: itemLevel(item)
+    });
+  });
+
+  state.buildingCatalog = Array.from(byWodId.values()).sort((a, b) => a.name.localeCompare(b.name));
+}
+
 function findOpenSpot(building) {
   // Treat an enabled expansion as a direct continuation of its castle rows,
   // not as a separate fallback area. validPosition() rejects the unavailable
@@ -1288,9 +1381,114 @@ overviewToggle.addEventListener("click", () => {
   saveCameraState();
   draw();
 });
+
+function setBuildingsPanel(panel) {
+  const showingCustomDecorations = panel === "custom-decorations";
+  buildingCatalogView.hidden = showingCustomDecorations;
+  customDecoForm.hidden = !showingCustomDecorations;
+  buildingsModalTitle.textContent = showingCustomDecorations ? "Custom decorations" : "Buildings";
+  customDecoToggle.dataset.panel = showingCustomDecorations ? "custom-decorations" : "catalog";
+  customDecoToggle.setAttribute("aria-label", showingCustomDecorations ? "Back to buildings" : "Add custom decoration");
+  const icon = customDecoToggle.querySelector("i");
+  if (icon) icon.className = `bi ${showingCustomDecorations ? "bi-arrow-left" : "bi-plus-lg"}`;
+}
+
+function addCustomDecoIdRow(value = "", focus = false) {
+  const row = document.createElement("div");
+  row.className = "custom-deco-id-row";
+  const input = document.createElement("input");
+  input.className = "form-control custom-deco-id-input";
+  input.type = "number";
+  input.min = "1";
+  input.step = "1";
+  input.inputMode = "numeric";
+  input.placeholder = "WOD ID";
+  input.value = value;
+  input.setAttribute("aria-label", "Decoration WOD ID");
+  input.addEventListener("input", () => {
+    if (input.value && row === customDecoRows.lastElementChild) addCustomDecoIdRow();
+  });
+  input.addEventListener("keydown", event => {
+    if (event.key !== "Enter") return;
+    event.preventDefault();
+    const nextInput = row.nextElementSibling?.querySelector(".custom-deco-id-input");
+    if (nextInput) nextInput.focus();
+    else if (input.value) addCustomDecoIdRow("", true);
+  });
+  input.addEventListener("paste", event => {
+    const ids = parseWodIdList(event.clipboardData?.getData("text"));
+    if (ids.length < 2) return;
+    event.preventDefault();
+    input.value = ids[0];
+    ids.slice(1).forEach(id => addCustomDecoIdRow(id));
+    if (customDecoRows.lastElementChild?.querySelector(".custom-deco-id-input")?.value) {
+      addCustomDecoIdRow();
+    }
+  });
+  const remove = document.createElement("button");
+  remove.className = "custom-deco-remove-row";
+  remove.type = "button";
+  remove.setAttribute("aria-label", "Remove WOD ID");
+  remove.innerHTML = '<i class="bi bi-x-lg" aria-hidden="true"></i>';
+  remove.addEventListener("click", () => {
+    row.remove();
+    const lastInput = customDecoRows.lastElementChild?.querySelector(".custom-deco-id-input");
+    if (!lastInput || lastInput.value) addCustomDecoIdRow("", true);
+  });
+  row.append(input, remove);
+  customDecoRows.append(row);
+  if (focus) input.focus();
+}
+
+function renderCustomDecoIdRows(ids) {
+  customDecoRows.replaceChildren();
+  const values = parseWodIdList(ids);
+  values.forEach(value => addCustomDecoIdRow(value));
+  addCustomDecoIdRow();
+}
+
+function customDecoIdsFromRows() {
+  return parseWodIdList(Array.from(customDecoRows.querySelectorAll(".custom-deco-id-input"), input => input.value));
+}
+
 sidebarToggle.addEventListener("click", () => {
   setSizeDropdownOpen(false);
+  setBuildingsPanel("catalog");
   buildingsModal.open();
+});
+customDecoToggle.addEventListener("click", () => {
+  const showingCustomDecorations = customDecoToggle.dataset.panel === "custom-decorations";
+  if (showingCustomDecorations) {
+    setBuildingsPanel("catalog");
+    return;
+  }
+  setSizeDropdownOpen(false);
+  renderCustomDecoIdRows(customDecorationWodIds());
+  setBuildingsPanel("custom-decorations");
+  customDecoRows.querySelector(".custom-deco-id-input")?.focus();
+});
+customDecoForm.addEventListener("submit", event => {
+  event.preventDefault();
+  const previousWodIds = new Set(customDecorationWodIds());
+  const nextWodIds = validCustomDecorationWodIds(customDecoIdsFromRows());
+  const nextWodIdSet = new Set(nextWodIds);
+  const removedWodIds = new Set(Array.from(previousWodIds).filter(id => !nextWodIdSet.has(id)));
+  state.customDecorationWodIds = nextWodIds;
+  if (removedWodIds.size) {
+    state.buildings = state.buildings.filter(building => !removedWodIds.has(String(building.id)));
+    if (state.drag?.building && removedWodIds.has(String(state.drag.building.id))) {
+      state.drag = null;
+      state.pointer = null;
+    }
+  }
+  saveCustomDecorationsToActiveLayout(removedWodIds);
+  rebuildBuildingCatalog();
+  populateSizeFilter();
+  hydratePlacedBuildingImages();
+  renderCatalog();
+  void prebuildCatalogAssets();
+  draw();
+  setBuildingsPanel("catalog");
 });
 savesToggle.addEventListener("click", () => {
   renderSavedLayouts();
@@ -1340,25 +1538,8 @@ await coreInit({
   assets: { buildings: true },
   onReady: async ({ data, imageMaps, lang }) => {
     const buildings = getArray(data, ["buildings"]);
-    const byWodId = new Map();
-    buildings.forEach(item => {
-      const wodId = String(item.wodID ?? "");
-      if (!LEGACY_CATALOG_WOD_IDS.has(wodId) || byWodId.has(wodId)) return;
-      const image = buildingImage(imageMaps, item, itemLevel(item));
-      const entry = {
-        id: item.wodID,
-        name: localizedBuildingName(item, lang),
-        group: item.group || item.type,
-        groundType: item.buildingGroundType,
-        width: item.width,
-        height: item.height,
-        image,
-        level: itemLevel(item)
-      };
-      if (!image) return;
-      byWodId.set(wodId, entry);
-    });
-    state.buildingCatalog = Array.from(byWodId.values()).sort((a, b) => a.name.localeCompare(b.name));
+    catalogSourceContext = { buildings, imageMaps, lang };
+    rebuildBuildingCatalog();
     populateSizeFilter();
     hydratePlacedBuildingImages();
     await placeDefaultKeep();

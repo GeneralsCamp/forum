@@ -22,11 +22,16 @@
         aria-labelledby="buildingsModalTitle">
         <div class="gf-modal-head">
           <h2 id="buildingsModalTitle" class="gf-modal-title">Buildings</h2>
-          <button id="sidebarClose" class="gf-modal-close" type="button" aria-label="Close buildings">
-            <i class="bi bi-x-lg" aria-hidden="true"></i>
-          </button>
+          <div class="modal-head-actions">
+            <button id="customDecoToggle" class="modal-head-tool" type="button" aria-label="Add custom decoration">
+              <i class="bi bi-plus-lg" aria-hidden="true"></i>
+            </button>
+            <button id="sidebarClose" class="gf-modal-close" type="button" aria-label="Close buildings">
+              <i class="bi bi-x-lg" aria-hidden="true"></i>
+            </button>
+          </div>
         </div>
-        <div class="gf-modal-body castle-buildings-modal-body">
+        <div id="buildingCatalogView" class="gf-modal-body castle-buildings-modal-body">
           <div class="building-filter-bar">
             <input id="buildingSearch" class="form-control custom-input" type="search"
               placeholder="Search by name" aria-label="Search by name">
@@ -44,6 +49,11 @@
           </div>
           <div id="buildingList" class="building-list" aria-live="polite"></div>
         </div>
+        <form id="customDecoForm" class="gf-modal-body custom-deco-form" hidden>
+          <div id="customDecoRows" class="custom-deco-id-grid"></div>
+          <p>Each valid decoration ID is stored separately in the active layout.</p>
+          <button class="custom-deco-add" type="submit">Apply</button>
+        </form>
       </div>
     </div>
 
