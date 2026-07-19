@@ -584,7 +584,17 @@ function screenToGrid(clientX, clientY) {
   return { x: Math.floor((a + b) / 2), y: Math.floor((b - a) / 2) };
 }
 
+let pendingRenderFrame = 0;
+
 function draw() {
+  if (pendingRenderFrame) return;
+  pendingRenderFrame = window.requestAnimationFrame(() => {
+    pendingRenderFrame = 0;
+    renderScene();
+  });
+}
+
+function renderScene() {
   if (!ctx) return;
   const rect = board.getBoundingClientRect();
   ctx.clearRect(0, 0, rect.width, rect.height);
@@ -610,14 +620,14 @@ function draw() {
     .filter(building => building !== state.drag?.building)
     .sort(compareBuildingDepth)
     .forEach(drawBuilding);
-  if (state.drag?.building) {
-    drawDragPreview(state.drag.building);
-    drawBuilding(state.drag.building);
-  }
   if (state.mode === "overview") {
     state.buildings
       .filter(building => building !== state.drag?.building)
       .forEach(drawOverviewBuildingLabel);
+  }
+  if (state.drag?.building) {
+    drawDragPreview(state.drag.building);
+    drawBuilding(state.drag.building);
   }
 }
 
