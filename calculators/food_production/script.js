@@ -1,18 +1,76 @@
 import { saveCalculatorData, loadCalculatorData } from "../../overviews/shared/GameSettings.mjs";
-import { getLangVersion, loadLanguage } from "../../overviews/shared/DataService.mjs";
+import {
+    getItemVersion,
+    getLangVersion,
+    loadItems,
+    loadLanguage
+} from "../../overviews/shared/DataService.mjs";
 import { initCalculatorI18n } from "../shared/CalculatorI18n.mjs";
 
 const { language, t, formatNumber } = await initCalculatorI18n();
 
 let gameLang = {};
-try {
-    gameLang = await loadLanguage(language, await getLangVersion());
-} catch (error) {
-    console.warn("Food production in-game translations could not be loaded:", error);
+let itemsData = {};
+
+const [languageResult, itemsResult] = await Promise.allSettled([
+    getLangVersion().then((version) => loadLanguage(language, version)),
+    getItemVersion().then((version) => loadItems(version))
+]);
+
+if (languageResult.status === "fulfilled") {
+    gameLang = languageResult.value;
+} else {
+    console.warn("Food production in-game translations could not be loaded:", languageResult.reason);
+}
+
+if (itemsResult.status === "fulfilled") {
+    itemsData = itemsResult.value;
+} else {
+    console.warn("Food production item data could not be loaded:", itemsResult.reason);
 }
 
 function getGameText(key, fallback) {
     return gameLang[key] || fallback;
+}
+
+function getNumericRows(section, predicate, valueKey) {
+    const rows = Array.isArray(itemsData?.[section]) ? itemsData[section] : [];
+    const byLevel = new Map();
+
+    rows.filter(predicate).forEach((row) => {
+        const level = Number.parseInt(row.level, 10);
+        const value = Number.parseInt(row[valueKey], 10);
+        if (Number.isFinite(level) && level > 0 && Number.isFinite(value)) {
+            byLevel.set(level, { level, value });
+        }
+    });
+
+    return [...byLevel.values()].sort((a, b) => a.level - b.level);
+}
+
+function getBuildingLevels(buildingType) {
+    const buildingNames = {
+        conservatory: "RelicFarmGreen",
+        greenhouse: "RelicFarm",
+        granary: "LegendFarm"
+    };
+    const name = buildingNames[buildingType];
+    if (!name) return [];
+
+    return getNumericRows(
+        "buildings",
+        (row) => row.name === name && row.Foodproduction !== undefined,
+        "Foodproduction"
+    );
+}
+
+function getConstructionItemLevels(groupID, minimumLevel = 1) {
+    return getNumericRows(
+        "constructionItems",
+        (row) => String(row.constructionItemGroupID) === String(groupID)
+            && Number.parseInt(row.level, 10) >= minimumLevel,
+        groupID === 8 ? "Foodproduction" : "unboostedFoodProduction"
+    );
 }
 
 function applyGameTranslations() {
@@ -208,7 +266,7 @@ function generateBuildingCards() {
 
     buildingsData.forEach((building, index) => {
         const buildingCard = `
-            <div class="col-12 col-xl-6 building-card-column" id="card-${building.id}" data-prodIndex="${index + 1}">
+            <div class="col-12 col-md-6 building-card-column" id="card-${building.id}" data-prodIndex="${index + 1}">
                 <div class="box" data-index="${index}">
                     <div class="box-icon">
                         <img src="${building.imgSrc}" class="img-fluid" alt="">
@@ -245,225 +303,34 @@ function generateBuildingCards() {
 
 // --- OPTION GENERATORS ---
 function generateLevelOptions(buildingType) {
-    let levels = [];
-
-    if (buildingType === "greenhouse") {
-        levels = [
-            { value: 0, label: "None" },
-            { value: 196, label: "Level 1" },
-            { value: 204, label: "Level 2" },
-            { value: 212, label: "Level 3" },
-            { value: 220, label: "Level 4" },
-            { value: 228, label: "Level 5" },
-            { value: 236, label: "Level 6" },
-            { value: 244, label: "Level 7" },
-            { value: 252, label: "Level 8" },
-            { value: 260, label: "Level 9" },
-            { value: 267, label: "Level 10" },
-            { value: 274, label: "Level 11" },
-            { value: 281, label: "Level 12" },
-            { value: 286, label: "Level 13" },
-            { value: 291, label: "Level 14" },
-            { value: 296, label: "Level 15" },
-            { value: 301, label: "Level 16" },
-            { value: 306, label: "Level 17" },
-            { value: 311, label: "Level 18" },
-            { value: 316, label: "Level 19" },
-            { value: 320, label: "Level 20" },
-            { value: 324, label: "Level 21" },
-            { value: 328, label: "Level 22" },
-            { value: 332, label: "Level 23" },
-            { value: 336, label: "Level 24" },
-            { value: 340, label: "Level 25" },
-            { value: 344, label: "Level 26" },
-            { value: 348, label: "Level 27" },
-            { value: 352, label: "Level 28" },
-            { value: 356, label: "Level 29" },
-            { value: 360, label: "Level 30" },
-            { value: 375, label: "Level 31" },
-            { value: 390, label: "Level 32" },
-            { value: 405, label: "Level 33" },
-            { value: 420, label: "Level 34" },
-            { value: 435, label: "Level 35" },
-            { value: 450, label: "Level 36" },
-            { value: 465, label: "Level 37" },
-            { value: 490, label: "Level 38" },
-            { value: 515, label: "Level 39" },
-            { value: 540, label: "Level 40" },
-        ];
-    } else if (buildingType === "granary") {
-        levels = [
-            { value: 0, label: "None" },
-            { value: 91, label: "Level 1" },
-            { value: 94, label: "Level 2" },
-            { value: 97, label: "Level 3" },
-            { value: 100, label: "Level 4" },
-            { value: 103, label: "Level 5" },
-            { value: 106, label: "Level 6" },
-            { value: 109, label: "Level 7" },
-            { value: 112, label: "Level 8" },
-            { value: 115, label: "Level 9" },
-            { value: 118, label: "Level 10" },
-            { value: 121, label: "Level 11" },
-            { value: 124, label: "Level 12" },
-            { value: 127, label: "Level 13" },
-            { value: 130, label: "Level 14" },
-            { value: 133, label: "Level 15" },
-            { value: 136, label: "Level 16" },
-            { value: 139, label: "Level 17" },
-            { value: 142, label: "Level 18" },
-            { value: 145, label: "Level 19" },
-            { value: 148, label: "Level 20" },
-            { value: 151, label: "Level 21" },
-            { value: 154, label: "Level 22" },
-            { value: 157, label: "Level 23" },
-            { value: 160, label: "Level 24" },
-            { value: 163, label: "Level 25" },
-            { value: 166, label: "Level 26" },
-            { value: 169, label: "Level 27" },
-            { value: 172, label: "Level 28" },
-            { value: 175, label: "Level 29" },
-            { value: 178, label: "Level 30" }
-        ];
-    } else if (buildingType === "conservatory") {
-        levels = [
-            { value: 0, label: "None" },
-            { value: 196, label: "Level 1" },
-            { value: 204, label: "Level 2" },
-            { value: 212, label: "Level 3" },
-            { value: 220, label: "Level 4" },
-            { value: 228, label: "Level 5" },
-            { value: 236, label: "Level 6" },
-            { value: 244, label: "Level 7" },
-            { value: 252, label: "Level 8" },
-            { value: 260, label: "Level 9" },
-            { value: 267, label: "Level 10" },
-            { value: 274, label: "Level 11" },
-            { value: 281, label: "Level 12" },
-            { value: 286, label: "Level 13" },
-            { value: 291, label: "Level 14" },
-            { value: 296, label: "Level 15" },
-            { value: 301, label: "Level 16" },
-            { value: 306, label: "Level 17" },
-            { value: 311, label: "Level 18" },
-            { value: 316, label: "Level 19" },
-            { value: 320, label: "Level 20" },
-            { value: 330, label: "Level 21" },
-            { value: 340, label: "Level 22" },
-            { value: 350, label: "Level 23" },
-            { value: 360, label: "Level 24" },
-            { value: 370, label: "Level 25" },
-            { value: 380, label: "Level 26" },
-            { value: 390, label: "Level 27" },
-            { value: 400, label: "Level 28" },
-            { value: 410, label: "Level 29" },
-            { value: 420, label: "Level 30" },
-            { value: 440, label: "Level 31" },
-            { value: 460, label: "Level 32" },
-            { value: 480, label: "Level 33" },
-            { value: 500, label: "Level 34" },
-            { value: 525, label: "Level 35" },
-            { value: 550, label: "Level 36" },
-            { value: 575, label: "Level 37" },
-            { value: 600, label: "Level 38" },
-            { value: 660, label: "Level 39" },
-            { value: 720, label: "Level 40" }
-        ];
-    }
-    return levels.map((level, index) => `<option value="${level.value}">${index === 0 ? getGameText("generals_abilities_desc_attack_1018", "None") : t("level", { value: index })}</option>`).join("");
+    const itemLevels = getBuildingLevels(buildingType);
+    return [
+        `<option value="0">${getGameText("generals_abilities_desc_attack_1018", "None")}</option>`,
+        ...itemLevels.map(({ level, value }) => `<option value="${value}">${t("level", { value: level })}</option>`)
+    ].join("");
 }
 
 function generatePrimaryOptions() {
-    const options = [
-        { value: 0, label: "No primary item" },
-        { value: 108, label: "Base 15" },
-        { value: 118, label: "Base 16" },
-        { value: 128, label: "Base 17" },
-        { value: 138, label: "Base 18" },
-        { value: 148, label: "Base 19" },
-        { value: 158, label: "Base 20" },
-        { value: 168, label: "Base 21" },
-        { value: 178, label: "Base 22" },
-        { value: 188, label: "Base 23" },
-        { value: 198, label: "Base 24" },
-        { value: 209, label: "Base 25" },
-        { value: 220, label: "Base 26" },
-        { value: 231, label: "Base 27" },
-        { value: 242, label: "Base 28" },
-        { value: 253, label: "Base 29" },
-        { value: 264, label: "Base 30" },
-        { value: 275, label: "Base 31" },
-        { value: 286, label: "Base 32" },
-        { value: 297, label: "Base 33" },
-        { value: 308, label: "Base 34" },
-        { value: 319, label: "Base 35" },
-        { value: 331, label: "Base 36" },
-        { value: 343, label: "Base 37" },
-        { value: 355, label: "Base 38" },
-        { value: 367, label: "Base 39" },
-        { value: 379, label: "Base 40" },
-        { value: 391, label: "Base 41" },
-        { value: 403, label: "Base 42" },
-        { value: 415, label: "Base 43" },
-        { value: 427, label: "Base 44" },
-        { value: 439, label: "Base 45" },
-    ];
+    const itemLevels = getConstructionItemLevels(8, 15);
     const basic = getGameText("toolType_basic", "Basic");
     const none = getGameText("generals_abilities_desc_attack_1018", "None");
-    return options.map((option, index) => `<option value="${option.value}">${index === 0 ? none : `${basic} ${index + 14}`}</option>`).join("");
+    return [
+        `<option value="0">${none}</option>`,
+        ...itemLevels.map(({ level, value }) => `<option value="${value}">${basic} ${level}</option>`)
+    ].join("");
 }
 
 function generateRelicOptions() {
-    const options = [
-        { value: 0, label: "No relic item" },
-        { value: 50, label: "Relic 1" },
-        { value: 150, label: "Relic 2" },
-        { value: 250, label: "Relic 3" },
-        { value: 350, label: "Relic 4" },
-        { value: 450, label: "Relic 5" },
-        { value: 550, label: "Relic 6" },
-        { value: 650, label: "Relic 7" },
-        { value: 750, label: "Relic 8" },
-        { value: 850, label: "Relic 9" },
-        { value: 1000, label: "Relic 10" },
-        { value: 1100, label: "Premium 1" },
-        { value: 1200, label: "Premium 2" },
-        { value: 1300, label: "Premium 3" },
-        { value: 1400, label: "Premium 4" },
-        { value: 1500, label: "Premium 5" },
-        { value: 1600, label: "Premium 6" },
-        { value: 1700, label: "Premium 7" },
-        { value: 1800, label: "Premium 8" },
-        { value: 1900, label: "Premium 9" },
-        { value: 2000, label: "Premium 10" },
-        { value: 2100, label: "Premium 11" },
-        { value: 2200, label: "Premium 12" },
-        { value: 2300, label: "Premium 13" },
-        { value: 2400, label: "Premium 14" },
-        { value: 2500, label: "Premium 15" },
-        { value: 2600, label: "Premium 16" },
-        { value: 2700, label: "Premium 17" },
-        { value: 2800, label: "Premium 18" },
-        { value: 2900, label: "Premium 19" },
-        { value: 3000, label: "Premium 20" },
-        { value: 3100, label: "Premium 21" },
-        { value: 3200, label: "Premium 22" },
-        { value: 3300, label: "Premium 23" },
-        { value: 3400, label: "Premium 24" },
-        { value: 3500, label: "Premium 25" },
-        { value: 3600, label: "Premium 26" },
-        { value: 3700, label: "Premium 27" },
-        { value: 3800, label: "Premium 28" },
-        { value: 3900, label: "Premium 29" },
-        { value: 4000, label: "Premium 30" }
-    ];
-    return options.map((option, index) => {
-        const relicName = getGameText("relicequip_dialog_category_relic", "Relic");
-        const premiumName = getGameText("premium", "Premium");
-        if (index === 0) return `<option value="${option.value}">${getGameText("generals_abilities_desc_attack_1018", "None")}</option>`;
-        if (index <= 10) return `<option value="${option.value}">${relicName} ${index}</option>`;
-        return `<option value="${option.value}">${premiumName} ${index - 10}</option>`;
-    }).join("");
+    const relicLevels = getConstructionItemLevels(36);
+    const premiumLevels = getConstructionItemLevels(37);
+    const none = getGameText("generals_abilities_desc_attack_1018", "None");
+    const relicName = getGameText("relicequip_dialog_category_relic", "Relic");
+    const premiumName = getGameText("premium", "Premium");
+    return [
+        `<option value="0">${none}</option>`,
+        ...relicLevels.map(({ level, value }) => `<option value="${value}">${relicName} ${level}</option>`),
+        ...premiumLevels.map(({ level, value }) => `<option value="${value}">${premiumName} ${level}</option>`)
+    ].join("");
 }
 
 // --- PRODUCTION CALCULATIONS ---
