@@ -45,7 +45,7 @@ const categories = {
         { key: "imperial_patronage", name: "Imperial Patronage Simulator", icon: "main_page/patronage-icon.webp", link: "./simulators/imperial_patronage/index.html", disabled: false },
         { key: "equipment_builder", name: "Equipment Set Builder", icon: "main_page/equipment-icon.webp", link: "./simulators/equipment_builder/index.html", disabled: false },
         { key: "hall_of_legends", name: "Hall of Legends Simulator", icon: "main_page/hall-of-legends-simulator-icon.webp", link: "./simulators/hol_simulator/index.html", disabled: false },
-                { key: "castle_layout", name: "Castle Layout Simulator", icon: "main_page/layout-icon.webp", link: "./simulators/layout_editor/index.html", disabled: false }
+        { key: "castle_layout", name: "Castle Layout Simulator", icon: "main_page/layout-icon.webp", link: "./simulators/castle_editor/index.html", disabled: false }
     ]
 };
 

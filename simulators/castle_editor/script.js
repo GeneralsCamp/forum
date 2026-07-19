@@ -4,9 +4,54 @@ import { getArray, buildLookup, normalizeName } from "../../overviews/shared/Rew
 import { composeAssetToDataUrl, deriveCompanionUrls } from "../../overviews/shared/AssetComposer.mjs";
 import { initCustomModal } from "../../overviews/shared/ModalService.mjs";
 import { loadSimulatorData, saveSimulatorData } from "../../overviews/shared/GameSettings.mjs";
+import { getInitialLanguage } from "../../overviews/shared/LanguageService.mjs";
 
 const SIM_NAME = "castle_editor";
 const STATE_VERSION = 2;
+const REPLACED_WOD_IDS = new Map([["363", 2843]]);
+const currentLanguage = getInitialLanguage();
+let ownLang = {};
+
+async function loadOwnLang() {
+  try {
+    const response = await fetch("./ownLang.json");
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    ownLang = await response.json();
+  } catch (error) {
+    console.warn("Castle editor translations could not be loaded.", error);
+    ownLang = {};
+  }
+}
+
+function ui(key, fallback = "", variables = {}) {
+  const exactLanguage = String(currentLanguage || "en").toLowerCase();
+  const baseLanguage = exactLanguage.split("-")[0];
+  const value = ownLang?.[exactLanguage]?.ui?.[key]
+    ?? ownLang?.[baseLanguage]?.ui?.[key]
+    ?? ownLang?.en?.ui?.[key]
+    ?? fallback;
+  return String(value).replace(/\{(\w+)\}/g, (match, name) =>
+    Object.prototype.hasOwnProperty.call(variables, name) ? String(variables[name]) : match
+  );
+}
+
+function applyPageTranslations() {
+  document.documentElement.lang = currentLanguage;
+  document.querySelectorAll("[data-i18n]").forEach(element => {
+    element.textContent = ui(element.dataset.i18n, element.textContent);
+  });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach(element => {
+    element.placeholder = ui(element.dataset.i18nPlaceholder, element.placeholder);
+  });
+  document.querySelectorAll("[data-i18n-aria]").forEach(element => {
+    element.setAttribute("aria-label", ui(element.dataset.i18nAria, element.getAttribute("aria-label") || ""));
+  });
+  Array.from(expansionSelect.options).forEach(option => {
+    option.textContent = ui("expansions", `Expansions: ${option.value}`, { count: option.value });
+  });
+  setBuildingsPanel(customDecoForm.hidden ? "catalog" : "custom-decorations");
+  syncViewToggle();
+}
 
 const canvas = document.getElementById("castleCanvas");
 const ctx = canvas.getContext("2d");
@@ -64,12 +109,15 @@ const state = {
 };
 
 const TOUCH_LONG_PRESS_MS = 400;
+const TOUCH_DELETE_PRESS_MS = 700;
+const TOUCH_DOUBLE_TAP_MS = 280;
 const TOUCH_MOVE_THRESHOLD = 10;
 const touchInteraction = {
   pointers: new Map(),
   gesture: null,
   longPressTimer: 0,
   longPressCandidate: null,
+  pendingTap: null,
   lastTouchAt: 0
 };
 
@@ -101,7 +149,7 @@ const LEGACY_CATALOG_WOD_IDS = new Set([
   "556", "196", "3137", "3072", "3097", "257", "256", "834",
   "2988", "150", "4254", "4396", "4259", "2910", "4263", "2987",
   "2989", "2992", "225", "3116", "1880", "495", "493", "224",
-  "490", "2827", "2359", "363", "3187", "3110", "3162", "3191"
+  "490", "2827", "2359", "2843", "3187", "3110", "3162", "3191"
 ]);
 const DEFAULT_KEEP_WOD_ID = "2987";
 const DEFAULT_FLIPPED_ASSET_WOD_IDS = new Set(["1422", "589"]);
@@ -247,7 +295,9 @@ function restoreExpansionState() {
 function syncViewToggle() {
   const showingOverview = state.mode === "overview";
   overviewToggle.classList.toggle("active", showingOverview);
-  overviewToggle.setAttribute("aria-label", showingOverview ? "Switch to normal view" : "Switch to overview");
+  overviewToggle.setAttribute("aria-label", showingOverview
+    ? ui("switch_normal", "Switch to normal view")
+    : ui("switch_overview", "Switch to overview"));
   const icon = overviewToggle.querySelector("i");
   if (icon) icon.className = `bi ${showingOverview ? "bi-image" : "bi-grid-3x3-gap"} fs-1`;
 }
@@ -294,9 +344,10 @@ function savedLayouts() {
 
 function normalizeSavedBuilding(building) {
   if (!building || building.id == null) return null;
+  const savedId = String(building.id);
   return {
-    id: building.id,
-    name: String(building.name || "Building"),
+    id: REPLACED_WOD_IDS.get(savedId) ?? building.id,
+    name: String(building.name || ui("building", "Building")),
     group: building.group || "",
     groundType: building.groundType || "",
     width: Math.max(1, Math.trunc(Number(building.width) || 1)),
@@ -396,12 +447,12 @@ function setActiveLayout(id) {
 function saveNewLayout() {
   const name = layoutNameInput.value.trim();
   if (!name) {
-    window.alert("Please enter a name for the layout.");
+    window.alert(ui("enter_layout_name", "Please enter a name for the layout."));
     layoutNameInput.focus();
     return;
   }
   if (savedLayouts().some(layout => layout.name.toLocaleLowerCase() === name.toLocaleLowerCase())) {
-    window.alert("A layout with this name already exists. Use Update to overwrite it.");
+    window.alert(ui("duplicate_layout_name", "A layout with this name already exists. Use Update to overwrite it."));
     return;
   }
   const layout = currentLayoutSnapshot(createLayoutId(), name);
@@ -474,7 +525,7 @@ function renderSavedLayouts() {
   if (!layouts.length) {
     const empty = document.createElement("div");
     empty.className = "saved-layout-empty";
-    empty.textContent = "No saved layouts yet.";
+    empty.textContent = ui("no_saved_layouts", "No saved layouts yet.");
     savedLayoutsList.append(empty);
     return;
   }
@@ -492,15 +543,15 @@ function renderSavedLayouts() {
     active.name = "active-layout";
     active.className = "saved-layout-active";
     active.checked = isActive;
-    active.setAttribute("aria-label", `Set ${layout.name} as active`);
+    active.setAttribute("aria-label", ui("set_layout_active", `Set ${layout.name} as active`, { name: layout.name }));
     active.addEventListener("change", () => setActiveLayout(layout.id));
     activeCell.append(active);
     const updateCell = document.createElement("div");
     updateCell.className = "saved-layout-cell";
-    updateCell.append(layoutActionButton("Update", () => updateSavedLayout(layout.id)));
+    updateCell.append(layoutActionButton(ui("update", "Update"), () => updateSavedLayout(layout.id)));
     const deleteCell = document.createElement("div");
     deleteCell.className = "saved-layout-cell";
-    deleteCell.append(layoutActionButton("Delete", () => deleteSavedLayout(layout.id)));
+    deleteCell.append(layoutActionButton(ui("delete", "Delete"), () => deleteSavedLayout(layout.id)));
     row.append(name, activeCell, updateCell, deleteCell);
     savedLayoutsList.append(row);
   });
@@ -779,7 +830,38 @@ function drawOverviewBuildingLabel(building) {
   ctx.fillStyle = "#fff0d0";
   ctx.font = "700 10px Arial";
   ctx.textAlign = "center";
-  ctx.fillText(building.name, center.x, center.y + 3);
+  ctx.textBaseline = "middle";
+  const footprintWidth = Math.max(...corners.map(point => point.x)) - Math.min(...corners.map(point => point.x));
+  const lines = wrapOverviewLabel(building.name, Math.max(46, Math.min(150, footprintWidth - 8)));
+  const lineHeight = 11;
+  const startY = center.y - ((lines.length - 1) * lineHeight / 2);
+  lines.forEach((line, index) => ctx.fillText(line, center.x, startY + index * lineHeight));
+}
+
+function wrapOverviewLabel(value, maxWidth) {
+  const text = String(value || "").trim();
+  if (!text || ctx.measureText(text).width <= maxWidth) return [text];
+  const words = text.split(/\s+/);
+  if (words.length === 1) {
+    const middle = Math.ceil(text.length / 2);
+    return [fitOverviewLabel(text.slice(0, middle), maxWidth), fitOverviewLabel(text.slice(middle), maxWidth)];
+  }
+
+  let best = null;
+  for (let index = 1; index < words.length; index++) {
+    const first = words.slice(0, index).join(" ");
+    const second = words.slice(index).join(" ");
+    const widest = Math.max(ctx.measureText(first).width, ctx.measureText(second).width);
+    if (!best || widest < best.widest) best = { first, second, widest };
+  }
+  return [fitOverviewLabel(best.first, maxWidth), fitOverviewLabel(best.second, maxWidth)];
+}
+
+function fitOverviewLabel(value, maxWidth) {
+  if (ctx.measureText(value).width <= maxWidth) return value;
+  let text = value;
+  while (text.length > 1 && ctx.measureText(`${text}…`).width > maxWidth) text = text.slice(0, -1);
+  return `${text}…`;
 }
 
 function drawBuilding(building) {
@@ -1343,6 +1425,11 @@ function clearTouchLongPress() {
   touchInteraction.longPressCandidate = null;
 }
 
+function clearPendingTouchTap() {
+  if (touchInteraction.pendingTap?.timer) window.clearTimeout(touchInteraction.pendingTap.timer);
+  touchInteraction.pendingTap = null;
+}
+
 function touchMidpoint(first, second) {
   return { x: (first.x + second.x) / 2, y: (first.y + second.y) / 2 };
 }
@@ -1366,6 +1453,7 @@ function startTouchPan(pointer) {
 
 function startTouchPinch() {
   clearTouchLongPress();
+  clearPendingTouchTap();
   const pointers = Array.from(touchInteraction.pointers.values()).slice(0, 2);
   if (pointers.length < 2) return;
   const midpoint = touchMidpoint(pointers[0], pointers[1]);
@@ -1380,7 +1468,11 @@ function startTouchPinch() {
   canvas.classList.add("is-dragging");
 }
 
-function beginSelectedBuildingGesture(pointer, justSelected = false) {
+function beginSelectedBuildingGesture(pointer, {
+  justSelected = false,
+  startedOnSelected = false,
+  secondTap = false
+} = {}) {
   const selected = state.drag?.building;
   if (!selected) return;
   const point = screenToGrid(pointer.x, pointer.y);
@@ -1392,7 +1484,9 @@ function beginSelectedBuildingGesture(pointer, justSelected = false) {
     offsetX: point.x - selected.x,
     offsetY: point.y - selected.y,
     moved: false,
-    justSelected
+    justSelected,
+    startedOnSelected,
+    secondTap
   };
   canvas.classList.add("is-dragging");
 }
@@ -1416,7 +1510,35 @@ function handleTouchPointerDown(event) {
   }
 
   if (state.drag?.touchSelected && state.drag.building) {
-    beginSelectedBuildingGesture(pointer);
+    const selectedBuilding = state.drag.building;
+    const startedOnSelected = buildingAt(event.clientX, event.clientY) === selectedBuilding;
+    const secondTap = startedOnSelected && touchInteraction.pendingTap?.building === selectedBuilding;
+    if (touchInteraction.pendingTap) clearPendingTouchTap();
+    beginSelectedBuildingGesture(pointer, { startedOnSelected, secondTap });
+    if (startedOnSelected) {
+      touchInteraction.longPressCandidate = {
+        action: "delete",
+        pointerId: event.pointerId,
+        building: state.drag.building,
+        startX: event.clientX,
+        startY: event.clientY
+      };
+      touchInteraction.longPressTimer = window.setTimeout(() => {
+        const candidate = touchInteraction.longPressCandidate;
+        const activePointer = touchInteraction.pointers.get(event.pointerId);
+        if (candidate?.action !== "delete" || !activePointer || touchInteraction.pointers.size !== 1) return;
+        touchInteraction.longPressTimer = 0;
+        touchInteraction.longPressCandidate = null;
+        const index = state.buildings.indexOf(candidate.building);
+        if (index !== -1) state.buildings.splice(index, 1);
+        state.drag = null;
+        state.pointer = null;
+        touchInteraction.gesture = { type: "blocked" };
+        clearPendingTouchTap();
+        navigator.vibrate?.([20, 35, 25]);
+        draw();
+      }, TOUCH_DELETE_PRESS_MS);
+    }
     return;
   }
 
@@ -1427,6 +1549,7 @@ function handleTouchPointerDown(event) {
   }
 
   touchInteraction.longPressCandidate = {
+    action: "select",
     pointerId: event.pointerId,
     building,
     startX: event.clientX,
@@ -1449,7 +1572,7 @@ function handleTouchPointerDown(event) {
       offsetY: point.y - candidate.building.y,
       touchSelected: true
     };
-    beginSelectedBuildingGesture(activePointer, true);
+    beginSelectedBuildingGesture(activePointer, { justSelected: true, startedOnSelected: true });
     navigator.vibrate?.(18);
     draw();
   }, TOUCH_LONG_PRESS_MS);
@@ -1483,17 +1606,21 @@ function handleTouchPointerMove(event) {
   if (candidate?.pointerId === event.pointerId) {
     const distance = Math.hypot(pointer.x - candidate.startX, pointer.y - candidate.startY);
     if (distance <= TOUCH_MOVE_THRESHOLD) return;
-    clearTouchLongPress();
-    touchInteraction.gesture = {
-      type: "pan",
-      pointerId: event.pointerId,
-      startX: candidate.startX,
-      startY: candidate.startY,
-      panX: candidate.panX,
-      panY: candidate.panY,
-      moved: true
-    };
-    canvas.classList.add("is-dragging");
+    if (candidate.action === "delete") {
+      clearTouchLongPress();
+    } else {
+      clearTouchLongPress();
+      touchInteraction.gesture = {
+        type: "pan",
+        pointerId: event.pointerId,
+        startX: candidate.startX,
+        startY: candidate.startY,
+        panX: candidate.panX,
+        panY: candidate.panY,
+        moved: true
+      };
+      canvas.classList.add("is-dragging");
+    }
   }
 
   const gesture = touchInteraction.gesture;
@@ -1518,6 +1645,22 @@ function handleTouchPointerMove(event) {
   }
 }
 
+function placeTouchSelectedBuilding(building) {
+  if (state.drag?.building !== building) return;
+  if (!validPosition(building, building.x, building.y)) return;
+  state.drag = null;
+  draw();
+}
+
+function scheduleTouchBuildingPlacement(building) {
+  clearPendingTouchTap();
+  const timer = window.setTimeout(() => {
+    touchInteraction.pendingTap = null;
+    placeTouchSelectedBuilding(building);
+  }, TOUCH_DOUBLE_TAP_MS);
+  touchInteraction.pendingTap = { building, timer };
+}
+
 function handleTouchPointerEnd(event) {
   const gesture = touchInteraction.gesture;
   const endingPinch = gesture?.type === "pinch";
@@ -1533,9 +1676,18 @@ function handleTouchPointerEnd(event) {
     flushCameraSave();
     touchInteraction.gesture = null;
   } else if (endingGesture && gesture.type === "building") {
-    if (!gesture.moved && !gesture.justSelected && state.drag?.building
-      && validPosition(state.drag.building, state.drag.building.x, state.drag.building.y)) {
-      state.drag = null;
+    const building = state.drag?.building;
+    if (!gesture.moved && !gesture.justSelected && building) {
+      if (gesture.secondTap && gesture.startedOnSelected) {
+        clearPendingTouchTap();
+        toggleBuildingRotation(building);
+        navigator.vibrate?.(12);
+      } else if (gesture.startedOnSelected) {
+        scheduleTouchBuildingPlacement(building);
+      } else {
+        clearPendingTouchTap();
+        placeTouchSelectedBuilding(building);
+      }
     }
     touchInteraction.gesture = null;
   }
@@ -1623,9 +1775,13 @@ function setBuildingsPanel(panel) {
   const showingCustomDecorations = panel === "custom-decorations";
   buildingCatalogView.hidden = showingCustomDecorations;
   customDecoForm.hidden = !showingCustomDecorations;
-  buildingsModalTitle.textContent = showingCustomDecorations ? "Custom decorations" : "Buildings";
+  buildingsModalTitle.textContent = showingCustomDecorations
+    ? ui("custom_decorations", "Custom decorations")
+    : ui("buildings", "Buildings");
   customDecoToggle.dataset.panel = showingCustomDecorations ? "custom-decorations" : "catalog";
-  customDecoToggle.setAttribute("aria-label", showingCustomDecorations ? "Back to buildings" : "Add custom decoration");
+  customDecoToggle.setAttribute("aria-label", showingCustomDecorations
+    ? ui("back_to_buildings", "Back to buildings")
+    : ui("add_custom_decoration", "Add custom decoration"));
   const icon = customDecoToggle.querySelector("i");
   if (icon) icon.className = `bi ${showingCustomDecorations ? "bi-arrow-left" : "bi-plus-lg"}`;
 }
@@ -1639,9 +1795,9 @@ function addCustomDecoIdRow(value = "", focus = false) {
   input.min = "1";
   input.step = "1";
   input.inputMode = "numeric";
-  input.placeholder = "WOD ID";
+  input.placeholder = ui("wod_id", "WOD ID");
   input.value = value;
-  input.setAttribute("aria-label", "Decoration WOD ID");
+  input.setAttribute("aria-label", ui("decoration_wod_id", "Decoration WOD ID"));
   input.addEventListener("input", () => {
     if (input.value && row === customDecoRows.lastElementChild) addCustomDecoIdRow();
   });
@@ -1665,7 +1821,7 @@ function addCustomDecoIdRow(value = "", focus = false) {
   const remove = document.createElement("button");
   remove.className = "custom-deco-remove-row";
   remove.type = "button";
-  remove.setAttribute("aria-label", "Remove WOD ID");
+  remove.setAttribute("aria-label", ui("remove_wod_id", "Remove WOD ID"));
   remove.innerHTML = '<i class="bi bi-x-lg" aria-hidden="true"></i>';
   remove.addEventListener("click", () => {
     row.remove();
@@ -1768,9 +1924,13 @@ window.addEventListener("pagehide", flushCameraSave);
 
 resizeCanvas();
 
+await loadOwnLang();
+applyPageTranslations();
+
 await coreInit({
   loader,
-  itemLabel: "castle buildings",
+  itemLabel: ui("loader_item", "castle buildings"),
+  langCode: currentLanguage,
   normalizeNameFn: normalizeName,
   assets: { buildings: true },
   onReady: async ({ data, imageMaps, lang }) => {

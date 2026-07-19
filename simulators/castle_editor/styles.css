@@ -213,12 +213,13 @@ button, input, select { font: inherit; }
 .size-filter-dropdown .dropdown-menu-custom {
   display: none;
   position: absolute !important;
-  top: calc(100% + 3px);
+  top: 100%;
   right: 0;
   left: 0;
   z-index: 1060;
   max-height: 350px;
   overflow-y: auto;
+  margin: 0 !important;
   padding: 5px;
   background-color: #f3e0c2;
   border: 2px solid #a97c50;
