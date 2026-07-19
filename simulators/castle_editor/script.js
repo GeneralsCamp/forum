@@ -63,6 +63,16 @@ const state = {
   drag: null
 };
 
+const TOUCH_LONG_PRESS_MS = 400;
+const TOUCH_MOVE_THRESHOLD = 10;
+const touchInteraction = {
+  pointers: new Map(),
+  gesture: null,
+  longPressTimer: 0,
+  longPressCandidate: null,
+  lastTouchAt: 0
+};
+
 let persistedState = loadSimulatorData(SIM_NAME) || {};
 let cameraRestored = false;
 let cameraSaveTimer = 0;
@@ -1327,7 +1337,221 @@ canvas.addEventListener("drop", async event => {
   state.paletteDrag = null;
 });
 
+function clearTouchLongPress() {
+  if (touchInteraction.longPressTimer) window.clearTimeout(touchInteraction.longPressTimer);
+  touchInteraction.longPressTimer = 0;
+  touchInteraction.longPressCandidate = null;
+}
+
+function touchMidpoint(first, second) {
+  return { x: (first.x + second.x) / 2, y: (first.y + second.y) / 2 };
+}
+
+function touchDistance(first, second) {
+  return Math.hypot(second.x - first.x, second.y - first.y);
+}
+
+function startTouchPan(pointer) {
+  touchInteraction.gesture = {
+    type: "pan",
+    pointerId: pointer.id,
+    startX: pointer.startX,
+    startY: pointer.startY,
+    panX: state.panX,
+    panY: state.panY,
+    moved: false
+  };
+  canvas.classList.add("is-dragging");
+}
+
+function startTouchPinch() {
+  clearTouchLongPress();
+  const pointers = Array.from(touchInteraction.pointers.values()).slice(0, 2);
+  if (pointers.length < 2) return;
+  const midpoint = touchMidpoint(pointers[0], pointers[1]);
+  const rect = canvas.getBoundingClientRect();
+  touchInteraction.gesture = {
+    type: "pinch",
+    startDistance: Math.max(1, touchDistance(pointers[0], pointers[1])),
+    startScale: state.scale,
+    anchorX: (midpoint.x - rect.left - state.panX) / state.scale,
+    anchorY: (midpoint.y - rect.top - state.panY) / state.scale
+  };
+  canvas.classList.add("is-dragging");
+}
+
+function beginSelectedBuildingGesture(pointer, justSelected = false) {
+  const selected = state.drag?.building;
+  if (!selected) return;
+  const point = screenToGrid(pointer.x, pointer.y);
+  touchInteraction.gesture = {
+    type: "building",
+    pointerId: pointer.id,
+    startX: pointer.x,
+    startY: pointer.y,
+    offsetX: point.x - selected.x,
+    offsetY: point.y - selected.y,
+    moved: false,
+    justSelected
+  };
+  canvas.classList.add("is-dragging");
+}
+
+function handleTouchPointerDown(event) {
+  event.preventDefault();
+  touchInteraction.lastTouchAt = Date.now();
+  const pointer = {
+    id: event.pointerId,
+    x: event.clientX,
+    y: event.clientY,
+    startX: event.clientX,
+    startY: event.clientY
+  };
+  touchInteraction.pointers.set(event.pointerId, pointer);
+  canvas.setPointerCapture?.(event.pointerId);
+
+  if (touchInteraction.pointers.size >= 2) {
+    startTouchPinch();
+    return;
+  }
+
+  if (state.drag?.touchSelected && state.drag.building) {
+    beginSelectedBuildingGesture(pointer);
+    return;
+  }
+
+  const building = buildingAt(event.clientX, event.clientY);
+  if (!building) {
+    startTouchPan(pointer);
+    return;
+  }
+
+  touchInteraction.longPressCandidate = {
+    pointerId: event.pointerId,
+    building,
+    startX: event.clientX,
+    startY: event.clientY,
+    panX: state.panX,
+    panY: state.panY
+  };
+  touchInteraction.longPressTimer = window.setTimeout(() => {
+    const candidate = touchInteraction.longPressCandidate;
+    const activePointer = touchInteraction.pointers.get(event.pointerId);
+    if (!candidate || !activePointer || touchInteraction.pointers.size !== 1) return;
+    touchInteraction.longPressTimer = 0;
+    touchInteraction.longPressCandidate = null;
+    const point = screenToGrid(activePointer.x, activePointer.y);
+    state.drag = {
+      building: candidate.building,
+      x: candidate.building.x,
+      y: candidate.building.y,
+      offsetX: point.x - candidate.building.x,
+      offsetY: point.y - candidate.building.y,
+      touchSelected: true
+    };
+    beginSelectedBuildingGesture(activePointer, true);
+    navigator.vibrate?.(18);
+    draw();
+  }, TOUCH_LONG_PRESS_MS);
+}
+
+function handleTouchPointerMove(event) {
+  const pointer = touchInteraction.pointers.get(event.pointerId);
+  if (!pointer) return;
+  event.preventDefault();
+  pointer.x = event.clientX;
+  pointer.y = event.clientY;
+
+  if (touchInteraction.pointers.size >= 2) {
+    if (touchInteraction.gesture?.type !== "pinch") startTouchPinch();
+    const pointers = Array.from(touchInteraction.pointers.values()).slice(0, 2);
+    const gesture = touchInteraction.gesture;
+    if (pointers.length < 2 || gesture?.type !== "pinch") return;
+    const midpoint = touchMidpoint(pointers[0], pointers[1]);
+    const rect = canvas.getBoundingClientRect();
+    state.scale = Math.max(.35, Math.min(2.5,
+      gesture.startScale * touchDistance(pointers[0], pointers[1]) / gesture.startDistance));
+    state.panX = midpoint.x - rect.left - gesture.anchorX * state.scale;
+    state.panY = midpoint.y - rect.top - gesture.anchorY * state.scale;
+    clampView();
+    scheduleCameraSave();
+    draw();
+    return;
+  }
+
+  const candidate = touchInteraction.longPressCandidate;
+  if (candidate?.pointerId === event.pointerId) {
+    const distance = Math.hypot(pointer.x - candidate.startX, pointer.y - candidate.startY);
+    if (distance <= TOUCH_MOVE_THRESHOLD) return;
+    clearTouchLongPress();
+    touchInteraction.gesture = {
+      type: "pan",
+      pointerId: event.pointerId,
+      startX: candidate.startX,
+      startY: candidate.startY,
+      panX: candidate.panX,
+      panY: candidate.panY,
+      moved: true
+    };
+    canvas.classList.add("is-dragging");
+  }
+
+  const gesture = touchInteraction.gesture;
+  if (!gesture || gesture.pointerId !== event.pointerId) return;
+  const movedDistance = Math.hypot(pointer.x - gesture.startX, pointer.y - gesture.startY);
+  if (movedDistance > TOUCH_MOVE_THRESHOLD) gesture.moved = true;
+
+  if (gesture.type === "pan") {
+    state.panX = gesture.panX + pointer.x - gesture.startX;
+    state.panY = gesture.panY + pointer.y - gesture.startY;
+    clampView();
+    scheduleCameraSave();
+    draw();
+    return;
+  }
+
+  if (gesture.type === "building" && gesture.moved && state.drag?.building) {
+    const point = screenToGrid(pointer.x, pointer.y);
+    state.drag.building.x = point.x - gesture.offsetX;
+    state.drag.building.y = point.y - gesture.offsetY;
+    draw();
+  }
+}
+
+function handleTouchPointerEnd(event) {
+  const gesture = touchInteraction.gesture;
+  const endingPinch = gesture?.type === "pinch";
+  const endingGesture = gesture?.pointerId === event.pointerId;
+  clearTouchLongPress();
+  touchInteraction.pointers.delete(event.pointerId);
+  canvas.releasePointerCapture?.(event.pointerId);
+
+  if (endingPinch) {
+    flushCameraSave();
+    touchInteraction.gesture = touchInteraction.pointers.size ? { type: "blocked" } : null;
+  } else if (endingGesture && gesture.type === "pan") {
+    flushCameraSave();
+    touchInteraction.gesture = null;
+  } else if (endingGesture && gesture.type === "building") {
+    if (!gesture.moved && !gesture.justSelected && state.drag?.building
+      && validPosition(state.drag.building, state.drag.building.x, state.drag.building.y)) {
+      state.drag = null;
+    }
+    touchInteraction.gesture = null;
+  }
+
+  if (!touchInteraction.pointers.size) {
+    touchInteraction.gesture = null;
+    canvas.classList.remove("is-dragging");
+  }
+  draw();
+}
+
 canvas.addEventListener("pointerdown", event => {
+  if (event.pointerType === "touch") {
+    handleTouchPointerDown(event);
+    return;
+  }
   if (event.button !== 0) return;
   const point = screenToGrid(event.clientX, event.clientY);
   const building = buildingAt(event.clientX, event.clientY);
@@ -1338,6 +1562,10 @@ canvas.addEventListener("pointerdown", event => {
   canvas.setPointerCapture(event.pointerId); canvas.classList.add("is-dragging");
 });
 canvas.addEventListener("pointermove", event => {
+  if (event.pointerType === "touch") {
+    handleTouchPointerMove(event);
+    return;
+  }
   if (!state.drag || !state.pointer) return;
   if (state.drag.pan) {
     state.panX = state.pointer.panX + event.clientX - state.pointer.x;
@@ -1351,6 +1579,10 @@ canvas.addEventListener("pointermove", event => {
   b.x = point.x - state.drag.offsetX; b.y = point.y - state.drag.offsetY; draw();
 });
 canvas.addEventListener("pointerup", event => {
+  if (event.pointerType === "touch") {
+    handleTouchPointerEnd(event);
+    return;
+  }
   const cameraWasMoved = Boolean(state.drag?.pan);
   if (state.drag?.building) {
     const b = state.drag.building;
@@ -1359,9 +1591,13 @@ canvas.addEventListener("pointerup", event => {
   state.pointer = null; state.drag = null; canvas.classList.remove("is-dragging"); canvas.releasePointerCapture?.(event.pointerId); draw();
   if (cameraWasMoved) flushCameraSave();
 });
+canvas.addEventListener("pointercancel", event => {
+  if (event.pointerType === "touch") handleTouchPointerEnd(event);
+});
 
 canvas.addEventListener("contextmenu", event => {
   event.preventDefault();
+  if (Date.now() - touchInteraction.lastTouchAt < 1200) return;
   const building = buildingAt(event.clientX, event.clientY);
   if (!building) return;
   const index = state.buildings.indexOf(building);
@@ -1371,6 +1607,7 @@ canvas.addEventListener("contextmenu", event => {
 
 canvas.addEventListener("dblclick", event => {
   event.preventDefault();
+  if (Date.now() - touchInteraction.lastTouchAt < 1200) return;
   const building = buildingAt(event.clientX, event.clientY);
   if (building) toggleBuildingRotation(building);
 });
