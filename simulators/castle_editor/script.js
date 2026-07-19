@@ -1276,6 +1276,11 @@ function hydrateCatalogImage(img, item) {
 function localizedBuildingName(item, lang) {
   const rawName = String(item.name || "").trim();
   const type = String(item.type || "").trim().toLowerCase();
+  if (rawName.toLowerCase() === "hunter") {
+    return lang?.hunter_surroundings_name
+      || lang?.hunter_name
+      || rawName;
+  }
   return lang?.[`${rawName}_name`.toLowerCase()]
     || (type && lang?.[`deco_${type}_name`])
     || rawName;
