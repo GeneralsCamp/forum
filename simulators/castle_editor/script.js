@@ -146,11 +146,13 @@ const LEGACY_CATALOG_WOD_IDS = new Set([
   "3136", "3111", "3059", "3039", "63", "1422", "589", "253",
   "556", "196", "3137", "3072", "3097", "257", "256", "834",
   "2988", "150", "4254", "4396", "4259", "2910", "4263", "3675", "2987",
-  "2989", "2992", "225", "3116", "1880", "495", "493", "224",
+  "2989", "2992", "3116", "1880", "495", "493", "224",
   "490", "2827", "2359", "2843", "3187", "3110", "3162", "3191"
 ]);
 const DEFAULT_KEEP_WOD_ID = "2987";
 const DEFAULT_FLIPPED_ASSET_WOD_IDS = new Set(["1422", "589"]);
+const BUILDING_ASSET_SCALE = 0.99;
+const BUILDING_ASSET_VERTICAL_OFFSET_TILES = -0.5;
 const ASSET_VERTICAL_OFFSET_TILES = new Map([
   // The Keep artwork contains loose rocks below its architectural base, so
   // its cropped image needs a small visual lift to sit on the 12x12 footprint.
@@ -160,6 +162,7 @@ const ASSET_VERTICAL_OFFSET_TILES = new Map([
 const TERRAIN_ATLAS_URL = "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Background/BackgroundsClassic/BackgroundsClassic--1573584429307.png";
 const CASTLE_GROUND_COLOR = "#789342";
 const TERRAIN_FRAMES = {
+  outerGrass: { sx: 2, sy: 2616, sw: 2408, sh: 400 },
   inner20x20: { sx: 1, sy: 1, sw: 1600, sh: 800, offsetX: -800, offsetY: 0 },
   grid20x20: { sx: 1603, sy: 1, sw: 1560, sh: 800, offsetX: -760, offsetY: 0 },
   inner10x20: [
@@ -577,6 +580,9 @@ function draw() {
   ctx.clearRect(0, 0, rect.width, rect.height);
   ctx.fillStyle = "#566b2d";
   ctx.fillRect(0, 0, rect.width, rect.height);
+  if (state.ready && state.mode !== "overview" && state.terrainImage) {
+    drawOuterGrass(rect);
+  }
   if (!state.ready) {
     const restoredExpansionLevel = state.expansionLevel;
     state.expansionLevel = 0;
@@ -654,6 +660,43 @@ function getRegionScreenBounds(region) {
     width: Math.max(...xs) - Math.min(...xs),
     height: Math.max(...ys) - Math.min(...ys)
   };
+}
+
+function drawOuterGrass(rect) {
+  const frame = TERRAIN_FRAMES.outerGrass;
+  const sourceScale = state.tileW * state.scale / 80;
+  const tileWidth = frame.sw * sourceScale;
+  const tileHeight = frame.sh * sourceScale;
+  if (tileWidth < 1 || tileHeight < 1) return;
+
+  const firstRow = Math.floor(-state.panY / tileHeight) - 1;
+  const lastRow = Math.ceil((rect.height - state.panY) / tileHeight) + 1;
+
+  ctx.save();
+  ctx.imageSmoothingEnabled = true;
+  for (let row = firstRow; row <= lastRow; row++) {
+    const rowOffset = Math.abs(row % 2) * tileWidth / 2;
+    const firstColumn = Math.floor((-state.panX - rowOffset) / tileWidth) - 1;
+    const lastColumn = Math.ceil((rect.width - state.panX - rowOffset) / tileWidth) + 1;
+    const y = state.panY + row * tileHeight;
+
+    for (let column = firstColumn; column <= lastColumn; column++) {
+      const x = state.panX + rowOffset + column * tileWidth;
+      const mirrored = Math.abs(row + column) % 2 === 1;
+      ctx.save();
+      ctx.translate(x + tileWidth / 2, y);
+      if (mirrored) ctx.scale(-1, 1);
+      ctx.drawImage(
+        state.terrainImage,
+        frame.sx, frame.sy, frame.sw, frame.sh,
+        -tileWidth / 2, 0, tileWidth + 1, tileHeight + 1
+      );
+      ctx.restore();
+    }
+  }
+  ctx.fillStyle = "rgba(10, 16, 6, .48)";
+  ctx.fillRect(0, 0, rect.width, rect.height);
+  ctx.restore();
 }
 
 function drawTerrainFrame(frame, region) {
@@ -985,7 +1028,8 @@ function getBuildingGeometry(building) {
     x: corners.reduce((sum, point) => sum + point.x, 0) / corners.length,
     y: corners.reduce((sum, point) => sum + point.y, 0) / corners.length
   };
-  const verticalOffset = (ASSET_VERTICAL_OFFSET_TILES.get(String(building.id)) || 0)
+  const verticalOffset = (BUILDING_ASSET_VERTICAL_OFFSET_TILES
+    + (ASSET_VERTICAL_OFFSET_TILES.get(String(building.id)) || 0))
     * state.tileH * state.scale;
   const bottom = {
     x: corners[2].x,
@@ -996,7 +1040,8 @@ function getBuildingGeometry(building) {
     const footprintWidth = Math.abs(corners[1].x - corners[3].x);
     // Decorations are authored to cover their complete ground footprint.
     // Regular buildings retain a little breathing room for overhanging roofs.
-    const footprintScale = String(building.groundType).toUpperCase() === "DECO" ? 1 : .96;
+    const footprintScale = (String(building.groundType).toUpperCase() === "DECO" ? 1 : .96)
+      * BUILDING_ASSET_SCALE;
     const width = Math.max(30, footprintWidth * footprintScale);
     const height = width * image.naturalHeight / image.naturalWidth;
     return { corners, center, bottom, image, width, height, left: center.x - width / 2, top: bottom.y - height };
