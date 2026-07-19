@@ -243,6 +243,32 @@
     white-space: nowrap;
 }
 
+#cards .stat-cell.is-multi-currency .stat-icon-box {
+    display: none;
+}
+
+#cards .stat-cell.is-multi-currency .stat-text {
+    max-width: 100%;
+}
+
+#cards .sale-price-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+#cards .sale-price-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+#cards .sale-price-row img {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+}
+
 #cards .card-section-title {
     color: var(--gf-gold-strong);
     font-size: 14px;

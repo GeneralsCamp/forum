@@ -750,13 +750,14 @@ function getDecorationSellPriceParts(entity) {
   const legendaryToken = getProp(entity, ["sellLegendaryToken", "selllegendarytoken"]);
   const legendaryMaterial = getProp(entity, ["sellLegendaryMaterial", "selllegendarymaterial"]);
   if (legendaryToken || legendaryMaterial) {
-    const parts = [];
-    const icons = [];
-    if (legendaryToken) parts.push(`<img src="../../img_base/construction-token.png" class="effect-icon" alt="">x${escapeHtml(formatNumber(legendaryToken))}`);
-    if (legendaryMaterial) parts.push(`<img src="../../img_base/upgrade-token.png" class="effect-icon" alt="">x${escapeHtml(formatNumber(legendaryMaterial))}`);
-    if (legendaryToken) icons.push(`<img src="../../img_base/construction-token.png" alt="">`);
-    if (legendaryMaterial) icons.push(`<img src="../../img_base/upgrade-token.png" alt="">`);
-    return { icon: icons.join(""), value: parts.map((part) => part.replace(/<img[^>]*>/g, "")).join("<br>") };
+    const rows = [];
+    if (legendaryToken) rows.push(`<span class="sale-price-row"><img src="../../img_base/construction-token.png" alt=""><span>x${escapeHtml(formatNumber(legendaryToken))}</span></span>`);
+    if (legendaryMaterial) rows.push(`<span class="sale-price-row"><img src="../../img_base/upgrade-token.png" alt=""><span>x${escapeHtml(formatNumber(legendaryMaterial))}</span></span>`);
+    return {
+      icon: "",
+      value: `<span class="sale-price-list">${rows.join("")}</span>`,
+      multiCurrency: rows.length > 0
+    };
   }
   const sellC1 = getProp(entity, ["sellC1", "sellc1"]) || "0";
   const riftShard = getProp(entity, ["sellRiftShard", "sellriftshard"]);
@@ -1006,8 +1007,8 @@ function renderDecorationModal(detail, ctx) {
   const imageUrl = getDecorationImageUrl(entity, detail, ctx);
   const effects = parseDetailEffects(getProp(entity, ["areaSpecificEffects", "areaspecificeffects"]) || "", ctx);
   const sellPrice = getDecorationSellPriceParts(entity);
-  const statCell = ({ label, value, icon, border = false }) => `
-    <div class="col-6 card-cell stat-cell${border ? " border-end" : ""}">
+  const statCell = ({ label, value, icon, border = false, multiCurrency = false }) => `
+    <div class="col-6 card-cell stat-cell${border ? " border-end" : ""}${multiCurrency ? " is-multi-currency" : ""}">
       <span class="stat-icon-box">${icon}</span>
       <span class="stat-text">
         <strong>${escapeHtml(label)}</strong>
@@ -1042,7 +1043,7 @@ function renderDecorationModal(detail, ctx) {
             </div>
             <hr>
             <div class="row g-0">
-              ${statCell({ label: labels.salePrice, value: sellPrice.value, icon: sellPrice.icon, border: true })}
+              ${statCell({ label: labels.salePrice, value: sellPrice.value, icon: sellPrice.icon, border: true, multiCurrency: sellPrice.multiCurrency })}
               ${statCell({ label: labels.fusion, value: escapeHtml(getDecorationFusionText(entity)), icon: `<img src="../../img_base/fusion.png" alt="">` })}
             </div>
           </div>

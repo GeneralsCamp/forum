@@ -654,6 +654,32 @@
   white-space: nowrap;
 }
 
+.reward-decoration-modal .stat-cell.is-multi-currency .stat-icon-box {
+  display: none;
+}
+
+.reward-decoration-modal .stat-cell.is-multi-currency .stat-text {
+  max-width: 100%;
+}
+
+.reward-decoration-modal .sale-price-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.reward-decoration-modal .sale-price-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.reward-decoration-modal .sale-price-row img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
 .reward-construction-modal .reward-info-content-cell strong {
   display: block;
   margin-bottom: 2px;

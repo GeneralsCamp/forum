@@ -464,19 +464,18 @@ function createCard(item, imageUrlMap = {}) {
 
   let sellPriceDisplay = "";
   let sellPriceIconDisplay = `<img src="../../img_base/coin.png" alt="">`;
+  let sellPriceIsMultiCurrency = false;
   if (item.sellLegendaryToken || item.sellLegendaryMaterial) {
-    const parts = [];
-    const icons = [];
+    const priceRows = [];
     if (item.sellLegendaryToken) {
-      icons.push(`<img src="../../img_base/construction-token.png" alt="">`);
-      parts.push(`x${formatNumber(item.sellLegendaryToken)}`);
+      priceRows.push(`<span class="sale-price-row"><img src="../../img_base/construction-token.png" alt=""><span>x${formatNumber(item.sellLegendaryToken)}</span></span>`);
     }
     if (item.sellLegendaryMaterial) {
-      icons.push(`<img src="../../img_base/upgrade-token.png" alt="">`);
-      parts.push(`x${formatNumber(item.sellLegendaryMaterial)}`);
+      priceRows.push(`<span class="sale-price-row"><img src="../../img_base/upgrade-token.png" alt=""><span>x${formatNumber(item.sellLegendaryMaterial)}</span></span>`);
     }
-    sellPriceIconDisplay = icons.join("");
-    sellPriceDisplay = parts.join("<br>");
+    sellPriceIconDisplay = "";
+    sellPriceDisplay = `<span class="sale-price-list">${priceRows.join("")}</span>`;
+    sellPriceIsMultiCurrency = priceRows.length > 0;
   } else {
     const sellPriceRaw = item.sellC1 || "0";
     if (Number(sellPriceRaw) === 0 && item.sellRiftShard) {
@@ -536,8 +535,8 @@ function createCard(item, imageUrlMap = {}) {
     : "";
 
   const safeName = name.replace(/'/g, "\\'");
-  const statCell = ({ label, value, icon, border = false }) => `
-                <div class="col-6 card-cell stat-cell${border ? " border-end" : ""}">
+  const statCell = ({ label, value, icon, border = false, multiCurrency = false }) => `
+                <div class="col-6 card-cell stat-cell${border ? " border-end" : ""}${multiCurrency ? " is-multi-currency" : ""}">
                   <span class="stat-icon-box">${icon}</span>
                   <span class="stat-text">
                     <strong>${label}</strong>
@@ -571,7 +570,7 @@ function createCard(item, imageUrlMap = {}) {
               </div>
               <hr>
               <div class="row g-0">
-                ${statCell({ label: ownText("label_sale", "Sale price"), value: sellPriceDisplay, icon: sellPriceIconDisplay, border: true })}
+                ${statCell({ label: ownText("label_sale", "Sale price"), value: sellPriceDisplay, icon: sellPriceIconDisplay, border: true, multiCurrency: sellPriceIsMultiCurrency })}
                 ${statCell({ label: ownText("label_fusion", "Fusion"), value: fusion, icon: `<img src="../../img_base/fusion.png" alt="">` })}
               </div>
             </div>
