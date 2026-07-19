@@ -106,7 +106,6 @@ function applyPageTranslations() {
   const pageTitle = ui("page_title", "GGE EQUIPMENT SET BUILDER");
   const heading = document.querySelector(".page-title h1");
   if (heading) heading.textContent = pageTitle;
-  document.title = pageTitle;
 }
 
 function sharedFilterText(key, fallback) {

@@ -1221,7 +1221,6 @@ async function init() {
 }
 
 function applyLanguage() {
-  document.title = `GGE ${ui("page_title", "Imperial Patronage Simulator")}`;
   const pageTitle = document.querySelector(".page-title h1");
   if (pageTitle) pageTitle.textContent = ui("page_title", "IMPERIAL PATRONAGE SIMULATOR");
   const donationTitle = document.getElementById("donationPanelTitle");
