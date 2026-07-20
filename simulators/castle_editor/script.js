@@ -51,6 +51,8 @@ function applyPageTranslations() {
   });
   setBuildingsPanel(customDecoForm.hidden ? "catalog" : "custom-decorations");
   syncViewToggle();
+  syncFullscreenToggle();
+  syncBuildingActionBar(true);
 }
 
 const canvas = document.getElementById("castleCanvas");
@@ -63,6 +65,7 @@ const sizeDropdown = document.getElementById("sizeDropdown");
 const sizeFilters = document.getElementById("sizeFilters");
 const sizeFilterDropdown = sizeDropdown.closest(".size-filter-dropdown");
 const overviewToggle = document.getElementById("overviewToggle");
+const fullscreenToggle = document.getElementById("fullscreenToggle");
 const expansionSelect = document.getElementById("expansionSelect");
 const sidebarToggle = document.getElementById("sidebarToggle");
 const savesToggle = document.getElementById("savesToggle");
@@ -74,6 +77,8 @@ const customDecoRows = document.getElementById("customDecoRows");
 const layoutNameInput = document.getElementById("layoutNameInput");
 const saveLayoutButton = document.getElementById("saveLayoutButton");
 const savedLayoutsList = document.getElementById("savedLayoutsList");
+const bottomNavigation = document.querySelector(".bottom-buttons-container");
+const bottomNavigationButtons = [sidebarToggle, savesToggle, overviewToggle, fullscreenToggle];
 const buildingsModal = initCustomModal({ modalId: "buildingsModal" });
 const savesModal = initCustomModal({ modalId: "savesModal" });
 const catalogImageItems = new WeakMap();
@@ -110,25 +115,32 @@ const state = {
   hoveredBuilding: null
 };
 
-const MIN_CAMERA_SCALE = .45;
-const MAX_CAMERA_SCALE = 2.5;
+const DESKTOP_MIN_CAMERA_SCALE = .55;
+const MOBILE_MIN_CAMERA_SCALE = .40;
+const MAX_CAMERA_SCALE = 1.5;
 const TOUCH_LONG_PRESS_MS = 400;
-const TOUCH_DELETE_PRESS_MS = 700;
-const TOUCH_DOUBLE_TAP_MS = 280;
 const TOUCH_MOVE_THRESHOLD = 10;
+const TOUCH_EDGE_PAN_MAX_SPEED = 720;
 const touchInteraction = {
   pointers: new Map(),
   gesture: null,
   longPressTimer: 0,
-  longPressCandidate: null,
-  pendingTap: null,
-  lastTouchAt: 0
+  longPressCandidate: null
 };
+let touchEdgePanFrame = 0;
+let touchEdgePanLastTime = 0;
 
 let persistedState = loadSimulatorData(SIM_NAME) || {};
 let cameraRestored = false;
 let cameraSaveTimer = 0;
 let catalogSourceContext = null;
+let buildingActionBarVisible = null;
+
+function getMinCameraScale() {
+  return window.matchMedia("(max-width: 760px)").matches
+    ? MOBILE_MIN_CAMERA_SCALE
+    : DESKTOP_MIN_CAMERA_SCALE;
+}
 
 const loader = createLoader();
 // The initial castle is a 3×3 group of 20×20 sectors. Each expansion step
@@ -246,7 +258,7 @@ function getWorldViewBounds() {
 function clampAxis(current, viewportSize, worldMin, worldMax, negativeAllowance, positiveAllowance = negativeAllowance) {
   const worldSize = worldMax - worldMin;
   if (worldSize <= viewportSize - negativeAllowance - positiveAllowance) {
-    return (viewportSize - worldMin - worldMax) / 2;
+    return (viewportSize + positiveAllowance - negativeAllowance - worldMin - worldMax) / 2;
   }
 
   const minimum = viewportSize - negativeAllowance - worldMax;
@@ -290,7 +302,7 @@ function restoreCameraState() {
 
   state.panX = panX;
   state.panY = panY;
-  state.scale = Math.max(MIN_CAMERA_SCALE, Math.min(MAX_CAMERA_SCALE, scale));
+  state.scale = Math.max(getMinCameraScale(), Math.min(MAX_CAMERA_SCALE, scale));
   cameraRestored = true;
 }
 
@@ -305,6 +317,7 @@ function restoreExpansionState() {
 }
 
 function syncViewToggle() {
+  if (state.drag?.building) return;
   const showingOverview = state.mode === "overview";
   overviewToggle.classList.toggle("active", showingOverview);
   overviewToggle.setAttribute("aria-label", showingOverview
@@ -312,6 +325,92 @@ function syncViewToggle() {
     : ui("switch_overview", "Switch to overview"));
   const icon = overviewToggle.querySelector("i");
   if (icon) icon.className = `bi ${showingOverview ? "bi-image" : "bi-grid-3x3-gap"} fs-1`;
+}
+
+function isFullscreen() {
+  return Boolean(document.fullscreenElement || document.webkitFullscreenElement);
+}
+
+function syncFullscreenToggle() {
+  if (state.drag?.building) return;
+  const fullscreenActive = isFullscreen();
+  fullscreenToggle.classList.toggle("active", fullscreenActive);
+  fullscreenToggle.setAttribute("aria-pressed", String(fullscreenActive));
+  fullscreenToggle.setAttribute("aria-label", fullscreenActive ? "Exit fullscreen" : "Enter fullscreen");
+  const icon = fullscreenToggle.querySelector("i");
+  if (icon) icon.className = `bi ${fullscreenActive ? "bi-fullscreen-exit" : "bi-fullscreen"} fs-1`;
+}
+
+function syncBuildingActionBar(force = false) {
+  const editingBuilding = Boolean(state.drag?.building);
+  if (!force && editingBuilding === buildingActionBarVisible) return;
+  buildingActionBarVisible = editingBuilding;
+  bottomNavigation.classList.toggle("is-building-actions", editingBuilding);
+
+  if (editingBuilding) {
+    const actions = [
+      { label: ui("cancel", "Cancel"), icon: "bi-x-lg" },
+      { label: ui("rotate", "Rotate"), icon: "bi-arrow-clockwise" },
+      { label: ui("destroy", "Destroy"), icon: "bi-trash3" },
+      { label: ui("apply", "Apply"), icon: "bi-check-lg" }
+    ];
+    bottomNavigationButtons.forEach((button, index) => {
+      button.classList.remove("active");
+      button.setAttribute("aria-label", actions[index].label);
+      button.setAttribute("aria-pressed", "false");
+      const icon = button.querySelector("i");
+      if (icon) icon.className = `bi ${actions[index].icon} fs-1`;
+      let label = button.querySelector(".nav-action-label");
+      if (!label) {
+        label = document.createElement("span");
+        label.className = "nav-action-label";
+        button.append(label);
+      }
+      label.textContent = actions[index].label;
+      label.hidden = false;
+    });
+    return;
+  }
+
+  const labels = [
+    ui("buildings", "Buildings"),
+    ui("saves", "Saves"),
+    ui("overview", "Overview"),
+    ui("fullscreen", "Fullscreen")
+  ];
+  bottomNavigationButtons.forEach((button, index) => {
+    let label = button.querySelector(".nav-action-label");
+    if (!label) {
+      label = document.createElement("span");
+      label.className = "nav-action-label";
+      button.append(label);
+    }
+    label.textContent = labels[index];
+    label.hidden = false;
+  });
+  sidebarToggle.setAttribute("aria-label", ui("open_buildings", "Open buildings"));
+  savesToggle.setAttribute("aria-label", ui("open_saves", "Open saves"));
+  const sidebarIcon = sidebarToggle.querySelector("i");
+  const savesIcon = savesToggle.querySelector("i");
+  if (sidebarIcon) sidebarIcon.className = "bi bi-hammer fs-1";
+  if (savesIcon) savesIcon.className = "bi bi-save fs-1";
+  syncViewToggle();
+  syncFullscreenToggle();
+}
+
+async function toggleFullscreen() {
+  try {
+    if (isFullscreen()) {
+      const exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen;
+      if (exitFullscreen) await exitFullscreen.call(document);
+    } else {
+      const root = document.documentElement;
+      const requestFullscreen = root.requestFullscreen || root.webkitRequestFullscreen;
+      if (requestFullscreen) await requestFullscreen.call(root);
+    }
+  } catch (error) {
+    console.warn("Fullscreen mode could not be changed.", error);
+  }
 }
 
 function restoreViewState() {
@@ -588,6 +687,7 @@ function screenToGrid(clientX, clientY) {
 let pendingRenderFrame = 0;
 
 function draw() {
+  syncBuildingActionBar();
   if (pendingRenderFrame) return;
   pendingRenderFrame = window.requestAnimationFrame(() => {
     pendingRenderFrame = 0;
@@ -614,7 +714,7 @@ function renderScene() {
   }
   drawZones();
   drawGrid();
-  if (state.mode !== "overview") {
+  if (state.mode !== "overview" && state.drag?.building) {
     state.buildings.forEach(drawBuildingGroundShadow);
   }
   state.buildings
@@ -662,7 +762,7 @@ function drawBuildingGroundShadow(building) {
   ctx.moveTo(corners[0].x, corners[0].y);
   corners.slice(1).forEach(point => ctx.lineTo(point.x, point.y));
   ctx.closePath();
-  ctx.fillStyle = "rgba(0, 0, 0, .11)";
+  ctx.fillStyle = "rgba(0, 0, 0, .25)";
   ctx.fill();
   ctx.restore();
 }
@@ -984,6 +1084,38 @@ function toggleBuildingRotation(building) {
   draw();
 }
 
+function finishBuildingEdit({ restore = false, destroy = false } = {}) {
+  const drag = state.drag;
+  const building = drag?.building;
+  if (!building) return;
+
+  if (restore) {
+    building.x = drag.x;
+    building.y = drag.y;
+    building.width = drag.width;
+    building.height = drag.height;
+    building.rotation = drag.rotation;
+  } else if (destroy) {
+    const index = state.buildings.indexOf(building);
+    if (index !== -1) state.buildings.splice(index, 1);
+  }
+
+  stopTouchEdgePan();
+  clearTouchLongPress();
+  touchInteraction.gesture = null;
+  state.pointer = null;
+  state.drag = null;
+  state.hoveredBuilding = null;
+  canvas.classList.remove("is-dragging");
+  draw();
+}
+
+function applyBuildingEdit() {
+  const building = state.drag?.building;
+  if (!building || !validPosition(building, building.x, building.y)) return;
+  finishBuildingEdit();
+}
+
 function isBuildingAssetFlipped(building) {
   const defaultFlip = DEFAULT_FLIPPED_ASSET_WOD_IDS.has(String(building.id));
   return Boolean(building.rotation) !== defaultFlip;
@@ -1112,21 +1244,51 @@ function categoryColor(groundType) {
 }
 
 function validPosition(building, x, y) {
+  if (!isBuildingInsideUnlockedAt(building, x, y)) return false;
+  return !state.buildings.some(other => other !== building && x < other.x + other.width && x + building.width > other.x && y < other.y + other.height && y + building.height > other.y);
+}
+
+function isBuildingInsideUnlockedAt(building, x, y) {
   for (let row = y; row < y + building.height; row++) {
     for (let col = x; col < x + building.width; col++) {
       if (!isCellUnlocked(col, row)) return false;
     }
   }
-  return !state.buildings.some(other => other !== building && x < other.x + other.width && x + building.width > other.x && y < other.y + other.height && y + building.height > other.y);
+  return true;
 }
 
 function isBuildingInsideUnlockedArea(building) {
-  for (let row = building.y; row < building.y + building.height; row++) {
-    for (let col = building.x; col < building.x + building.width; col++) {
-      if (!isCellUnlocked(col, row)) return false;
-    }
+  return isBuildingInsideUnlockedAt(building, building.x, building.y);
+}
+
+function clampBuildingToUnlockedArea(building, x, y) {
+  if (isBuildingInsideUnlockedAt(building, x, y)) return { x, y };
+
+  const regions = [{ x: 0, y: 0, width: state.unlocked, height: state.unlocked }];
+  if (state.expansionLevel > 0) {
+    regions.push({ x: 0, y: 0, width: 70, height: state.expansionLevel * 20 });
   }
-  return true;
+
+  let nearest = null;
+  regions.forEach(region => {
+    const maxX = region.x + region.width - building.width;
+    const maxY = region.y + region.height - building.height;
+    if (maxX < region.x || maxY < region.y) return;
+    const candidate = {
+      x: Math.max(region.x, Math.min(maxX, x)),
+      y: Math.max(region.y, Math.min(maxY, y))
+    };
+    const distance = (candidate.x - x) ** 2 + (candidate.y - y) ** 2;
+    if (!nearest || distance < nearest.distance) nearest = { ...candidate, distance };
+  });
+
+  return nearest ? { x: nearest.x, y: nearest.y } : { x: building.x, y: building.y };
+}
+
+function moveBuildingWithinUnlockedArea(building, x, y) {
+  const position = clampBuildingToUnlockedArea(building, x, y);
+  building.x = position.x;
+  building.y = position.y;
 }
 
 function isCellUnlocked(x, y) {
@@ -1482,11 +1644,12 @@ async function prebuildCatalogAssets(workerCount = 4) {
 
 canvas.addEventListener("wheel", event => {
   event.preventDefault();
-  const before = screenToGrid(event.clientX, event.clientY);
-  state.scale = Math.max(MIN_CAMERA_SCALE, Math.min(MAX_CAMERA_SCALE, state.scale * (event.deltaY < 0 ? 1.1 : .9)));
-  const after = iso(before.x, before.y); const rect = canvas.getBoundingClientRect();
-  state.panX += event.clientX - rect.left - after.x;
-  state.panY += event.clientY - rect.top - after.y;
+  const rect = canvas.getBoundingClientRect();
+  const anchorX = (event.clientX - rect.left - state.panX) / state.scale;
+  const anchorY = (event.clientY - rect.top - state.panY) / state.scale;
+  state.scale = Math.max(getMinCameraScale(), Math.min(MAX_CAMERA_SCALE, state.scale * (event.deltaY < 0 ? 1.1 : .9)));
+  state.panX = event.clientX - rect.left - anchorX * state.scale;
+  state.panY = event.clientY - rect.top - anchorY * state.scale;
   clampView();
   scheduleCameraSave();
   draw();
@@ -1510,13 +1673,73 @@ function clearTouchLongPress() {
   touchInteraction.longPressCandidate = null;
 }
 
-function clearPendingTouchTap() {
-  if (touchInteraction.pendingTap?.timer) window.clearTimeout(touchInteraction.pendingTap.timer);
-  touchInteraction.pendingTap = null;
-}
-
 function touchMidpoint(first, second) {
   return { x: (first.x + second.x) / 2, y: (first.y + second.y) / 2 };
+}
+
+function stopTouchEdgePan() {
+  if (touchEdgePanFrame) window.cancelAnimationFrame(touchEdgePanFrame);
+  touchEdgePanFrame = 0;
+  touchEdgePanLastTime = 0;
+}
+
+function runTouchEdgePan(timestamp) {
+  touchEdgePanFrame = 0;
+  const gesture = touchInteraction.gesture;
+  const building = state.drag?.building;
+  const pointer = gesture?.type === "building" && gesture.moved
+    ? touchInteraction.pointers.get(gesture.pointerId)
+    : null;
+  if (!pointer || !building) {
+    touchEdgePanLastTime = 0;
+    return;
+  }
+
+  const rect = canvas.getBoundingClientRect();
+  const horizontalEdgeSize = Math.min(80, Math.max(52, rect.width * .16));
+  const verticalEdgeSize = Math.min(90, Math.max(56, rect.height * .12));
+  const localX = pointer.x - rect.left;
+  const localY = pointer.y - rect.top;
+  let horizontalStrength = 0;
+  let verticalStrength = 0;
+  if (localX < horizontalEdgeSize) {
+    horizontalStrength = (horizontalEdgeSize - Math.max(0, localX)) / horizontalEdgeSize;
+  } else if (localX > rect.width - horizontalEdgeSize) {
+    horizontalStrength = -(horizontalEdgeSize - Math.max(0, rect.width - localX)) / horizontalEdgeSize;
+  }
+  if (localY < verticalEdgeSize) {
+    verticalStrength = (verticalEdgeSize - Math.max(0, localY)) / verticalEdgeSize;
+  } else if (localY > rect.height - verticalEdgeSize) {
+    verticalStrength = -(verticalEdgeSize - Math.max(0, rect.height - localY)) / verticalEdgeSize;
+  }
+  if (!horizontalStrength && !verticalStrength) {
+    touchEdgePanLastTime = 0;
+    return;
+  }
+
+  const elapsedSeconds = touchEdgePanLastTime
+    ? Math.min(32, timestamp - touchEdgePanLastTime) / 1000
+    : 1 / 60;
+  touchEdgePanLastTime = timestamp;
+  state.panX += Math.sign(horizontalStrength)
+    * TOUCH_EDGE_PAN_MAX_SPEED
+    * Math.pow(Math.abs(horizontalStrength), 1.35)
+    * elapsedSeconds;
+  state.panY += Math.sign(verticalStrength)
+    * TOUCH_EDGE_PAN_MAX_SPEED
+    * Math.pow(Math.abs(verticalStrength), 1.35)
+    * elapsedSeconds;
+  clampView();
+
+  const point = screenToGrid(pointer.x, pointer.y);
+  moveBuildingWithinUnlockedArea(building, point.x - gesture.offsetX, point.y - gesture.offsetY);
+  scheduleCameraSave();
+  draw();
+  touchEdgePanFrame = window.requestAnimationFrame(runTouchEdgePan);
+}
+
+function startTouchEdgePan() {
+  if (!touchEdgePanFrame) touchEdgePanFrame = window.requestAnimationFrame(runTouchEdgePan);
 }
 
 function touchDistance(first, second) {
@@ -1537,8 +1760,8 @@ function startTouchPan(pointer) {
 }
 
 function startTouchPinch() {
+  stopTouchEdgePan();
   clearTouchLongPress();
-  clearPendingTouchTap();
   const pointers = Array.from(touchInteraction.pointers.values()).slice(0, 2);
   if (pointers.length < 2) return;
   const midpoint = touchMidpoint(pointers[0], pointers[1]);
@@ -1553,11 +1776,7 @@ function startTouchPinch() {
   canvas.classList.add("is-dragging");
 }
 
-function beginSelectedBuildingGesture(pointer, {
-  justSelected = false,
-  startedOnSelected = false,
-  secondTap = false
-} = {}) {
+function beginSelectedBuildingGesture(pointer) {
   const selected = state.drag?.building;
   if (!selected) return;
   const point = screenToGrid(pointer.x, pointer.y);
@@ -1568,17 +1787,13 @@ function beginSelectedBuildingGesture(pointer, {
     startY: pointer.y,
     offsetX: point.x - selected.x,
     offsetY: point.y - selected.y,
-    moved: false,
-    justSelected,
-    startedOnSelected,
-    secondTap
+    moved: false
   };
   canvas.classList.add("is-dragging");
 }
 
 function handleTouchPointerDown(event) {
   event.preventDefault();
-  touchInteraction.lastTouchAt = Date.now();
   const pointer = {
     id: event.pointerId,
     x: event.clientX,
@@ -1595,35 +1810,7 @@ function handleTouchPointerDown(event) {
   }
 
   if (state.drag?.touchSelected && state.drag.building) {
-    const selectedBuilding = state.drag.building;
-    const startedOnSelected = buildingAt(event.clientX, event.clientY) === selectedBuilding;
-    const secondTap = startedOnSelected && touchInteraction.pendingTap?.building === selectedBuilding;
-    if (touchInteraction.pendingTap) clearPendingTouchTap();
-    beginSelectedBuildingGesture(pointer, { startedOnSelected, secondTap });
-    if (startedOnSelected) {
-      touchInteraction.longPressCandidate = {
-        action: "delete",
-        pointerId: event.pointerId,
-        building: state.drag.building,
-        startX: event.clientX,
-        startY: event.clientY
-      };
-      touchInteraction.longPressTimer = window.setTimeout(() => {
-        const candidate = touchInteraction.longPressCandidate;
-        const activePointer = touchInteraction.pointers.get(event.pointerId);
-        if (candidate?.action !== "delete" || !activePointer || touchInteraction.pointers.size !== 1) return;
-        touchInteraction.longPressTimer = 0;
-        touchInteraction.longPressCandidate = null;
-        const index = state.buildings.indexOf(candidate.building);
-        if (index !== -1) state.buildings.splice(index, 1);
-        state.drag = null;
-        state.pointer = null;
-        touchInteraction.gesture = { type: "blocked" };
-        clearPendingTouchTap();
-        navigator.vibrate?.([20, 35, 25]);
-        draw();
-      }, TOUCH_DELETE_PRESS_MS);
-    }
+    beginSelectedBuildingGesture(pointer);
     return;
   }
 
@@ -1634,7 +1821,6 @@ function handleTouchPointerDown(event) {
   }
 
   touchInteraction.longPressCandidate = {
-    action: "select",
     pointerId: event.pointerId,
     building,
     startX: event.clientX,
@@ -1653,11 +1839,14 @@ function handleTouchPointerDown(event) {
       building: candidate.building,
       x: candidate.building.x,
       y: candidate.building.y,
+      width: candidate.building.width,
+      height: candidate.building.height,
+      rotation: candidate.building.rotation || 0,
       offsetX: point.x - candidate.building.x,
       offsetY: point.y - candidate.building.y,
       touchSelected: true
     };
-    beginSelectedBuildingGesture(activePointer, { justSelected: true, startedOnSelected: true });
+    beginSelectedBuildingGesture(activePointer);
     navigator.vibrate?.(18);
     draw();
   }, TOUCH_LONG_PRESS_MS);
@@ -1677,7 +1866,7 @@ function handleTouchPointerMove(event) {
     if (pointers.length < 2 || gesture?.type !== "pinch") return;
     const midpoint = touchMidpoint(pointers[0], pointers[1]);
     const rect = canvas.getBoundingClientRect();
-    state.scale = Math.max(MIN_CAMERA_SCALE, Math.min(MAX_CAMERA_SCALE,
+    state.scale = Math.max(getMinCameraScale(), Math.min(MAX_CAMERA_SCALE,
       gesture.startScale * touchDistance(pointers[0], pointers[1]) / gesture.startDistance));
     state.panX = midpoint.x - rect.left - gesture.anchorX * state.scale;
     state.panY = midpoint.y - rect.top - gesture.anchorY * state.scale;
@@ -1691,21 +1880,17 @@ function handleTouchPointerMove(event) {
   if (candidate?.pointerId === event.pointerId) {
     const distance = Math.hypot(pointer.x - candidate.startX, pointer.y - candidate.startY);
     if (distance <= TOUCH_MOVE_THRESHOLD) return;
-    if (candidate.action === "delete") {
-      clearTouchLongPress();
-    } else {
-      clearTouchLongPress();
-      touchInteraction.gesture = {
-        type: "pan",
-        pointerId: event.pointerId,
-        startX: candidate.startX,
-        startY: candidate.startY,
-        panX: candidate.panX,
-        panY: candidate.panY,
-        moved: true
-      };
-      canvas.classList.add("is-dragging");
-    }
+    clearTouchLongPress();
+    touchInteraction.gesture = {
+      type: "pan",
+      pointerId: event.pointerId,
+      startX: candidate.startX,
+      startY: candidate.startY,
+      panX: candidate.panX,
+      panY: candidate.panY,
+      moved: true
+    };
+    canvas.classList.add("is-dragging");
   }
 
   const gesture = touchInteraction.gesture;
@@ -1714,6 +1899,7 @@ function handleTouchPointerMove(event) {
   if (movedDistance > TOUCH_MOVE_THRESHOLD) gesture.moved = true;
 
   if (gesture.type === "pan") {
+    stopTouchEdgePan();
     state.panX = gesture.panX + pointer.x - gesture.startX;
     state.panY = gesture.panY + pointer.y - gesture.startY;
     clampView();
@@ -1724,29 +1910,18 @@ function handleTouchPointerMove(event) {
 
   if (gesture.type === "building" && gesture.moved && state.drag?.building) {
     const point = screenToGrid(pointer.x, pointer.y);
-    state.drag.building.x = point.x - gesture.offsetX;
-    state.drag.building.y = point.y - gesture.offsetY;
+    moveBuildingWithinUnlockedArea(
+      state.drag.building,
+      point.x - gesture.offsetX,
+      point.y - gesture.offsetY
+    );
     draw();
+    startTouchEdgePan();
   }
 }
 
-function placeTouchSelectedBuilding(building) {
-  if (state.drag?.building !== building) return;
-  if (!validPosition(building, building.x, building.y)) return;
-  state.drag = null;
-  draw();
-}
-
-function scheduleTouchBuildingPlacement(building) {
-  clearPendingTouchTap();
-  const timer = window.setTimeout(() => {
-    touchInteraction.pendingTap = null;
-    placeTouchSelectedBuilding(building);
-  }, TOUCH_DOUBLE_TAP_MS);
-  touchInteraction.pendingTap = { building, timer };
-}
-
 function handleTouchPointerEnd(event) {
+  stopTouchEdgePan();
   const gesture = touchInteraction.gesture;
   const endingPinch = gesture?.type === "pinch";
   const endingGesture = gesture?.pointerId === event.pointerId;
@@ -1761,19 +1936,6 @@ function handleTouchPointerEnd(event) {
     flushCameraSave();
     touchInteraction.gesture = null;
   } else if (endingGesture && gesture.type === "building") {
-    const building = state.drag?.building;
-    if (!gesture.moved && !gesture.justSelected && building) {
-      if (gesture.secondTap && gesture.startedOnSelected) {
-        clearPendingTouchTap();
-        toggleBuildingRotation(building);
-        navigator.vibrate?.(12);
-      } else if (gesture.startedOnSelected) {
-        scheduleTouchBuildingPlacement(building);
-      } else {
-        clearPendingTouchTap();
-        placeTouchSelectedBuilding(building);
-      }
-    }
     touchInteraction.gesture = null;
   }
 
@@ -1790,10 +1952,17 @@ canvas.addEventListener("pointerdown", event => {
     handleTouchPointerDown(event);
     return;
   }
+  const activeBuildingEdit = state.drag?.building ? state.drag : null;
   if (event.button === 1) {
     event.preventDefault();
-    state.pointer = { x: event.clientX, y: event.clientY, panX: state.panX, panY: state.panY };
-    state.drag = { pan: true };
+    state.pointer = {
+      x: event.clientX,
+      y: event.clientY,
+      panX: state.panX,
+      panY: state.panY,
+      cameraPan: true
+    };
+    if (!activeBuildingEdit) state.drag = { pan: true };
     canvas.setPointerCapture(event.pointerId);
     canvas.classList.add("is-dragging");
     return;
@@ -1801,9 +1970,33 @@ canvas.addEventListener("pointerdown", event => {
   if (event.button !== 0) return;
   const point = screenToGrid(event.clientX, event.clientY);
   const building = buildingAt(event.clientX, event.clientY);
+  if (activeBuildingEdit && building !== activeBuildingEdit.building) {
+    if (building) return;
+    state.pointer = {
+      x: event.clientX,
+      y: event.clientY,
+      panX: state.panX,
+      panY: state.panY,
+      cameraPan: true
+    };
+    canvas.setPointerCapture(event.pointerId);
+    canvas.classList.add("is-dragging");
+    return;
+  }
   state.pointer = { x: event.clientX, y: event.clientY, panX: state.panX, panY: state.panY };
-  state.drag = building
-    ? { building, x: building.x, y: building.y, offsetX: point.x - building.x, offsetY: point.y - building.y }
+  state.drag = activeBuildingEdit
+    ? { ...activeBuildingEdit, offsetX: point.x - building.x, offsetY: point.y - building.y }
+    : building
+      ? {
+        building,
+        x: building.x,
+        y: building.y,
+        width: building.width,
+        height: building.height,
+        rotation: building.rotation || 0,
+        offsetX: point.x - building.x,
+        offsetY: point.y - building.y
+      }
     : { pan: true };
   canvas.setPointerCapture(event.pointerId); canvas.classList.add("is-dragging");
 });
@@ -1825,7 +2018,7 @@ canvas.addEventListener("pointermove", event => {
     }
     return;
   }
-  if (state.drag.pan) {
+  if (state.pointer.cameraPan || state.drag.pan) {
     state.panX = state.pointer.panX + event.clientX - state.pointer.x;
     state.panY = state.pointer.panY + event.clientY - state.pointer.y;
     clampView();
@@ -1833,18 +2026,27 @@ canvas.addEventListener("pointermove", event => {
     draw();
     return;
   }
-  const point = screenToGrid(event.clientX, event.clientY); const b = state.drag.building;
-  b.x = point.x - state.drag.offsetX; b.y = point.y - state.drag.offsetY; draw();
+  const point = screenToGrid(event.clientX, event.clientY);
+  moveBuildingWithinUnlockedArea(
+    state.drag.building,
+    point.x - state.drag.offsetX,
+    point.y - state.drag.offsetY
+  );
+  draw();
 });
 canvas.addEventListener("pointerup", event => {
   if (event.pointerType === "touch") {
     handleTouchPointerEnd(event);
     return;
   }
-  const cameraWasMoved = Boolean(state.drag?.pan);
+  const cameraWasMoved = Boolean(state.pointer?.cameraPan || state.drag?.pan);
   if (state.drag?.building) {
-    const b = state.drag.building;
-    if (!validPosition(b, b.x, b.y)) { b.x = state.drag.x; b.y = state.drag.y; }
+    state.pointer = null;
+    canvas.classList.remove("is-dragging");
+    canvas.releasePointerCapture?.(event.pointerId);
+    draw();
+    if (cameraWasMoved) flushCameraSave();
+    return;
   }
   state.pointer = null;
   state.drag = null;
@@ -1863,31 +2065,27 @@ canvas.addEventListener("pointerleave", event => {
   draw();
 });
 
-canvas.addEventListener("contextmenu", event => {
-  event.preventDefault();
-  if (Date.now() - touchInteraction.lastTouchAt < 1200) return;
-  const building = buildingAt(event.clientX, event.clientY);
-  if (!building) return;
-  const index = state.buildings.indexOf(building);
-  if (index !== -1) state.buildings.splice(index, 1);
-  if (state.hoveredBuilding === building) state.hoveredBuilding = null;
-  draw();
-});
-
-canvas.addEventListener("dblclick", event => {
-  event.preventDefault();
-  if (Date.now() - touchInteraction.lastTouchAt < 1200) return;
-  const building = buildingAt(event.clientX, event.clientY);
-  if (building) toggleBuildingRotation(building);
-});
-
 overviewToggle.addEventListener("click", () => {
+  if (state.drag?.building) {
+    finishBuildingEdit({ destroy: true });
+    return;
+  }
   state.mode = state.mode === "normal" ? "overview" : "normal";
   state.hoveredBuilding = null;
   syncViewToggle();
   saveCameraState();
   draw();
 });
+
+fullscreenToggle.addEventListener("click", () => {
+  if (state.drag?.building) {
+    applyBuildingEdit();
+    return;
+  }
+  void toggleFullscreen();
+});
+document.addEventListener("fullscreenchange", syncFullscreenToggle);
+document.addEventListener("webkitfullscreenchange", syncFullscreenToggle);
 
 function setBuildingsPanel(panel) {
   const showingCustomDecorations = panel === "custom-decorations";
@@ -1964,6 +2162,10 @@ function customDecoIdsFromRows() {
 }
 
 sidebarToggle.addEventListener("click", () => {
+  if (state.drag?.building) {
+    finishBuildingEdit({ restore: true });
+    return;
+  }
   setSizeDropdownOpen(false);
   setBuildingsPanel("catalog");
   buildingsModal.open();
@@ -2003,6 +2205,10 @@ customDecoForm.addEventListener("submit", event => {
   setBuildingsPanel("catalog");
 });
 savesToggle.addEventListener("click", () => {
+  if (state.drag?.building) {
+    toggleBuildingRotation(state.drag.building);
+    return;
+  }
   renderSavedLayouts();
   savesModal.open();
 });
