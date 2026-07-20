@@ -137,6 +137,7 @@ const state = {
 const DESKTOP_MIN_CAMERA_SCALE = .55;
 const MOBILE_MIN_CAMERA_SCALE = .40;
 const MAX_CAMERA_SCALE = 1.5;
+const DESKTOP_DRAG_THRESHOLD = 4;
 const TOUCH_LONG_PRESS_MS = 400;
 const TOUCH_MOVE_THRESHOLD = 10;
 const TOUCH_EDGE_PAN_MAX_SPEED = 720;
@@ -469,7 +470,7 @@ function syncFullscreenToggle() {
 }
 
 function syncBuildingActionBar(force = false) {
-  const editingBuilding = Boolean(state.drag?.building);
+  const editingBuilding = Boolean(state.drag?.building && !state.drag.transientMove);
   if (!force && editingBuilding === buildingActionBarVisible) return;
   buildingActionBarVisible = editingBuilding;
   bottomNavigation.classList.toggle("is-building-actions", editingBuilding);
@@ -1173,7 +1174,12 @@ function drawBuilding(building) {
       corners.slice(1).forEach(point => ctx.lineTo(point.x, point.y)); ctx.closePath();
       ctx.fill();
       ctx.restore();
-      ctx.strokeStyle = "rgba(247, 234, 213, .82)"; ctx.lineWidth = 1; ctx.stroke();
+      ctx.save();
+      ctx.strokeStyle = categoryColor(building.groundType);
+      ctx.lineWidth = 3;
+      ctx.lineJoin = "round";
+      ctx.stroke();
+      ctx.restore();
     }
     if (isDragged && image?.complete && image.naturalWidth) {
       ctx.save();
@@ -2182,7 +2188,9 @@ canvas.addEventListener("pointerdown", event => {
         height: building.height,
         rotation: building.rotation || 0,
         offsetX: point.x - building.x,
-        offsetY: point.y - building.y
+        offsetY: point.y - building.y,
+        transientMove: true,
+        transientMoved: false
       }
     : { pan: true };
   canvas.setPointerCapture(event.pointerId); canvas.classList.add("is-dragging");
@@ -2213,6 +2221,11 @@ canvas.addEventListener("pointermove", event => {
     draw();
     return;
   }
+  if (state.drag.transientMove && !state.drag.transientMoved) {
+    const distance = Math.hypot(event.clientX - state.pointer.x, event.clientY - state.pointer.y);
+    if (distance <= DESKTOP_DRAG_THRESHOLD) return;
+    state.drag.transientMoved = true;
+  }
   const point = screenToGrid(event.clientX, event.clientY);
   moveBuildingWithinUnlockedArea(
     state.drag.building,
@@ -2228,9 +2241,25 @@ canvas.addEventListener("pointerup", event => {
   }
   const cameraWasMoved = Boolean(state.pointer?.cameraPan || state.drag?.pan);
   if (state.drag?.building) {
+    const transientMove = state.drag.transientMove;
+    const transientMoved = state.drag.transientMoved;
+    const draggedBuilding = state.drag.building;
+    if (transientMove && transientMoved && !validPosition(draggedBuilding, draggedBuilding.x, draggedBuilding.y)) {
+      restoreBuildingEditSnapshot(state.drag);
+    }
     state.pointer = null;
     canvas.classList.remove("is-dragging");
     canvas.releasePointerCapture?.(event.pointerId);
+    if (transientMove && transientMoved) {
+      state.drag = null;
+      state.hoveredBuilding = CAN_HOVER_BUILDINGS && state.mode === "normal"
+        ? buildingAt(event.clientX, event.clientY)
+        : null;
+    } else if (transientMove) {
+      delete state.drag.transientMove;
+      delete state.drag.transientMoved;
+    }
+    syncBuildingActionBar(true);
     draw();
     if (cameraWasMoved) flushCameraSave();
     return;
