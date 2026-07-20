@@ -192,6 +192,7 @@ const DEFAULT_KEEP_WOD_ID = "2987";
 const DEFAULT_FLIPPED_ASSET_WOD_IDS = new Set(["1422", "589"]);
 const BUILDING_ASSET_SCALE = 0.99;
 const BUILDING_ASSET_VERTICAL_OFFSET_TILES = -0.5;
+const DRAGGED_BUILDING_OPACITY = .62;
 const OUTER_GRASS_SCALE_MULTIPLIER = 1.85;
 const OUTER_GRASS_DARKNESS = .25;
 const ASSET_VERTICAL_OFFSET_TILES = new Map([
@@ -1164,8 +1165,8 @@ function fitOverviewLabel(value, maxWidth) {
 
 function drawBuilding(building) {
   const { corners, center, bottom, image, width, height } = getBuildingGeometry(building);
+  const isDragged = state.drag?.building === building;
   if (state.mode === "overview") {
-    const isDragged = state.drag?.building === building;
     if (!isDragged) {
       ctx.save();
       ctx.globalAlpha = .68;
@@ -1183,7 +1184,7 @@ function drawBuilding(building) {
     }
     if (isDragged && image?.complete && image.naturalWidth) {
       ctx.save();
-      ctx.globalAlpha = .62;
+      ctx.globalAlpha = DRAGGED_BUILDING_OPACITY;
       if (isBuildingAssetFlipped(building)) {
         ctx.translate(center.x, 0);
         ctx.scale(-1, 1);
@@ -1197,6 +1198,7 @@ function drawBuilding(building) {
   }
   if (image?.complete && image.naturalWidth) {
     ctx.save();
+    if (isDragged) ctx.globalAlpha = DRAGGED_BUILDING_OPACITY;
     if (CAN_HOVER_BUILDINGS && state.hoveredBuilding === building && !state.drag) {
       ctx.filter = "drop-shadow(0 0 5px rgba(255, 255, 255, .68)) drop-shadow(0 0 10px rgba(255, 255, 255, .36))";
     }
@@ -1209,24 +1211,17 @@ function drawBuilding(building) {
     }
     ctx.restore();
   } else {
+    ctx.save();
+    if (isDragged) ctx.globalAlpha = DRAGGED_BUILDING_OPACITY;
     ctx.fillStyle = categoryColor(building.groundType);
     ctx.fillRect(center.x - 18, bottom.y - 26, 36, 26);
+    ctx.restore();
   }
 }
 
 function toggleBuildingRotation(building) {
-  const oldWidth = building.width;
-  const oldHeight = building.height;
-  const oldRotation = building.rotation || 0;
-  building.width = oldHeight;
-  building.height = oldWidth;
-  building.rotation = oldRotation ? 0 : 1;
-  if (!validPosition(building, building.x, building.y)) {
-    building.width = oldWidth;
-    building.height = oldHeight;
-    building.rotation = oldRotation;
-    return;
-  }
+  [building.width, building.height] = [building.height, building.width];
+  building.rotation = building.rotation ? 0 : 1;
   draw();
 }
 
