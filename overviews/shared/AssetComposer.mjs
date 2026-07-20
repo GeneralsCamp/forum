@@ -72,6 +72,8 @@ function buildCreateJsStubs() {
     this.rotation = 0;
     this.skewX = 0;
     this.skewY = 0;
+    this.regX = 0;
+    this.regY = 0;
   }
   Bitmap.prototype.setBounds = function () { };
 
@@ -84,6 +86,8 @@ function buildCreateJsStubs() {
     this.rotation = 0;
     this.skewX = 0;
     this.skewY = 0;
+    this.regX = 0;
+    this.regY = 0;
   }
   Container.prototype.addChild = function (...kids) {
     this.children.push(...kids.filter(Boolean));
@@ -99,6 +103,8 @@ function buildCreateJsStubs() {
     this.rotation = 0;
     this.skewX = 0;
     this.skewY = 0;
+    this.regX = 0;
+    this.regY = 0;
   }
   MovieClip.prototype.addChild = function (...kids) {
     this.children.push(...kids.filter(Boolean));
@@ -118,28 +124,18 @@ function buildCreateJsStubs() {
   return { Bitmap, Container, MovieClip, LoadQueue };
 }
 
-function isDynamicColorLayer(node) {
+function isBrokenStateLayer(node) {
+  const name = String(node?.name || "");
   const className = String(node?.constructor?.__fname || "");
-  return /banner[_-]?colors/i.test(className) || /_Cc[0-9a-f]/i.test(className);
+  return /^mc[_-]?broken$/i.test(name) || /^mc[_-]?broken/i.test(className);
 }
 
-function drawNode(ctx, node, { skipDynamicColorLayers = false } = {}) {
-  if (!node) return;
-  if (skipDynamicColorLayers && isDynamicColorLayer(node)) return;
-
-  const x = Number(node.x || 0);
-  const y = Number(node.y || 0);
-  const sx = Number(node.scaleX == null ? 1 : node.scaleX);
-  const sy = Number(node.scaleY == null ? 1 : node.scaleY);
-  const rot = Number(node.rotation || 0) * Math.PI / 180;
-  const skewX = Number(node.skewX || 0) * Math.PI / 180;
-  const skewY = Number(node.skewY || 0) * Math.PI / 180;
+function drawNode(ctx, node) {
+  if (!node || isBrokenStateLayer(node)) return;
 
   ctx.save();
-  ctx.translate(x, y);
-  if (rot) ctx.rotate(rot);
-  if (skewX || skewY) ctx.transform(1, Math.tan(skewY), Math.tan(skewX), 1, 0, 0);
-  ctx.scale(sx, sy);
+  const matrix = getNodeMatrix(node);
+  ctx.transform(...matrix);
 
   if (node.sourceRect && node.image) {
     const r = node.sourceRect;
@@ -147,7 +143,7 @@ function drawNode(ctx, node, { skipDynamicColorLayers = false } = {}) {
   }
 
   if (Array.isArray(node.children)) {
-    node.children.forEach(child => drawNode(ctx, child, { skipDynamicColorLayers }));
+    node.children.forEach(child => drawNode(ctx, child));
   }
 
   ctx.restore();
@@ -183,16 +179,48 @@ function getNodeMatrix(node) {
   const rot = Number(node?.rotation || 0) * Math.PI / 180;
   const skewX = Number(node?.skewX || 0) * Math.PI / 180;
   const skewY = Number(node?.skewY || 0) * Math.PI / 180;
+  const regX = Number(node?.regX || 0);
+  const regY = Number(node?.regY || 0);
 
   const cos = Math.cos(rot);
   const sin = Math.sin(rot);
+  const rotationAndScale = [
+    cos * sx,
+    sin * sx,
+    -sin * sy,
+    cos * sy,
+    0,
+    0
+  ];
 
-  const translate = [1, 0, 0, 1, x, y];
-  const rotate = [cos, sin, -sin, cos, 0, 0];
-  const skew = [1, Math.tan(skewY), Math.tan(skewX), 1, 0, 0];
-  const scale = [sx, 0, 0, sy, 0, 0];
+  // EaselJS appendTransform semantics are important here: exported assets
+  // commonly encode a horizontal flip as skewY=180. A tan-based canvas skew
+  // turns that into an identity transform and leaves overlays on the wrong side.
+  let matrix = (skewX || skewY)
+    ? multiplyMatrix([
+      Math.cos(skewY),
+      Math.sin(skewY),
+      -Math.sin(skewX),
+      Math.cos(skewX),
+      x,
+      y
+    ], rotationAndScale)
+    : [
+      rotationAndScale[0],
+      rotationAndScale[1],
+      rotationAndScale[2],
+      rotationAndScale[3],
+      x,
+      y
+    ];
 
-  return multiplyMatrix(multiplyMatrix(multiplyMatrix(translate, rotate), skew), scale);
+  if (regX || regY) {
+    matrix = matrix.slice();
+    matrix[4] -= regX * matrix[0] + regY * matrix[2];
+    matrix[5] -= regX * matrix[1] + regY * matrix[3];
+  }
+
+  return matrix;
 }
 
 function expandBounds(bounds, x, y) {
@@ -202,9 +230,8 @@ function expandBounds(bounds, x, y) {
   bounds.maxY = Math.max(bounds.maxY, y);
 }
 
-function measureNodeBounds(node, parentMatrix, bounds, { skipDynamicColorLayers = false } = {}) {
-  if (!node) return;
-  if (skipDynamicColorLayers && isDynamicColorLayer(node)) return;
+function measureNodeBounds(node, parentMatrix, bounds) {
+  if (!node || isBrokenStateLayer(node)) return;
   const matrix = multiplyMatrix(parentMatrix, getNodeMatrix(node));
 
   if (node.sourceRect && node.image) {
@@ -221,12 +248,7 @@ function measureNodeBounds(node, parentMatrix, bounds, { skipDynamicColorLayers 
   }
 
   if (Array.isArray(node.children)) {
-    node.children.forEach((child) => measureNodeBounds(
-      child,
-      matrix,
-      bounds,
-      { skipDynamicColorLayers }
-    ));
+    node.children.forEach((child) => measureNodeBounds(child, matrix, bounds));
   }
 }
 
@@ -315,10 +337,10 @@ function parseAssetMeta(jsCode) {
   const assetId = assetIdMatch?.[1];
   if (!assetId) throw new Error("Asset id not found in JS");
 
-  const rootClassMatch = jsCode.match(/t\.([A-Za-z0-9_]+)\s*=\s*s;/);
-  const rootClassName = rootClassMatch?.[1] || assetId;
-
-  return { assetId, rootClassName };
+  // The generated library namespace and its exported root constructor use the
+  // asset id. Minified local variable names are unstable, so matching a
+  // particular assignment such as `t.Name = s` can accidentally select BMP_0.
+  return { assetId, rootClassName: assetId };
 }
 
 function instantiateRoot(jsCode, assetId, rootClassName, atlasImage, atlasJson) {
@@ -367,10 +389,9 @@ export async function composeAssetToDataUrl({
   maxWidth = null,
   maxHeight = null,
   padding = 0,
-  localizeSingleFrame = false,
-  skipDynamicColorLayers = false
+  localizeSingleFrame = false
 }) {
-  const cacheKey = `${jsonUrl}|${jsUrl}|${imageUrl}|${maxWidth}|${maxHeight}|${padding}|${localizeSingleFrame}|${skipDynamicColorLayers}`;
+  const cacheKey = `${jsonUrl}|${jsUrl}|${imageUrl}|${maxWidth}|${maxHeight}|${padding}|${localizeSingleFrame}`;
   if (composedCache.has(cacheKey)) return composedCache.get(cacheKey);
 
   const task = (async () => {
@@ -415,7 +436,7 @@ export async function composeAssetToDataUrl({
       maxX: Number.NEGATIVE_INFINITY,
       maxY: Number.NEGATIVE_INFINITY
     };
-    measureNodeBounds(root, createIdentityMatrix(), measured, { skipDynamicColorLayers });
+    measureNodeBounds(root, createIdentityMatrix(), measured);
 
     const hasMeasuredBounds = Number.isFinite(measured.minX) && Number.isFinite(measured.maxX);
     const fallbackW = Number(atlasJson?.sourceSize?.w || 600);
@@ -441,7 +462,7 @@ export async function composeAssetToDataUrl({
     ctx.translate(padding / 2, padding / 2);
     ctx.scale(scale, scale);
     ctx.translate(offsetX, offsetY);
-    drawNode(ctx, root, { skipDynamicColorLayers });
+    drawNode(ctx, root);
     ctx.restore();
 
     return canvas.toDataURL("image/png");

@@ -1618,8 +1618,7 @@ async function ensureComposedImage(item) {
         ...companions,
         maxWidth: 900,
         maxHeight: 900,
-        localizeSingleFrame: true,
-        skipDynamicColorLayers: true
+        localizeSingleFrame: true
       });
       if (composed) {
         item.image = composed;
