@@ -192,6 +192,7 @@ const DEFAULT_FLIPPED_ASSET_WOD_IDS = new Set(["1422", "589"]);
 const BUILDING_ASSET_SCALE = 0.99;
 const BUILDING_ASSET_VERTICAL_OFFSET_TILES = -0.5;
 const OUTER_GRASS_SCALE_MULTIPLIER = 1.85;
+const OUTER_GRASS_DARKNESS = .25;
 const ASSET_VERTICAL_OFFSET_TILES = new Map([
   // The Keep artwork contains loose rocks below its architectural base, so
   // its cropped image needs a small visual lift to sit on the 12x12 footprint.
@@ -933,7 +934,7 @@ function drawOuterGrass(rect) {
       );
       destinationX += frame.sw;
     });
-    grassContext.fillStyle = "rgba(10, 16, 6, .36)";
+    grassContext.fillStyle = `rgba(10, 16, 6, ${OUTER_GRASS_DARKNESS})`;
     grassContext.fillRect(0, 0, grassTile.width, grassTile.height);
     outerGrassPattern = ctx.createPattern(grassTile, "repeat");
   }
