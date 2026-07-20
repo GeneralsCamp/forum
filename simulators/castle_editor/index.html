@@ -26,16 +26,10 @@
         aria-labelledby="buildingsModalTitle">
         <div class="gf-modal-head">
           <h2 id="buildingsModalTitle" class="gf-modal-title" data-i18n="buildings">Buildings</h2>
-          <div class="modal-head-actions">
-            <button id="customDecoToggle" class="modal-head-tool" type="button" aria-label="Add custom building"
-              data-i18n-aria="add_custom_decoration">
-              <i class="bi bi-plus-lg" aria-hidden="true"></i>
-            </button>
-            <button id="sidebarClose" class="gf-modal-close" type="button" aria-label="Close buildings"
-              data-i18n-aria="close_buildings">
-              <i class="bi bi-x-lg" aria-hidden="true"></i>
-            </button>
-          </div>
+          <button id="sidebarClose" class="gf-modal-close" type="button" aria-label="Close buildings"
+            data-i18n-aria="close_buildings">
+            <i class="bi bi-x-lg" aria-hidden="true"></i>
+          </button>
         </div>
         <div id="buildingCatalogView" class="gf-modal-body castle-buildings-modal-body">
           <div class="building-filter-bar">
@@ -47,20 +41,21 @@
                 aria-expanded="false" aria-controls="sizeFilters" data-i18n="size_filter">Size Filter</button>
               <ul id="sizeFilters" class="dropdown-menu dropdown-menu-custom w-100" hidden></ul>
             </div>
-            <select id="expansionSelect" class="form-select custom-select text-center" aria-label="Castle expansions"
-              data-i18n-aria="castle_expansions">
-              <option value="0">Expansions: 0</option>
-              <option value="1">Expansions: 1</option>
-              <option value="2">Expansions: 2</option>
-              <option value="3">Expansions: 3</option>
-            </select>
           </div>
           <div id="buildingList" class="building-list" aria-live="polite"></div>
         </div>
         <form id="customDecoForm" class="gf-modal-body custom-deco-form" hidden>
+          <div class="custom-deco-apply-bar">
+            <button id="customDecoCancel" class="custom-deco-action custom-deco-cancel" type="button"
+              data-i18n="cancel">Cancel</button>
+            <button class="custom-deco-add" type="submit" data-i18n="update_custom_buildings">Update custom buildings</button>
+          </div>
           <div id="customDecoRows" class="custom-deco-id-grid"></div>
-          <button class="custom-deco-add" type="submit" data-i18n="apply">Apply</button>
         </form>
+        <button id="customDecoToggle" class="custom-deco-floating" type="button"
+          aria-label="Add custom building" data-i18n-aria="add_custom_decoration">
+          <i class="bi bi-plus-lg" aria-hidden="true"></i>
+        </button>
       </div>
     </div>
 
@@ -92,6 +87,46 @@
       </div>
     </div>
 
+    <div id="settingsModal" class="gf-modal castle-settings-modal" aria-hidden="true">
+      <div class="gf-modal-backdrop" data-close-modal="1"></div>
+      <div class="gf-modal-card castle-settings-modal-card" role="dialog" aria-modal="true"
+        aria-labelledby="settingsModalTitle">
+        <div class="gf-modal-head">
+          <h2 id="settingsModalTitle" class="gf-modal-title" data-i18n="settings">Settings</h2>
+          <button class="gf-modal-close" type="button" aria-label="Close settings" data-i18n-aria="close_settings">
+            <i class="bi bi-x-lg" aria-hidden="true"></i>
+          </button>
+        </div>
+        <div class="gf-modal-body castle-settings-modal-body">
+          <label class="castle-setting-row" for="expansionSelect">
+            <span data-i18n="castle_expansions">Castle expansions</span>
+            <select id="expansionSelect" class="form-select custom-select text-center" aria-label="Castle expansions"
+              data-i18n-aria="castle_expansions">
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+            </select>
+          </label>
+          <label class="castle-setting-row" for="backgroundSelect">
+            <span data-i18n="castle_background">Castle background</span>
+            <select id="backgroundSelect" class="form-select custom-select text-center" aria-label="Castle background"
+              data-i18n-aria="castle_background">
+              <option value="">Background</option>
+            </select>
+          </label>
+          <div class="castle-setting-row">
+            <span data-i18n="display_mode">Display mode</span>
+            <select id="fullscreenSelect" class="form-select custom-select text-center" aria-label="Display mode"
+              data-i18n-aria="display_mode">
+              <option value="off">Windowed</option>
+              <option value="on">Fullscreen</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <nav class="bottom-buttons-container d-flex justify-content-center align-items-center" aria-label="Editor navigation"
       data-i18n-aria="editor_navigation">
       <button id="sidebarToggle" class="btn" type="button" aria-label="Open buildings" data-i18n-aria="open_buildings">
@@ -106,8 +141,8 @@
         <i class="bi bi-grid-3x3-gap fs-1" aria-hidden="true"></i>
       </button>
       <div class="vr mx-2" aria-hidden="true"></div>
-      <button id="fullscreenToggle" class="btn" type="button" aria-label="Enter fullscreen" aria-pressed="false">
-        <i class="bi bi-fullscreen fs-1" aria-hidden="true"></i>
+      <button id="settingsToggle" class="btn" type="button" aria-label="Settings">
+        <i class="bi bi-gear fs-1" aria-hidden="true"></i>
       </button>
     </nav>
   </main>

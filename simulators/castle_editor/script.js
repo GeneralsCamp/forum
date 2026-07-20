@@ -5,9 +5,23 @@ import { composeAssetToDataUrl, deriveCompanionUrls } from "../../overviews/shar
 import { initCustomModal } from "../../overviews/shared/ModalService.mjs";
 import { loadSimulatorData, saveSimulatorData } from "../../overviews/shared/GameSettings.mjs";
 import { getInitialLanguage } from "../../overviews/shared/LanguageService.mjs";
+import { fetchWithFallback } from "../../overviews/shared/Fetcher.mjs";
 
 const SIM_NAME = "castle_editor";
 const STATE_VERSION = 2;
+const DEFAULT_TERRAIN_ASSET_ID = "Background/BackgroundsClassic/BackgroundsClassic--1573584429307";
+const CASTLE_BACKGROUND_LANGUAGE_KEYS = new Map([
+  ["BackgroundsClassic", "kingdomname_classic"],
+  ["BackgroundsIcecream", "kingdomname_icecream"],
+  ["BackgroundsDessert", "kingdomname_dessert"],
+  ["BackgroundsVolcano", "kingdomname_volcano"]
+]);
+const CASTLE_BACKGROUND_THEMES = new Map([
+  ["BackgroundsClassic", { outer: "#566b2d", inner: "#789342" }],
+  ["BackgroundsIcecream", { outer: "#8f969b", inner: "#c8c9c9" }],
+  ["BackgroundsDessert", { outer: "#8f7950", inner: "#c3a96e" }],
+  ["BackgroundsVolcano", { outer: "#352820", inner: "#5f4534" }]
+]);
 const REPLACED_WOD_IDS = new Map([["363", 2843]]);
 const currentLanguage = getInitialLanguage();
 let ownLang = {};
@@ -46,9 +60,7 @@ function applyPageTranslations() {
   document.querySelectorAll("[data-i18n-aria]").forEach(element => {
     element.setAttribute("aria-label", ui(element.dataset.i18nAria, element.getAttribute("aria-label") || ""));
   });
-  Array.from(expansionSelect.options).forEach(option => {
-    option.textContent = ui("expansions", `Expansions: ${option.value}`, { count: option.value });
-  });
+  backgroundSelect.setAttribute("aria-label", ui("castle_background", "Castle background"));
   setBuildingsPanel(customDecoForm.hidden ? "catalog" : "custom-decorations");
   syncViewToggle();
   syncFullscreenToggle();
@@ -65,11 +77,14 @@ const sizeDropdown = document.getElementById("sizeDropdown");
 const sizeFilters = document.getElementById("sizeFilters");
 const sizeFilterDropdown = sizeDropdown.closest(".size-filter-dropdown");
 const overviewToggle = document.getElementById("overviewToggle");
-const fullscreenToggle = document.getElementById("fullscreenToggle");
+const settingsToggle = document.getElementById("settingsToggle");
+const fullscreenSelect = document.getElementById("fullscreenSelect");
 const expansionSelect = document.getElementById("expansionSelect");
+const backgroundSelect = document.getElementById("backgroundSelect");
 const sidebarToggle = document.getElementById("sidebarToggle");
 const savesToggle = document.getElementById("savesToggle");
 const customDecoToggle = document.getElementById("customDecoToggle");
+const customDecoCancel = document.getElementById("customDecoCancel");
 const buildingsModalTitle = document.getElementById("buildingsModalTitle");
 const buildingCatalogView = document.getElementById("buildingCatalogView");
 const customDecoForm = document.getElementById("customDecoForm");
@@ -78,9 +93,10 @@ const layoutNameInput = document.getElementById("layoutNameInput");
 const saveLayoutButton = document.getElementById("saveLayoutButton");
 const savedLayoutsList = document.getElementById("savedLayoutsList");
 const bottomNavigation = document.querySelector(".bottom-buttons-container");
-const bottomNavigationButtons = [sidebarToggle, savesToggle, overviewToggle, fullscreenToggle];
+const bottomNavigationButtons = [sidebarToggle, savesToggle, overviewToggle, settingsToggle];
 const buildingsModal = initCustomModal({ modalId: "buildingsModal" });
 const savesModal = initCustomModal({ modalId: "savesModal" });
+const settingsModal = initCustomModal({ modalId: "settingsModal" });
 const catalogImageItems = new WeakMap();
 const imageAlphaMasks = new WeakMap();
 const catalogImageObserver = "IntersectionObserver" in window
@@ -110,6 +126,9 @@ const state = {
   buildingCatalog: [],
   images: new Map(),
   terrainImage: null,
+  terrainFrames: null,
+  terrainColors: CASTLE_BACKGROUND_THEMES.get("BackgroundsClassic"),
+  backgroundAsset: "",
   pointer: null,
   drag: null,
   hoveredBuilding: null
@@ -131,9 +150,12 @@ let touchEdgePanFrame = 0;
 let touchEdgePanLastTime = 0;
 
 let persistedState = loadSimulatorData(SIM_NAME) || {};
+const preferredBackgroundAssetId = String(persistedState?.backgroundAsset || DEFAULT_TERRAIN_ASSET_ID);
+state.backgroundAsset = DEFAULT_TERRAIN_ASSET_ID;
 let cameraRestored = false;
 let cameraSaveTimer = 0;
 let catalogSourceContext = null;
+let backgroundCatalog = [];
 let buildingActionBarVisible = null;
 
 function getMinCameraScale() {
@@ -176,10 +198,19 @@ const ASSET_VERTICAL_OFFSET_TILES = new Map([
   [DEFAULT_KEEP_WOD_ID, -1.5]
 ]);
 
-const TERRAIN_ATLAS_URL = "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Background/BackgroundsClassic/BackgroundsClassic--1573584429307.png";
-const CASTLE_GROUND_COLOR = "#789342";
-const TERRAIN_FRAMES = {
-  outerGrass: { sx: 2, sy: 2616, sw: 2408, sh: 400 },
+const DEFAULT_TERRAIN_ASSET = {
+  id: DEFAULT_TERRAIN_ASSET_ID,
+  name: "BackgroundsClassic",
+  imageUrl: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Background/BackgroundsClassic/BackgroundsClassic--1573584429307.webp",
+  jsonUrl: "https://empire-html5.goodgamestudios.com/default/assets/itemassets/Background/BackgroundsClassic/BackgroundsClassic--1573584429307.json"
+};
+const TERRAIN_ASSET_PROXY = "https://my-proxy-8u49.onrender.com/";
+const DEFAULT_TERRAIN_FRAMES = {
+  outerGrass: [
+    { sx: 1, sy: 2615, sw: 802, sh: 402 },
+    { sx: 805, sy: 2615, sw: 802, sh: 402 },
+    { sx: 1609, sy: 2615, sw: 802, sh: 402 }
+  ],
   inner20x20: { sx: 1, sy: 1, sw: 1600, sh: 800, offsetX: -800, offsetY: 0 },
   grid20x20: { sx: 1603, sy: 1, sw: 1560, sh: 800, offsetX: -760, offsetY: 0 },
   inner10x20: [
@@ -198,17 +229,112 @@ const TERRAIN_FRAMES = {
   grid20x10: { sx: 2413, sy: 2613, sw: 1160, sh: 600, offsetX: -360, offsetY: 0 }
 };
 
-const terrainImage = new Image();
 let outerGrassPattern = null;
-const terrainReady = new Promise(resolve => {
-  terrainImage.onload = () => {
-    state.terrainImage = terrainImage;
-    draw();
-    resolve();
-  };
-  terrainImage.onerror = () => resolve();
-  terrainImage.src = TERRAIN_ATLAS_URL;
+let terrainLoadVersion = 0;
+const terrainReady = loadTerrainAsset(DEFAULT_TERRAIN_ASSET).catch(error => {
+  console.warn("Default castle background could not be loaded.", error);
 });
+
+function terrainFrame(atlasJson, animationName) {
+  const animation = atlasJson?.animations?.[animationName];
+  const frameIndex = Array.isArray(animation?.frames) ? animation.frames[0] : null;
+  const frame = Number.isInteger(frameIndex) ? atlasJson?.frames?.[frameIndex] : null;
+  if (!Array.isArray(frame) || frame.length < 4) return null;
+  return { sx: frame[0], sy: frame[1], sw: frame[2], sh: frame[3] };
+}
+
+function terrainFramesFromAtlas(atlasJson) {
+  const withOffset = (frame, offsetX, offsetY) => frame && ({
+    ...frame,
+    offsetX: offsetX(frame),
+    offsetY: offsetY(frame)
+  });
+  const frameEntries = Object.entries(atlasJson?.animations || {})
+    .map(([name]) => terrainFrame(atlasJson, name))
+    .filter(Boolean);
+  const outerGrass = frameEntries.filter(frame =>
+    frame.sw >= 700 && frame.sw <= 900 && frame.sh >= 350 && frame.sh <= 450
+  );
+  const inner20x20 = terrainFrame(atlasJson, "BMP_b");
+  const grid20x20 = terrainFrame(atlasJson, "BMP_2");
+  const inner10x20 = ["BMP_3", "BMP_4", "BMP_5", "BMP_6"].map(name =>
+    withOffset(terrainFrame(atlasJson, name), frame => 800 - frame.sw, frame => 600 - frame.sh)
+  ).filter(Boolean);
+  const inner20x10 = ["BMP_7", "BMP_8", "BMP_9", "BMP_a"].map(name =>
+    withOffset(terrainFrame(atlasJson, name), frame => 400 - frame.sw, frame => 600 - frame.sh)
+  ).filter(Boolean);
+  const grid10x20 = withOffset(
+    terrainFrame(atlasJson, "BMP_0"),
+    frame => 400 - frame.sw,
+    frame => 600 - frame.sh
+  );
+  const grid20x10 = withOffset(
+    terrainFrame(atlasJson, "BMP_1"),
+    frame => 800 - frame.sw,
+    frame => 600 - frame.sh
+  );
+
+  if (!outerGrass.length || !inner20x20 || !grid20x20
+    || !inner10x20.length || !inner20x10.length || !grid10x20 || !grid20x10) {
+    throw new Error("Incompatible castle background atlas");
+  }
+
+  return {
+    outerGrass,
+    inner20x20: withOffset(inner20x20, frame => 800 - frame.sw, frame => 800 - frame.sh),
+    grid20x20: withOffset(grid20x20, frame => 800 - frame.sw, frame => 800 - frame.sh),
+    inner10x20,
+    inner20x10,
+    grid10x20,
+    grid20x10
+  };
+}
+
+async function loadTerrainAtlasJson(url) {
+  let lastError = null;
+  for (const fetchUrl of [`${TERRAIN_ASSET_PROXY}${url}`, url]) {
+    try {
+      const response = await fetchWithFallback(fetchUrl, 20000);
+      return response.json();
+    } catch (error) {
+      lastError = error;
+    }
+  }
+  throw lastError || new Error("Castle background metadata could not be loaded");
+}
+
+function loadTerrainImage(url) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error(`Castle background image could not be loaded: ${url}`));
+    image.src = url;
+  });
+}
+
+async function loadTerrainAsset(asset) {
+  if (!asset) return;
+  if (state.backgroundAsset === asset.id && state.terrainImage && state.terrainFrames) return;
+  const loadVersion = ++terrainLoadVersion;
+  const [image, atlasJson] = await Promise.all([
+    loadTerrainImage(asset.imageUrl),
+    loadTerrainAtlasJson(asset.jsonUrl).catch(error => {
+      if (asset.id === DEFAULT_TERRAIN_ASSET.id) return null;
+      throw error;
+    })
+  ]);
+  if (loadVersion !== terrainLoadVersion) return;
+
+  state.terrainImage = image;
+  state.terrainFrames = atlasJson ? terrainFramesFromAtlas(atlasJson) : DEFAULT_TERRAIN_FRAMES;
+  state.terrainColors = CASTLE_BACKGROUND_THEMES.get(asset.name)
+    || CASTLE_BACKGROUND_THEMES.get("BackgroundsClassic");
+  state.backgroundAsset = asset.id;
+  outerGrassPattern = null;
+  board.style.backgroundColor = state.terrainColors.outer;
+  if (backgroundSelect.options.length > 1) backgroundSelect.value = asset.id;
+  draw();
+}
 
 function resizeCanvas() {
   const rect = board.getBoundingClientRect();
@@ -332,13 +458,13 @@ function isFullscreen() {
 }
 
 function syncFullscreenToggle() {
-  if (state.drag?.building) return;
   const fullscreenActive = isFullscreen();
-  fullscreenToggle.classList.toggle("active", fullscreenActive);
-  fullscreenToggle.setAttribute("aria-pressed", String(fullscreenActive));
-  fullscreenToggle.setAttribute("aria-label", fullscreenActive ? "Exit fullscreen" : "Enter fullscreen");
-  const icon = fullscreenToggle.querySelector("i");
-  if (icon) icon.className = `bi ${fullscreenActive ? "bi-fullscreen-exit" : "bi-fullscreen"} fs-1`;
+  fullscreenSelect.value = fullscreenActive ? "on" : "off";
+  fullscreenSelect.setAttribute("aria-label", ui("display_mode", "Display mode"));
+  const offOption = fullscreenSelect.querySelector('option[value="off"]');
+  const onOption = fullscreenSelect.querySelector('option[value="on"]');
+  if (offOption) offOption.textContent = ui("windowed", "Windowed");
+  if (onOption) onOption.textContent = ui("fullscreen", "Fullscreen");
 }
 
 function syncBuildingActionBar(force = false) {
@@ -376,7 +502,7 @@ function syncBuildingActionBar(force = false) {
     ui("buildings", "Buildings"),
     ui("saves", "Saves"),
     ui("overview", "Overview"),
-    ui("fullscreen", "Fullscreen")
+    ui("settings", "Settings")
   ];
   bottomNavigationButtons.forEach((button, index) => {
     let label = button.querySelector(".nav-action-label");
@@ -390,10 +516,13 @@ function syncBuildingActionBar(force = false) {
   });
   sidebarToggle.setAttribute("aria-label", ui("open_buildings", "Open buildings"));
   savesToggle.setAttribute("aria-label", ui("open_saves", "Open saves"));
+  settingsToggle.setAttribute("aria-label", ui("settings", "Settings"));
   const sidebarIcon = sidebarToggle.querySelector("i");
   const savesIcon = savesToggle.querySelector("i");
+  const settingsIcon = settingsToggle.querySelector("i");
   if (sidebarIcon) sidebarIcon.className = "bi bi-hammer fs-1";
   if (savesIcon) savesIcon.className = "bi bi-save fs-1";
+  if (settingsIcon) settingsIcon.className = "bi bi-gear fs-1";
   syncViewToggle();
   syncFullscreenToggle();
 }
@@ -410,6 +539,8 @@ async function toggleFullscreen() {
     }
   } catch (error) {
     console.warn("Fullscreen mode could not be changed.", error);
+  } finally {
+    syncFullscreenToggle();
   }
 }
 
@@ -423,6 +554,7 @@ function saveCameraState() {
     ...persistedState,
     version: STATE_VERSION,
     expansionLevel: state.expansionLevel,
+    backgroundAsset: state.backgroundAsset,
     viewMode: state.mode,
     camera: {
       panX: Math.round(state.panX * 100) / 100,
@@ -699,7 +831,7 @@ function renderScene() {
   if (!ctx) return;
   const rect = board.getBoundingClientRect();
   ctx.clearRect(0, 0, rect.width, rect.height);
-  ctx.fillStyle = "#566b2d";
+  ctx.fillStyle = state.terrainColors.outer;
   ctx.fillRect(0, 0, rect.width, rect.height);
   if (state.ready && state.mode !== "overview" && state.terrainImage) {
     drawOuterGrass(rect);
@@ -785,19 +917,24 @@ function getRegionScreenBounds(region) {
 }
 
 function drawOuterGrass(rect) {
-  const frame = TERRAIN_FRAMES.outerGrass;
+  const frames = state.terrainFrames?.outerGrass || [];
+  if (!frames.length) return;
   if (!outerGrassPattern) {
     const grassTile = document.createElement("canvas");
-    grassTile.width = frame.sw;
-    grassTile.height = frame.sh;
+    grassTile.width = frames.reduce((width, frame) => width + frame.sw, 0);
+    grassTile.height = Math.max(...frames.map(frame => frame.sh));
     const grassContext = grassTile.getContext("2d");
-    grassContext.drawImage(
-      state.terrainImage,
-      frame.sx, frame.sy, frame.sw, frame.sh,
-      0, 0, frame.sw, frame.sh
-    );
+    let destinationX = 0;
+    frames.forEach(frame => {
+      grassContext.drawImage(
+        state.terrainImage,
+        frame.sx, frame.sy, frame.sw, frame.sh,
+        destinationX, 0, frame.sw, frame.sh
+      );
+      destinationX += frame.sw;
+    });
     grassContext.fillStyle = "rgba(10, 16, 6, .36)";
-    grassContext.fillRect(0, 0, frame.sw, frame.sh);
+    grassContext.fillRect(0, 0, grassTile.width, grassTile.height);
     outerGrassPattern = ctx.createPattern(grassTile, "repeat");
   }
   if (!outerGrassPattern) return;
@@ -847,10 +984,12 @@ function drawTerrainFrame(frame, region) {
 }
 
 function getCastleTerrainPieces() {
+  const terrainFrames = state.terrainFrames;
+  if (!terrainFrames) return [];
   const pieces = [{
     region: { x: 0, y: 0, width: 20, height: 20 },
-    terrain: TERRAIN_FRAMES.inner20x20,
-    grid: TERRAIN_FRAMES.grid20x20
+    terrain: terrainFrames.inner20x20,
+    grid: terrainFrames.grid20x20
   }];
   let variant = 0;
 
@@ -861,13 +1000,13 @@ function getCastleTerrainPieces() {
       const originY = blockY * 20;
       const splitAlongX = (blockX + blockY) % 2 === 1;
       for (let half = 0; half < 2; half++) {
-        const terrainFrames = splitAlongX ? TERRAIN_FRAMES.inner20x10 : TERRAIN_FRAMES.inner10x20;
+        const halfFrames = splitAlongX ? terrainFrames.inner20x10 : terrainFrames.inner10x20;
         pieces.push({
           region: splitAlongX
             ? { x: originX + half * 10, y: originY, width: 10, height: 20 }
             : { x: originX, y: originY + half * 10, width: 20, height: 10 },
-          terrain: terrainFrames[variant % terrainFrames.length],
-          grid: splitAlongX ? TERRAIN_FRAMES.grid10x20 : TERRAIN_FRAMES.grid20x10
+          terrain: halfFrames[variant % halfFrames.length],
+          grid: splitAlongX ? terrainFrames.grid10x20 : terrainFrames.grid20x10
         });
         variant++;
       }
@@ -877,8 +1016,8 @@ function getCastleTerrainPieces() {
   for (let index = 0; index < state.expansionLevel; index++) {
     pieces.push({
       region: { x: 60, y: index * 20, width: 10, height: 20 },
-      terrain: TERRAIN_FRAMES.inner20x10[index % TERRAIN_FRAMES.inner20x10.length],
-      grid: TERRAIN_FRAMES.grid10x20
+      terrain: terrainFrames.inner20x10[index % terrainFrames.inner20x10.length],
+      grid: terrainFrames.grid10x20
     });
   }
   return pieces;
@@ -889,7 +1028,7 @@ function fillCastleGround() {
   if (state.expansionLevel > 0) {
     regions.push({ x: 60, y: 0, width: 10, height: state.expansionLevel * 20 });
   }
-  ctx.fillStyle = CASTLE_GROUND_COLOR;
+  ctx.fillStyle = state.terrainColors.inner;
   regions.forEach(region => {
     const corners = [
       iso(region.x, region.y),
@@ -1797,6 +1936,32 @@ function beginSelectedBuildingGesture(pointer) {
   canvas.classList.add("is-dragging");
 }
 
+function populateBackgroundSelect(backgrounds, lang) {
+  const availableBackgrounds = Array.isArray(backgrounds) ? backgrounds : [];
+  backgroundCatalog = Array.from(CASTLE_BACKGROUND_LANGUAGE_KEYS.keys(), name =>
+    availableBackgrounds.find(asset => asset.name === name)
+  ).filter(Boolean);
+  if (!backgroundCatalog.some(asset => asset.id === DEFAULT_TERRAIN_ASSET.id)) {
+    backgroundCatalog.unshift(DEFAULT_TERRAIN_ASSET);
+  }
+
+  backgroundSelect.replaceChildren();
+  backgroundCatalog.forEach(asset => {
+    const option = document.createElement("option");
+    option.value = asset.id;
+    const languageKey = CASTLE_BACKGROUND_LANGUAGE_KEYS.get(asset.name);
+    option.textContent = lang?.[languageKey] || asset.name;
+    backgroundSelect.append(option);
+  });
+
+  const restoredId = preferredBackgroundAssetId;
+  const selected = backgroundCatalog.find(asset => asset.id === restoredId)
+    || backgroundCatalog.find(asset => asset.id === DEFAULT_TERRAIN_ASSET.id)
+    || backgroundCatalog[0];
+  if (selected) backgroundSelect.value = selected.id;
+  return selected;
+}
+
 function selectTouchBuilding(building, pointer) {
   if (state.drag?.building && state.drag.building !== building) {
     restoreBuildingEditSnapshot(state.drag);
@@ -2098,11 +2263,9 @@ overviewToggle.addEventListener("click", () => {
   draw();
 });
 
-fullscreenToggle.addEventListener("click", () => {
-  if (state.drag?.building) {
-    applyBuildingEdit();
-    return;
-  }
+fullscreenSelect.addEventListener("change", () => {
+  const wantsFullscreen = fullscreenSelect.value === "on";
+  if (wantsFullscreen === isFullscreen()) return;
   void toggleFullscreen();
 });
 document.addEventListener("fullscreenchange", syncFullscreenToggle);
@@ -2112,15 +2275,11 @@ function setBuildingsPanel(panel) {
   const showingCustomDecorations = panel === "custom-decorations";
   buildingCatalogView.hidden = showingCustomDecorations;
   customDecoForm.hidden = !showingCustomDecorations;
+  customDecoToggle.hidden = showingCustomDecorations;
   buildingsModalTitle.textContent = showingCustomDecorations
     ? ui("custom_decorations", "Custom buildings")
     : ui("buildings", "Buildings");
-  customDecoToggle.dataset.panel = showingCustomDecorations ? "custom-decorations" : "catalog";
-  customDecoToggle.setAttribute("aria-label", showingCustomDecorations
-    ? ui("back_to_buildings", "Back to buildings")
-    : ui("add_custom_decoration", "Add custom building"));
-  const icon = customDecoToggle.querySelector("i");
-  if (icon) icon.className = `bi ${showingCustomDecorations ? "bi-arrow-left" : "bi-plus-lg"}`;
+  customDecoToggle.setAttribute("aria-label", ui("add_custom_decoration", "Add custom building"));
 }
 
 function addCustomDecoIdRow(value = "", focus = false) {
@@ -2192,16 +2351,12 @@ sidebarToggle.addEventListener("click", () => {
   buildingsModal.open();
 });
 customDecoToggle.addEventListener("click", () => {
-  const showingCustomDecorations = customDecoToggle.dataset.panel === "custom-decorations";
-  if (showingCustomDecorations) {
-    setBuildingsPanel("catalog");
-    return;
-  }
   setSizeDropdownOpen(false);
   renderCustomDecoIdRows(customDecorationWodIds());
   setBuildingsPanel("custom-decorations");
   customDecoRows.querySelector(".custom-deco-id-input")?.focus();
 });
+customDecoCancel.addEventListener("click", () => setBuildingsPanel("catalog"));
 customDecoForm.addEventListener("submit", event => {
   event.preventDefault();
   const previousWodIds = new Set(customDecorationWodIds());
@@ -2233,6 +2388,14 @@ savesToggle.addEventListener("click", () => {
   renderSavedLayouts();
   savesModal.open();
 });
+settingsToggle.addEventListener("click", () => {
+  if (state.drag?.building) {
+    applyBuildingEdit();
+    return;
+  }
+  syncFullscreenToggle();
+  settingsModal.open();
+});
 saveLayoutButton.addEventListener("click", saveNewLayout);
 layoutNameInput.addEventListener("keydown", event => {
   if (event.key === "Enter") saveNewLayout();
@@ -2252,6 +2415,21 @@ expansionSelect.addEventListener("change", () => {
   clampView();
   scheduleCameraSave();
   draw();
+});
+backgroundSelect.addEventListener("change", async () => {
+  const previousId = state.backgroundAsset;
+  const asset = backgroundCatalog.find(candidate => candidate.id === backgroundSelect.value);
+  if (!asset) return;
+  backgroundSelect.disabled = true;
+  try {
+    await loadTerrainAsset(asset);
+    saveCameraState();
+  } catch (error) {
+    backgroundSelect.value = previousId;
+    console.warn("Castle background could not be changed.", error);
+  } finally {
+    backgroundSelect.disabled = false;
+  }
 });
 search.addEventListener("input", renderCatalog);
 sizeDropdown.addEventListener("click", () => {
@@ -2278,15 +2456,25 @@ await coreInit({
   itemLabel: ui("loader_item", "castle buildings"),
   langCode: currentLanguage,
   normalizeNameFn: normalizeName,
-  assets: { buildings: true },
+  assets: { buildings: true, backgrounds: true },
   onReady: async ({ data, imageMaps, lang }) => {
     const buildings = getArray(data, ["buildings"]);
     catalogSourceContext = { buildings, imageMaps, lang };
+    const selectedBackground = populateBackgroundSelect(imageMaps.backgrounds, lang);
     rebuildBuildingCatalog();
     populateSizeFilter();
     hydratePlacedBuildingImages();
     await placeDefaultKeep();
     await Promise.all([terrainReady, prebuildCatalogAssets()]);
+    if (selectedBackground) {
+      try {
+        await loadTerrainAsset(selectedBackground);
+        saveCameraState();
+      } catch (error) {
+        console.warn("Saved castle background could not be restored.", error);
+        backgroundSelect.value = DEFAULT_TERRAIN_ASSET.id;
+      }
+    }
     await preparePlacedBuildingImages();
     renderCatalog();
     state.ready = true;

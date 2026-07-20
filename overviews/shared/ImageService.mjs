@@ -168,6 +168,30 @@ function parseBuildings(text, normalize) {
     return map;
 }
 
+function parseBackgrounds(text) {
+    const regex =
+        /Background\/(Backgrounds[^\/\s"'`<>]*)\/\1--\d+/g;
+    const backgrounds = [];
+    const seen = new Set();
+
+    for (const match of text.matchAll(regex)) {
+        const path = match[0];
+        if (seen.has(path)) continue;
+        seen.add(path);
+
+        const assetName = match[1];
+        const baseUrl = `${BASE}${path}`;
+        backgrounds.push({
+            id: path,
+            name: assetName,
+            imageUrl: `${baseUrl}.webp`,
+            jsonUrl: `${baseUrl}.json`
+        });
+    }
+
+    return backgrounds.sort((a, b) => a.name.localeCompare(b.name));
+}
+
 function parseUnits(text, normalize) {
 
     const regex =
@@ -490,6 +514,7 @@ export async function loadImageMaps({
     allianceLayouts = false,
     legendSkills = false,
     buildings = false,
+    backgrounds = false,
     normalizeNameFn
 }) {
 
@@ -607,6 +632,15 @@ export async function loadImageMaps({
 
         result.buildings =
             parsedCache.buildings;
+    }
+
+    if (backgrounds) {
+
+        parsedCache.backgrounds ??=
+            parseBackgrounds(text);
+
+        result.backgrounds =
+            parsedCache.backgrounds;
     }
 
     return result;
