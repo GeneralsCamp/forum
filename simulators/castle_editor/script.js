@@ -1084,17 +1084,23 @@ function toggleBuildingRotation(building) {
   draw();
 }
 
+function restoreBuildingEditSnapshot(drag) {
+  const building = drag?.building;
+  if (!building) return;
+  building.x = drag.x;
+  building.y = drag.y;
+  building.width = drag.width;
+  building.height = drag.height;
+  building.rotation = drag.rotation;
+}
+
 function finishBuildingEdit({ restore = false, destroy = false } = {}) {
   const drag = state.drag;
   const building = drag?.building;
   if (!building) return;
 
   if (restore) {
-    building.x = drag.x;
-    building.y = drag.y;
-    building.width = drag.width;
-    building.height = drag.height;
-    building.rotation = drag.rotation;
+    restoreBuildingEditSnapshot(drag);
   } else if (destroy) {
     const index = state.buildings.indexOf(building);
     if (index !== -1) state.buildings.splice(index, 1);
@@ -1792,6 +1798,46 @@ function beginSelectedBuildingGesture(pointer) {
   canvas.classList.add("is-dragging");
 }
 
+function selectTouchBuilding(building, pointer) {
+  if (state.drag?.building && state.drag.building !== building) {
+    restoreBuildingEditSnapshot(state.drag);
+  }
+  const point = screenToGrid(pointer.x, pointer.y);
+  state.drag = {
+    building,
+    x: building.x,
+    y: building.y,
+    width: building.width,
+    height: building.height,
+    rotation: building.rotation || 0,
+    offsetX: point.x - building.x,
+    offsetY: point.y - building.y,
+    touchSelected: true
+  };
+  beginSelectedBuildingGesture(pointer);
+  navigator.vibrate?.(18);
+  draw();
+}
+
+function startTouchBuildingLongPress(pointer, building) {
+  touchInteraction.longPressCandidate = {
+    pointerId: pointer.id,
+    building,
+    startX: pointer.x,
+    startY: pointer.y,
+    panX: state.panX,
+    panY: state.panY
+  };
+  touchInteraction.longPressTimer = window.setTimeout(() => {
+    const candidate = touchInteraction.longPressCandidate;
+    const activePointer = touchInteraction.pointers.get(pointer.id);
+    if (!candidate || candidate.pointerId !== pointer.id || !activePointer || touchInteraction.pointers.size !== 1) return;
+    touchInteraction.longPressTimer = 0;
+    touchInteraction.longPressCandidate = null;
+    selectTouchBuilding(candidate.building, activePointer);
+  }, TOUCH_LONG_PRESS_MS);
+}
+
 function handleTouchPointerDown(event) {
   event.preventDefault();
   const pointer = {
@@ -1810,6 +1856,11 @@ function handleTouchPointerDown(event) {
   }
 
   if (state.drag?.touchSelected && state.drag.building) {
+    const building = buildingAt(event.clientX, event.clientY);
+    if (building && building !== state.drag.building) {
+      startTouchBuildingLongPress(pointer, building);
+      return;
+    }
     beginSelectedBuildingGesture(pointer);
     return;
   }
@@ -1820,36 +1871,7 @@ function handleTouchPointerDown(event) {
     return;
   }
 
-  touchInteraction.longPressCandidate = {
-    pointerId: event.pointerId,
-    building,
-    startX: event.clientX,
-    startY: event.clientY,
-    panX: state.panX,
-    panY: state.panY
-  };
-  touchInteraction.longPressTimer = window.setTimeout(() => {
-    const candidate = touchInteraction.longPressCandidate;
-    const activePointer = touchInteraction.pointers.get(event.pointerId);
-    if (!candidate || !activePointer || touchInteraction.pointers.size !== 1) return;
-    touchInteraction.longPressTimer = 0;
-    touchInteraction.longPressCandidate = null;
-    const point = screenToGrid(activePointer.x, activePointer.y);
-    state.drag = {
-      building: candidate.building,
-      x: candidate.building.x,
-      y: candidate.building.y,
-      width: candidate.building.width,
-      height: candidate.building.height,
-      rotation: candidate.building.rotation || 0,
-      offsetX: point.x - candidate.building.x,
-      offsetY: point.y - candidate.building.y,
-      touchSelected: true
-    };
-    beginSelectedBuildingGesture(activePointer);
-    navigator.vibrate?.(18);
-    draw();
-  }, TOUCH_LONG_PRESS_MS);
+  startTouchBuildingLongPress(pointer, building);
 }
 
 function handleTouchPointerMove(event) {
