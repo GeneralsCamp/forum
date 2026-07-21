@@ -69,73 +69,74 @@
 
         </main>
 
-        <div id="settingsModal" class="gf-modal settings-modal" aria-hidden="true">
-            <div class="gf-modal-backdrop" data-close-modal="1"></div>
-            <div class="gf-modal-card settings-modal-card" role="dialog" aria-modal="true" aria-labelledby="settingsModalTitle">
-                <div class="gf-modal-head settings-modal-head">
-                    <h3 id="settingsModalTitle" class="gf-modal-title">Settings</h3>
-                    <button id="closeSettingsBtn" class="gf-modal-close settings-close-btn" type="button" aria-label="Close settings">
-                        <i class="bi bi-x-lg" aria-hidden="true"></i>
-                    </button>
-                </div>
-                <div class="settings-options">
-                    <section class="settings-group">
-                        <div class="settings-group-body">
-                            <label class="settings-option settings-option-game">
-                                <span class="settings-option-title">Game</span>
-                                <div class="settings-select-shell">
-                                    <select id="settingsSelectedGame" class="settings-select" aria-label="Choose game loader">
-                                        <option value="empire">Empire (Browser)</option>
-                                        <option value="e4k">Empire: Four Kingdoms (Mobile)</option>
-                                    </select>
-                                </div>
-                            </label>
-                            <label class="settings-option settings-option-game">
-                                <span class="settings-option-title">Language</span>
-                                <div class="settings-select-shell">
-                                    <select id="settingsSelectedLanguage" class="settings-select" aria-label="Choose language"></select>
-                                </div>
-                            </label>
-                            <label class="settings-option">
-                                <span>Developer Comments</span>
-                                <input id="settingsDevComments" type="checkbox">
-                            </label>
-                        </div>
-                    </section>
-                </div>
-            </div>
-        </div>
-
-        <div id="versionInfoModal" class="gf-modal version-info-modal" aria-hidden="true">
-            <div class="gf-modal-backdrop" data-close-modal="1"></div>
-            <div class="gf-modal-card version-info-modal-card" role="dialog" aria-modal="true"
-                aria-labelledby="versionInfoModalTitle">
-                <div class="gf-modal-head version-info-modal-head">
-                    <h3 id="versionInfoModalTitle" class="gf-modal-title">Data versions</h3>
-                    <button id="closeVersionInfoBtn" class="gf-modal-close" type="button"
-                        aria-label="Close data versions">
-                        <i class="bi bi-x-lg" aria-hidden="true"></i>
-                    </button>
-                </div>
-                <div class="gf-modal-body version-info-body">
-                    <div id="versionInfoStatus" class="version-info-status" role="status" hidden>
-                        <span class="version-info-loader" aria-hidden="true"></span>
-                        <span>Loading current versions…</span>
-                    </div>
-                    <div id="versionInfoList" class="version-info-list" aria-live="polite"></div>
-                    <div class="version-info-footer">
-                        <a class="version-info-download-link" href="./others/assets_downloader/index.html">
-                            <span id="versionInfoDownloaderLabel">Assets Downloader</span>
-                        </a>
-                        <div id="versionInfoUpdated" class="version-info-updated" hidden></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <script type="module" src="main.js"></script>
     </div>
+    <div id="settingsModal" class="gf-modal settings-modal" aria-hidden="true">
+        <div class="gf-modal-backdrop" data-close-modal="1"></div>
+        <div class="gf-modal-card settings-modal-card" role="dialog" aria-modal="true"
+            aria-labelledby="settingsModalTitle">
+            <div class="gf-modal-head settings-modal-head">
+                <h3 id="settingsModalTitle" class="gf-modal-title">Settings</h3>
+                <button id="closeSettingsBtn" class="gf-modal-close settings-close-btn" type="button"
+                    aria-label="Close settings">
+                    <i class="bi bi-x-lg" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="settings-options">
+                <section class="settings-group">
+                    <div class="settings-group-body">
+                        <label class="settings-option settings-option-game">
+                            <span class="settings-option-title">Game</span>
+                            <div class="settings-select-shell">
+                                <select id="settingsSelectedGame" class="settings-select"
+                                    aria-label="Choose game loader">
+                                    <option value="empire">Empire (Browser)</option>
+                                    <option value="e4k">Empire: Four Kingdoms (Mobile)</option>
+                                </select>
+                            </div>
+                        </label>
+                        <label class="settings-option settings-option-game">
+                            <span class="settings-option-title">Language</span>
+                            <div class="settings-select-shell">
+                                <select id="settingsSelectedLanguage" class="settings-select"
+                                    aria-label="Choose language"></select>
+                            </div>
+                        </label>
+                        <label class="settings-option">
+                            <span>Developer Comments</span>
+                            <input id="settingsDevComments" type="checkbox">
+                        </label>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
 
+    <div id="versionInfoModal" class="gf-modal version-info-modal" aria-hidden="true">
+        <div class="gf-modal-backdrop" data-close-modal="1"></div>
+        <div class="gf-modal-card version-info-modal-card" role="dialog" aria-modal="true"
+            aria-labelledby="versionInfoModalTitle">
+            <div class="gf-modal-head version-info-modal-head">
+                <h3 id="versionInfoModalTitle" class="gf-modal-title">Data versions</h3>
+                <button id="closeVersionInfoBtn" class="gf-modal-close" type="button" aria-label="Close data versions">
+                    <i class="bi bi-x-lg" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="gf-modal-body version-info-body">
+                <div id="versionInfoStatus" class="version-info-status" role="status" hidden>
+                    <span class="version-info-loader" aria-hidden="true"></span>
+                    <span>Loading current versions…</span>
+                </div>
+                <div id="versionInfoList" class="version-info-list" aria-live="polite"></div>
+                <div class="version-info-footer">
+                    <a class="version-info-download-link" href="./others/assets_downloader/index.html">
+                        <span id="versionInfoDownloaderLabel">Assets Downloader</span>
+                    </a>
+                    <div id="versionInfoUpdated" class="version-info-updated" hidden></div>
+                </div>
+            </div>
+        </div>
+    </div>
     <script type="module" src="./overviews/shared/ConsentInit.mjs"></script>
 </body>
 
