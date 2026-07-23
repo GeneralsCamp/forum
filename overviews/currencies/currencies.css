@@ -1,10 +1,6 @@
 #content {
-  padding-top: 2px;
+  padding: 0 6px;
   --currency-scrollbar-width: 10px;
-}
-
-.container > .row > .col-12.mb-2 {
-  margin-bottom: 0 !important;
 }
 
 .currency-table-wrap {
@@ -158,8 +154,8 @@
 
 @media (max-width: 575px) {
   #content {
-    padding-left: 2px;
-    padding-right: 2px;
+    padding-left: 6px;
+    padding-right: 6px;
   }
 
   .currency-table {

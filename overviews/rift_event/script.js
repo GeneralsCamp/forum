@@ -1,7 +1,7 @@
 import { coreInit } from "../shared/CoreInit.mjs";
 import { createLoader } from "../shared/LoadingService.mjs";
 import { initLanguageSelector, getInitialLanguage } from "../shared/LanguageService.mjs";
-import { initAutoHeight, handleAutoHeight } from "../shared/ResizeService.mjs";
+import { handleAutoHeight } from "../shared/ResizeService.mjs";
 import { deriveCompanionUrls } from "../shared/AssetComposer.mjs";
 import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
 import { revealCard } from "../shared/CardReveal.mjs";
@@ -31,11 +31,32 @@ function updateRiftSetting(key, value) {
   saveOverviewData(OVERVIEW_NAME, data);
 }
 
-initAutoHeight({
-  contentSelector: "#content",
-  subtractSelectors: [".note", ".page-title"],
-  extraOffset: 18
-});
+function updateRiftAutoHeight() {
+  const content = document.getElementById("content");
+  const battleLootRows = document.getElementById("battleLootRows");
+  const battleLootSection = document.getElementById("battleLootSection");
+  const battleMode = battleLootSection?.style.display !== "none";
+
+  if (battleMode) {
+    if (content) content.style.height = "";
+    handleAutoHeight({
+      contentSelector: "#battleLootRows",
+      subtractSelectors: [".note", ".page-title"],
+      extraOffset: 4
+    });
+    return;
+  }
+
+  if (battleLootRows) battleLootRows.style.height = "";
+  handleAutoHeight({
+    contentSelector: "#content",
+    subtractSelectors: [".note", ".page-title"],
+    extraOffset: 18
+  });
+}
+
+window.addEventListener("resize", updateRiftAutoHeight);
+window.addEventListener("DOMContentLoaded", updateRiftAutoHeight);
 
 const state = {
   lang: {},
@@ -765,6 +786,108 @@ function buildBossRows(boss) {
   return rows;
 }
 
+function getBattleLootTombolaIds(boss) {
+  const tombolaIds = [...new Set(
+    state.raidBossLevels
+      .filter(row => String(row.raidBossID) === String(boss?.raidBossID || ""))
+      .map(row => String(row.lootBoxTombolaID || "").trim())
+      .filter(Boolean)
+  )];
+  return tombolaIds;
+}
+
+function resolveBattleRewardItems(reward) {
+  if (!reward) return [];
+
+  const resourceDefinitions = [
+    ["wood", "wood", "Wood", "../../img_base/wood.png"],
+    ["stone", "stone", "Stone", "../../img_base/stone.png"],
+    ["food", "food", "Food", "../../img_base/food.png"],
+    ["mead", "mead", "Mead", "../../img_base/meadwastage.png"],
+    ["beef", "beef", "Beef", "../../img_base/beefwastage.png"],
+    ["currency1", "currency_name_currency1", "Coins", "../../img_base/coin.png"]
+  ];
+
+  const resources = resourceDefinitions
+    .filter(([field]) => Number(reward[field] || 0) > 0)
+    .map(([field, gameLangKey, fallback, imageUrl]) => ({
+      name: langValue(gameLangKey) || fallback,
+      amount: Number(reward[field]),
+      imageUrl,
+      type: field,
+      id: null
+    }));
+  if (resources.length > 0) return resources;
+
+  const gemIds = reward.gemIDs ?? reward.gemIds ?? reward.gemids;
+  if (gemIds) {
+    const rewardGemAmount = Number(reward.gemAmount ?? reward.gemamount);
+    return parseIdAmountList(gemIds).map(parsed => {
+      const id = String(parsed.id);
+      const gem = state.gemsById[id];
+      const imageId = String(gem?.reuseAssetOfGemID || id);
+
+      return {
+        name:
+          langValue(`gem_unique_${id}`)
+          || gem?.comment2
+          || gem?.comment1
+          || `Gem ${id}`,
+        amount: Number.isFinite(rewardGemAmount) && rewardGemAmount > 0
+          ? rewardGemAmount
+          : parsed.amount,
+        imageUrl:
+          state.imageMaps.uniqueGems?.[imageId]
+          || state.imageMaps.uniqueGems?.[id]
+          || "../../img_base/placeholder.webp",
+        type: "gem",
+        id
+      };
+    });
+  }
+
+  return mapRewardToEntries(reward).map(item => ({
+    ...item,
+    imageUrl: imageUrlFor(item)
+  }));
+}
+
+function buildBattleLootTableRows(boss) {
+  const tombolaIds = new Set(getBattleLootTombolaIds(boss));
+  const entries = getArray(state.items, ["lootBoxTombolas", "lootboxtombolas"])
+    .filter(entry => tombolaIds.has(String(entry.tombolaID || "")));
+  const totalShares = entries.reduce((sum, entry) => sum + Number(entry.shares || 0), 0);
+
+  return entries
+    .map(entry => {
+      const rewardIds = csv(entry.rewardIDs);
+      const items = rewardIds.flatMap(rewardId =>
+        resolveBattleRewardItems(state.rewardsById[String(rewardId)])
+      );
+      const shares = Number(entry.shares || 0);
+      return {
+        entryId: String(entry.entryID || ""),
+        items,
+        shares,
+        chance: totalShares > 0 ? (shares / totalShares) * 100 : 0
+      };
+    })
+    .filter(row => row.items.length > 0)
+    .sort((a, b) => b.shares - a.shares || Number(a.entryId) - Number(b.entryId));
+}
+
+function hasBattleLootData() {
+  const tombolaIds = new Set(
+    state.raidBossLevels
+      .map(row => String(row.lootBoxTombolaID || "").trim())
+      .filter(Boolean)
+  );
+  if (tombolaIds.size === 0) return false;
+
+  return getArray(state.items, ["lootBoxTombolas", "lootboxtombolas"])
+    .some(entry => tombolaIds.has(String(entry.tombolaID || "")));
+}
+
 function getLevelEntriesForBoss(boss) {
   return state.raidBossLevels
     .filter(row => String(row.raidBossID) === String(boss?.raidBossID || ""))
@@ -1150,39 +1273,157 @@ function renderAll() {
   const noBossRewards = ownText("no_boss_rewards", "No boss rewards found");
   if (!boss) {
     renderCardRows("bossRows", [], noBossRewards);
+    renderBattleLoot(null);
     renderBossOverview();
     return;
   }
 
   const bossRows = buildBossRows(boss);
   renderCardRows("bossRows", bossRows, noBossRewards);
+  renderBattleLoot(boss);
   renderBossOverview();
+}
+
+function renderBattleLoot(boss) {
+  const root = document.getElementById("battleLootRows");
+  if (!root) return;
+  root.innerHTML = "";
+
+  const rows = boss ? buildBattleLootTableRows(boss) : [];
+  if (rows.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "filter-empty-message rift-empty-message";
+    empty.textContent = ownText("no_battle_rewards", "No battle rewards found");
+    root.appendChild(empty);
+    return;
+  }
+
+  const labels = [
+    langValue("reward") || "Reward",
+    langValue("amount") || "Amount",
+    ownText("battle_chance", "Chance")
+  ];
+
+  const wrap = document.createElement("div");
+  wrap.className = "battle-loot-table-wrap";
+
+  const headerWrap = document.createElement("div");
+  headerWrap.className = "battle-loot-table-header";
+  const headerTable = document.createElement("table");
+  headerTable.className = "battle-loot-table";
+  const tableHead = document.createElement("thead");
+  const headerRow = document.createElement("tr");
+  labels.forEach(label => {
+    const cell = document.createElement("th");
+    cell.scope = "col";
+    cell.textContent = label;
+    headerRow.appendChild(cell);
+  });
+  tableHead.appendChild(headerRow);
+  headerTable.appendChild(tableHead);
+  headerWrap.appendChild(headerTable);
+
+  const scroll = document.createElement("div");
+  scroll.className = "battle-loot-table-scroll";
+  const bodyTable = document.createElement("table");
+  bodyTable.className = "battle-loot-table";
+  const tableBody = document.createElement("tbody");
+
+  rows.forEach(row => {
+    const rowEl = document.createElement("tr");
+
+    const rewardCell = document.createElement("td");
+    row.items.forEach(item => {
+      const itemEl = document.createElement("div");
+      itemEl.className = "battle-loot-name";
+
+      if (item.imageUrl) {
+        const image = document.createElement("img");
+        image.className = "battle-loot-icon";
+        image.src = item.imageUrl;
+        image.alt = item.name || langValue("reward") || "Reward";
+        image.loading = "lazy";
+
+        const shouldCompose =
+          typeof item.imageUrl === "string"
+          && item.imageUrl.startsWith("https://empire-html5.goodgamestudios.com/default/assets/itemassets/")
+          && /\.(webp|png)$/i.test(item.imageUrl);
+        if (shouldCompose) {
+          const composed = deriveCompanionUrls(item.imageUrl);
+          if (composed?.imageUrl && composed?.jsonUrl && composed?.jsUrl) {
+            image.dataset.composeAsset = "1";
+            image.dataset.imageUrl = composed.imageUrl;
+            image.dataset.jsonUrl = composed.jsonUrl;
+            image.dataset.jsUrl = composed.jsUrl;
+          }
+        }
+
+        itemEl.appendChild(image);
+      }
+
+      const name = document.createElement("span");
+      name.textContent = item.name || ownText("unknown_reward", "Unknown reward");
+      itemEl.appendChild(name);
+      rewardCell.appendChild(itemEl);
+    });
+
+    const amountCell = document.createElement("td");
+    amountCell.className = "battle-loot-value";
+    amountCell.textContent = row.items
+      .map(item => formatNumber(item.amount ?? 1))
+      .join(" + ");
+
+    const chanceCell = document.createElement("td");
+    chanceCell.className = "battle-loot-value";
+    chanceCell.textContent = `${row.chance.toLocaleString(currentLanguage, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })}%`;
+
+    rowEl.appendChild(rewardCell);
+    rowEl.appendChild(amountCell);
+    rowEl.appendChild(chanceCell);
+    tableBody.appendChild(rowEl);
+  });
+
+  bodyTable.appendChild(tableBody);
+  scroll.appendChild(bodyTable);
+  wrap.appendChild(headerWrap);
+  wrap.appendChild(scroll);
+  root.appendChild(wrap);
+
+  void hydrateComposedImages({
+    root,
+    cache: composedRewardImageCache
+  });
 }
 
 // --- SELECTORS ---
 function applyTypeSelection(type) {
   const bossSection = document.getElementById("bossSection");
+  const battleLootSection = document.getElementById("battleLootSection");
   const bossOverviewSection = document.getElementById("bossOverviewSection");
   const bossLevelWrap = document.getElementById("bossLevelFilterWrap");
   const bossStageWrap = document.getElementById("bossStageFilterWrap");
   const mode =
     type === "boss_overview"
       ? "boss_overview"
-      : "boss";
+      : type === "battle_loot"
+        ? "battle_loot"
+        : "boss";
   bossSection.style.display = mode === "boss" ? "" : "none";
+  battleLootSection.style.display = mode === "battle_loot" ? "" : "none";
   bossOverviewSection.style.display = mode === "boss_overview" ? "" : "none";
   bossLevelWrap.style.display = mode === "boss_overview" ? "" : "none";
   bossStageWrap.style.display = mode === "boss_overview" ? "" : "none";
+  document.documentElement.classList.toggle("battle-loot-mode", mode === "battle_loot");
+  document.body.classList.toggle("battle-loot-mode", mode === "battle_loot");
 
   updateRiftSetting("type", mode);
   if (mode === "boss_overview") {
     renderBossOverview();
   }
-  handleAutoHeight({
-    contentSelector: "#content",
-    subtractSelectors: [".note", ".page-title"],
-    extraOffset: 18
-  });
+  updateRiftAutoHeight();
 }
 
 function setupTypeSelector() {
@@ -1190,10 +1431,10 @@ function setupTypeSelector() {
   if (!typeSelect) return;
   ensureTypeOptions(typeSelect);
   const saved = getRiftData().type;
-  if (saved === "boss" || saved === "boss_overview") {
+  if (saved === "boss" || saved === "boss_overview" || saved === "battle_loot") {
     typeSelect.value = saved;
   }
-  if (typeSelect.value !== "boss" && typeSelect.value !== "boss_overview") {
+  if (!["boss", "boss_overview", "battle_loot"].includes(typeSelect.value)) {
     typeSelect.value = "boss_overview";
   }
   applyTypeSelection(typeSelect.value);
@@ -1218,9 +1459,17 @@ function getBossDefeatRewardFilterLabel() {
 }
 
 function ensureTypeOptions(typeSelect) {
+  const battleLootAvailable = hasBattleLootData();
   const hasBoss = Array.from(typeSelect.options).some(opt => opt.value === "boss");
   const hasBossOverview = Array.from(typeSelect.options).some(opt => opt.value === "boss_overview");
-  if (hasBoss && hasBossOverview && typeSelect.options.length === 2) return;
+  const hasBattleLoot = Array.from(typeSelect.options).some(opt => opt.value === "battle_loot");
+  const expectedOptionCount = battleLootAvailable ? 3 : 2;
+  if (
+    hasBoss &&
+    hasBossOverview &&
+    hasBattleLoot === battleLootAvailable &&
+    typeSelect.options.length === expectedOptionCount
+  ) return;
 
   typeSelect.innerHTML = "";
   const bossOverview = document.createElement("option");
@@ -1229,8 +1478,14 @@ function ensureTypeOptions(typeSelect) {
   const boss = document.createElement("option");
   boss.value = "boss";
   boss.textContent = getBossDefeatRewardFilterLabel();
+  const battleLoot = document.createElement("option");
+  battleLoot.value = "battle_loot";
+  battleLoot.textContent = ownText("battle_rewards", "Battle rewards");
   typeSelect.appendChild(bossOverview);
   typeSelect.appendChild(boss);
+  if (battleLootAvailable) {
+    typeSelect.appendChild(battleLoot);
+  }
 }
 
 function applyTypeLabelsFromLang() {
@@ -1246,10 +1501,16 @@ function applyTypeLabelsFromLang() {
   const bossOverviewOption = Array.from(typeSelect.options).find(
     opt => opt.value === "boss_overview"
   );
+  const battleLootOption = Array.from(typeSelect.options).find(
+    opt => opt.value === "battle_loot"
+  );
 
   if (bossOption) bossOption.textContent = bossLabel;
   if (bossOverviewOption) {
     bossOverviewOption.textContent = ownText("boss_overview", "Boss overview");
+  }
+  if (battleLootOption) {
+    battleLootOption.textContent = ownText("battle_rewards", "Battle rewards");
   }
 }
 
@@ -1426,11 +1687,7 @@ async function init() {
         renderAll();
 
         document.getElementById("rewardsViewport").hidden = false;
-        handleAutoHeight({
-          contentSelector: "#content",
-          subtractSelectors: [".note", ".page-title"],
-          extraOffset: 18
-        });
+        updateRiftAutoHeight();
       }
     });
   } catch (err) {
