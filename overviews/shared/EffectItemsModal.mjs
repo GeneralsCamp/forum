@@ -108,7 +108,7 @@ export function createEffectItemsModal({
             .replace(/\s*<span class="max-bonus"[^>]*>\(Max:[\s\S]*?<\/span>/g, "");
     }
 
-    function createRow({ kind, name, id, imageUrl, effectText, composeImage = false }) {
+    function createRow({ kind, name, id, imageUrl, sortValue, composeImage = false }, valueSuffix = "") {
         const shouldCompose = composeImage
             && typeof imageUrl === "string"
             && imageUrl.startsWith("https://empire-html5.goodgamestudios.com/default/assets/itemassets/")
@@ -117,6 +117,10 @@ export function createEffectItemsModal({
         const composeAttrs = companion
             ? ` data-compose-asset="1" data-image-url="${escapeHtml(companion.imageUrl)}" data-json-url="${escapeHtml(companion.jsonUrl)}" data-js-url="${escapeHtml(companion.jsUrl)}"`
             : "";
+        const numericValue = Number(sortValue);
+        const valueText = Number.isFinite(numericValue)
+            ? `${numericValue.toLocaleString()}${valueSuffix}`
+            : `${String(sortValue ?? "").trim()}${valueSuffix}`;
 
         return `
     <div class="effect-items-row">
@@ -128,7 +132,7 @@ export function createEffectItemsModal({
         <div class="effect-items-name">
           ${escapeHtml(name)} <span class="effect-items-kind">(${escapeHtml(kind)})</span>
         </div>
-        <div class="effect-items-effect">${effectText}</div>
+        <div class="effect-items-value">${escapeHtml(valueText)}</div>
       </div>
     </div>`;
     }
@@ -195,7 +199,7 @@ export function createEffectItemsModal({
         ${capText ? `<span class="effect-items-summary-badge effect-items-summary-cap">${escapeHtml(capText)}</span>` : ""}
       </div>
       <div class="effect-items-list">
-        ${rows.map(createRow).join("")}
+        ${rows.map(row => createRow(row, capSuffix)).join("")}
       </div>`
             : `<div class="effect-items-empty">No matching items.</div>`;
 

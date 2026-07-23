@@ -214,12 +214,12 @@
     white-space: nowrap;
 }
 
-.effect-items-effect {
+.effect-items-value {
     color: #fff3dc;
-    font-size: 13px;
-    font-weight: 500;
-    line-height: 1.35;
-    overflow-wrap: anywhere;
+    font-size: 18px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 900;
+    line-height: 1.1;
 }
 
 .effect-items-empty {
@@ -252,8 +252,11 @@
         font-size: 13px;
     }
 
-    .effect-items-kind,
-    .effect-items-effect {
+    .effect-items-kind {
         font-size: 12px;
+    }
+
+    .effect-items-value {
+        font-size: 16px;
     }
 }
