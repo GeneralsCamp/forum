@@ -15,6 +15,7 @@ let questsById = {};
 let currenciesById = {};
 let unitsById = {};
 let lootBoxesById = {};
+let raidBossesById = {};
 
 const loader = createLoader();
 const GT_QUEST_EVENT_ID = "129";
@@ -163,6 +164,14 @@ function getLootBoxName(lootBoxId) {
     );
 }
 
+function getRiftBossName(bossId) {
+    const boss = raidBossesById[String(bossId)];
+    if (!boss) return `Boss ${bossId}`;
+
+    const rawName = String(boss.name || "").trim();
+    return getLangValue([`are_boss_name_${rawName}`], rawName || `Boss ${bossId}`);
+}
+
 function getRiftQuestTemplateValues(quest) {
     const parsed = quest.parsed || {};
     const amount = formatQuestNumber(parsed.amount);
@@ -294,6 +303,7 @@ function buildQuestData() {
     currenciesById = Object.fromEntries((itemsData.currencies || []).map(c => [String(c.currencyid), c]));
     unitsById = Object.fromEntries((itemsData.units || []).map(u => [String(u.wodid), u]));
     lootBoxesById = Object.fromEntries((itemsData.lootboxes || []).map(box => [String(box.lootboxid), box]));
+    raidBossesById = Object.fromEntries((itemsData.raidbosses || []).map(boss => [String(boss.raidbossid), boss]));
 
     quests = allianceQuests
         .map(q => {
@@ -314,6 +324,7 @@ function buildQuestData() {
                 duration: Number(q.duration || 0),
                 minRaidBossLevel: Number(q.minraidbosslevel || 0),
                 maxRaidBossLevel: Number(q.maxraidbosslevel || 0),
+                raidBossId: String(q.raidbossid || ""),
                 chanceValue
             };
         });
@@ -332,6 +343,11 @@ function getQuestTypeFilterKey(quest) {
 
 function getLevelFilterValue() {
     const el = document.getElementById("levelFilter");
+    return String(el?.value || "");
+}
+
+function getBossFilterValue() {
+    const el = document.getElementById("bossFilter");
     return String(el?.value || "");
 }
 
@@ -432,10 +448,43 @@ function populateEventFilterOptions() {
     eventFilter.value = hasSelected ? selected : "gt";
 }
 
+function populateBossFilterOptions() {
+    const bossFilter = document.getElementById("bossFilter");
+    const bossFilterWrap = document.getElementById("bossFilterWrap");
+    if (!bossFilter || !bossFilterWrap) return;
+
+    const isRift = getEventFilterValue() === "rift";
+    bossFilterWrap.style.display = isRift ? "" : "none";
+
+    if (!isRift) {
+        bossFilter.disabled = true;
+        return;
+    }
+
+    const selected = String(bossFilter.value || "");
+    const bossIds = [...new Set(
+        getEventFilteredQuests()
+            .map(q => String(q.raidBossId || "").trim())
+            .filter(Boolean)
+    )].sort((a, b) => Number(a) - Number(b));
+
+    bossFilter.innerHTML = "";
+
+    bossIds.forEach(bossId => {
+        const option = document.createElement("option");
+        option.value = bossId;
+        option.textContent = getRiftBossName(bossId);
+        bossFilter.appendChild(option);
+    });
+
+    const hasSelected = [...bossFilter.options].some(option => option.value === selected);
+    bossFilter.value = hasSelected ? selected : String(bossIds[0] || "");
+    bossFilter.disabled = bossIds.length === 0;
+}
+
 function getAvailableRiftLevels() {
     const levels = new Set();
-    quests
-        .filter(q => q.eventKey === "rift")
+    getBossFilteredQuests()
         .forEach(q => {
             const minLevel = Number(q.minRaidBossLevel || 0);
             const maxLevel = Number(q.maxRaidBossLevel || minLevel || 0);
@@ -452,11 +501,13 @@ function getAvailableRiftLevels() {
 
 function populateLevelFilterOptions() {
     const levelFilter = document.getElementById("levelFilter");
-    if (!levelFilter) return;
+    const levelFilterWrap = document.getElementById("levelFilterWrap");
+    if (!levelFilter || !levelFilterWrap) return;
 
     const isRift = getEventFilterValue() === "rift";
     const selected = String(levelFilter.value || "");
     levelFilter.innerHTML = "";
+    levelFilterWrap.style.display = isRift ? "" : "none";
 
     if (!isRift) {
         const option = document.createElement("option");
@@ -486,6 +537,15 @@ function getEventFilteredQuests() {
     return quests.filter(q => q.eventKey === "gt");
 }
 
+function getBossFilteredQuests() {
+    const eventQuests = getEventFilteredQuests();
+    if (getEventFilterValue() !== "rift") return eventQuests;
+
+    const bossValue = getBossFilterValue();
+    if (!bossValue) return [];
+    return eventQuests.filter(q => String(q.raidBossId || "") === bossValue);
+}
+
 function matchesSelectedLevel(quest) {
     const selectedLevel = Number(getLevelFilterValue() || 0);
     if (quest?.eventKey !== "rift" || !selectedLevel) return true;
@@ -496,7 +556,7 @@ function matchesSelectedLevel(quest) {
 }
 
 function getLevelFilteredQuests() {
-    return getEventFilteredQuests().filter(matchesSelectedLevel);
+    return getBossFilteredQuests().filter(matchesSelectedLevel);
 }
 
 function getCurrentQuestChanceTotal() {
@@ -586,13 +646,16 @@ function renderQuests() {
 
 function setFiltersLoadingState(isLoading) {
     const eventFilter = document.getElementById("eventFilter");
+    const bossFilter = document.getElementById("bossFilter");
     const levelFilter = document.getElementById("levelFilter");
     const typeFilter = document.getElementById("typeFilter");
-    if (!eventFilter || !levelFilter || !typeFilter) return;
+    if (!eventFilter || !bossFilter || !levelFilter || !typeFilter) return;
 
     if (isLoading) {
         eventFilter.innerHTML = `<option value="gt" selected>Loading quest events...</option>`;
         eventFilter.disabled = true;
+        bossFilter.innerHTML = `<option value="" selected>Loading Rift bosses...</option>`;
+        bossFilter.disabled = true;
         levelFilter.innerHTML = `<option value="" selected>Loading levels...</option>`;
         levelFilter.disabled = true;
         typeFilter.innerHTML = `<option value="all" selected>Loading quest types...</option>`;
@@ -606,23 +669,35 @@ function setFiltersLoadingState(isLoading) {
 
 function setupFilters() {
     const eventFilter = document.getElementById("eventFilter");
+    const bossFilter = document.getElementById("bossFilter");
     const levelFilter = document.getElementById("levelFilter");
     const typeFilter = document.getElementById("typeFilter");
-    if (!eventFilter || !levelFilter || !typeFilter) return;
+    if (!eventFilter || !bossFilter || !levelFilter || !typeFilter) return;
 
     setFiltersLoadingState(false);
     populateEventFilterOptions();
+    populateBossFilterOptions();
     populateLevelFilterOptions();
     populateTypeFilterOptions();
 
     if (!eventFilter.dataset.bound) {
         eventFilter.addEventListener("change", () => {
             updateHashForEventFilter(eventFilter.value);
+            populateBossFilterOptions();
             populateLevelFilterOptions();
             populateTypeFilterOptions();
             renderQuests();
         });
         eventFilter.dataset.bound = "1";
+    }
+
+    if (!bossFilter.dataset.bound) {
+        bossFilter.addEventListener("change", () => {
+            populateLevelFilterOptions();
+            populateTypeFilterOptions();
+            renderQuests();
+        });
+        bossFilter.dataset.bound = "1";
     }
 
     if (!levelFilter.dataset.bound) {

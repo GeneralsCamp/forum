@@ -31,19 +31,25 @@
         </div>
 
         <div class="row note gx-1 gy-1 align-items-center pb-2">
-          <div class="col-lg-4 col-md-4">
+          <div class="col-6">
             <select id="eventFilter" class="form-select custom-select text-center" aria-label="Quest event filter"
               disabled>
               <option value="gt" selected>Loading quest events...</option>
             </select>
           </div>
-          <div class="col-lg-4 col-md-4">
+          <div id="bossFilterWrap" class="col-6" style="display: none;">
+            <select id="bossFilter" class="form-select custom-select text-center" aria-label="Rift boss filter"
+              disabled>
+              <option value="" selected>Loading Rift bosses...</option>
+            </select>
+          </div>
+          <div class="col-6">
             <select id="typeFilter" class="form-select custom-select text-center" aria-label="Quest type filter"
               disabled>
               <option value="all" selected>Loading quest types...</option>
             </select>
           </div>
-          <div class="col-lg-4 col-md-4">
+          <div id="levelFilterWrap" class="col-6" style="display: none;">
             <select id="levelFilter" class="form-select custom-select text-center" aria-label="Quest level filter"
               disabled>
               <option value="" selected>Level filter unavailable</option>
