@@ -776,8 +776,9 @@ function buildBossRows(boss) {
     });
 
     const levelLabel = langValue("level") || "Level";
+    const riftPointLabel = langValue("currency_name_RiftPoint") || "Rift Point";
     rows.push({
-      title: `${levelLabel} ${level.level} (${formatNumber(level.minPointsForBossRewards)})`,
+      title: `${levelLabel} ${level.level} (${formatNumber(level.minPointsForBossRewards)} ${riftPointLabel})`,
       meta: "",
       items: items.length > 0 ? items : [{ name: ownText("no_rewards", "No rewards"), amount: 1, type: null, id: null, addKeyName: null }]
     });
