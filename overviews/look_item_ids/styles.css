@@ -1,0 +1,244 @@
+#content {
+  padding: 0 6px;
+  --look-scrollbar-width: 10px;
+}
+
+.look-table-wrap {
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-bottom: 0;
+  border: 0;
+  border-top: 1px solid rgba(215, 155, 66, 0.52);
+  border-bottom: 1px solid rgba(215, 155, 66, 0.52);
+  border-radius: 0;
+  background: transparent;
+  color: #f7ead5;
+  box-shadow: none;
+}
+
+.look-table-header {
+  flex: 0 0 auto;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding-inline-end: var(--look-scrollbar-width);
+  background: #4f3625;
+}
+
+.look-table-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+.look-table {
+  width: 100%;
+  min-width: 0;
+  table-layout: fixed;
+  border-collapse: collapse;
+  color: #f7ead5;
+  font-size: clamp(11px, 1.2vw, 14px);
+}
+
+.look-table th,
+.look-table td {
+  padding: clamp(4px, 0.8vw, 8px) clamp(3px, 1vw, 12px);
+  border-bottom: 1px solid rgba(215, 155, 66, 0.34);
+  text-align: center;
+  vertical-align: middle;
+}
+
+.look-table th {
+  background: #4f3625;
+  color: #f3c24a;
+  font-weight: 900;
+  border-bottom: 2px solid rgba(215, 155, 66, 0.52);
+}
+
+.look-table th:not(:last-child),
+.look-table td:not(:last-child) {
+  border-right: 1px solid rgba(215, 155, 66, 0.34);
+}
+
+.look-table th:nth-child(3),
+.look-table td:nth-child(3) {
+  text-align: left;
+}
+
+[dir="rtl"] .look-table th:nth-child(3),
+[dir="rtl"] .look-table td:nth-child(3) {
+  text-align: right;
+}
+
+.look-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.look-table tbody tr {
+  background: linear-gradient(90deg, rgba(79, 54, 37, 0.96), rgba(79, 54, 37, 0.76));
+}
+
+.look-table tbody tr:nth-child(even) {
+  background: linear-gradient(90deg, rgba(73, 49, 34, 0.96), rgba(73, 49, 34, 0.74));
+}
+
+.look-table tbody tr:hover {
+  background: linear-gradient(90deg, rgba(86, 58, 39, 0.98), rgba(86, 58, 39, 0.82));
+}
+
+.look-table th:first-child,
+.look-table td:first-child {
+  width: 10%;
+  color: #f3c24a;
+  font-variant-numeric: tabular-nums;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.look-table th:nth-child(2),
+.look-table td:nth-child(2) {
+  width: 28%;
+}
+
+.look-table th:nth-child(3),
+.look-table td:nth-child(3) {
+  width: 38%;
+}
+
+.look-table th:nth-child(4),
+.look-table td:nth-child(4),
+.look-table th:nth-child(5),
+.look-table td:nth-child(5) {
+  width: 12%;
+  white-space: nowrap;
+}
+
+.look-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 58px;
+}
+
+.look-preview img {
+  width: 72px;
+  height: 56px;
+  object-fit: contain;
+  cursor: zoom-in;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
+}
+
+.look-preview.castellan {
+  display: grid;
+  grid-template-columns: repeat(2, 58px);
+}
+
+.look-preview.castellan img {
+  width: 58px;
+  height: 42px;
+}
+
+.look-name {
+  color: #fff3dc;
+  font-weight: 800;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.game-state {
+  display: inline-flex;
+  width: 26px;
+  height: 26px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: 800;
+}
+
+.game-state.available {
+  color: #b9f3bd;
+  background: rgba(65, 159, 75, 0.22);
+  border: 1px solid rgba(104, 201, 113, 0.45);
+}
+
+.game-state.unavailable {
+  color: #ffc2c2;
+  background: rgba(178, 52, 52, 0.24);
+  border: 1px solid rgba(224, 91, 91, 0.55);
+}
+
+.look-table-wrap .filter-empty-message {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #f7ead5;
+}
+
+@media (max-width: 575px) {
+  #content {
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+
+  .look-table {
+    font-size: clamp(9px, 2.8vw, 11px);
+  }
+
+  .look-table th:first-child,
+  .look-table td:first-child {
+    width: 15%;
+  }
+
+  .look-table th:nth-child(2),
+  .look-table td:nth-child(2) {
+    width: 30%;
+  }
+
+  .look-table th:nth-child(3),
+  .look-table td:nth-child(3) {
+    width: 35%;
+  }
+
+  .look-table th:nth-child(4),
+  .look-table td:nth-child(4),
+  .look-table th:nth-child(5),
+  .look-table td:nth-child(5) {
+    width: 10%;
+  }
+
+  .look-table th,
+  .look-table td {
+    padding: 4px 2px;
+  }
+
+  .look-preview {
+    min-height: 42px;
+  }
+
+  .look-preview img {
+    width: 38px;
+    height: 38px;
+  }
+
+  .look-preview.castellan {
+    grid-template-columns: repeat(2, 32px);
+  }
+
+  .look-preview.castellan img {
+    width: 32px;
+    height: 25px;
+  }
+
+  .game-state {
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+  }
+}

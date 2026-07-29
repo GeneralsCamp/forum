@@ -1,0 +1,20 @@
+{
+  "en": {
+    "search": "Search by name, look ID or skin ID...",
+    "commander": "Commander skins",
+    "castellan": "Castellan skins",
+    "look_id": "ID",
+    "preview": "Preview",
+    "name": "Name",
+    "no_match": "No match to the current filters."
+  },
+  "hu": {
+    "search": "Keresés név, look ID vagy skin ID alapján...",
+    "commander": "Parancsnok kinézetek",
+    "castellan": "Várnagy kinézetek",
+    "look_id": "ID",
+    "preview": "Előnézet",
+    "name": "Név",
+    "no_match": "Nincs találat a jelenlegi szűrőkkel."
+  }
+}

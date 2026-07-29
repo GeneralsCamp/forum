@@ -57,7 +57,15 @@ export async function getVersionHistory() {
 }
 
 export async function getItemVersion() {
-    if (getGameSource() === "e4k") {
+    return getItemVersionForSource(getGameSource());
+}
+
+export async function getItemVersionForSource(source = "empire") {
+    const normalizedSource = String(source).toLowerCase() === "e4k"
+        ? "e4k"
+        : "empire";
+
+    if (normalizedSource === "e4k") {
         const info = await getE4kRemoteInfo();
         return info.itemVersion;
     }
@@ -155,13 +163,17 @@ export async function loadLanguage(langCode, version) {
 }
 
 export async function loadItems(version) {
-    const source = getGameSource();
+    return loadItemsForSource(getGameSource(), version);
+}
+
+export async function loadItemsForSource(source = "empire", version) {
+    const normalizedSource = String(source).toLowerCase() === "e4k"
+        ? "e4k"
+        : "empire";
     const resolvedVersion = String(
-        version || (source === "e4k"
-            ? (await getE4kRemoteInfo()).itemVersion
-            : await getItemVersion())
+        version || await getItemVersionForSource(normalizedSource)
     );
-    const cacheKey = `items:${source}:${resolvedVersion}`;
+    const cacheKey = `items:${normalizedSource}:${resolvedVersion}`;
     const cached = await getCachedJson(cacheKey);
     if (cached) {
         const normalizedCached = normalizeItemsPayload(cached);
@@ -171,7 +183,7 @@ export async function loadItems(version) {
         return normalizedCached;
     }
 
-    const url = source === "e4k"
+    const url = normalizedSource === "e4k"
         ? DATA_URLS.e4kItems
         : DATA_URLS.empireItems;
     const res = await fetchFreshWithFallback(url, 60000);
