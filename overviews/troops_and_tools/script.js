@@ -7,6 +7,7 @@ import { hydrateComposedImages } from "../shared/ComposeHydrator.mjs";
 import { getSharedLanguagePack, getSharedText } from "../shared/SharedTextService.mjs";
 import { revealCard } from "../shared/CardReveal.mjs";
 import { initRewardDetailModal, rewardDetailAttrs } from "../shared/RewardDetailModal.mjs";
+import { getUnitTypeAliases, resolveUnitImageUrl } from "../shared/UnitImageService.mjs";
 
 const loader = createLoader();
 let currentLanguage = getInitialLanguage();
@@ -650,79 +651,17 @@ function normalizeName(value) {
 }
 
 function getTypeAliases(rawType) {
-  const type = String(rawType || "").trim();
-  const typeLc = type.toLowerCase();
-  const aliases = [type];
-
-  if (/^nomadcoinboost(?:wood|stone)$/i.test(type)) {
-    aliases.push("NomadCoinBoost", "NomadCoinBoostStone");
-  }
-
-  if (typeLc.startsWith("aliensamuraianti")) {
-    const suffix = type.slice("AlienSamuraiAnti".length);
-    if (suffix) {
-      aliases.push(`AlienInvasionAnti${suffix}`);
-      if (suffix.toLowerCase() === "shield") {
-        aliases.push("AlienInvasionAntiShields");
-      }
-    }
-  }
-
-  if (currentGameSource === "e4k" && typeLc === "skeletalhunter") {
-    aliases.push("Skeletalarcher");
-  }
-
-  return [...new Set(aliases.filter(Boolean))];
-}
-
-function isGenericUnitAssetName(rawName) {
-  const name = normalizeName(rawName);
-  return name === "eventtool" || name === "eventunit" || name === "unit";
+  return getUnitTypeAliases(rawType, currentGameSource);
 }
 
 function getUnitImageUrl(unit) {
-  const rawName = unit?.name || unit?.Name || "";
-  const rawType = unit?.type || unit?.Type || "";
-  if (!rawName || !rawType) return null;
-  const nameNorm = normalizeName(rawName);
-  const typeAliases = getTypeAliases(rawType);
-  const typeNorms = typeAliases.map(normalizeName);
-
-  const exactKeys = [
-    ...typeAliases.flatMap(type => [
-      normalizeName(`${rawName}_unit_${type}`),
-      normalizeName(`${type}_unit_${rawName}`),
-      normalizeName(type)
-    ]),
-    normalizeName(rawName)
-  ];
-
-  for (const key of exactKeys) {
-    if (unitImageUrlMap[key]) return unitImageUrlMap[key];
-  }
-
-  if (!unitImageEntries.length) return null;
-
-  const strictMatch = unitImageEntries.find(([key]) =>
-    typeNorms.some(typeNorm => key.includes(typeNorm)) &&
-    key.includes(nameNorm) &&
-    key.includes("unit")
-  );
-  if (strictMatch) return strictMatch[1];
-
-  const typeMatch = unitImageEntries.find(([key]) =>
-    typeNorms.some(typeNorm => key.includes(typeNorm)) && key.includes("unit")
-  );
-  if (typeMatch) return typeMatch[1];
-
-  if (!isGenericUnitAssetName(rawName)) {
-    const nameMatch = unitImageEntries.find(([key]) =>
-      key.includes(nameNorm) && key.includes("unit")
-    );
-    if (nameMatch) return nameMatch[1];
-  }
-
-  return null;
+  return resolveUnitImageUrl({
+    unit,
+    unitImageUrlMap,
+    unitImageEntries,
+    gameSource: currentGameSource,
+    normalizeNameFn: normalizeName
+  });
 }
 
 function getUnitName(unit) {
