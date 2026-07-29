@@ -119,6 +119,7 @@
 }
 
 .look-preview {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -132,6 +133,24 @@
   object-fit: contain;
   cursor: zoom-in;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
+}
+
+.gem-slot-marker {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(243, 194, 74, 0.72);
+  border-radius: 50%;
+  background: rgba(58, 39, 25, 0.9);
+  color: #f3c24a;
+  font-size: 11px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.38);
+  pointer-events: none;
 }
 
 .look-preview.castellan {
@@ -240,5 +259,13 @@
     width: 18px;
     height: 18px;
     font-size: 10px;
+  }
+
+  .gem-slot-marker {
+    right: 1px;
+    bottom: 1px;
+    width: 16px;
+    height: 16px;
+    font-size: 8px;
   }
 }

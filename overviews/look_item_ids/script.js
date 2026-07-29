@@ -144,6 +144,8 @@ function buildRows(empireData, e4kData) {
       assets,
       type,
       name,
+      hasGemSlot: [entry.empire?.canSlotGem, entry.e4k?.canSlotGem]
+        .some((value) => ["1", "true"].includes(String(value || "").toLowerCase())),
       searchText: normalizeName([
         entry.id,
         item?.skinID,
@@ -189,6 +191,9 @@ function renderPreview(row) {
 
   return `<div class="look-preview ${row.type}">
     ${uniqueUrls.map((url) => imageTag(url, row.name)).join("")}
+    ${row.hasGemSlot
+      ? '<span class="gem-slot-marker" title="Gem slot"><i class="bi bi-star-fill"></i></span>'
+      : ""}
   </div>`;
 }
 
