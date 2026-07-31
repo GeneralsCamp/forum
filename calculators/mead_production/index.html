@@ -19,7 +19,7 @@
 
 <body>
   <div class="container">
-    <h1 data-i18n="page_title">BREWERY SIMULATOR</h1>
+    <h1 data-i18n="page_title">Mead Production Calculator</h1>
     <div class="row">
       <a href="https://generalscamp.github.io/forum/" class="home-icon-link" aria-label="Back to homepage"
         data-i18n-aria-label="back_home">
@@ -30,7 +30,7 @@
 
       <div class="col-12 collapse-area mb-2">
         <h2 class="collapse-header">
-          <span class="header-title" data-game-lang="honeyproduction">HONEY PRODUCTION</span>
+          <span class="header-title" data-game-lang="honeyproduction">Honey production</span>
         </h2>
         <div class="collapse show">
           <form id="bonuses-form" class="calculator-bonuses-form" onchange="calculate()">
@@ -129,7 +129,7 @@
                 </select>
               </div>
               <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                <label for="AstormsTitle" data-i18n="storm_title">Storm title</label>
+                <label for="AstormsTitle" data-i18n="storm_title">Storm Islands title</label>
                 <select class="form-select" name="AstormsTitle" id="AstormsTitle">
                   <option value="0" data-game-lang="commons_no">No</option>
                   <option value="0.25" data-game-lang="playerTitle_52">the Hive Master</option>
@@ -240,7 +240,7 @@
       </div>
       <div class="col-12 collapse-area mb-2">
         <h2 class="collapse-header">
-          <span class="header-title" data-game-lang="meadproduction">MEAD PRODUCTION</span>
+          <span class="header-title" data-game-lang="meadproduction">Mead production</span>
         </h2>
         <div class="calculator">
           <div class="collapse show">
@@ -328,7 +328,7 @@
                   </select>
                 </div>
                 <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                  <label for="meadBonus" data-i18n="effect_deco_bonus">Effect decoration bonus</label>
+                  <label for="meadBonus" data-i18n="effect_deco_bonus">Effect decorations (%)</label>
                   <input type="number" id="meadBonus" name="meadBonus" class="form-control" min="0" max="50" step="0.1"
                     value="0">
                 </div>
@@ -349,7 +349,7 @@
                   </select>
                 </div>
                 <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                  <label for="stormsTitle" data-i18n="storm_title">Storm title</label>
+                  <label for="stormsTitle" data-i18n="storm_title">Storm Islands title</label>
                   <select class="form-select" name="stormsTitle" id="stormsTitle">
                     <option value="0" data-game-lang="commons_no">No</option>
                     <option value="0.25" data-game-lang="playerTitle_51">the Voracious</option>
@@ -413,7 +413,7 @@
                   </select>
                 </div>
                 <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
-                  <label for="cast" data-i18n="castellan_bonus">Castellan bonus (%)</label>
+                  <label for="cast" data-i18n="castellan_bonus">Castellan bonus</label>
                   <input type="number" id="cast" name="cast" class="form-control" min="0" max="25" step="0.1" value="0">
                 </div>
                 <div class="col-md-3 col-6 col-sm-4 col-lg-3 form-group">
@@ -435,15 +435,15 @@
 
       <div class="col-12 collapse-area mb-2 result">
         <h2 class="collapse-header">
-          <span class="header-title" data-i18n="results">RESULTS</span>
+          <span class="header-title" data-i18n="results">Results</span>
         </h2>
         <div class="collapse show">
           <form class="calculator-bonuses-form row" onsubmit="return false;">
             <div class="collapse show results">
               <p class="il result-line"><span class="result-label" data-game-lang="honeyProductionPerHour">Honey production per hour</span><span><i id="honeyProd">0</i> <span data-i18n="per_hour">/hour</span></span></p>
               <hr>
-              <p class="result-line"><span class="result-label" data-game-lang="meadproduction_total_desc">Total mead production per hour</span><span><i id="food">0</i> <span data-game-lang="food">food</span> + <i id="honey">0</i> <span data-game-lang="honey">honey</span> =
-                  <i id="mead">0</i> <span data-game-lang="mead">mead</span></span></p>
+              <p class="result-line"><span class="result-label" data-game-lang="meadproduction_total_desc">Total mead production per hour</span><span><i id="food">0</i> <span data-game-lang="food">Food</span> + <i id="honey">0</i> <span data-game-lang="honey">Honey</span> =
+                  <i id="mead">0</i> <span data-game-lang="mead">Mead</span></span></p>
               <hr>
               <p class="il result-line"><span class="result-label" data-i18n="units_can_keep">Number of units you can keep</span><span><i id="unitsHold">0</i></span></p>
             </div>
