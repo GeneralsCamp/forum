@@ -1,4 +1,4 @@
-import { defense_tools, defenseSlots, toolSlotRestrictions } from '../../data/variables.js';
+import { defense_tools, defenseSlots, toolSlotRestrictions, enforceDefenseWallUnitLimit } from '../../data/variables.js';
 import { imageUrl } from '../../data/imagePaths.js';
 import { createDefenseToolIcon, getToolIcon, displayDefenseBonuses, calculateTroopDefenseStrength } from '../uiDefense.js';
 import { saveDefenseState } from '../../data/defenseState.js';
@@ -63,6 +63,10 @@ export function initializeDefenseTools(defense_tools, slotType) {
   });
 }
 
+export function getUsedCourtyardToolTypes(slots = []) {
+  return slots.map(slot => slot?.type).filter(Boolean);
+}
+
 export function openDefenseToolsModal(side, toolType, slotIndex) {
   const modal = new bootstrap.Modal(document.getElementById('toolModalDefense'));
   const slotElement = document.getElementById(`tool-slot-${side}-${toolType}-${slotIndex}`);
@@ -73,7 +77,7 @@ export function openDefenseToolsModal(side, toolType, slotIndex) {
     : defenseSlots[side][`${toolType}Tools`][slotIndex - 1] || { type: '', count: 0 };
 
   const usedCourtyardTools = toolType === 'cy'
-    ? defenseSlots[side].cyTools.map(slot => slot.type).filter(type => type !== '')
+    ? getUsedCourtyardToolTypes(defenseSlots[side].cyTools)
     : [];
 
   defense_tools.forEach((tool, index) => {
@@ -147,6 +151,7 @@ export function openDefenseToolsModal(side, toolType, slotIndex) {
       slotElement.innerHTML = createDefenseToolIcon({ type: selectedToolType, count: 1 });
     }
 
+    enforceDefenseWallUnitLimit();
     displayDefenseBonuses(side);
     calculateTroopDefenseStrength(side);
     saveDefenseState();

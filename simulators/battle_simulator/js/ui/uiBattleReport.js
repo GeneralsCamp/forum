@@ -12,7 +12,8 @@ import {
   commanderStats,
   castellanStats,
   attackGeneralAbilities,
-  defenseGeneralAbilities
+  defenseGeneralAbilities,
+  getDefenseCourtyardEffectTotals
 } from '../data/variables.js';
 import { initPresetSwipe } from './swipe.js';
 import { imageUrl } from '../data/imagePaths.js';
@@ -103,7 +104,7 @@ function distributeLossesByUnit(units = [], totalLoss = 0) {
   return losses;
 }
 
-function applyStrongestKills(units = [], killCount = 0, strengthGetter) {
+export function applyStrongestKills(units = [], killCount = 0, strengthGetter) {
   if (!killCount || killCount <= 0) return new Map();
   const losses = new Map();
   const ranked = units
@@ -335,20 +336,30 @@ function computeDefenseBonuses(side) {
   return bonuses;
 }
 
+export function combineDefenseProtectionMultipliers(moatBonus, wallBonus, gateBonus) {
+  return (1 + Math.max(moatBonus, 0) / 100)
+    * (1 + Math.max(wallBonus, 0) / 100)
+    * (1 + Math.max(gateBonus, 0) / 100);
+}
+
+export function getCourtyardEntryMultiplier(enteredWallSides) {
+  const enteredCount = enteredWallSides.filter(Boolean).length;
+  if (enteredCount === 3) return 1.3;
+  if (enteredCount === 1) return 0.7;
+  return 1;
+}
+
 function computeDefenseStrengthBonuses(side, waveIndex) {
   let ranged = 100 + (castellanStats.ranged || 0);
   let melee = 100 + (castellanStats.melee || 0);
+  const courtyardToolTotals = getDefenseCourtyardEffectTotals();
+  const combatStrengthBonus = courtyardToolTotals.CombatStrength || 0;
 
-  let combatStrengthBonus = 0;
-  (defenseSlots.cy?.cyTools || []).forEach(tool => {
-    if (!tool || tool.count <= 0) return;
-    const toolId = tool.type?.replace('DefenseTool', '');
-    const effectData = toolEffectsDefense?.[toolId];
-    if (!effectData) return;
-    if (effectData.effect2?.name === 'CombatStrength') {
-      combatStrengthBonus += tool.count * effectData.effect2.value;
-    }
-  });
+  if (side === 'cy') {
+    const courtyardStrength = (castellanStats.courtyard || 0) + (courtyardToolTotals.Courtyard || 0);
+    ranged += courtyardStrength;
+    melee += courtyardStrength;
+  }
 
   ['wallTools', 'moatTools', 'gateTools'].forEach(slotType => {
     const tools = defenseSlots[side]?.[slotType] || [];
@@ -494,11 +505,11 @@ function computeWaveBattle(side, wave, defenseUnits, attackTotalMultiplier = 1, 
 
   const defenseBonuses = computeDefenseBonuses(side);
   const gateBonus = side === 'front' ? defenseBonuses.gate : 0;
-  const defenseBonusMult = 1 + (
-    Math.max(defenseBonuses.moat - moatReduction, 0) +
-    Math.max(defenseBonuses.wall - wallReduction, 0) +
-    Math.max(gateBonus - gateReduction, 0)
-  ) / 100;
+  const defenseBonusMult = combineDefenseProtectionMultipliers(
+    defenseBonuses.moat - moatReduction,
+    defenseBonuses.wall - wallReduction,
+    gateBonus - gateReduction
+  );
 
   const defenseStrength = computeDefenseStrengthBonuses(side, waveIndex);
   const defenseRangedPercent = Math.max(defenseStrength.ranged - shieldPercent, 0);
@@ -885,15 +896,10 @@ function computeBattleResults(side) {
 
   const wallSides = ['left', 'front', 'right'];
   const wallResults = wallSides.map(simulateSide);
-  const attackerWinsCount = wallResults.reduce((acc, result, index) => {
-    const sideKey = wallSides[index];
-    const attackersSent = (waves[sideKey] || [])
-      .flatMap(wave => wave.slots || [])
-      .reduce((sum, slot) => sum + (slot?.count || 0), 0);
-    const defendersLeft = Array.from(result.defenderSurvivors.values()).reduce((a, v) => a + v, 0);
-    const attackersWon = attackersSent > 0 && defendersLeft === 0;
-    return acc + (attackersWon ? 1 : 0);
-  }, 0);
+  const enteredWallSides = wallResults.map(result =>
+    sumMapValues(result.attackerSurvivors) > 0
+  );
+  const attackerWinsCount = enteredWallSides.filter(Boolean).length;
 
   if (attackerWinsCount === 0) {
     return {
@@ -906,7 +912,8 @@ function computeBattleResults(side) {
       defenderSurvivors: new Map(),
       combinedAttackers: new Map(),
       combinedDefenders: new Map(),
-      attackerWinsCount
+      attackerWinsCount,
+      courtyardEntryMultiplier: 1
     };
   }
   const wallAttackerSurvivors = mergeUnitMaps(...wallResults.map(r => r.attackerSurvivors));
@@ -927,9 +934,7 @@ function computeBattleResults(side) {
   const attackUnitsForBattle = mapToUnits(combinedAttackers, false);
   const attackersEnteredCY = Array.from(combinedAttackers.values()).reduce((sum, count) => sum + count, 0) > 0;
 
-  let attackTotalMultiplier = 1;
-  if (attackerWinsCount === 3) attackTotalMultiplier = 1.3;
-  else if (attackerWinsCount === 1) attackTotalMultiplier = 0.7;
+  let attackTotalMultiplier = getCourtyardEntryMultiplier(enteredWallSides);
 
   let defenseTotalMultiplier = 1;
   if (attackGeneralAbilities.courtyardLossBonus || defenseGeneralAbilities.courtyardLossBonus) {
@@ -989,6 +994,11 @@ function computeBattleResults(side) {
     });
   };
   if (attackersEnteredCY) {
+    const killTotals = {
+      melee: 0,
+      ranged: 0,
+      any: 0
+    };
     const cyTools = defenseSlots.cy?.cyTools || [];
     cyTools.forEach(tool => {
       if (!tool || tool.count <= 0) return;
@@ -999,35 +1009,30 @@ function computeBattleResults(side) {
       const applyEffect = effect => {
         if (!effect?.name) return;
         const value = effect.value * tool.count;
-        if (effect.name === 'KillMeleeTroopsYard') {
-          const losses = applyStrongestKills(
-            attackUnitsForBattle.filter(unit => unit.type2 === 'melee'),
-            value,
-            unit => unit.meleeCombatStrength
-          );
-          addDefenseKills(losses);
-        }
-        if (effect.name === 'KillRangedTroopsYard') {
-          const losses = applyStrongestKills(
-            attackUnitsForBattle.filter(unit => unit.type2 === 'ranged'),
-            value,
-            unit => unit.rangedCombatStrength
-          );
-          addDefenseKills(losses);
-        }
-        if (effect.name === 'KillAnyDefenseTroopsYard') {
-          const losses = applyStrongestKills(
-            attackUnitsForBattle,
-            value,
-            unit => Math.max(unit.rangedCombatStrength || 0, unit.meleeCombatStrength || 0)
-          );
-          addDefenseKills(losses);
-        }
+        if (effect.name === 'KillMeleeTroopsYard') killTotals.melee += value;
+        if (effect.name === 'KillRangedTroopsYard') killTotals.ranged += value;
+        if (effect.name === 'KillAnyDefenseTroopsYard') killTotals.any += value;
       };
 
       applyEffect(effectData.effect1);
       applyEffect(effectData.effect2);
     });
+
+    addDefenseKills(applyStrongestKills(
+      attackUnitsForBattle.filter(unit => unit.type2 === 'ranged'),
+      killTotals.ranged,
+      unit => unit.rangedCombatStrength
+    ));
+    addDefenseKills(applyStrongestKills(
+      attackUnitsForBattle.filter(unit => unit.type2 === 'melee'),
+      killTotals.melee,
+      unit => unit.meleeCombatStrength
+    ));
+    addDefenseKills(applyStrongestKills(
+      attackUnitsForBattle,
+      killTotals.any,
+      unit => Math.max(unit.rangedCombatStrength || 0, unit.meleeCombatStrength || 0)
+    ));
   }
 
   const attackersMapForBattle = mapFromUnits(attackUnitsForBattle);
@@ -1045,6 +1050,7 @@ function computeBattleResults(side) {
     combinedAttackers,
     combinedDefenders,
     attackerWinsCount,
+    courtyardEntryMultiplier: attackTotalMultiplier,
     supportKills
   };
 }
@@ -1136,13 +1142,14 @@ function populateBattleReportModal(side) {
 
   if (side === 'cy') {
     const wins = battleResults.attackerWinsCount ?? 0;
-    const bonusLabel = wins === 3
-      ? '+30% courtyard attacker strength'
-      : wins === 2
-        ? '0% courtyard attacker strength'
-        : wins === 1
+    const entryMultiplier = battleResults.courtyardEntryMultiplier ?? 1;
+    const bonusLabel = wins === 0
+      ? 'No courtyard battle'
+      : entryMultiplier === 1.3
+        ? '+30% courtyard attacker strength'
+        : entryMultiplier === 0.7
           ? '-30% courtyard attacker strength'
-          : 'No courtyard battle';
+          : '0% courtyard attacker strength';
     const bonusRow = `
       <div class="player-flank text-center">
         <span>${bonusLabel}</span>

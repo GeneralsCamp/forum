@@ -1,5 +1,5 @@
 import { generateInputCard } from './modalGenerator.js';
-import { attackBasics, commanderStats, castellanStats } from '../../data/variables.js';
+import { attackBasics, commanderStats, castellanStats, BASE_WAVE_MIN, BASE_WAVE_MAX } from '../../data/variables.js';
 
 export const modalsData = [
   //Presets modal
@@ -286,8 +286,8 @@ export const modalsData = [
     body: `
         ${generateInputCard(
       'Waves', '../../img_base/battle_simulator/attack-modal1.png', 'wave',
-      'waves-slider', 4, 30, attackBasics.maxWaves,
-      'waves-value', 4, 30, attackBasics.maxWaves
+      'waves-slider', BASE_WAVE_MIN, BASE_WAVE_MAX, attackBasics.maxWaves,
+      'waves-value', BASE_WAVE_MIN, BASE_WAVE_MAX, attackBasics.maxWaves
     )}
         ${generateInputCard(
       'Front unit limit', '../../img_base/battle_simulator/attack-modal2.png', 'front-unit-limit',

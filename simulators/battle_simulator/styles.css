@@ -427,6 +427,10 @@ body {
     color: transparent;
 }
 
+.modal.fade .modal-dialog {
+    transform: none;
+}
+
 .modal-content {
 
     background-color: rgb(119, 80, 54);

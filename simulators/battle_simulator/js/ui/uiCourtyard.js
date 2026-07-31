@@ -206,13 +206,8 @@ export function summarizeCourtyardUnitBonuses() {
 
   const totalStats = { ranged: 0, melee: 0 };
   const wave = variables.waves['CY'][0];
-  const supportCombatStrength = variables.waves['Support']?.[0]?.tools?.reduce((total, tool) => {
-    const effectData = variables.supportToolEffects?.[tool.type];
-    if (!effectData || !tool.count) return total;
-    return total
-      + (effectData.effect1?.name === 'CombatStrength' ? effectData.effect1.value * tool.count : 0)
-      + (effectData.effect2?.name === 'CombatStrength' ? effectData.effect2.value * tool.count : 0);
-  }, 0) || 0;
+  const supportEffects = variables.getSupportEffectTotals();
+  const supportCourtyardStrength = (supportEffects.CombatStrength || 0) + (supportEffects.YardStrength || 0);
 
   wave.slots.forEach(slot => {
     const unitStat = variables.unitStats.find(u => u.type === slot.type);
@@ -236,12 +231,12 @@ export function summarizeCourtyardUnitBonuses() {
     totalStats.melee += melee;
   });
 
-  let totalRangedBonus = variables.commanderStats.ranged + variables.commanderStats.holRanged + variables.commanderStats.universal + variables.commanderStats.holUniversal;
-  let totalMeleeBonus = variables.commanderStats.melee + variables.commanderStats.holMelee + variables.commanderStats.universal + variables.commanderStats.holUniversal;
+  let totalRangedBonus = variables.commanderStats.ranged + variables.commanderStats.holRanged + variables.commanderStats.universal + variables.commanderStats.holUniversal + variables.commanderStats.courtyard;
+  let totalMeleeBonus = variables.commanderStats.melee + variables.commanderStats.holMelee + variables.commanderStats.universal + variables.commanderStats.holUniversal + variables.commanderStats.courtyard;
 
-  if (supportCombatStrength) {
-    totalRangedBonus += supportCombatStrength;
-    totalMeleeBonus += supportCombatStrength;
+  if (supportCourtyardStrength) {
+    totalRangedBonus += supportCourtyardStrength;
+    totalMeleeBonus += supportCourtyardStrength;
   }
 
   const result = [];

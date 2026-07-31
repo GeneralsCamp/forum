@@ -423,6 +423,7 @@ export async function loadData() {
     initializeSupportTools();
     loadPresets();
     loadDefenseState();
+    variables.enforceDefenseWallUnitLimit();
     loadAttackState();
   } catch (error) {
     console.error("Error loading in-game battle simulator data:", error);

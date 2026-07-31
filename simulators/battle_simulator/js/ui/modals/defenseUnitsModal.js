@@ -1,4 +1,4 @@
-import { defense_units, defenseSlots, castellanStats } from '../../data/variables.js';
+import { defense_units, defenseSlots, castellanStats, getEffectiveWallUnitLimit } from '../../data/variables.js';
 import { imageUrl } from '../../data/imagePaths.js';
 import { calculateTroopDefenseStrength, createDefenseUnitIcon } from '../uiDefense.js';
 import { saveDefenseState } from '../../data/defenseState.js';
@@ -54,7 +54,7 @@ export function openDefenseUnitsModal(side, slotNumber) {
   const modal = new bootstrap.Modal(document.getElementById('unitModalDefense'));
   const slotElement = document.getElementById(`unit-slot-${side}-${slotNumber}`);
 
-  const wallMaxUnits = castellanStats.wallUnitLimit;
+  const wallMaxUnits = getEffectiveWallUnitLimit();
   const cyMaxUnits = castellanStats.cyUnitLimit;
   const isCourtyard = side === 'cy';
 
@@ -73,9 +73,9 @@ export function openDefenseUnitsModal(side, slotNumber) {
   const currentSlotData = defenseSlots[side].units[slotNumber - 1] || { type: '', count: 0 };
   const currentSlotUnitCount = currentSlotData.count;
   initializeDefenseUnits(defense_units, currentSlotData);
-  const availableUnits = isCourtyard
+  const availableUnits = Math.max(0, isCourtyard
     ? cyMaxUnits - totalUnitsInCourtyard + currentSlotUnitCount
-    : wallMaxUnits - totalUnitsInDefense + currentSlotUnitCount;
+    : wallMaxUnits - totalUnitsInDefense + currentSlotUnitCount);
 
   defense_units.forEach((unit, index) => {
     const count = currentSlotData.type === `DefenseUnit${unit.id.replace(/\D/g, '')}`

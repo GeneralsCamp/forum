@@ -1,4 +1,4 @@
-import { defenseSlots, defenseSides, defense_units, toolEffectsDefense, castellanStats, unitImagesDefense, toolImagesDefense } from '../data/variables.js';
+import { defenseSlots, defenseSides, defense_units, toolEffectsDefense, castellanStats, unitImagesDefense, toolImagesDefense, getDefenseCourtyardEffectTotals } from '../data/variables.js';
 import { imageUrl } from '../data/imagePaths.js';
 import { openDefenseToolsModal } from './modals/defenseToolsModal.js';
 import { openDefenseUnitsModal } from './modals/defenseUnitsModal.js';
@@ -216,28 +216,17 @@ export function loadDefenseTools(side) {
 
 export function displayDefenseBonuses(side) {
   const bonuses = {
-    melee: castellanStats.melee,
-    ranged: castellanStats.ranged,
+    melee: 100 + castellanStats.melee,
+    ranged: 100 + castellanStats.ranged,
     wall: castellanStats.wallProtection,
     moat: castellanStats.moatProtection,
     gate: castellanStats.gateProtection,
     courtyard: castellanStats.courtyard
   };
 
-  let combatStrengthBonus = 0;
-
-  defenseSlots.cy.cyTools.forEach(tool => {
-    if (tool && tool.count > 0) {
-      const toolId = tool.type.replace('DefenseTool', '');
-      const effectData = toolEffectsDefense[toolId];
-
-      if (effectData) {
-        if (effectData.effect1.name === 'Courtyard') bonuses.courtyard += tool.count * effectData.effect1.value;
-        if (effectData.effect2.name === 'Courtyard') bonuses.courtyard += tool.count * effectData.effect2.value;
-        if (effectData.effect2.name === 'CombatStrength') combatStrengthBonus += tool.count * effectData.effect2.value;
-      }
-    }
-  });
+  const courtyardToolTotals = getDefenseCourtyardEffectTotals();
+  const combatStrengthBonus = courtyardToolTotals.CombatStrength || 0;
+  bonuses.courtyard += courtyardToolTotals.Courtyard || 0;
 
   if (combatStrengthBonus > 0) {
     bonuses.melee += combatStrengthBonus;
@@ -277,34 +266,34 @@ export function displayDefenseBonuses(side) {
     currentBonuses.push(
       `<div class="d-flex align-items-center">
         <img src="../../img_base/battle_simulator/castellan-modal1.png" alt="Melee Defense" class="combat-icon" />
-        <span class="">+${bonuses.melee}%</span>
+        <span class="">${bonuses.melee}%</span>
       </div>`,
       `<div class="d-flex align-items-center">
         <img src="../../img_base/battle_simulator/castellan-modal2.png" alt="Ranged Defense" class="combat-icon" />
-        <span class="">+${bonuses.ranged}%</span>
+        <span class="">${bonuses.ranged}%</span>
       </div>`,
       `<div class="d-flex align-items-center">
         <img src="../../img_base/battle_simulator/cy-icon.png" alt="Courtyard Strength" class="combat-icon" />
-        <span class="">+${bonuses.courtyard}%</span>
+        <span class="">${bonuses.courtyard}%</span>
       </div>`
     );
   } else {
     currentBonuses.push(
       `<div class="d-flex align-items-center">
         <img src="../../img_base/battle_simulator/castellan-modal1.png" alt="Melee Defense" class="combat-icon" />
-        <span class="">+${bonuses.melee}%</span>
+        <span class="">${bonuses.melee}%</span>
       </div>`,
       `<div class="d-flex align-items-center">
         <img src="../../img_base/battle_simulator/castellan-modal2.png" alt="Ranged Defense" class="combat-icon" />
-        <span class="">+${bonuses.ranged}%</span>
+        <span class="">${bonuses.ranged}%</span>
       </div>`,
       `<div class="d-flex align-items-center">
         <img src="../../img_base/battle_simulator/wall-icon.png" alt="Wall Defense" class="combat-icon" />
-        <span class="">+${bonuses.wall}%</span>
+        <span class="">${bonuses.wall}%</span>
       </div>`,
       `<div class="d-flex align-items-center">
         <img src="../../img_base/battle_simulator/moat-icon.png" alt="Moat Defense" class="combat-icon" />
-        <span class="">+${bonuses.moat}%</span>
+        <span class="">${bonuses.moat}%</span>
       </div>`
     );
 
@@ -312,7 +301,7 @@ export function displayDefenseBonuses(side) {
       currentBonuses.push(
         `<div class="d-flex align-items-center">
           <img src="../../img_base/battle_simulator/gate-icon.png" alt="Gate Defense" class="combat-icon" />
-          <span class="">+${bonuses.gate}%</span>
+          <span class="">${bonuses.gate}%</span>
         </div>`
       );
     }
@@ -333,17 +322,14 @@ export function calculateTroopDefenseStrength(side) {
   let totalMeleeBonus = castellanStats.melee;
   let totalRangedBonus = castellanStats.ranged;
 
-  let combatStrengthBonus = 0;
+  const courtyardToolTotals = getDefenseCourtyardEffectTotals();
+  const combatStrengthBonus = courtyardToolTotals.CombatStrength || 0;
 
-  defenseSlots.cy.cyTools.forEach(tool => {
-    if (tool?.count > 0) {
-      const toolId = tool.type.replace('DefenseTool', '');
-      const effectData = toolEffectsDefense[toolId];
-      if (effectData?.effect2.name === 'CombatStrength') {
-        combatStrengthBonus += tool.count * effectData.effect2.value;
-      }
-    }
-  });
+  if (side === 'cy') {
+    const courtyardStrength = (castellanStats.courtyard || 0) + (courtyardToolTotals.Courtyard || 0);
+    totalMeleeBonus += courtyardStrength;
+    totalRangedBonus += courtyardStrength;
+  }
 
   ['wallTools', 'moatTools', 'gateTools'].forEach(slotType => {
     const tools = defenseSlots[side][slotType] || [];

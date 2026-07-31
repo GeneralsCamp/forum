@@ -198,7 +198,7 @@ export function openToolModal(slotId, side, waveIndex) {
       const bonusElement = document.getElementById(`tool-bonuses-${side}-${waveIndex}`);
       if (bonusElement) bonusElement.innerHTML = toolBonuses;
 
-      generateWaves(side, attackBasics.maxWaves);
+      generateWaves(side, variables.getEffectiveWaveCount());
       modal.hide();
     };
   }

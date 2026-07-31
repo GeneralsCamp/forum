@@ -79,6 +79,89 @@ export let attackBasics = {
   maxTools: { front: 50, left: 40, right: 40 }
 };
 
+export const BASE_WAVE_MIN = 4;
+export const BASE_WAVE_MAX = 25;
+export const ADDITIONAL_WAVE_MAX = 3;
+
+function sumSelectedEffects(selectedTools, effectsByType) {
+  const totals = {};
+  (selectedTools || []).forEach(tool => {
+    if (!tool || tool.count <= 0) return;
+    const effectData = effectsByType?.[tool.type];
+    [effectData?.effect1, effectData?.effect2].forEach(effect => {
+      if (!effect?.name) return;
+      totals[effect.name] = (totals[effect.name] || 0) + effect.value * tool.count;
+    });
+  });
+  return totals;
+}
+
+export function getSupportEffectTotals() {
+  return sumSelectedEffects(waves.Support?.[0]?.tools, supportToolEffects);
+}
+
+export function getDefenseCourtyardEffectTotals() {
+  const selectedTools = (defenseSlots.cy?.cyTools || []).map(tool => ({
+    ...tool,
+    type: tool?.type?.replace('DefenseTool', '')
+  }));
+  return sumSelectedEffects(selectedTools, toolEffectsDefense);
+}
+
+export function getAdditionalWaveCount() {
+  const value = Math.floor(Number(getSupportEffectTotals().AdditionalWave) || 0);
+  return Math.min(ADDITIONAL_WAVE_MAX, Math.max(0, value));
+}
+
+export function getBaseWaveCount() {
+  const value = Math.floor(Number(attackBasics.maxWaves) || BASE_WAVE_MIN);
+  return Math.min(BASE_WAVE_MAX, Math.max(BASE_WAVE_MIN, value));
+}
+
+export function getEffectiveWaveCount() {
+  return getBaseWaveCount() + getAdditionalWaveCount();
+}
+
+export function getEffectiveWallUnitLimit() {
+  const baseLimit = Math.max(0, Number(castellanStats.wallUnitLimit) || 0);
+  const bonusPercent = Number(getDefenseCourtyardEffectTotals().WallLimit) || 0;
+  return Math.floor(baseLimit * (1 + bonusPercent / 100));
+}
+
+export function enforceDefenseWallUnitLimit() {
+  const entries = [];
+  ['left', 'front', 'right'].forEach(side => {
+    (defenseSlots[side]?.units || []).forEach(slot => {
+      if (slot && slot.count > 0) entries.push(slot);
+    });
+  });
+
+  const total = entries.reduce((sum, slot) => sum + slot.count, 0);
+  const limit = getEffectiveWallUnitLimit();
+  if (total <= limit) return 0;
+
+  const scaled = entries.map((slot, index) => {
+    const exact = slot.count * limit / total;
+    return { slot, index, count: Math.floor(exact), remainder: exact - Math.floor(exact) };
+  });
+  let remaining = limit - scaled.reduce((sum, item) => sum + item.count, 0);
+
+  [...scaled]
+    .sort((a, b) => b.remainder - a.remainder || a.index - b.index)
+    .forEach(item => {
+      if (remaining <= 0) return;
+      item.count += 1;
+      remaining -= 1;
+    });
+
+  scaled.forEach(({ slot, count }) => {
+    slot.count = count;
+    if (count === 0) slot.type = '';
+  });
+
+  return total - limit;
+}
+
 export const defenseSides = {
   front: { name: "Front", tools: { wall: 4, gate: 2, moat: 1 } },
   left: { name: "Left flank", tools: { wall: 5, moat: 1 } },

@@ -1,5 +1,5 @@
 import { bindSlider, bindConfirmButton } from './modalUtils.js';
-import { attackBasics, currentSide, units } from '../../data/variables.js';
+import { attackBasics, currentSide, units, BASE_WAVE_MIN, BASE_WAVE_MAX } from '../../data/variables.js';
 import { switchSide } from '../uiWaves.js';
 import { loadData } from '../../data/dataLoader.js';
 import { renderUnitLevelControls, saveUnitLevelControls } from './unitLevelControls.js';
@@ -11,7 +11,7 @@ export function openBasicsModal() {
   renderUnitLevelControls('attack-unit-level-controls', units);
 
   const sliders = [
-    { sliderId: 'waves-slider', valueId: 'waves-value', value: attackBasics.maxWaves, min: 4, max: 30 },
+    { sliderId: 'waves-slider', valueId: 'waves-value', value: attackBasics.maxWaves, min: BASE_WAVE_MIN, max: BASE_WAVE_MAX },
     { sliderId: 'front-unit-slider', valueId: 'front-unit-value', value: attackBasics.maxUnits.front, min: 192, max: 1600 },
     { sliderId: 'flank-unit-slider', valueId: 'flank-unit-value', value: attackBasics.maxUnits.left, min: 64, max: 800 },
     { sliderId: 'courtyard-unit-slider', valueId: 'courtyard-unit-value', value: attackBasics.maxUnitsCY, min: 2089, max: 6000 },

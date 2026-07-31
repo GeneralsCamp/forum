@@ -1,10 +1,11 @@
 import { bindSlider, bindConfirmButton } from './modalUtils.js';
-import { castellanStats, currentSide, currentSideDefense, defense_units } from '../../data/variables.js';
+import { castellanStats, currentSide, currentSideDefense, defense_units, enforceDefenseWallUnitLimit } from '../../data/variables.js';
 import { switchSide } from '../uiWaves.js';
 import { loadData } from '../../data/dataLoader.js';
 import { switchDefenseSide } from '../uiDefense.js';
 import { renderUnitLevelControls, saveUnitLevelControls } from './unitLevelControls.js';
 import { writeStoredJson } from '../../data/storage.js';
+import { saveDefenseState } from '../../data/defenseState.js';
 
 export function openCastellanStatsModal() {
   const modalEl = document.getElementById('castellanStatsModal');
@@ -37,6 +38,8 @@ export function openCastellanStatsModal() {
 
   bindConfirmButton('confirmCastellanStats', confirmValues, modal, () => {
     saveUnitLevelControls('defense-unit-level-controls');
+    enforceDefenseWallUnitLimit();
+    saveDefenseState();
     writeStoredJson('castellanStats', castellanStats);
     loadData().then(() => {
       switchSide(currentSide);

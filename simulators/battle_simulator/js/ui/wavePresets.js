@@ -1,4 +1,4 @@
-import { totalUnits, totalTools, attackBasics, currentSide, currentWaveIndex, selectedPreset, presets, notificationTimeout } from '../data/variables.js';
+import { totalUnits, totalTools, currentSide, currentWaveIndex, selectedPreset, presets, notificationTimeout, getEffectiveWaveCount } from '../data/variables.js';
 import { switchSide, generateWaves } from '../ui/uiWaves.js';
 import { setCurrentWaveIndex, setSelectedPreset, setPresets, setNotificationTimeout } from '../data/variables.js';
 import { initPresetSwipe } from './swipe.js';
@@ -9,7 +9,7 @@ export function openWaveCopyModal() {
     const modal = new bootstrap.Modal(modalEl);
     modal.show();
 
-    document.getElementById('currentWaveText').textContent = `Wave ${currentWaveIndex} / ${attackBasics.maxWaves}`;
+    document.getElementById('currentWaveText').textContent = `Wave ${currentWaveIndex} / ${getEffectiveWaveCount()}`;
 
     const presetItems = modalEl.querySelectorAll('.preset-item');
     presetItems.forEach((item, i) => {
@@ -28,11 +28,11 @@ export function openWaveCopyModal() {
 export function changeWave(direction) {
     let newIndex = currentWaveIndex + direction;
 
-    if (newIndex > attackBasics.maxWaves) newIndex = 1;
-    if (newIndex < 1) newIndex = attackBasics.maxWaves;
+    if (newIndex > getEffectiveWaveCount()) newIndex = 1;
+    if (newIndex < 1) newIndex = getEffectiveWaveCount();
 
     setCurrentWaveIndex(newIndex);
-    document.getElementById('currentWaveText').textContent = `Wave ${newIndex} / ${attackBasics.maxWaves}`;
+    document.getElementById('currentWaveText').textContent = `Wave ${newIndex} / ${getEffectiveWaveCount()}`;
 }
 
 export function selectPreset(presetNumber) {
@@ -95,7 +95,7 @@ export function applyPreset() {
     ['front', 'left', 'right'].forEach(side => switchSide(side));
     switchSide(previousSide);
 
-    generateWaves(currentSide, attackBasics.maxWaves);
+    generateWaves(currentSide, getEffectiveWaveCount());
     displayNotification(`Applied Preset ${selectedPreset} to Wave ${currentWaveIndex}`);
 }
 
@@ -107,7 +107,7 @@ export function applyPresetToAll() {
 
     const previousSide = currentSide;
 
-    for (let i = 0; i < attackBasics.maxWaves; i++) {
+    for (let i = 0; i < getEffectiveWaveCount(); i++) {
         ['left', 'front', 'right'].forEach(side => {
             totalUnits[side][i] = JSON.parse(JSON.stringify(presets[selectedPreset].units[side]));
             totalTools[side][i] = JSON.parse(JSON.stringify(presets[selectedPreset].tools[side]));
@@ -117,7 +117,7 @@ export function applyPresetToAll() {
     ['front', 'left', 'right'].forEach(side => switchSide(side));
     switchSide(previousSide);
 
-    generateWaves(currentSide, attackBasics.maxWaves);
+    generateWaves(currentSide, getEffectiveWaveCount());
     displayNotification(`Applied Preset ${selectedPreset} to all waves`);
 }
 

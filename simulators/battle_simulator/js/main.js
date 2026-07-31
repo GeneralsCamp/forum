@@ -1,6 +1,6 @@
 import { loadData } from './data/dataLoader.js';
 import { generateWaves, switchSide, openAllWaves } from './ui/uiWaves.js';
-import { attackBasics, commanderStats, castellanStats, currentSide, attackGeneralAbilities, defenseGeneralAbilities, unitLevels } from './data/variables.js';
+import { attackBasics, commanderStats, castellanStats, currentSide, attackGeneralAbilities, defenseGeneralAbilities, unitLevels, getEffectiveWaveCount, getBaseWaveCount } from './data/variables.js';
 import { openCommanderStatsModal } from './ui/modals/commanderStatsModal.js';
 import { openBasicsModal } from './ui/modals/attackBasicsModal.js';
 import { openDefenseBasicsModal } from './ui/modals/defenseBasicsModal.js';
@@ -22,6 +22,7 @@ window.addEventListener('load', () => {
   if (savedCommanderStats) Object.assign(commanderStats, savedCommanderStats);
   if (savedCastellanStats) Object.assign(castellanStats, savedCastellanStats);
   if (savedAttackBasics) Object.assign(attackBasics, savedAttackBasics);
+  attackBasics.maxWaves = getBaseWaveCount();
   if (savedAttackGeneralAbilities) Object.assign(attackGeneralAbilities, savedAttackGeneralAbilities);
   if (savedDefenseGeneralAbilities) Object.assign(defenseGeneralAbilities, savedDefenseGeneralAbilities);
   if (savedUnitLevels) Object.assign(unitLevels, savedUnitLevels);
@@ -59,7 +60,7 @@ window.addEventListener('load', () => {
 
   loadData().then(() => {
 
-    generateWaves('front', attackBasics.maxWaves);
+    generateWaves('front', getEffectiveWaveCount());
     switchSide(currentSide);
   });
 });

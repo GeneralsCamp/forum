@@ -8,6 +8,13 @@ import { initWaveSwipe } from './swipe.js';
 import { saveAttackState } from '../data/attackState.js';
 
 export function generateWaves(side, numberOfWaves) {
+  numberOfWaves = Math.min(
+    variables.BASE_WAVE_MAX + variables.ADDITIONAL_WAVE_MAX,
+    Math.max(
+      variables.BASE_WAVE_MIN,
+      Number(numberOfWaves) || variables.getEffectiveWaveCount()
+    )
+  );
   variables.waves[side] = [];
   const waveContainer = document.getElementById('wave-container');
   waveContainer.innerHTML = '';
@@ -206,6 +213,8 @@ export function generateWaves(side, numberOfWaves) {
 }
 
 export function switchSide(side) {
+  const waveCount = variables.getEffectiveWaveCount();
+  if (variables.currentWaveIndex > waveCount) variables.setCurrentWaveIndex(waveCount);
   const buttons = document.querySelectorAll('.flanks-button');
   buttons.forEach(button => {
     button.classList.remove('active');
@@ -216,7 +225,7 @@ export function switchSide(side) {
     activeButton.classList.add('active');
   }
   variables.setCurrentSide(side);
-  generateWaves(side, variables.attackBasics.maxWaves);
+  generateWaves(side, waveCount);
 
   const openAllWavesButton = document.querySelector('.openAllWaves-button');
 
@@ -239,7 +248,7 @@ export function switchSide(side) {
 
   document.getElementById('current-flank').innerText = flankLabels[side] || '';
 
-  for (let i = 1; i <= variables.attackBasics.maxWaves; i++) {
+  for (let i = 1; i <= waveCount; i++) {
     const arrow = document.querySelector(`#heading-${side}-${i} .arrow`);
     const collapseElement = document.getElementById(`collapse-${side}-${i}`);
 
@@ -265,10 +274,11 @@ export function updateHeaderColor(wave, side, waveIndex) {
 export function openAllWaves() {
   const { attackBasics, waves, openWaves, currentSide } = variables;
   const openAllWavesButton = document.querySelector('.openAllWaves-button');
+  const waveCount = variables.getEffectiveWaveCount();
 
   let anyOpen = false;
 
-  for (let i = 1; i <= attackBasics.maxWaves; i++) {
+  for (let i = 1; i <= waveCount; i++) {
     const collapse = document.getElementById(`collapse-${currentSide}-${i}`);
     if (collapse && collapse.classList.contains('show')) anyOpen = true;
   }
@@ -280,7 +290,7 @@ export function openAllWaves() {
 
   const action = anyOpen ? 'close' : 'open';
 
-  for (let i = 1; i <= attackBasics.maxWaves; i++) {
+  for (let i = 1; i <= waveCount; i++) {
     const collapse = document.getElementById(`collapse-${currentSide}-${i}`);
     const header = document.getElementById(`heading-${currentSide}-${i}`);
     const arrow = header?.querySelector('.arrow');
