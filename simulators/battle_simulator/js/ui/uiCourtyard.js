@@ -1,7 +1,6 @@
 import * as variables from '../data/variables.js';
 import { saveAttackState } from '../data/attackState.js';
-import { createUnitIcon } from './uiUnits.js';
-import { switchSide } from './uiWaves.js';
+import { createUnitIcon, openUnitModal } from './uiUnits.js';
 
 export function createCourtyardAssaultCard() {
   if (!variables.waves['CY']) {
@@ -119,86 +118,7 @@ export function createCourtyardAssaultCard() {
 }
 
 export function openCourtyardUnitModal(slotId) {
-  const modal = new bootstrap.Modal(document.getElementById('unitModal'));
-  const slotElement = document.getElementById(slotId);
-  const wave = variables.waves['CY'][0];
-
-  if (!wave || !wave.slots) {
-    console.error('Courtyard wave or slots not found.');
-    return;
-  }
-
-  const slot = wave.slots.find(s => s.id === slotId);
-  if (!slot) {
-    console.error(`Slot not found for slotId: ${slotId}`);
-    return;
-  }
-
-  const maxUnitsInCourtyard = variables.attackBasics.maxUnitsCY;
-  const totalUnitsInCourtyard = wave.slots.reduce((acc, s) => s.id !== slotId ? acc + s.count : acc, 0);
-  let availableUnits = maxUnitsInCourtyard - totalUnitsInCourtyard;
-
-  variables.units.forEach((unit, index) => {
-    const count = slot.count > 0 && slot.type === `Unit${unit.id.replace(/\D/g, '')}` ? slot.count : 0;
-    const unitRange = document.getElementById(`unit${index + 1}`);
-    const unitValue = document.getElementById(`unit${index + 1}-value`);
-
-    if (unitRange && unitValue) {
-      unitRange.value = count;
-      unitRange.max = availableUnits;
-      unitValue.textContent = count;
-
-      unitRange.addEventListener('input', function () {
-        unitValue.textContent = this.value;
-        variables.units.forEach((otherUnit, otherIndex) => {
-          if (otherIndex !== index) {
-            const otherRange = document.getElementById(`unit${otherIndex + 1}`);
-            const otherValue = document.getElementById(`unit${otherIndex + 1}-value`);
-            if (otherRange && otherValue) {
-              otherRange.value = 0;
-              otherValue.textContent = 0;
-            }
-          }
-        });
-      });
-    }
-  });
-
-  document.getElementById('confirmUnits').onclick = function () {
-    let totalUnitsInSlot = 0;
-    let selectedUnitType = '';
-
-    variables.units.forEach((unit, index) => {
-      const unitRange = document.getElementById(`unit${index + 1}`);
-      const unitCount = parseInt(unitRange?.value || 0, 10);
-      if (unitCount > 0) {
-        totalUnitsInSlot += unitCount;
-        selectedUnitType = `Unit${unit.id.replace(/\D/g, '')}`;
-      }
-    });
-
-    if (totalUnitsInCourtyard + totalUnitsInSlot > maxUnitsInCourtyard) {
-      alert(`Cannot exceed ${maxUnitsInCourtyard} units in the Courtyard!`);
-      return;
-    }
-
-    slot.type = selectedUnitType || '';
-    slot.count = totalUnitsInSlot;
-
-    if (!variables.totalUnits['CY']) variables.totalUnits['CY'] = [];
-    variables.totalUnits['CY'][0] = wave.slots;
-
-    slotElement.innerHTML = slot.count > 0 ? createUnitIcon(slot) : '+';
-    const bonusElement = document.getElementById('courtyard-unit-bonuses');
-    if (bonusElement) bonusElement.innerHTML = summarizeCourtyardUnitBonuses();
-
-    updateCourtyardHeaderColor();
-    switchSide(variables.currentSide);
-
-    modal.hide();
-  };
-
-  modal.show();
+  openUnitModal(slotId, 'CY', 1);
 }
 
 export function summarizeCourtyardUnitBonuses() {

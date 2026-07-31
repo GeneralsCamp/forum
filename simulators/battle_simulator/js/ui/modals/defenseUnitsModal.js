@@ -1,60 +1,64 @@
-import { defense_units, defenseSlots, castellanStats, getEffectiveWallUnitLimit } from '../../data/variables.js';
+import { defense_units, defenseSlots, castellanStats } from '../../data/variables.js';
 import { imageUrl } from '../../data/imagePaths.js';
 import { calculateTroopDefenseStrength, createDefenseUnitIcon } from '../uiDefense.js';
 import { saveDefenseState } from '../../data/defenseState.js';
 
 export function initializeDefenseUnits(defense_units) {
   const unitModalBody = document.querySelector('#unitModalDefense .modal-body');
-  unitModalBody.innerHTML = '';
+  if (!unitModalBody) return;
+  unitModalBody.innerHTML = '<div id="defense-unit-editor-list" class="wave-editor-list"></div>';
+  const list = unitModalBody.querySelector('#defense-unit-editor-list');
 
   defense_units.forEach((unit, index) => {
     const effects = [];
     if (unit.meleeDefenseStrength > 0) {
-      effects.push(`<img src="../../img_base/battle_simulator/castellan-modal1.png" alt="" class="combat-icon" /><span class="me-2">+${unit.meleeDefenseStrength}</span>`);
+      effects.push(`<span class="wave-editor-effect"><img src="../../img_base/battle_simulator/castellan-modal1.png" alt="">+${unit.meleeDefenseStrength}</span>`);
     }
     if (unit.rangedDefenseStrength > 0) {
-      effects.push(`<img src="../../img_base/battle_simulator/castellan-modal2.png" alt="" class="combat-icon" /><span class="me-2">+${unit.rangedDefenseStrength}</span>`);
+      effects.push(`<span class="wave-editor-effect"><img src="../../img_base/battle_simulator/castellan-modal2.png" alt="">+${unit.rangedDefenseStrength}</span>`);
     }
 
     const levelInfo = unit.availableLevels?.length > 1 ? `(Lv.${unit.level})` : '';
 
-    const unitCard = `
-      <div class="col-12">
-        <div class="card w-100">
-          <div class="modal-card-body mt-1">
-            <h6 class="card-title text-center">${unit.name} ${levelInfo}</h6>
-            <div class="d-flex align-items-center">
-              <div class="me-2">
-                <img src="${imageUrl(unit.image)}" alt="${unit.name}" class="unit-image" />
-              </div>
-              <div class="flex-grow-1">
-                <div class="d-flex align-items-center">
-                  <input type="range" id="defense_unit${index + 1}" min="0" max="7" value="0" class="form-range me-2" />
-                  <span id="defense_unit${index + 1}-value" class="selector-value">0</span>
-                </div>
-                <div class="mt-2">${effects.join('')}</div>
-              </div>
+    list.insertAdjacentHTML('beforeend', `
+      <div class="wave-editor-row" data-defense-unit-index="${index}">
+        <div class="wave-editor-name">${unit.name} ${levelInfo}</div>
+        <img src="${imageUrl(unit.image)}" alt="${unit.name}" class="wave-editor-image">
+        <div class="wave-editor-main">
+          <div class="wave-editor-controls">
+            <button type="button" class="wave-editor-step defense-unit-minus" aria-label="Decrease">&minus;</button>
+            <div class="wave-editor-value-wrap">
+              <strong id="defense_unit${index + 1}-value" class="wave-editor-value">0 / 0</strong>
+              <input type="range" id="defense_unit${index + 1}" min="0" max="0" value="0" class="wave-editor-range">
             </div>
+            <button type="button" class="wave-editor-step defense-unit-plus" aria-label="Increase">+</button>
           </div>
+          <div class="wave-editor-effects">${effects.join('')}</div>
         </div>
       </div>
-    `;
+    `);
+  });
+}
 
-    unitModalBody.insertAdjacentHTML('beforeend', unitCard);
-
-    const unitRange = document.getElementById(`defense_unit${index + 1}`);
-    const unitValue = document.getElementById(`defense_unit${index + 1}-value`);
-    unitRange.addEventListener('input', function () {
-      unitValue.textContent = this.value;
-    });
+function renderDefenseUnitEditor(selectedIndex, selectedValue, maximum) {
+  document.querySelectorAll('#unitModalDefense [data-defense-unit-index]').forEach(row => {
+    const index = Number(row.dataset.defenseUnitIndex);
+    const value = index === selectedIndex ? selectedValue : 0;
+    const range = row.querySelector('.wave-editor-range');
+    range.max = maximum;
+    range.value = value;
+    row.querySelector('.wave-editor-value').textContent = `${value} / ${maximum}`;
+    row.querySelector('.defense-unit-minus').disabled = value <= 0;
+    row.querySelector('.defense-unit-plus').disabled = value >= maximum;
+    row.classList.toggle('selected', value > 0);
   });
 }
 
 export function openDefenseUnitsModal(side, slotNumber) {
-  const modal = new bootstrap.Modal(document.getElementById('unitModalDefense'));
+  const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('unitModalDefense'));
   const slotElement = document.getElementById(`unit-slot-${side}-${slotNumber}`);
 
-  const wallMaxUnits = getEffectiveWallUnitLimit();
+  const wallMaxUnits = castellanStats.wallUnitLimit;
   const cyMaxUnits = castellanStats.cyUnitLimit;
   const isCourtyard = side === 'cy';
 
@@ -77,34 +81,21 @@ export function openDefenseUnitsModal(side, slotNumber) {
     ? cyMaxUnits - totalUnitsInCourtyard + currentSlotUnitCount
     : wallMaxUnits - totalUnitsInDefense + currentSlotUnitCount);
 
-  defense_units.forEach((unit, index) => {
-    const count = currentSlotData.type === `DefenseUnit${unit.id.replace(/\D/g, '')}`
-      ? currentSlotData.count
-      : 0;
+  const initialSelectedIndex = defense_units.findIndex(unit =>
+    currentSlotData.type === `DefenseUnit${unit.id.replace(/\D/g, '')}`);
+  const setSelection = (index, requestedValue) => {
+    const value = Math.max(0, Math.min(availableUnits, requestedValue || 0));
+    renderDefenseUnitEditor(value > 0 ? index : -1, value, availableUnits);
+  };
 
-    const unitRange = document.getElementById(`defense_unit${index + 1}`);
-    const unitValue = document.getElementById(`defense_unit${index + 1}-value`);
-
-    if (unitRange && unitValue) {
-      unitRange.value = count;
-      unitRange.max = availableUnits;
-      unitValue.textContent = count;
-
-      unitRange.addEventListener('input', function () {
-        unitValue.textContent = this.value;
-        defense_units.forEach((otherUnit, otherIndex) => {
-          if (otherIndex !== index) {
-            const otherRange = document.getElementById(`defense_unit${otherIndex + 1}`);
-            const otherValue = document.getElementById(`defense_unit${otherIndex + 1}-value`);
-            if (otherRange && otherValue) {
-              otherRange.value = 0;
-              otherValue.textContent = 0;
-            }
-          }
-        });
-      });
-    }
+  document.querySelectorAll('#unitModalDefense [data-defense-unit-index]').forEach(row => {
+    const index = Number(row.dataset.defenseUnitIndex);
+    const range = row.querySelector('.wave-editor-range');
+    range.oninput = () => setSelection(index, Number(range.value));
+    row.querySelector('.defense-unit-minus').onclick = () => setSelection(index, Number(range.value) - 1);
+    row.querySelector('.defense-unit-plus').onclick = () => setSelection(index, Number(range.value) + 1);
   });
+  renderDefenseUnitEditor(initialSelectedIndex, currentSlotUnitCount, availableUnits);
 
   document.getElementById('confirmDefenseUnits').onclick = function () {
     let totalUnitsInSlot = 0;

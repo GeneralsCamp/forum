@@ -3,81 +3,134 @@ import { saveAttackState } from '../data/attackState.js';
 import { imageUrl } from '../data/imagePaths.js';
 import { switchSide } from './uiWaves.js';
 
-export function openSupportToolModal(slotId) {
-  const modal = new bootstrap.Modal(document.getElementById('supportToolModal'));
-  const slotElement = document.getElementById(slotId);
-  const supportWave = variables.waves['Support'][0];
-  const slot = supportWave.tools.find(s => s.id === slotId);
+let supportToolEditorState = null;
 
-  const maxSupportTools = 3;
-  const totalSupportToolsInWave = supportWave.tools.reduce((acc, s) => s.id !== slotId ? acc + s.count : acc, 0);
-  let availableTools = maxSupportTools - totalSupportToolsInWave;
+function supportToolType(tool) {
+  return `Tool${tool.id.replace(/\D/g, '')}`;
+}
 
-  const usedToolTypes = supportWave.tools
-    .filter(s => s.id !== slotId)
-    .map(tool => tool.type)
-    .filter(type => type !== '');
+function supportToolEffects(tool) {
+  const effects = [];
+  if (tool.effect1Type && tool.effect1Value !== 0) {
+    effects.push([imageUrl(tool.effectImage1), tool.effect1Value]);
+  }
+  if (tool.effect2Type && tool.effect2Value !== 0) {
+    effects.push([imageUrl(tool.effectImage2), `${tool.effect2Value > 0 ? '+' : ''}${tool.effect2Value}%`]);
+  }
+  if (tool.toolLimit > 0) {
+    effects.push(['../../img_base/battle_simulator/unitLimit-icon.png', tool.toolLimit]);
+  }
+  return effects.map(([icon, value]) => `
+    <span class="wave-editor-effect"><img src="${icon}" alt="">${value}</span>
+  `).join('');
+}
 
-  variables.supportTools.forEach((tool, index) => {
-    const count = slot.count > 0 && slot.type === `Tool${tool.id.replace(/\D/g, '')}` ? slot.count : 0;
+function maximumForSupportTool(toolIndex) {
+  const state = supportToolEditorState;
+  const tool = variables.supportTools[toolIndex];
+  const type = supportToolType(tool);
+  const otherSlots = state.slots.filter((slot, index) => index !== state.activeSlot);
+  const otherCount = otherSlots.reduce((sum, slot) => sum + (slot.count || 0), 0);
+  let maximum = Math.max(0, state.max - otherCount);
 
-    const toolRange = document.getElementById(`supportTool${index + 1}`);
-    const toolValue = document.getElementById(`supportTool${index + 1}-value`);
+  if (tool.toolLimit > 0) {
+    const sameToolElsewhere = otherSlots.reduce((sum, slot) =>
+      slot.type === type ? sum + (slot.count || 0) : sum, 0);
+    maximum = Math.min(maximum, Math.max(0, tool.toolLimit - sameToolElsewhere));
+  }
 
-    if (toolRange && toolValue) {
-      toolRange.value = count;
-      const toolLimit = tool.toolLimit > 0 ? tool.toolLimit : availableTools;
-      toolRange.max = Math.min(toolLimit, availableTools);
-      toolRange.disabled = usedToolTypes.includes(`Tool${tool.id.replace(/\D/g, '')}`) && slot.type !== `Tool${tool.id.replace(/\D/g, '')}`;
-      toolValue.textContent = count;
+  return maximum;
+}
 
-      toolRange.addEventListener('input', function () {
-        toolValue.textContent = this.value;
-        variables.supportTools.forEach((otherTool, otherIndex) => {
-          if (otherIndex !== index) {
-            const otherRange = document.getElementById(`supportTool${otherIndex + 1}`);
-            const otherValue = document.getElementById(`supportTool${otherIndex + 1}-value`);
-            if (otherRange && otherValue) {
-              otherRange.value = 0;
-              otherValue.textContent = 0;
-            }
-          }
-        });
-      });
-    }
+function setSupportToolEditorValue(toolIndex, requestedValue) {
+  const state = supportToolEditorState;
+  if (!state) return;
+  const value = Math.max(0, Math.min(maximumForSupportTool(toolIndex), requestedValue || 0));
+  const slot = state.slots[state.activeSlot];
+  slot.type = value > 0 ? supportToolType(variables.supportTools[toolIndex]) : '';
+  slot.count = value;
+  renderSupportToolEditor();
+}
+
+function scrollToSelectedSupportTool() {
+  const selectedRow = document.querySelector('#support-tool-editor-list .wave-editor-row.selected');
+  if (selectedRow) selectedRow.scrollIntoView({ block: 'center', behavior: 'auto' });
+}
+
+function scrollToSupportToolOnModalDisplay(modalElement) {
+  if (supportToolEditorState.slots[supportToolEditorState.activeSlot].count <= 0) return;
+  const observer = new MutationObserver(() => {
+    if (modalElement.style.display !== 'block') return;
+    observer.disconnect();
+    scrollToSelectedSupportTool();
+  });
+  observer.observe(modalElement, { attributes: true, attributeFilter: ['style'] });
+}
+
+function renderSupportToolEditor() {
+  const state = supportToolEditorState;
+  if (!state) return;
+  const total = state.slots.reduce((sum, slot) => sum + (slot.count || 0), 0);
+  document.getElementById('support-tool-editor-total-label').textContent = `${total} / ${state.max}`;
+
+  const slotsElement = document.getElementById('support-tool-editor-slots');
+  slotsElement.innerHTML = state.slots.map((slot, index) => {
+    const image = slot.type ? imageUrl(variables.supportToolImages?.[slot.type]) : '';
+    return `<button type="button" class="wave-editor-slot ${index === state.activeSlot ? 'active' : ''}" data-slot-index="${index}">
+      ${image ? `<img src="${image}" alt=""><span>${slot.count || 0}</span>` : '<b>+</b>'}
+    </button>`;
+  }).join('');
+  slotsElement.querySelectorAll('[data-slot-index]').forEach(button => {
+    button.onclick = () => {
+      state.activeSlot = Number(button.dataset.slotIndex);
+      renderSupportToolEditor();
+      if (state.slots[state.activeSlot].count > 0) scrollToSelectedSupportTool();
+    };
   });
 
+  const active = state.slots[state.activeSlot];
+  document.querySelectorAll('#support-tool-editor-list [data-support-tool-index]').forEach(row => {
+    const index = Number(row.dataset.supportToolIndex);
+    const type = supportToolType(variables.supportTools[index]);
+    const selected = active.type === type;
+    const value = selected ? active.count || 0 : 0;
+    const maximum = maximumForSupportTool(index);
+    const range = row.querySelector('.wave-editor-range');
+    range.max = maximum;
+    range.value = Math.min(value, maximum);
+    range.disabled = maximum === 0 && !selected;
+    row.querySelector('.wave-editor-value').textContent = `${value} / ${maximum}`;
+    row.querySelector('.support-tool-minus').disabled = value <= 0;
+    row.querySelector('.support-tool-plus').disabled = value >= maximum;
+    row.classList.toggle('selected', selected);
+    row.classList.toggle('unavailable', maximum === 0 && !selected);
+  });
+}
+
+export function openSupportToolModal(slotId) {
+  const modalEl = document.getElementById('supportToolModal');
+  if (!modalEl) return;
+  const modal = new bootstrap.Modal(modalEl);
+  const supportWave = variables.waves['Support'][0];
+  if (!supportWave?.tools) return;
+  const activeSlot = supportWave.tools.findIndex(slot => slot.id === slotId);
+  if (activeSlot < 0) return;
+
+  supportToolEditorState = {
+    wave: supportWave,
+    activeSlot,
+    max: 3,
+    slots: supportWave.tools.map(slot => ({ ...slot }))
+  };
+  renderSupportToolEditor();
+  scrollToSupportToolOnModalDisplay(modalEl);
+
   document.getElementById('confirmSupportTools').onclick = function () {
-    let totalToolsInSlot = 0;
-    let selectedToolType = '';
-
-    variables.supportTools.forEach((tool, index) => {
-      const toolRange = document.getElementById(`supportTool${index + 1}`);
-      const toolCount = parseInt(toolRange?.value || 0, 10);
-      if (toolCount > 0) {
-        totalToolsInSlot += toolCount;
-        selectedToolType = `Tool${tool.id.replace(/\D/g, '')}`;
-      }
-    });
-
-    if (totalSupportToolsInWave + totalToolsInSlot > maxSupportTools) {
-      alert(`Cannot exceed ${maxSupportTools} tools in the support wave!`);
-      return;
-    }
-
-    if (slot) {
-      slot.type = selectedToolType || '';
-      slot.count = totalToolsInSlot;
-      slotElement.innerHTML = slot.count > 0 ? createSupportToolIcon(slot) : '+';
-
-      const bonusElement = document.getElementById('support-tool-bonuses');
-      if (bonusElement) bonusElement.innerHTML = summarizeSupportToolBonuses(supportWave.tools);
-
-      if (!variables.totalTools['Support']) variables.totalTools['Support'] = [];
-      variables.totalTools['Support'][0] = supportWave.tools;
-
-      switchSide(variables.currentSide);
-    }
+    supportWave.tools.splice(0, supportWave.tools.length,
+      ...supportToolEditorState.slots.map(slot => ({ ...slot })));
+    if (!variables.totalTools.Support) variables.totalTools.Support = [];
+    variables.totalTools.Support[0] = supportWave.tools;
+    switchSide(variables.currentSide);
 
     modal.hide();
   };
@@ -87,58 +140,51 @@ export function openSupportToolModal(slotId) {
 
 export function initializeSupportTools(supportTools = variables.supportTools) {
   const supportToolModalBody = document.querySelector('#supportToolModal .modal-body');
-  supportToolModalBody.innerHTML = '';
+  if (!supportToolModalBody) return;
+  supportToolModalBody.innerHTML = `
+    <div class="wave-editor-sticky">
+      <div class="wave-editor-limit">
+        <span id="support-tool-editor-total-label">0 / 3</span>
+      </div>
+      <div id="support-tool-editor-slots" class="wave-editor-slots"></div>
+    </div>
+    <div id="support-tool-editor-list" class="wave-editor-list"></div>
+  `;
+
+  const list = supportToolModalBody.querySelector('#support-tool-editor-list');
 
   supportTools.forEach((tool, index) => {
-    const effects = [];
-
-    if (tool.travelSpeed > 0) {
-      effects.push(`
-        <img src="../../img_base/battle_simulator/travelSpeed-icon.png" alt="" class="combat-icon" />
-        <span class="me-2">+${tool.travelSpeed}</span>
-      `);
-    }
-    if (tool.effect1Type && tool.effect1Value !== 0) {
-      effects.push(`
-        <img src="${imageUrl(tool.effectImage1)}" alt="${tool.effect1Type}" class="combat-icon" />
-        <span class="me-2">${tool.effect1Value}</span>
-      `);
-    }
-    if (tool.effect2Type && tool.effect2Value !== 0) {
-      effects.push(`
-        <img src="${imageUrl(tool.effectImage2)}" alt="${tool.effect2Type}" class="combat-icon" />
-        <span class="me-2">+${tool.effect2Value}%</span>
-      `);
-    }
-
-    const supportToolCard = `
-      <div class="col-12">
-        <div class="card w-100">
-          <div class="modal-card-body mt-1">
-            <h6 class="card-title text-center">${tool.name}</h6>
-            <div class="d-flex align-items-center">
-              <div class="me-2">
-                <img src="${imageUrl(tool.image)}" alt="${tool.name}" class="tool-image" />
-              </div>
-              <div class="flex-grow-1">
-                <div class="d-flex align-items-center">
-                  <input type="range" id="supportTool${index + 1}" min="0" max="${tool.toolLimit}" value="0" class="form-range me-2" />
-                  <span id="supportTool${index + 1}-value" class="selector-value">0</span>
-                </div>
-                <div class="mt-2">${effects.join('')}</div>
-              </div>
+    list.insertAdjacentHTML('beforeend', `
+      <div class="wave-editor-row" data-support-tool-index="${index}">
+        <div class="wave-editor-name">${tool.name}</div>
+        <img src="${imageUrl(tool.image)}" alt="${tool.name}" class="wave-editor-image">
+        <div class="wave-editor-main">
+          <div class="wave-editor-controls">
+            <button type="button" class="wave-editor-step support-tool-minus" aria-label="Decrease">&minus;</button>
+            <div class="wave-editor-value-wrap">
+              <strong class="wave-editor-value">0 / 0</strong>
+              <input type="range" class="wave-editor-range" min="0" max="0" value="0">
             </div>
+            <button type="button" class="wave-editor-step support-tool-plus" aria-label="Increase">+</button>
           </div>
+          <div class="wave-editor-effects">${supportToolEffects(tool)}</div>
         </div>
       </div>
-    `;
+    `);
+  });
 
-    supportToolModalBody.insertAdjacentHTML('beforeend', supportToolCard);
-
-    const toolRange = document.getElementById(`supportTool${index + 1}`);
-    toolRange.addEventListener('input', function () {
-      document.getElementById(`supportTool${index + 1}-value`).textContent = this.value;
-    });
+  list.addEventListener('click', event => {
+    const row = event.target.closest('[data-support-tool-index]');
+    if (!row || !supportToolEditorState) return;
+    const index = Number(row.dataset.supportToolIndex);
+    const current = Number(row.querySelector('.wave-editor-range').value) || 0;
+    if (event.target.closest('.support-tool-minus')) setSupportToolEditorValue(index, current - 1);
+    if (event.target.closest('.support-tool-plus')) setSupportToolEditorValue(index, current + 1);
+  });
+  list.addEventListener('input', event => {
+    if (!event.target.matches('.wave-editor-range')) return;
+    const row = event.target.closest('[data-support-tool-index]');
+    setSupportToolEditorValue(Number(row.dataset.supportToolIndex), Number(event.target.value));
   });
 }
 

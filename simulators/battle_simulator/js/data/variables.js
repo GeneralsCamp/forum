@@ -122,46 +122,6 @@ export function getEffectiveWaveCount() {
   return getBaseWaveCount() + getAdditionalWaveCount();
 }
 
-export function getEffectiveWallUnitLimit() {
-  const baseLimit = Math.max(0, Number(castellanStats.wallUnitLimit) || 0);
-  const bonusPercent = Number(getDefenseCourtyardEffectTotals().WallLimit) || 0;
-  return Math.floor(baseLimit * (1 + bonusPercent / 100));
-}
-
-export function enforceDefenseWallUnitLimit() {
-  const entries = [];
-  ['left', 'front', 'right'].forEach(side => {
-    (defenseSlots[side]?.units || []).forEach(slot => {
-      if (slot && slot.count > 0) entries.push(slot);
-    });
-  });
-
-  const total = entries.reduce((sum, slot) => sum + slot.count, 0);
-  const limit = getEffectiveWallUnitLimit();
-  if (total <= limit) return 0;
-
-  const scaled = entries.map((slot, index) => {
-    const exact = slot.count * limit / total;
-    return { slot, index, count: Math.floor(exact), remainder: exact - Math.floor(exact) };
-  });
-  let remaining = limit - scaled.reduce((sum, item) => sum + item.count, 0);
-
-  [...scaled]
-    .sort((a, b) => b.remainder - a.remainder || a.index - b.index)
-    .forEach(item => {
-      if (remaining <= 0) return;
-      item.count += 1;
-      remaining -= 1;
-    });
-
-  scaled.forEach(({ slot, count }) => {
-    slot.count = count;
-    if (count === 0) slot.type = '';
-  });
-
-  return total - limit;
-}
-
 export const defenseSides = {
   front: { name: "Front", tools: { wall: 4, gate: 2, moat: 1 } },
   left: { name: "Left flank", tools: { wall: 5, moat: 1 } },

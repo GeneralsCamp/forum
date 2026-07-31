@@ -25,7 +25,6 @@ const EFFECT_TYPES = {
   29: "additionalWave",
   48: "combatStrength",
   504: "yardStrength",
-  618: "wallLimit",
   619: "combatStrength",
   620: "courtyard",
   621: "killMeleeTroopsYard",
@@ -214,7 +213,6 @@ function effectIcon(type, defense = false) {
     combatStrength: defense ? "combatStrengthDefense-icon.png" : "combatStrength-icon.png",
     yardStrength: "cy-icon.png",
     courtyard: "attack-modal4.png",
-    wallLimit: "castellan-modal3.png",
     killMeleeTroopsYard: defense
       ? "killMeleeTroopsYardDefense-icon.png"
       : "killMeleeTroopsYard-icon.png",
@@ -423,7 +421,6 @@ export async function loadData() {
     initializeSupportTools();
     loadPresets();
     loadDefenseState();
-    variables.enforceDefenseWallUnitLimit();
     loadAttackState();
   } catch (error) {
     console.error("Error loading in-game battle simulator data:", error);

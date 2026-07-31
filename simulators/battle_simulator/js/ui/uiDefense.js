@@ -64,6 +64,7 @@ export function generateUnitSlots(side) {
 
 export function generateToolSlots(side, tools) {
   const container = document.getElementById('toolsSlots');
+  container.classList.toggle('cy-defense-tool-slots', side === 'cy');
   container.innerHTML = '';
 
   for (let i = 0; i < tools.wall; i++) {
@@ -259,39 +260,39 @@ export function displayDefenseBonuses(side) {
     });
   }
 
-  let bonusesDisplay = '<div class="d-flex justify-content-around align-items-center">';
+  let bonusesDisplay = '<div class="defense-effect-row">';
   const currentBonuses = [];
 
   if (side === 'cy') {
     currentBonuses.push(
-      `<div class="d-flex align-items-center">
+      `<div class="defense-effect-cell">
         <img src="../../img_base/battle_simulator/castellan-modal1.png" alt="Melee Defense" class="combat-icon" />
         <span class="">${bonuses.melee}%</span>
       </div>`,
-      `<div class="d-flex align-items-center">
+      `<div class="defense-effect-cell">
         <img src="../../img_base/battle_simulator/castellan-modal2.png" alt="Ranged Defense" class="combat-icon" />
         <span class="">${bonuses.ranged}%</span>
       </div>`,
-      `<div class="d-flex align-items-center">
+      `<div class="defense-effect-cell">
         <img src="../../img_base/battle_simulator/cy-icon.png" alt="Courtyard Strength" class="combat-icon" />
         <span class="">${bonuses.courtyard}%</span>
       </div>`
     );
   } else {
     currentBonuses.push(
-      `<div class="d-flex align-items-center">
+      `<div class="defense-effect-cell">
         <img src="../../img_base/battle_simulator/castellan-modal1.png" alt="Melee Defense" class="combat-icon" />
         <span class="">${bonuses.melee}%</span>
       </div>`,
-      `<div class="d-flex align-items-center">
+      `<div class="defense-effect-cell">
         <img src="../../img_base/battle_simulator/castellan-modal2.png" alt="Ranged Defense" class="combat-icon" />
         <span class="">${bonuses.ranged}%</span>
       </div>`,
-      `<div class="d-flex align-items-center">
+      `<div class="defense-effect-cell">
         <img src="../../img_base/battle_simulator/wall-icon.png" alt="Wall Defense" class="combat-icon" />
         <span class="">${bonuses.wall}%</span>
       </div>`,
-      `<div class="d-flex align-items-center">
+      `<div class="defense-effect-cell">
         <img src="../../img_base/battle_simulator/moat-icon.png" alt="Moat Defense" class="combat-icon" />
         <span class="">${bonuses.moat}%</span>
       </div>`
@@ -299,7 +300,7 @@ export function displayDefenseBonuses(side) {
 
     if (side === 'front') {
       currentBonuses.push(
-        `<div class="d-flex align-items-center">
+        `<div class="defense-effect-cell">
           <img src="../../img_base/battle_simulator/gate-icon.png" alt="Gate Defense" class="combat-icon" />
           <span class="">${bonuses.gate}%</span>
         </div>`
@@ -385,12 +386,12 @@ export function calculateTroopDefenseStrength(side) {
   const formatter = new Intl.NumberFormat('en-US');
 
   const defenseStrengthDisplay = `
-    <div class="d-flex justify-content-around align-items-center">
-      <div class="d-flex align-items-center">
+    <div class="defense-effect-row">
+      <div class="defense-effect-cell">
         <img src="../../img_base/battle_simulator/castellan-modal1.png" alt="Melee Defense" class="combat-icon" />
         <span class="me-1">+${formatter.format(totalMeleeDefense)}</span>
       </div>
-      <div class="d-flex align-items-center">
+      <div class="defense-effect-cell">
         <img src="../../img_base/battle_simulator/castellan-modal2.png" alt="Ranged Defense" class="combat-icon" />
         <span class="me-1">+${formatter.format(totalRangedDefense)}</span>
       </div>

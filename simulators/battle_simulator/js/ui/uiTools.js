@@ -2,75 +2,168 @@ import * as variables from '../data/variables.js';
 import { imageUrl } from '../data/imagePaths.js';
 import { generateWaves } from './uiWaves.js';
 
+let toolEditorState = null;
+
+function toolType(tool) {
+  return `Tool${tool.id.replace(/\D/g, '')}`;
+}
+
+function toolEffects(tool) {
+  const effects = [];
+  if (tool.effect1Type && tool.effect1Value !== 0) {
+    effects.push([imageUrl(tool.effectImage1), `${tool.effect1Value}%`]);
+  }
+  if (tool.effect2Type && tool.effect2Value !== 0) {
+    effects.push([imageUrl(tool.effectImage2), `${tool.effect2Value > 0 ? '+' : ''}${tool.effect2Value}%`]);
+  }
+  if (tool.toolLimit > 0) {
+    effects.push(['../../img_base/battle_simulator/unitLimit-icon.png', tool.toolLimit]);
+  }
+  return effects.map(([icon, value]) => `
+    <span class="wave-editor-effect"><img src="${icon}" alt="">${value}</span>
+  `).join('');
+}
+
 export function initializeTools(tools = variables.tools) {
   const toolModalBody = document.querySelector('#toolModal .modal-body');
   if (!toolModalBody) return;
 
-  toolModalBody.innerHTML = '';
+  toolModalBody.innerHTML = `
+    <div class="wave-editor-sticky">
+      <div class="wave-editor-limit">
+        <span id="tool-editor-total-label">0 / 0</span>
+      </div>
+      <div id="tool-editor-slots" class="wave-editor-slots"></div>
+    </div>
+    <div id="tool-editor-list" class="wave-editor-list"></div>
+  `;
+
+  const list = toolModalBody.querySelector('#tool-editor-list');
 
   tools.forEach((tool, index) => {
-    const effects = [];
-
-    if (tool.travelSpeed > 0) {
-      effects.push(`
-        <img src="../../img_base/battle_simulator/travelSpeed-icon.png" alt="" class="combat-icon" />
-        <span class="me-2">+${tool.travelSpeed}</span>
-      `);
-    }
-
-    if (tool.effect1Type && tool.effect1Value !== 0) {
-      effects.push(`
-        <img src="${imageUrl(tool.effectImage1)}" alt="${tool.effect1Type}" class="combat-icon" />
-        <span class="me-2">${tool.effect1Value}%</span>
-      `);
-    }
-
-    if (tool.effect2Type && tool.effect2Value !== 0) {
-      effects.push(`
-        <img src="${imageUrl(tool.effectImage2)}" alt="${tool.effect2Type}" class="combat-icon" />
-        <span class="me-2">+${tool.effect2Value}%</span>
-      `);
-    }
-
-    if (tool.toolLimit && tool.toolLimit !== 0) {
-      effects.push(`
-        <img src="../../img_base/battle_simulator/unitLimit-icon.png" alt="tool-limit" class="combat-icon" />
-        <span class="me-2">${tool.toolLimit}</span>
-      `);
-    }
-
-    const toolCard = `
-      <div class="col-12">
-        <div class="card w-100">
-          <div class="modal-card-body mt-1">
-            <h6 class="card-title text-center">${tool.name}</h6>
-            <div class="d-flex align-items-center">
-              <div class="me-2">
-                <img src="${imageUrl(tool.image)}" alt="${tool.name}" class="tool-image" />
-              </div>
-              <div class="flex-grow-1">
-                <div class="d-flex align-items-center">
-                  <input type="range" id="tool${index + 1}" min="0" max="5" value="0" class="form-range me-2" />
-                  <span id="tool${index + 1}-value" class="selector-value">0</span>
-                </div>
-                <div class="mt-2">
-                  ${effects.join('')}
-                </div>
-              </div>
+    list.insertAdjacentHTML('beforeend', `
+      <div class="wave-editor-row" data-tool-index="${index}">
+        <div class="wave-editor-name">${tool.name}</div>
+        <img src="${imageUrl(tool.image)}" alt="${tool.name}" class="wave-editor-image">
+        <div class="wave-editor-main">
+          <div class="wave-editor-controls">
+            <button type="button" class="wave-editor-step tool-minus" aria-label="Decrease">&minus;</button>
+            <div class="wave-editor-value-wrap">
+              <strong class="wave-editor-value">0</strong>
+              <input type="range" class="wave-editor-range" min="0" max="0" value="0">
             </div>
+            <button type="button" class="wave-editor-step tool-plus" aria-label="Increase">+</button>
           </div>
+          <div class="wave-editor-effects">${toolEffects(tool)}</div>
         </div>
       </div>
-    `;
+    `);
+  });
 
-    toolModalBody.insertAdjacentHTML('beforeend', toolCard);
+  list.addEventListener('click', event => {
+    const row = event.target.closest('[data-tool-index]');
+    if (!row || !toolEditorState) return;
+    const index = Number(row.dataset.toolIndex);
+    const current = Number(row.querySelector('.wave-editor-range').value) || 0;
+    if (event.target.closest('.tool-minus')) setToolEditorValue(index, current - 1);
+    if (event.target.closest('.tool-plus')) setToolEditorValue(index, current + 1);
+  });
+  list.addEventListener('input', event => {
+    if (!event.target.matches('.wave-editor-range')) return;
+    const row = event.target.closest('[data-tool-index]');
+    setToolEditorValue(Number(row.dataset.toolIndex), Number(event.target.value));
+  });
+}
 
-    const toolRange = document.getElementById(`tool${index + 1}`);
-    if (toolRange) {
-      toolRange.addEventListener('input', function () {
-        document.getElementById(`tool${index + 1}-value`).textContent = this.value;
+function maximumForTool(toolIndex) {
+  const state = toolEditorState;
+  const tool = variables.tools[toolIndex];
+  const type = toolType(tool);
+  const otherSlots = state.slots.filter((slot, index) => index !== state.activeSlot);
+
+  const otherCount = otherSlots.reduce((sum, slot) => sum + (slot.count || 0), 0);
+  let maximum = Math.max(0, state.max - otherCount);
+
+  if (tool.toolLimit > 0) {
+    let usedOutsideActive = 0;
+    ['front', 'left', 'right'].forEach(side => {
+      const slots = side === state.side
+        ? state.slots
+        : variables.totalTools?.[side]?.[state.waveIndex - 1] || [];
+      slots.forEach((slot, index) => {
+        if (side === state.side && index === state.activeSlot) return;
+        if (slot.type === type) usedOutsideActive += slot.count || 0;
       });
-    }
+    });
+    maximum = Math.min(maximum, Math.max(0, tool.toolLimit - usedOutsideActive));
+  }
+
+  return maximum;
+}
+
+function setToolEditorValue(toolIndex, requestedValue) {
+  const state = toolEditorState;
+  if (!state) return;
+  const value = Math.max(0, Math.min(maximumForTool(toolIndex), requestedValue || 0));
+  const slot = state.slots[state.activeSlot];
+  slot.type = value > 0 ? toolType(variables.tools[toolIndex]) : '';
+  slot.count = value;
+  renderToolEditor();
+}
+
+function scrollToSelectedTool() {
+  const selectedRow = document.querySelector('#tool-editor-list .wave-editor-row.selected');
+  if (selectedRow) selectedRow.scrollIntoView({ block: 'center', behavior: 'auto' });
+}
+
+function scrollToToolOnModalDisplay(modalElement) {
+  if (toolEditorState.slots[toolEditorState.activeSlot].count <= 0) return;
+  const observer = new MutationObserver(() => {
+    if (modalElement.style.display !== 'block') return;
+    observer.disconnect();
+    scrollToSelectedTool();
+  });
+  observer.observe(modalElement, { attributes: true, attributeFilter: ['style'] });
+}
+
+function renderToolEditor() {
+  const state = toolEditorState;
+  if (!state) return;
+  const total = state.slots.reduce((sum, slot) => sum + (slot.count || 0), 0);
+  const totalLabel = document.getElementById('tool-editor-total-label');
+  totalLabel.textContent = `${total} / ${state.max}`;
+
+  const slotsElement = document.getElementById('tool-editor-slots');
+  slotsElement.innerHTML = state.slots.map((slot, index) => {
+    const image = slot.type ? imageUrl(variables.toolImages?.[slot.type]) : '';
+    return `<button type="button" class="wave-editor-slot ${index === state.activeSlot ? 'active' : ''}" data-slot-index="${index}">
+      ${image ? `<img src="${image}" alt=""><span>${slot.count || 0}</span>` : '<b>+</b>'}
+    </button>`;
+  }).join('');
+  slotsElement.querySelectorAll('[data-slot-index]').forEach(button => {
+    button.onclick = () => {
+      state.activeSlot = Number(button.dataset.slotIndex);
+      renderToolEditor();
+      if (state.slots[state.activeSlot].count > 0) scrollToSelectedTool();
+    };
+  });
+
+  const active = state.slots[state.activeSlot];
+  document.querySelectorAll('#tool-editor-list [data-tool-index]').forEach(row => {
+    const index = Number(row.dataset.toolIndex);
+    const type = toolType(variables.tools[index]);
+    const selected = active.type === type;
+    const value = selected ? active.count || 0 : 0;
+    const maximum = maximumForTool(index);
+    const range = row.querySelector('.wave-editor-range');
+    range.max = maximum;
+    range.value = Math.min(value, maximum);
+    range.disabled = maximum === 0 && !selected;
+    row.querySelector('.wave-editor-value').textContent = `${value} / ${maximum}`;
+    row.querySelector('.tool-minus').disabled = value <= 0;
+    row.querySelector('.tool-plus').disabled = value >= maximum;
+    row.classList.toggle('selected', selected);
+    row.classList.toggle('unavailable', maximum === 0 && !selected);
   });
 }
 
@@ -99,7 +192,6 @@ export function openToolModal(slotId, side, waveIndex) {
   if (!modalEl) return;
   const modal = new bootstrap.Modal(modalEl);
 
-  const slotElement = document.getElementById(slotId);
   const waves = variables.waves || {};
   const wave = waves[side] ? waves[side][waveIndex - 1] : null;
 
@@ -108,95 +200,30 @@ export function openToolModal(slotId, side, waveIndex) {
     return;
   }
 
-  const slot = wave.tools.find(s => s.id === slotId);
-  if (!slot) {
+  const activeSlot = wave.tools.findIndex(s => s.id === slotId);
+  if (activeSlot < 0) {
     console.error(`Slot not found for slotId: ${slotId}`);
     return;
   }
 
-  const attackBasics = variables.attackBasics || { maxTools: { front: 0, left: 0, right: 0 } };
-  const maxToolsInWave = attackBasics.maxTools[side];
-  const totalToolsInWave = wave.tools.reduce((acc, s) => s.id !== slotId ? acc + (s.count || 0) : acc, 0);
-  let availableTools = maxToolsInWave - totalToolsInWave;
-  if (availableTools < 0) availableTools = 0;
-
-  const usedToolTypes = wave.tools
-    .filter(s => s.id !== slotId && s.type)
-    .map(s => s.type);
-
-  (variables.tools || []).forEach((tool, index) => {
-    const count = (slot.count > 0 && slot.type === `Tool${tool.id.replace(/\D/g, '')}`) ? slot.count : 0;
-
-    const toolRange = document.getElementById(`tool${index + 1}`);
-    const toolValue = document.getElementById(`tool${index + 1}-value`);
-    if (!toolRange || !toolValue) return;
-
-    let maxAllowed = availableTools;
-    if (tool.toolLimit && tool.toolLimit > 0) {
-      let totalUsedThisWave = 0;
-      ['front', 'left', 'right'].forEach(s => {
-        if (variables.totalTools[s] && variables.totalTools[s][waveIndex - 1]) {
-          const existing = variables.totalTools[s][waveIndex - 1].find(t => t.type === `Tool${tool.id.replace(/\D/g, '')}`);
-          totalUsedThisWave += existing ? existing.count : 0;
-        }
-      });
-      totalUsedThisWave -= count;
-      maxAllowed = Math.min(tool.toolLimit - totalUsedThisWave, availableTools);
-      if (maxAllowed < 0) maxAllowed = 0;
-    }
-
-    toolRange.value = count;
-    toolRange.max = maxAllowed;
-    toolRange.disabled = usedToolTypes.includes(`Tool${tool.id.replace(/\D/g, '')}`) && slot.type !== `Tool${tool.id.replace(/\D/g, '')}`;
-    toolValue.textContent = count;
-
-    toolRange.addEventListener('input', function () {
-      toolValue.textContent = this.value;
-      (variables.tools || []).forEach((otherTool, otherIndex) => {
-        if (otherIndex !== index) {
-          const otherRange = document.getElementById(`tool${otherIndex + 1}`);
-          const otherValue = document.getElementById(`tool${otherIndex + 1}-value`);
-          if (otherRange && otherValue) {
-            otherRange.value = 0;
-            otherValue.textContent = 0;
-          }
-        }
-      });
-    });
-  });
+  const maxTools = variables.attackBasics?.maxTools?.[side] || 0;
+  toolEditorState = {
+    side,
+    waveIndex,
+    wave,
+    activeSlot,
+    max: maxTools,
+    slots: wave.tools.map(slot => ({ ...slot }))
+  };
+  renderToolEditor();
+  scrollToToolOnModalDisplay(modalEl);
 
   const confirmBtn = document.getElementById('confirmTools');
   if (confirmBtn) {
     confirmBtn.onclick = function () {
-      let totalToolsInSlot = 0;
-      let selectedToolType = '';
-
-      (variables.tools || []).forEach((tool, index) => {
-        const toolRange = document.getElementById(`tool${index + 1}`);
-        const toolCount = parseInt(toolRange ? toolRange.value : 0, 10) || 0;
-        if (toolCount > 0) {
-          totalToolsInSlot += toolCount;
-          selectedToolType = `Tool${tool.id.replace(/\D/g, '')}`;
-        }
-      });
-
-      if (totalToolsInWave + totalToolsInSlot > maxToolsInWave) {
-        alert(`Cannot exceed ${maxToolsInWave} tools in this wave!`);
-        return;
-      }
-
-      slot.type = selectedToolType || '';
-      slot.count = totalToolsInSlot;
-
-      if (!variables.totalTools) variables.totalTools = {};
+      wave.tools.splice(0, wave.tools.length, ...toolEditorState.slots.map(slot => ({ ...slot })));
       if (!variables.totalTools[side]) variables.totalTools[side] = [];
       variables.totalTools[side][waveIndex - 1] = wave.tools;
-
-      slotElement.innerHTML = slot.count > 0 ? createToolIcon(slot) : '+';
-
-      const toolBonuses = summarizeToolBonuses(wave.tools);
-      const bonusElement = document.getElementById(`tool-bonuses-${side}-${waveIndex}`);
-      if (bonusElement) bonusElement.innerHTML = toolBonuses;
 
       generateWaves(side, variables.getEffectiveWaveCount());
       modal.hide();

@@ -25,24 +25,18 @@ export const modalsData = [
     `,
     footer: `
 <div class="row presets-footer">
-    <div class="col-6">
-        <button class="btn btn-apply" id="applyPresetBtn">
-            <img src="../../img_base/battle_simulator/icon_applyOne.webp" alt="Apply" class="icon" />
-        </button>
-        <p>Apply preset to wave</p>
-    </div>
-    <div class="col-6">
-        <button class="btn btn-apply-all" id="applyPresetAllBtn">
-            <img src="../../img_base/battle_simulator/icon_applyAll.webp" alt="Apply to All" class="icon" />
-        </button>
-        <p>Apply preset to all waves</p>
-    </div>
-    <div class="col-6">
-        <button class="btn btn-save" id="savePresetBtn">
-            <img src="../../img_base/battle_simulator/icon_save.webp" alt="Save" class="icon" />
-        </button>
-        <p>Save selected wave to preset</p>
-    </div>
+    <button class="btn btn-apply" id="applyPresetBtn">
+        <span>APPLY</span>
+    </button>
+    <button class="btn btn-apply-all" id="applyPresetAllBtn">
+        <span>APPLY ALL</span>
+    </button>
+    <button class="btn btn-save" id="savePresetBtn">
+        <span>SAVE</span>
+    </button>
+    <button class="btn btn-clear" id="clearWaveBtn">
+        <span>CLEAR</span>
+    </button>
 </div>
   `
   },
@@ -104,37 +98,40 @@ export const modalsData = [
             <div class="card w-100">
                 <div class="modal-card-body mt-1 unit-distributon-modal">
                     <h6 class="card-title text-center">Unit distribution</h6>
-                    <div class="row d-flex align-items-center justify-content-center">
-                        <div class="d-flex justify-content-center mb-1 mt-2">
-                            <img src="../../img_base/battle_simulator/castellan-modal1.png" alt="Tools" style="width: 20px; height: 20px; vertical-align: middle;">
-                            <span id="leftPercentage" class="selector-value">0%</span>
-                            <input type="range" id="defenseStrengthSlider" min="0" max="100" value="0" class="form-range" disabled />
-                            <img src="../../img_base/battle_simulator/castellan-modal2.png" alt="Tools" style="width: 20px; height: 20px; vertical-align: middle;">
-                            <span id="rightPercentage" class="selector-value">0%</span>
+                    <div class="unit-distribution-balance">
+                        <div class="unit-distribution-strengths">
+                            <div class="unit-distribution-strength">
+                                <img src="../../img_base/battle_simulator/castellan-modal1.png" alt="Melee defense">
+                                <span id="leftPercentage" class="selector-value">0%</span>
+                            </div>
+                            <div class="unit-distribution-strength">
+                                <img src="../../img_base/battle_simulator/castellan-modal2.png" alt="Ranged defense">
+                                <span id="rightPercentage" class="selector-value">0%</span>
+                            </div>
                         </div>
-                        <div class="col-4 d-flex flex-column align-items-center justify-content-center text-center">
-                            <div class="d-flex align-items-center justify-content-center">
-                                <img src="../../img_base/battle_simulator/wall-icon.png" alt="Tools" style="width: 22px; height: auto;">
+                        <input type="range" id="defenseStrengthSlider" min="0" max="100" value="0" class="wave-editor-range" disabled />
+                    </div>
+                    <div class="unit-distribution-sides">
+                        <div class="unit-distribution-side flank-side">
+                            <span class="unit-distributon-modal-side">Left flank</span>
+                            <div class="unit-distribution-side-value">
+                                <img src="../../img_base/battle_simulator/wall-icon.png" alt="Left flank">
                                 <span class="unit-distributon-modal-value" id="leftFlank">X%</span>
                             </div>
-                            <hr class="yellow-line">
-                            <span class="unit-distributon-modal-side">Left flank</span>
                         </div>
-                        <div class="col-4 d-flex flex-column align-items-center justify-content-center text-center">
-                            <div class="d-flex align-items-center justify-content-center">
-                                <img src="../../img_base/battle_simulator/gate-icon.png" alt="Tools" style="width: 22px; height: auto; vertical-align: middle;">
+                        <div class="unit-distribution-side front-side">
+                            <span class="unit-distributon-modal-side">Front</span>
+                            <div class="unit-distribution-side-value">
+                                <img src="../../img_base/battle_simulator/gate-icon.png" alt="Front">
                                 <span class="unit-distributon-modal-value" id="front">X%</span>
                             </div>
-                            <hr class="red-line">
-                            <span class="unit-distributon-modal-side">Front</span>
                         </div>
-                        <div class="col-4 d-flex flex-column align-items-center justify-content-center text-center">
-                            <div class="d-flex align-items-center justify-content-center">
-                                <img src="../../img_base/battle_simulator/wall-icon.png" alt="Tools" style="width: 22px; height: auto;">
+                        <div class="unit-distribution-side flank-side">
+                            <span class="unit-distributon-modal-side">Right flank</span>
+                            <div class="unit-distribution-side-value">
+                                <img src="../../img_base/battle_simulator/wall-icon.png" alt="Right flank">
                                 <span class="unit-distributon-modal-value" id="rightFlank">X%</span>
                             </div>
-                            <hr class="yellow-line">
-                            <span class="unit-distributon-modal-side">Right flank</span>
                         </div>
                     </div>
                 </div>
@@ -271,7 +268,7 @@ export const modalsData = [
   {
 
     id: 'supportToolModal',
-    title: 'Tools',
+    title: 'Support tools',
     body: `<div class="modal-body p-0 support-tool-modal-body"></div>`,
     footer: `
         <button type="button" id="confirmSupportTools" class="btn btn-success btn-confirm">

@@ -2,78 +2,138 @@ import * as variables from '../data/variables.js';
 import { imageUrl } from '../data/imagePaths.js';
 import { switchSide, updateHeaderColor} from './uiWaves.js';
 
+let unitEditorState = null;
+
+function unitType(unit) {
+  return `Unit${unit.id.replace(/\D/g, '')}`;
+}
+
+function unitEffects(unit) {
+  const effects = [];
+  if (unit.rangedCombatStrength > 0) effects.push(['../../img_base/battle_simulator/ranged-icon.png', `+${unit.rangedCombatStrength}`]);
+  if (unit.meleeCombatStrength > 0) effects.push(['../../img_base/battle_simulator/melee-icon.png', `+${unit.meleeCombatStrength}`]);
+  if (unit.LootingCapacity > 0) effects.push(['../../img_base/battle_simulator/loot-icon.png', `+${unit.LootingCapacity}`]);
+  return effects.map(([icon, value]) => `
+    <span class="wave-editor-effect"><img src="${icon}" alt="">${value}</span>
+  `).join('');
+}
+
 export function initializeUnits(units = variables.units) {
   const unitModalBody = document.querySelector('#unitModal .modal-body');
   if (!unitModalBody) return;
 
-  unitModalBody.innerHTML = '';
+  unitModalBody.innerHTML = `
+    <div class="wave-editor-sticky">
+      <div class="wave-editor-limit">
+        <span id="unit-editor-total-label">0 / 0</span>
+      </div>
+      <div id="unit-editor-slots" class="wave-editor-slots"></div>
+    </div>
+    <div id="unit-editor-list" class="wave-editor-list"></div>
+  `;
+
+  const list = unitModalBody.querySelector('#unit-editor-list');
 
   units.forEach((unit, index) => {
-    const effects = [];
-
-    if (unit.travelSpeed > 0) {
-      effects.push(`
-        <img src="../../img_base/battle_simulator/travelSpeed-icon.png" alt="" class="combat-icon" />
-        <span class="me-2">+${unit.travelSpeed}</span>
-      `);
-    }
-
-    if (unit.rangedCombatStrength > 0) {
-      effects.push(`
-        <img src="../../img_base/battle_simulator/ranged-icon.png" alt="" class="combat-icon" />
-        <span class="me-2">+${unit.rangedCombatStrength}</span>
-      `);
-    }
-
-    if (unit.meleeCombatStrength > 0) {
-      effects.push(`
-        <img src="../../img_base/battle_simulator/melee-icon.png" alt="" class="combat-icon" />
-        <span class="me-2">+${unit.meleeCombatStrength}</span>
-      `);
-    }
-
-    if (unit.LootingCapacity > 0) {
-      effects.push(`
-        <img src="../../img_base/battle_simulator/loot-icon.png" alt="" class="combat-icon" />
-        <span class="me-2">+${unit.LootingCapacity}</span>
-      `);
-    }
-
     const levelInfo = unit.availableLevels?.length > 1 ? `(Lv.${unit.level})` : '';
-
-    const unitCard = `
-      <div class="col-12">
-        <div class="card w-100">
-          <div class="modal-card-body mt-1">
-            <h6 class="card-title text-center">${unit.name} ${levelInfo}</h6>
-            <div class="d-flex align-items-center">
-              <div class="me-2">
-                <img src="${imageUrl(unit.image)}" alt="${unit.name}" class="unit-image" />
-              </div>
-              <div class="flex-grow-1">
-                <div class="d-flex align-items-center">
-                  <input type="range" id="unit${index + 1}" min="0" value="0" class="form-range me-2" />
-                  <span id="unit${index + 1}-value" class="selector-value">0</span>
-                </div>
-                <div class="mt-2">
-                  ${effects.join('')}
-                </div>
-              </div>
+    list.insertAdjacentHTML('beforeend', `
+      <div class="wave-editor-row" data-unit-index="${index}">
+        <div class="wave-editor-name">${unit.name} ${levelInfo}</div>
+        <img src="${imageUrl(unit.image)}" alt="${unit.name}" class="wave-editor-image">
+        <div class="wave-editor-main">
+          <div class="wave-editor-controls">
+            <button type="button" class="wave-editor-step unit-minus" aria-label="Decrease">&minus;</button>
+            <div class="wave-editor-value-wrap">
+              <strong class="wave-editor-value">0</strong>
+              <input type="range" class="wave-editor-range" min="0" max="0" value="0">
             </div>
+            <button type="button" class="wave-editor-step unit-plus" aria-label="Increase">+</button>
           </div>
+          <div class="wave-editor-effects">${unitEffects(unit)}</div>
         </div>
       </div>
-    `;
+    `);
+  });
 
-    unitModalBody.insertAdjacentHTML('beforeend', unitCard);
+  list.addEventListener('click', event => {
+    const row = event.target.closest('[data-unit-index]');
+    if (!row || !unitEditorState) return;
+    const index = Number(row.dataset.unitIndex);
+    const current = Number(row.querySelector('.wave-editor-range').value) || 0;
+    if (event.target.closest('.unit-minus')) setUnitEditorValue(index, current - 1);
+    if (event.target.closest('.unit-plus')) setUnitEditorValue(index, current + 1);
+  });
+  list.addEventListener('input', event => {
+    if (!event.target.matches('.wave-editor-range')) return;
+    const row = event.target.closest('[data-unit-index]');
+    setUnitEditorValue(Number(row.dataset.unitIndex), Number(event.target.value));
+  });
+}
 
-    const unitRange = document.getElementById(`unit${index + 1}`);
-    if (unitRange) {
-      unitRange.addEventListener('input', function () {
-        const valueEl = document.getElementById(`unit${index + 1}-value`);
-        if (valueEl) valueEl.textContent = this.value;
-      });
-    }
+function setUnitEditorValue(unitIndex, requestedValue) {
+  const state = unitEditorState;
+  if (!state) return;
+  const otherTotal = state.slots.reduce((sum, slot, index) =>
+    index === state.activeSlot ? sum : sum + (slot.count || 0), 0);
+  const value = Math.max(0, Math.min(state.max - otherTotal, requestedValue || 0));
+  const slot = state.slots[state.activeSlot];
+  slot.type = value > 0 ? unitType(variables.units[unitIndex]) : '';
+  slot.count = value;
+  renderUnitEditor();
+}
+
+function scrollToSelectedUnit() {
+  const selectedRow = document.querySelector('#unit-editor-list .wave-editor-row.selected');
+  if (selectedRow) selectedRow.scrollIntoView({ block: 'center', behavior: 'auto' });
+}
+
+function scrollToUnitOnModalDisplay(modalElement) {
+  if (unitEditorState.slots[unitEditorState.activeSlot].count <= 0) return;
+  const observer = new MutationObserver(() => {
+    if (modalElement.style.display !== 'block') return;
+    observer.disconnect();
+    scrollToSelectedUnit();
+  });
+  observer.observe(modalElement, { attributes: true, attributeFilter: ['style'] });
+}
+
+function renderUnitEditor() {
+  const state = unitEditorState;
+  if (!state) return;
+  const total = state.slots.reduce((sum, slot) => sum + (slot.count || 0), 0);
+  const totalLabel = document.getElementById('unit-editor-total-label');
+  totalLabel.textContent = `${total} / ${state.max}`;
+
+  const slotsElement = document.getElementById('unit-editor-slots');
+  slotsElement.classList.toggle('courtyard-grid', state.side === 'CY');
+  slotsElement.innerHTML = state.slots.map((slot, index) => {
+    const image = slot.type ? imageUrl(variables.unitImages?.[slot.type]) : '';
+    return `<button type="button" class="wave-editor-slot ${index === state.activeSlot ? 'active' : ''}" data-slot-index="${index}">
+      ${image ? `<img src="${image}" alt=""><span>${slot.count || 0}</span>` : '<b>+</b>'}
+    </button>`;
+  }).join('');
+  slotsElement.querySelectorAll('[data-slot-index]').forEach(button => {
+    button.onclick = () => {
+      state.activeSlot = Number(button.dataset.slotIndex);
+      renderUnitEditor();
+      if (state.slots[state.activeSlot].count > 0) scrollToSelectedUnit();
+    };
+  });
+
+  const active = state.slots[state.activeSlot];
+  const otherTotal = total - (active.count || 0);
+  const maxForSlot = Math.max(0, state.max - otherTotal);
+  document.querySelectorAll('#unit-editor-list [data-unit-index]').forEach(row => {
+    const unit = variables.units[Number(row.dataset.unitIndex)];
+    const selected = active.type === unitType(unit);
+    const value = selected ? active.count || 0 : 0;
+    const range = row.querySelector('.wave-editor-range');
+    range.max = maxForSlot;
+    range.value = value;
+    row.querySelector('.wave-editor-value').textContent = `${value} / ${maxForSlot}`;
+    row.querySelector('.unit-minus').disabled = value <= 0;
+    row.querySelector('.unit-plus').disabled = value >= maxForSlot;
+    row.classList.toggle('selected', selected);
   });
 }
 
@@ -102,7 +162,6 @@ export function openUnitModal(slotId, side, waveIndex) {
   if (!modalEl) return;
   const modal = new bootstrap.Modal(modalEl);
 
-  const slotElement = document.getElementById(slotId);
   const waves = variables.waves || {};
   const wave = waves[side] ? waves[side][waveIndex - 1] : null;
 
@@ -111,83 +170,34 @@ export function openUnitModal(slotId, side, waveIndex) {
     return;
   }
 
-  const slot = wave.slots.find(s => s.id === slotId);
-  if (!slot) {
+  const activeSlot = wave.slots.findIndex(s => s.id === slotId);
+  if (activeSlot < 0) {
     console.error(`Slot not found for slotId: ${slotId}`);
     return;
   }
 
-  const attackBasics = variables.attackBasics || { maxUnits: { front: 0, right: 0 } };
-  const maxUnitsInWave = (side === 'front') ? attackBasics.maxUnits.front : attackBasics.maxUnits.right;
-
-  const totalUnitsInWave = wave.slots.reduce((acc, s) => s.id !== slotId ? acc + (s.count || 0) : acc, 0);
-  let availableUnits = maxUnitsInWave - totalUnitsInWave;
-  if (availableUnits < 0) availableUnits = 0;
-
-  (variables.units || []).forEach((unit, index) => {
-    const count = (slot.count > 0 && slot.type === `Unit${unit.id.replace(/\D/g, '')}`) ? slot.count : 0;
-
-    const unitRange = document.getElementById(`unit${index + 1}`);
-    const unitValue = document.getElementById(`unit${index + 1}-value`);
-
-    if (unitRange && unitValue) {
-      unitRange.value = count;
-      unitRange.max = availableUnits;
-      unitValue.textContent = count;
-
-      unitRange.oninput = function () {
-        unitValue.textContent = this.value;
-
-        (variables.units || []).forEach((otherUnit, otherIndex) => {
-          if (otherIndex !== index) {
-            const otherRange = document.getElementById(`unit${otherIndex + 1}`);
-            const otherValue = document.getElementById(`unit${otherIndex + 1}-value`);
-            if (otherRange && otherValue) {
-              otherRange.value = 0;
-              otherValue.textContent = '0';
-            }
-          }
-        });
-      };
-    }
-  });
+  unitEditorState = {
+    side,
+    waveIndex,
+    wave,
+    activeSlot,
+    max: side === 'CY'
+      ? variables.attackBasics.maxUnitsCY
+      : variables.attackBasics.maxUnits[side],
+    slots: wave.slots.map(slot => ({ ...slot }))
+  };
+  renderUnitEditor();
+  scrollToUnitOnModalDisplay(modalEl);
 
   const confirmBtn = document.getElementById('confirmUnits');
   if (confirmBtn) {
     confirmBtn.onclick = function () {
-      let totalUnitsInSlot = 0;
-      let selectedUnitType = '';
-
-      (variables.units || []).forEach((unit, index) => {
-        const unitRange = document.getElementById(`unit${index + 1}`);
-        const unitCount = parseInt(unitRange ? unitRange.value : 0, 10) || 0;
-        if (unitCount > 0) {
-          totalUnitsInSlot += unitCount;
-          selectedUnitType = `Unit${unit.id.replace(/\D/g, '')}`;
-        }
-      });
-
-      if (totalUnitsInWave + totalUnitsInSlot > maxUnitsInWave) {
-        alert(`Cannot exceed ${maxUnitsInWave} units in this wave!`);
-        return;
-      }
-
-      if (slot) {
-        slot.type = selectedUnitType || '';
-        slot.count = totalUnitsInSlot;
-
-        if (!variables.totalUnits) variables.totalUnits = {};
-        if (!variables.totalUnits[side]) variables.totalUnits[side] = [];
-        variables.totalUnits[side][waveIndex - 1] = wave.slots;
-
-        if (slotElement) {
-          slotElement.innerHTML = (slot.count > 0) ? createUnitIcon(slot) : '+';
-        }
-
-        const unitBonuses = summarizeUnitBonuses(wave.slots);
-        const bonusElement = document.getElementById(`unit-bonuses-${side}-${waveIndex}`);
-        if (bonusElement) bonusElement.innerHTML = unitBonuses;
-
+      wave.slots.splice(0, wave.slots.length, ...unitEditorState.slots.map(slot => ({ ...slot })));
+      if (!variables.totalUnits[side]) variables.totalUnits[side] = [];
+      variables.totalUnits[side][waveIndex - 1] = wave.slots;
+      if (side === 'CY') {
+        switchSide(variables.currentSide);
+      } else {
         updateHeaderColor(wave, side, waveIndex);
         switchSide(side);
       }

@@ -19,6 +19,7 @@ export function openWaveCopyModal() {
     modalEl.querySelector('#applyPresetBtn').onclick = applyPreset;
     modalEl.querySelector('#applyPresetAllBtn').onclick = applyPresetToAll;
     modalEl.querySelector('#savePresetBtn').onclick = saveToPreset;
+    modalEl.querySelector('#clearWaveBtn').onclick = clearCurrentWave;
 
     modalEl.querySelector('#prevWaveBtn').onclick = () => changeWave(-1);
     modalEl.querySelector('#nextWaveBtn').onclick = () => changeWave(1);
@@ -119,6 +120,27 @@ export function applyPresetToAll() {
 
     generateWaves(currentSide, getEffectiveWaveCount());
     displayNotification(`Applied Preset ${selectedPreset} to all waves`);
+}
+
+export function clearCurrentWave() {
+    const waveArrayIndex = currentWaveIndex - 1;
+    const previousSide = currentSide;
+
+    ['left', 'front', 'right'].forEach(side => {
+        const slotCount = side === 'front' ? 3 : 2;
+        totalUnits[side][waveArrayIndex] = Array.from(
+            { length: slotCount },
+            () => ({ type: '', count: 0 })
+        );
+        totalTools[side][waveArrayIndex] = Array.from(
+            { length: slotCount },
+            () => ({ type: '', count: 0 })
+        );
+    });
+
+    ['front', 'left', 'right'].forEach(side => switchSide(side));
+    switchSide(previousSide);
+    displayNotification(`Cleared Wave ${currentWaveIndex}`);
 }
 
 export function displayNotification(message) {

@@ -1,65 +1,57 @@
-import { defense_tools, defenseSlots, toolSlotRestrictions, enforceDefenseWallUnitLimit } from '../../data/variables.js';
+import { defense_tools, defenseSlots, toolSlotRestrictions } from '../../data/variables.js';
 import { imageUrl } from '../../data/imagePaths.js';
 import { createDefenseToolIcon, getToolIcon, displayDefenseBonuses, calculateTroopDefenseStrength } from '../uiDefense.js';
 import { saveDefenseState } from '../../data/defenseState.js';
 
 export function initializeDefenseTools(defense_tools, slotType) {
   const toolModalBody = document.querySelector('#toolModalDefense .modal-body');
-  toolModalBody.innerHTML = '';
+  if (!toolModalBody) return;
+  toolModalBody.innerHTML = '<div id="defense-tool-editor-list" class="wave-editor-list"></div>';
+  const list = toolModalBody.querySelector('#defense-tool-editor-list');
 
   defense_tools.forEach((tool, index) => {
     if (toolSlotRestrictions[slotType].includes(tool.id)) {
-      const toolCard = `
-      <div class="col-12">
-          <div class="card w-100">
-              <div class="modal-card-body mt-1">
-                  <h6 class="card-title text-center">${tool.name}</h6>
-                  <div class="d-flex align-items-center">
-                      <div class="me-2">
-                          <img src="${imageUrl(tool.image)}" alt="${tool.name}" class="tool-image" />
-                      </div>
-                      <div class="flex-grow-1">
-                          <div class="d-flex align-items-center">
-                              <input type="range" id="defense_tool${index + 1}" min="0" max="1" value="0" class="form-range me-2" />
-                              <span id="defense_tool${index + 1}-value" class="selector-value">0</span>
-                          </div>
-                          <div class="mt-2 d-flex align-items-center">
-                              <div class="me-2">
-                                  <img src="${imageUrl(tool.effectImage1)}" alt="" class="combat-icon" />
-                                  <span>+${tool.effect1Value}${tool.effect1Value > 149 ? '' : '%'} </span>
-                              </div>
-                              ${tool.effect2Value > 0 ? `
-                              <div class="me-2">
-                                  <img src="${imageUrl(tool.effectImage2)}" alt="" class="combat-icon" />
-                                  <span class="me-2">+${tool.effect2Value}${tool.effect2Value > 149 ? '' : '%'} </span>
-                              </div>` : ''}
-                          </div>
-                      </div>
-                  </div>
+      const effects = [
+        `<span class="wave-editor-effect"><img src="${imageUrl(tool.effectImage1)}" alt="">+${tool.effect1Value}${tool.effect1Value > 149 ? '' : '%'}</span>`
+      ];
+      if (tool.effect2Value > 0) {
+        effects.push(`<span class="wave-editor-effect"><img src="${imageUrl(tool.effectImage2)}" alt="">+${tool.effect2Value}${tool.effect2Value > 149 ? '' : '%'}</span>`);
+      }
+
+      list.insertAdjacentHTML('beforeend', `
+        <div class="wave-editor-row" data-defense-tool-index="${index}">
+          <div class="wave-editor-name">${tool.name}</div>
+          <img src="${imageUrl(tool.image)}" alt="${tool.name}" class="wave-editor-image">
+          <div class="wave-editor-main">
+            <div class="wave-editor-controls">
+              <button type="button" class="wave-editor-step defense-tool-minus" aria-label="Decrease">&minus;</button>
+              <div class="wave-editor-value-wrap">
+                <strong id="defense_tool${index + 1}-value" class="wave-editor-value">0 / 1</strong>
+                <input type="range" id="defense_tool${index + 1}" min="0" max="1" value="0" class="wave-editor-range">
               </div>
+              <button type="button" class="wave-editor-step defense-tool-plus" aria-label="Increase">+</button>
+            </div>
+            <div class="wave-editor-effects">${effects.join('')}</div>
           </div>
-      </div>
-      `;
-      toolModalBody.insertAdjacentHTML('beforeend', toolCard);
-
-      const toolRange = document.getElementById(`defense_tool${index + 1}`);
-      const toolValue = document.getElementById(`defense_tool${index + 1}-value`);
-
-      toolRange.addEventListener('input', function () {
-        toolValue.textContent = this.value;
-
-        defense_tools.forEach((otherTool, otherIndex) => {
-          if (otherIndex !== index) {
-            const otherRange = document.getElementById(`defense_tool${otherIndex + 1}`);
-            const otherValue = document.getElementById(`defense_tool${otherIndex + 1}-value`);
-            if (otherRange && otherValue) {
-              otherRange.value = 0;
-              otherValue.textContent = '0';
-            }
-          }
-        });
-      });
+        </div>
+      `);
     }
+  });
+}
+
+function renderDefenseToolEditor(selectedIndex, unavailableIndexes = new Set()) {
+  document.querySelectorAll('#toolModalDefense [data-defense-tool-index]').forEach(row => {
+    const index = Number(row.dataset.defenseToolIndex);
+    const selected = index === selectedIndex;
+    const unavailable = unavailableIndexes.has(index) && !selected;
+    const range = row.querySelector('.wave-editor-range');
+    range.value = selected ? 1 : 0;
+    range.disabled = unavailable;
+    row.querySelector('.wave-editor-value').textContent = `${selected ? 1 : 0} / 1`;
+    row.querySelector('.defense-tool-minus').disabled = !selected;
+    row.querySelector('.defense-tool-plus').disabled = selected || unavailable;
+    row.classList.toggle('selected', selected);
+    row.classList.toggle('unavailable', unavailable);
   });
 }
 
@@ -68,7 +60,7 @@ export function getUsedCourtyardToolTypes(slots = []) {
 }
 
 export function openDefenseToolsModal(side, toolType, slotIndex) {
-  const modal = new bootstrap.Modal(document.getElementById('toolModalDefense'));
+  const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('toolModalDefense'));
   const slotElement = document.getElementById(`tool-slot-${side}-${toolType}-${slotIndex}`);
   initializeDefenseTools(defense_tools, toolType);
 
@@ -80,41 +72,24 @@ export function openDefenseToolsModal(side, toolType, slotIndex) {
     ? getUsedCourtyardToolTypes(defenseSlots[side].cyTools)
     : [];
 
+  const initialSelectedIndex = defense_tools.findIndex(tool =>
+    currentSlotData.type === `DefenseTool${tool.id}`);
+  const unavailableIndexes = new Set();
   defense_tools.forEach((tool, index) => {
-    const isSelected = currentSlotData.type === `DefenseTool${tool.id}`;
-    const toolRange = document.getElementById(`defense_tool${index + 1}`);
-    const toolValue = document.getElementById(`defense_tool${index + 1}-value`);
-
-    if (toolRange && toolValue) {
-      toolRange.value = isSelected ? 1 : 0;
-      toolValue.textContent = isSelected ? '1' : '0';
-
-      const isToolUsedInCourtyard = usedCourtyardTools.includes(`DefenseTool${tool.id}`);
-
-      if (!toolSlotRestrictions[toolType].includes(tool.id) || (toolType === 'cy' && isToolUsedInCourtyard && !isSelected)) {
-        toolRange.disabled = true;
-        toolRange.value = 0;
-        toolValue.textContent = '0';
-      } else {
-        toolRange.disabled = false;
-      }
-
-      toolRange.addEventListener('input', function () {
-        toolValue.textContent = this.value;
-
-        defense_tools.forEach((otherTool, otherIndex) => {
-          if (otherIndex !== index) {
-            const otherRange = document.getElementById(`defense_tool${otherIndex + 1}`);
-            const otherValue = document.getElementById(`defense_tool${otherIndex + 1}-value`);
-            if (otherRange && otherValue) {
-              otherRange.value = 0;
-              otherValue.textContent = 0;
-            }
-          }
-        });
-      });
+    if (toolType === 'cy' && usedCourtyardTools.includes(`DefenseTool${tool.id}`) && index !== initialSelectedIndex) {
+      unavailableIndexes.add(index);
     }
   });
+
+  document.querySelectorAll('#toolModalDefense [data-defense-tool-index]').forEach(row => {
+    const index = Number(row.dataset.defenseToolIndex);
+    const range = row.querySelector('.wave-editor-range');
+    const setSelection = value => renderDefenseToolEditor(value > 0 ? index : -1, unavailableIndexes);
+    range.oninput = () => setSelection(Number(range.value));
+    row.querySelector('.defense-tool-minus').onclick = () => setSelection(0);
+    row.querySelector('.defense-tool-plus').onclick = () => setSelection(1);
+  });
+  renderDefenseToolEditor(initialSelectedIndex, unavailableIndexes);
 
   document.getElementById('confirmDefenseTools').onclick = function () {
     let selectedToolType = '';
@@ -128,7 +103,6 @@ export function openDefenseToolsModal(side, toolType, slotIndex) {
         } else {
           alert(`This tool cannot be placed in a ${toolType} slot.`);
           toolRange.value = 0;
-          toolValue.textContent = '0';
           toolRange.disabled = true;
           selectedToolType = '';
         }
@@ -151,7 +125,6 @@ export function openDefenseToolsModal(side, toolType, slotIndex) {
       slotElement.innerHTML = createDefenseToolIcon({ type: selectedToolType, count: 1 });
     }
 
-    enforceDefenseWallUnitLimit();
     displayDefenseBonuses(side);
     calculateTroopDefenseStrength(side);
     saveDefenseState();

@@ -13,7 +13,7 @@ function bindToggle(id, key) {
 
 export function openDefenseGeneralModal() {
   const modalEl = document.getElementById('defenseGeneralModal');
-  const modal = new bootstrap.Modal(modalEl);
+  const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
 
   bindToggle('defense-ability-wave-strength', 'waveStrengthBonus');
   bindToggle('defense-ability-periodic-debuff', 'periodicDebuff');

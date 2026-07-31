@@ -5,35 +5,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GGE Battle Simulator</title>
-      <link rel="icon" type="image/png" href="../../img_base/battle_simulator/favicon-32x32.png">
+    <link rel="icon" type="image/webp" href="../../img_base/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
   <meta property="og:title" content="Battle Simulator">
   <meta property="og:description" content="Tools, calculators and simulators.">
-  <meta property="og:image" content="https://generalscamp.github.io/forum/img_base/share-banner.webp">
+  <meta property="og:image" content="https://generalscamp.github.io/forum/img_base/battle_simulator/favicon-32x32.png">
 </head>
 
 <body>
     <div class="container attack-planning">
-        <div class="general-info d-flex justify-content-between align-items-center">
-            <div class="col-auto p-0 general-bg1">
-                <img src="../../img_base/battle_simulator/unknown.png" alt="General Image" class="general-img">
-            </div>
-
-            <div class="col text-center d-flex justify-content-center">
-                <div class="d-flex justify-content-between w-100">
+        <div class="general-info">
+            <div class="general-side general-side-attack">
+                <div class="general-bg1">
+                    <img src="../../img_base/battle_simulator/unknown.png" alt="General Image" class="general-img">
+                </div>
+                <div class="general-actions">
                     <div class="square2 commander" title="Commander stats"></div>
                     <div class="square2 attack-basics" title="Attack basics"></div>
-
-                    <div class="vertical-line"></div>
-
-                    <div class="square2 defense-basics" title="Defense basics"></div>
-                    <div class="square2 castellan" title="Castellan stats"></div>
                 </div>
             </div>
 
-            <div class="col-auto p-0 general-bg2">
-                <img src="../../img_base/battle_simulator/unknown.png" alt="Enemy Image" class="enemy-img">
+            <div class="vertical-line"></div>
+
+            <div class="general-side general-side-defense">
+                <div class="general-actions">
+                    <div class="square2 defense-basics" title="Defense basics"></div>
+                    <div class="square2 castellan" title="Castellan stats"></div>
+                </div>
+                <div class="general-bg2">
+                    <img src="../../img_base/battle_simulator/unknown.png" alt="Enemy Image" class="enemy-img">
+                </div>
             </div>
         </div>
 
@@ -83,11 +85,14 @@
         </div>
 
         <div class="modal fade" id="battleReportModal" tabindex="-1" aria-labelledby="battleReportLabel"
-            aria-hidden="true">
+            aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content battle-report">
                     <div class="modal-header d-flex justify-content-center">
                         <h5 class="modal-title" id="battleReportLabel">Battle Report</h5>
+                        <div class="modal-header-actions">
+                            <button type="button" class="modal-header-action modal-header-close" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+                        </div>
                     </div>
                     <div class="player-flanks d-flex justify-content-between align-items-center">
                         <div class="row flanks ms-1">
@@ -139,8 +144,6 @@
                         </div>
                         <div id="wave-summary-container" class="player-flank margin-bug-fix">
                         </div>
-                    </div>
-                    <div class="modal-footer d-flex justify-content-center">
                     </div>
                 </div>
             </div>

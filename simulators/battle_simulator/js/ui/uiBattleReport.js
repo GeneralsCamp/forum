@@ -19,7 +19,6 @@ import { initPresetSwipe } from './swipe.js';
 import { imageUrl } from '../data/imagePaths.js';
 
 const SIDE_KEYS = ['left', 'front', 'right', 'cy'];
-let activeLogSide = null;
 
 export function battleSimulation() {
   const battleReportModal = new bootstrap.Modal(document.getElementById('battleReportModal'));
@@ -695,82 +694,6 @@ function computeWaveBattle(side, wave, defenseUnits, attackTotalMultiplier = 1, 
     defenderLosses.set(key, (rangedDefenderLosses.get(key) || 0) + (meleeDefenderLosses.get(key) || 0));
   });
 
-  if (attackerTotalCount > 0 && side === activeLogSide) {
-    const attackRangedCount = attackUnits.reduce((acc, u) => acc + (u.type2 === 'ranged' ? u.count : 0), 0);
-    const attackMeleeCount = attackUnits.reduce((acc, u) => acc + (u.type2 === 'melee' ? u.count : 0), 0);
-    const defenseRangedCount = defenseTotals.rangedCount;
-    const defenseMeleeCount = defenseTotals.meleeCount;
-
-    const attackRangedPerUnit = attackRangedCount > 0 ? attackTotals.rangedBase / attackRangedCount : 0;
-    const attackMeleePerUnit = attackMeleeCount > 0 ? attackTotals.meleeBase / attackMeleeCount : 0;
-    const defenseRangedPerUnit = defenseRangedCount > 0 ? defenseBaseRanged / defenseRangedCount : 0;
-    const defenseMeleePerUnit = defenseMeleeCount > 0 ? defenseBaseMelee / defenseMeleeCount : 0;
-
-    console.log(`[Battle Debug] ${side.toUpperCase()} Wave ${waveIndex}`);
-    console.log(`Attack units (ranged): ${attackRangedCount}`);
-    console.log(`Attack units (melee): ${attackMeleeCount}`);
-    console.log(`Ranged base strength (per unit): ${attackRangedPerUnit}`);
-    console.log(`Melee base strength (per unit): ${attackMeleePerUnit}`);
-    console.log(`Ranged base strength (total): ${attackTotals.rangedBase}`);
-    console.log(`Melee base strength (total): ${attackTotals.meleeBase}`);
-    console.log(`Ranged strength bonus: ${Math.round((attackBonus.rangedMult - 1) * 100)}%`);
-    console.log(`Melee strength bonus: ${Math.round((attackBonus.meleeMult - 1) * 100)}%`);
-    console.log(`Ranged total strength: ${totalAttackRanged}`);
-    console.log(`Melee total strength: ${totalAttackMelee}`);
-    const attackerKilledPercent = attackerTotalCount > 0 ? (attackerTotalLoss / attackerTotalCount) * 100 : 0;
-    const defenderKilledPercent = defenderTotalCount > 0 ? (defenderTotalLoss / defenderTotalCount) * 100 : 0;
-    console.log(`How many attackers killed: ${attackerKilledPercent.toFixed(2)}%`);
-    console.log(`Moat reduction: ${moatReduction}`);
-    console.log(`Wall reduction: ${wallReduction}`);
-    console.log(`Gate reduction: ${gateReduction}`);
-    console.log(`Shields: ${shieldPercent}%`);
-    console.log(`Defense units (ranged): ${defenseRangedCount}`);
-    console.log(`Defense units (melee): ${defenseMeleeCount}`);
-    console.log(`Ranged base strength (def, per unit): ${defenseRangedPerUnit}`);
-    console.log(`Melee base strength (def, per unit): ${defenseMeleePerUnit}`);
-    console.log(`Ranged base strength (def, total): ${defenseBaseRanged}`);
-    console.log(`Melee base strength (def, total): ${defenseBaseMelee}`);
-    console.log(`Ranged strength before shield: ${defenseStrength.ranged}%`);
-    console.log(`Ranged strength bonus: ${defenseRangedPercent}%`);
-    console.log(`Melee strength bonus: ${defenseStrength.melee}%`);
-    console.log(`Melee total ranged strength: ${defenseTotals.meleeRangedBase * defenseMeleeMult * defenseBonusMult}`);
-    console.log(`Ranged total ranged strength: ${defenseTotals.rangedRangedBase * defenseRangedMult * defenseBonusMult}`);
-    console.log(`Melee total melee strength: ${defenseTotals.meleeMeleeBase * defenseMeleeMult * defenseBonusMult}`);
-    console.log(`Ranged total melee strength: ${defenseTotals.rangedMeleeBase * defenseRangedMult * defenseBonusMult}`);
-    console.log(`How many defenders killed: ${defenderKilledPercent.toFixed(2)}%`);
-    console.log(`Moat bonus: ${defenseBonuses.moat}`);
-    console.log(`Wall bonus: ${defenseBonuses.wall}`);
-    console.log(`Gate bonus: ${gateBonus}`);
-    console.log(`Defense bonus: ${Math.round((defenseBonusMult - 1) * 100)}%`);
-
-    console.log(`[Abilities] Attack wave strength: ${attackGeneralAbilities.waveStrengthBonus ? `+${waveIndex * 4}%` : 'off'}`);
-    console.log(`[Abilities] Defense wave strength: ${defenseGeneralAbilities.waveStrengthBonus ? `+${waveIndex * 4}%` : 'off'}`);
-    console.log(`[Abilities] Attack periodic debuff: ${attackGeneralAbilities.periodicDebuff && waveIndex >= 4 && waveIndex % 3 !== 0 ? '-25% defense (active)' : 'off'}`);
-    console.log(`[Abilities] Defense periodic debuff: ${defenseGeneralAbilities.periodicDebuff && waveIndex >= 4 && waveIndex % 3 !== 0 ? '-25% attack (active)' : 'off'}`);
-    console.log(`[Abilities] Attack conditional melee: ${attackGeneralAbilities.conditionalMeleeBoost && side !== 'cy' && defenseBaseMelee > defenseBaseRanged ? '+100% melee (active)' : 'off'}`);
-    console.log(`[Abilities] Defense conditional melee: ${defenseGeneralAbilities.conditionalMeleeBoost && side !== 'cy' && attackBaseMelee > attackBaseRanged ? '+100% melee (active)' : 'off'}`);
-    console.log(`[Abilities] Attack odd/even swing: ${attackGeneralAbilities.oddEvenStrengthSwing ? (waveIndex % 2 === 1 ? '-50% (odd wave)' : '+60% (even wave)') : 'off'}`);
-    console.log(`[Abilities] Attack every 2nd wave: ${attackGeneralAbilities.everySecondWaveStrength && waveIndex % 2 === 0 ? '+10% (active)' : 'off'}`);
-    console.log(`[Abilities] Defense every 2nd wave: ${defenseGeneralAbilities.everySecondWaveStrength && waveIndex % 2 === 0 ? '+10% (active)' : 'off'}`);
-
-    if (side === 'cy') {
-      const attackTotalPercent = Math.round((attackTotalMultiplier - 1) * 100);
-      const defenseTotalPercent = Math.round((defenseTotalMultiplier - 1) * 100);
-      if (attackTotalPercent !== 0) console.log(`[Abilities] Courtyard attack total: ${attackTotalPercent > 0 ? '+' : ''}${attackTotalPercent}%`);
-      if (defenseTotalPercent !== 0) console.log(`[Abilities] Courtyard defense total: ${defenseTotalPercent > 0 ? '+' : ''}${defenseTotalPercent}%`);
-      if (attackGeneralAbilities.courtyardStealBonus) {
-        const pct = baseAttackStrength > 0 ? (attackCourtyardStealBonus / baseAttackStrength) * 100 : 0;
-        console.log(`[Abilities] Courtyard steal (attack): +${attackCourtyardStealBonus.toFixed(2)} (${pct.toFixed(2)}%)`);
-      }
-      if (defenseGeneralAbilities.courtyardStealBonus) {
-        const pct = baseDefenseStrength > 0 ? (defenseCourtyardStealBonus / baseDefenseStrength) * 100 : 0;
-        console.log(`[Abilities] Courtyard steal (defense): +${defenseCourtyardStealBonus.toFixed(2)} (${pct.toFixed(2)}%)`);
-      }
-    }
-
-    console.log('');
-  }
-
   defenseUnits.forEach(unit => {
     const loss = defenderLosses.get(toUnitKey(unit.type)) || 0;
     unit.count = Math.max(0, unit.count - loss);
@@ -1056,7 +979,6 @@ function computeBattleResults(side) {
 }
 
 function populateBattleReportModal(side) {
-  activeLogSide = side;
   const attackerContainer = document.querySelector('.report-attackers .row');
   attackerContainer.innerHTML = '';
 

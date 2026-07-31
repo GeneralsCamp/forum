@@ -18,26 +18,36 @@ export function renderUnitLevelControls(containerId, units) {
       body.className = "modal-card-body mt-1";
 
       const title = document.createElement("h6");
-      title.className = "card-title text-center";
+      title.className = "card-title wave-editor-name";
       title.textContent = `Level of "${unit.name}"`;
 
       const row = document.createElement("div");
-      row.className = "d-flex align-items-center";
-
-      const imageWrap = document.createElement("div");
-      imageWrap.className = "me-2";
+      row.className = "d-flex align-items-stretch";
 
       const image = document.createElement("img");
       image.src = unit.image;
       image.alt = unit.name;
       image.className = "modal-image";
-      imageWrap.appendChild(image);
 
       const controls = document.createElement("div");
-      controls.className = "flex-grow-1";
+      controls.className = "modal-input-main";
 
       const inputRow = document.createElement("div");
-      inputRow.className = "d-flex align-items-center";
+      inputRow.className = "wave-editor-controls";
+
+      const minusButton = document.createElement("button");
+      minusButton.type = "button";
+      minusButton.className = "wave-editor-step";
+      minusButton.setAttribute("aria-label", "Decrease");
+      minusButton.textContent = "−";
+
+      const valueWrap = document.createElement("div");
+      valueWrap.className = "wave-editor-value-wrap";
+
+      const value = document.createElement("strong");
+      value.id = `${controlId}-value`;
+      value.className = "wave-editor-value";
+      value.textContent = `${unit.level} / ${levels.at(-1)}`;
 
       const slider = document.createElement("input");
       slider.type = "range";
@@ -45,17 +55,14 @@ export function renderUnitLevelControls(containerId, units) {
       slider.min = String(levels[0]);
       slider.max = String(levels.at(-1));
       slider.value = String(unit.level);
-      slider.className = "form-range";
+      slider.className = "wave-editor-range";
       slider.dataset.unitLevelKey = unit.levelKey;
 
-      const value = document.createElement("input");
-      value.type = "number";
-      value.id = `${controlId}-value`;
-      value.min = slider.min;
-      value.max = slider.max;
-      value.value = slider.value;
-      value.className = "form-control w-25";
-      value.style.marginLeft = "10px";
+      const plusButton = document.createElement("button");
+      plusButton.type = "button";
+      plusButton.className = "wave-editor-step";
+      plusButton.setAttribute("aria-label", "Increase");
+      plusButton.textContent = "+";
 
       const closestLevel = (requested) => levels.reduce((closest, level) =>
         Math.abs(level - requested) < Math.abs(closest - requested) ? level : closest
@@ -63,15 +70,27 @@ export function renderUnitLevelControls(containerId, units) {
       const update = (requested) => {
         const selected = closestLevel(Number(requested));
         slider.value = String(selected);
-        value.value = String(selected);
+        value.textContent = `${selected} / ${levels.at(-1)}`;
+        const selectedIndex = levels.indexOf(selected);
+        minusButton.disabled = selectedIndex <= 0;
+        plusButton.disabled = selectedIndex >= levels.length - 1;
       };
 
       slider.addEventListener("input", () => update(slider.value));
-      value.addEventListener("input", () => update(value.value));
+      minusButton.onclick = () => {
+        const currentIndex = levels.indexOf(Number(slider.value));
+        update(levels[Math.max(0, currentIndex - 1)]);
+      };
+      plusButton.onclick = () => {
+        const currentIndex = levels.indexOf(Number(slider.value));
+        update(levels[Math.min(levels.length - 1, currentIndex + 1)]);
+      };
+      update(unit.level);
 
-      inputRow.append(slider, value);
+      valueWrap.append(value, slider);
+      inputRow.append(minusButton, valueWrap, plusButton);
       controls.appendChild(inputRow);
-      row.append(imageWrap, controls);
+      row.append(image, controls);
       body.append(title, row);
       card.appendChild(body);
       container.appendChild(card);
