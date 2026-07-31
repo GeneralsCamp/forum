@@ -18,8 +18,8 @@ function getHorseBoostPercent(stableLevel, horseType) {
 }
 
 function calculateLowLevelBoost(level) {
-    if (level > 25) return 0;
-    return (100 * Math.max(0, -0.1667 * level + 4.167)) / 100;
+    if (level >= 25) return 0;
+    return Math.trunc(100 * Math.max(0, -0.1667 * level + 4.167)) / 100;
 }
 
 function hmsFromSeconds(sec) {
@@ -116,11 +116,18 @@ function render() {
     const horseBoostPercent = getHorseBoostPercent(stableLevel, horseType);
     const totalBonus = commander + glory + vip + global + hol + war;
     const lowLevelBoost = calculateLowLevelBoost(playerLevel);
+    const totalBonusWithLowLevelBoost = totalBonus + lowLevelBoost * 100;
 
-    const rawTimeWithoutHorse = getTravelTime(speed, distance, 0, totalBonus, distance);
-    const rawTimeWithHorse = getTravelTime(speed, distance, horseBoostPercent, totalBonus, distance);
+    const rawTimeWithoutHorse = getTravelTime(speed, distance, 0, totalBonusWithLowLevelBoost, distance);
+    const rawTimeWithHorse = getTravelTime(
+        speed,
+        distance,
+        horseBoostPercent,
+        totalBonusWithLowLevelBoost,
+        distance
+    );
 
-    const adjustedTime = rawTimeWithHorse / (1 + lowLevelBoost);
+    const adjustedTime = rawTimeWithHorse;
     document.getElementById('arrivalTime').textContent = hmsFromSeconds(adjustedTime);
 
     calculateTroopDetection(rawTimeWithoutHorse, adjustedTime, distance);
