@@ -46,6 +46,7 @@ const ABILITY_GROUP_BY_FLAG = {
   calmBeforeTheStorm: '1019',
   ayala: '1021',
   ambush: '1022',
+  longbows: '1023',
   reinforcedArrows: '1025',
   wayOfPerfection: '1029',
   vengeance: '1030',
@@ -805,6 +806,30 @@ function computeWaveBattle(
       markDefenseAbility('hordebreaker', bonusPercent);
       defenseStrength.ranged += bonusPercent;
       defenseStrength.melee += bonusPercent;
+    }
+  }
+
+  if (side !== 'cy' && waveIndex % 2 === 0) {
+    const hasRangedAttackers = attackUnits.some(unit => unit.type2 === 'ranged' && unit.count > 0);
+    if (hasRangedAttackers && isAttackAbilityActive('longbows', side, waveIndex)) {
+      const scale = attackWallAbilityScale(side, waveIndex);
+      const minimumPercent = 100 + 50 * scale;
+      const bonusPercent = 15 * scale;
+      attackBonus.rangedMult = Math.max(attackBonus.rangedMult, minimumPercent / 100)
+        * (1 + bonusPercent / 100);
+      markAttackAbility('longbows', [minimumPercent, bonusPercent]);
+    }
+
+    const hasRangedDefenders = defenseUnits.some(unit => unit.type2 === 'ranged' && unit.count > 0);
+    if (hasRangedDefenders && isDefenseAbilityActive('longbows', side, waveIndex)) {
+      const scale = defenseWallAbilityScale(side, waveIndex);
+      const minimumPercent = 100 + 40 * scale;
+      const bonusPercent = 14 * scale;
+      const rangedAfterShields = Math.max(defenseStrength.ranged - shieldPercent, 0);
+      const stabilizedRanged = Math.max(rangedAfterShields, minimumPercent)
+        * (1 + bonusPercent / 100);
+      defenseStrength.ranged = stabilizedRanged + shieldPercent;
+      markDefenseAbility('longbows', [minimumPercent, bonusPercent]);
     }
   }
 

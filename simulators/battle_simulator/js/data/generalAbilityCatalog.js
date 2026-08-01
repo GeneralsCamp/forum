@@ -14,6 +14,7 @@ const SUPPORTED_ABILITY_FLAGS = {
   '1019': 'calmBeforeTheStorm',
   '1021': 'ayala',
   '1022': 'ambush',
+  '1023': 'longbows',
   '1025': 'reinforcedArrows',
   '1029': 'wayOfPerfection',
   '1030': 'vengeance',
@@ -74,7 +75,9 @@ function resolveDescription(groupId, ability, side, effectById, lang) {
     ).trim();
   }
   if (groupId === '1023') {
-    return replaceToken(replaceToken(replaceToken(text, 0, values[0] || '0'), 1, '10'), 2, trigger).trim();
+    const minimum = values[0] || '0';
+    const bonus = Number.isFinite(Number(minimum)) ? String(Number(minimum) / 10) : '0';
+    return replaceToken(replaceToken(replaceToken(text, 0, minimum), 1, bonus), 2, trigger).trim();
   }
   if (groupId === '1028') {
     const value = values[0] || '0';

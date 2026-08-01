@@ -340,9 +340,12 @@ const SPECIAL_ABILITY_HANDLERS = {
 
     "1023": ({ text, values, ability }) => {
         const v0 = values[0] ?? "0";
+        const bonus = Number.isFinite(Number(v0))
+            ? String(Number(v0) / 10)
+            : "0";
         return text
             .replace("{0}", v0)
-            .replace("{1}", "10")
+            .replace("{1}", bonus)
             .replace("{2}", ability.triggerperwave || "1")
             .trim();
     },
@@ -403,8 +406,11 @@ function resolveAbilityDescription(groupId, skill, ability, type) {
 
     if (groupId === "1023") {
         const v0 = values[0] ?? "0";
+        const bonus = Number.isFinite(Number(v0))
+            ? String(Number(v0) / 10)
+            : "0";
         text = text.replace("{0}", v0);
-        text = text.replace("{1}", "10");
+        text = text.replace("{1}", bonus);
         text = text.replace("{2}", ability.triggerperwave || "1");
         return text.trim();
     }

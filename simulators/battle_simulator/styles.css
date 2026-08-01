@@ -519,17 +519,27 @@ body {
 }
 
 .report-view-select {
+    appearance: none;
+    -webkit-appearance: none;
     width: 100%;
     min-width: 0;
     height: 38px;
     padding: 2px 34px 2px 10px;
     color: rgb(67, 51, 38);
     background-color: rgb(180, 140, 100);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10' viewBox='0 0 16 10'%3E%3Cpath d='M2 2l6 6 6-6' fill='none' stroke='%23433326' stroke-width='3' stroke-linecap='square' stroke-linejoin='miter'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 14px 9px;
     border: 2px solid rgb(67, 51, 38);
     border-radius: 0;
     font-size: 14px;
     font-weight: 900;
     outline: none;
+}
+
+.report-view-select::-ms-expand {
+    display: none;
 }
 
 .report-view-select option {
@@ -750,6 +760,17 @@ body {
 .report-ability-item small {
     font-size: 9px;
     line-height: 1.2;
+}
+
+@media (max-width: 480px) {
+    .report-ability-item {
+        grid-template-columns: 34px minmax(0, 1fr);
+    }
+
+    .report-ability-item img {
+        width: 34px;
+        height: 34px;
+    }
 }
 
 .report-empty {
