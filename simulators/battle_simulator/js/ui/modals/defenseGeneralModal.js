@@ -21,6 +21,7 @@ export function openDefenseGeneralModal() {
   bindToggle('defense-ability-courtyard-steal', 'courtyardStealBonus');
   bindToggle('defense-ability-courtyard-loss-bonus', 'courtyardLossBonus');
   bindToggle('defense-ability-every-second-wave', 'everySecondWaveStrength');
+  bindToggle('defense-ability-wings-whirlwind', 'wingsWhirlwind');
 
   modal.show();
 }

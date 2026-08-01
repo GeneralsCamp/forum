@@ -198,6 +198,10 @@ export const modalsData = [
               <input type="checkbox" id="attack-ability-every-second-wave" />
               <span>Offense: +10% combat strength for attackers during every 2nd wave.</span>
             </label>
+            <label class="general-ability-row">
+              <input type="checkbox" id="attack-ability-wings-whirlwind" />
+              <span>Wings Whirlwind: +21% ranged attack power and -21% enemy ranged defense power.</span>
+            </label>
           </div>
         </div>
       </div>
@@ -235,6 +239,10 @@ export const modalsData = [
             <label class="general-ability-row">
               <input type="checkbox" id="defense-ability-every-second-wave" />
               <span>Defense: +10% combat strength for defenders during every 2nd wave.</span>
+            </label>
+            <label class="general-ability-row">
+              <input type="checkbox" id="defense-ability-wings-whirlwind" />
+              <span>Wings Whirlwind: +21% ranged defense power and -21% enemy ranged attack power.</span>
             </label>
           </div>
         </div>

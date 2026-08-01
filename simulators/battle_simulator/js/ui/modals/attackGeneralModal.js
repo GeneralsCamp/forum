@@ -22,6 +22,7 @@ export function openAttackGeneralModal() {
   bindToggle('attack-ability-courtyard-loss-bonus', 'courtyardLossBonus');
   bindToggle('attack-ability-odd-even-swing', 'oddEvenStrengthSwing');
   bindToggle('attack-ability-every-second-wave', 'everySecondWaveStrength');
+  bindToggle('attack-ability-wings-whirlwind', 'wingsWhirlwind');
 
   modal.show();
 }

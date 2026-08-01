@@ -561,6 +561,15 @@ function computeWaveBattle(side, wave, defenseUnits, attackTotalMultiplier = 1, 
     totalAttackMelee *= 0.75;
   }
 
+  if (attackGeneralAbilities.wingsWhirlwind) {
+    totalAttackRanged *= 1.21;
+    totalDefenseRanged *= 0.79;
+  }
+  if (defenseGeneralAbilities.wingsWhirlwind) {
+    totalDefenseRanged *= 1.21;
+    totalAttackRanged *= 0.79;
+  }
+
   if (attackGeneralAbilities.oddEvenStrengthSwing) {
     const swingMult = waveIndex % 2 === 1 ? 0.5 : 1.6;
     totalAttackRanged *= swingMult;

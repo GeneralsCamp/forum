@@ -60,7 +60,8 @@ export let attackGeneralAbilities = {
   courtyardStealBonus: false,
   courtyardLossBonus: false,
   oddEvenStrengthSwing: false,
-  everySecondWaveStrength: false
+  everySecondWaveStrength: false,
+  wingsWhirlwind: false
 };
 
 export let defenseGeneralAbilities = {
@@ -69,7 +70,8 @@ export let defenseGeneralAbilities = {
   conditionalMeleeBoost: false,
   courtyardStealBonus: false,
   courtyardLossBonus: false,
-  everySecondWaveStrength: false
+  everySecondWaveStrength: false,
+  wingsWhirlwind: false
 };
 
 export let attackBasics = {
