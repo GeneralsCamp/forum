@@ -674,6 +674,16 @@ body {
     min-height: 52vh;
 }
 
+#attackGeneralModal .modal-body,
+#defenseGeneralModal .modal-body,
+#basicsModal .modal-body,
+#commanderStatsModal .modal-body,
+#castellanStatsModal .modal-body {
+    height: 68vh;
+    max-height: 68vh;
+    min-height: 68vh;
+}
+
 .wave-editor-sticky {
     position: sticky;
     top: 0;

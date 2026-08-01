@@ -603,7 +603,16 @@ function computeWaveBattle(side, wave, defenseUnits, attackTotalMultiplier = 1, 
     }
     if (defenseGeneralAbilities.courtyardStealBonus) {
       defenseCourtyardStealBonus = Math.min(totalAttack * 0.09, baseDefenseStrength * 3);
-      totalDefense += defenseCourtyardStealBonus;
+      const defenseStrengthBeforeSteal = totalDefenseRanged + totalDefenseMelee;
+      const rangedShare = defenseStrengthBeforeSteal > 0
+        ? totalDefenseRanged / defenseStrengthBeforeSteal
+        : 0;
+      const meleeShare = defenseStrengthBeforeSteal > 0
+        ? totalDefenseMelee / defenseStrengthBeforeSteal
+        : 0;
+      totalDefenseRanged += defenseCourtyardStealBonus * rangedShare;
+      totalDefenseMelee += defenseCourtyardStealBonus * meleeShare;
+      totalDefense = totalDefenseRanged + totalDefenseMelee;
     }
   }
 
