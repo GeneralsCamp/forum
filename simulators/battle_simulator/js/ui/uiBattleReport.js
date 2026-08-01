@@ -293,21 +293,19 @@ function sumAttackToolEffects(tools = []) {
     const effectData = toolEffects?.[tool.type];
     if (!effectData) return;
 
-    if (effectData.effect1?.name) {
-      const name = effectData.effect1.name;
-      const value = effectData.effect1.value * tool.count;
-      if (name === 'Wall') totals.wall += value;
-      if (name === 'Moat') totals.moat += value;
-      if (name === 'Gate') totals.gate += value;
-      if (name === 'Shield') totals.shield += value;
-    }
-
-    if (effectData.effect2?.name) {
-      const name = effectData.effect2.name;
-      const value = effectData.effect2.value * tool.count;
-      if (name === 'RangedStrength') totals.rangedStrength += value;
-      if (name === 'MeleeStrength') totals.meleeStrength += value;
-    }
+    [effectData.effect1, effectData.effect2].forEach(effect => {
+      if (!effect?.name) return;
+      const keyByEffectName = {
+        Wall: 'wall',
+        Moat: 'moat',
+        Gate: 'gate',
+        Shield: 'shield',
+        RangedStrength: 'rangedStrength',
+        MeleeStrength: 'meleeStrength'
+      };
+      const key = keyByEffectName[effect.name];
+      if (key) totals[key] += effect.value * tool.count;
+    });
   });
 
   return totals;
