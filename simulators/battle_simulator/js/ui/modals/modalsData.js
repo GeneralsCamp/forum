@@ -167,88 +167,18 @@ export const modalsData = [
     id: 'attackGeneralModal',
     title: 'Attack General',
     body: `
-      <div class="col-12">
-        <div class="modal-card-body mt-1">
-          <div class="general-ability-list">
-            <label class="general-ability-row">
-              <input type="checkbox" id="attack-ability-wave-strength" />
-              <span>Offense: Increase combat strength for attack units by an additional 4% with each attack wave.</span>
-            </label>
-            <label class="general-ability-row">
-              <input type="checkbox" id="attack-ability-periodic-debuff" />
-              <span>Reduces enemy power by -25% in the following 2 waves. Activates every 3 waves.</span>
-            </label>
-            <label class="general-ability-row">
-              <input type="checkbox" id="attack-ability-conditional-melee" />
-              <span>Increase attackers' melee combat strength on that section by 100% if the defenders' base melee strength surpasses their base ranged strength in a wall section.</span>
-            </label>
-            <label class="general-ability-row">
-              <input type="checkbox" id="attack-ability-courtyard-steal" />
-              <span>Gain a bonus to the attacker courtyard combat strength equal to 9% of the defending units' total courtyard combat strength. Cap: 3 times of attackers' strength.</span>
-            </label>
-            <label class="general-ability-row">
-              <input type="checkbox" id="attack-ability-courtyard-loss-bonus" />
-              <span>Offense: +0.7% attack units combat strength in the courtyard battle for every 100 attack units lost during the wall fight. Capped at 30%.</span>
-            </label>
-            <label class="general-ability-row">
-              <input type="checkbox" id="attack-ability-odd-even-swing" />
-              <span>Offense: Reduce attackers' combat strength by 50% on odd waves, then increase by 60% on even waves. Activates every wave.</span>
-            </label>
-            <label class="general-ability-row">
-              <input type="checkbox" id="attack-ability-every-second-wave" />
-              <span>Offense: +10% combat strength for attackers during every 2nd wave.</span>
-            </label>
-            <label class="general-ability-row">
-              <input type="checkbox" id="attack-ability-wings-whirlwind" />
-              <span>Wings Whirlwind: +21% ranged attack power and -21% enemy ranged defense power.</span>
-            </label>
-          </div>
-        </div>
-      </div>
+      <div class="general-loadout-root" data-general-mode="attack"></div>
     `,
-    footer: ``
+    footer: `<button type="button" id="confirmAttackGeneral" class="btn btn-success btn-confirm">Confirm</button>`
   },
   //Defense general modal
   {
     id: 'defenseGeneralModal',
     title: 'Defense General',
     body: `
-      <div class="col-12">
-        <div class="modal-card-body mt-1">
-          <div class="general-ability-list">
-            <label class="general-ability-row">
-              <input type="checkbox" id="defense-ability-wave-strength" />
-              <span>Defense: Increase combat strength for defense units by an additional 4% with each attack wave.</span>
-            </label>
-            <label class="general-ability-row">
-              <input type="checkbox" id="defense-ability-periodic-debuff" />
-              <span>Reduces enemy power by -25% in the following 2 waves. Activates every 3 waves.</span>
-            </label>
-            <label class="general-ability-row">
-              <input type="checkbox" id="defense-ability-conditional-melee" />
-              <span>Increase defenders' melee combat strength on that section by 100% if the attackers' base melee strength surpasses their base ranged strength in a wall section.</span>
-            </label>
-            <label class="general-ability-row">
-              <input type="checkbox" id="defense-ability-courtyard-steal" />
-              <span>Gain a bonus to the defender courtyard combat strength equal to 9% of the attacking units' total courtyard combat strength. Cap: 3 times of defenders' strength.</span>
-            </label>
-            <label class="general-ability-row">
-              <input type="checkbox" id="defense-ability-courtyard-loss-bonus" />
-              <span>Defense: +0.7% defense units combat strength in the courtyard battle for every 100 defense units lost during the wall fight. Capped at 30%.</span>
-            </label>
-            <label class="general-ability-row">
-              <input type="checkbox" id="defense-ability-every-second-wave" />
-              <span>Defense: +10% combat strength for defenders during every 2nd wave.</span>
-            </label>
-            <label class="general-ability-row">
-              <input type="checkbox" id="defense-ability-wings-whirlwind" />
-              <span>Wings Whirlwind: +21% ranged defense power and -21% enemy ranged attack power.</span>
-            </label>
-          </div>
-        </div>
-      </div>
+      <div class="general-loadout-root" data-general-mode="defense"></div>
     `,
-    footer: ``
+    footer: `<button type="button" id="confirmDefenseGeneral" class="btn btn-success btn-confirm">Confirm</button>`
   },
   //Attacker troops modal
   {

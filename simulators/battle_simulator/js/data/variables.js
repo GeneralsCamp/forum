@@ -54,24 +54,48 @@ export let castellanStats = {
 };
 
 export let attackGeneralAbilities = {
-  waveStrengthBonus: false,
-  periodicDebuff: false,
-  conditionalMeleeBoost: false,
-  courtyardStealBonus: false,
-  courtyardLossBonus: false,
-  oddEvenStrengthSwing: false,
-  everySecondWaveStrength: false,
-  wingsWhirlwind: false
+  endlessPractice: false,
+  lastingWounds: false,
+  wayOfTheSword: false,
+  giantSlayer: false,
+  vengeance: false,
+  calmBeforeTheStorm: false,
+  powerSurge: false,
+  hordebreaker: false,
+  ironWill: false,
+  toolFoulUp: false,
+  heartOfAWarrior: false,
+  toweringShield: false,
+  ayala: false,
+  ambush: false,
+  reinforcedArrows: false,
+  wayOfPerfection: false,
+  tailwhip: false,
+  dragonscaleArmor: false,
+  wingsWhirlwind: false,
+  exalted: false
 };
 
 export let defenseGeneralAbilities = {
-  waveStrengthBonus: false,
-  periodicDebuff: false,
-  conditionalMeleeBoost: false,
-  courtyardStealBonus: false,
-  courtyardLossBonus: false,
-  everySecondWaveStrength: false,
-  wingsWhirlwind: false
+  endlessPractice: false,
+  lastingWounds: false,
+  wayOfTheSword: false,
+  giantSlayer: false,
+  vengeance: false,
+  powerSurge: false,
+  hordebreaker: false,
+  ironWill: false,
+  toolFoulUp: false,
+  heartOfAWarrior: false,
+  toweringShield: false,
+  ayala: false,
+  ambush: false,
+  reinforcedArrows: false,
+  wayOfPerfection: false,
+  tailwhip: false,
+  dragonscaleArmor: false,
+  wingsWhirlwind: false,
+  exalted: false
 };
 
 export let attackBasics = {

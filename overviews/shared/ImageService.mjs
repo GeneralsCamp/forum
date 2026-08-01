@@ -363,7 +363,8 @@ function parseGenerals(text) {
     const base =
         ASSET_ROOT;
 
-    const portraits = {};
+    const fullPortraits = {};
+    const icons = {};
     const abilities = {};
 
     const portraitRegex =
@@ -374,14 +375,14 @@ function parseGenerals(text) {
     for (const m of text.matchAll(portraitRegex)) {
 
         const id = m[1];
-        portraits[id] =
+        fullPortraits[id] =
             `${base}${m[0]}.webp`;
     }
 
     for (const m of text.matchAll(generalIconRegex)) {
 
         const id = m[1];
-        portraits[id] =
+        icons[id] =
             `${base}${m[0]}.webp`;
     }
 
@@ -396,7 +397,9 @@ function parseGenerals(text) {
     }
 
     return {
-        portraits,
+        portraits: icons,
+        fullPortraits,
+        icons,
         abilities
     };
 }

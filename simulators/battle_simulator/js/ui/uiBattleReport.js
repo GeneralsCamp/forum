@@ -53,6 +53,117 @@ function sumCounts(units = []) {
   return units.reduce((acc, unit) => acc + (unit.count || 0), 0);
 }
 
+function totalPlannedWallAttackers() {
+  return ['left', 'front', 'right'].reduce((total, side) => total +
+    (waves[side] || []).reduce((waveTotal, wave) => waveTotal +
+      (wave?.slots || []).reduce((slotTotal, slot) => slotTotal + (slot?.count || 0), 0), 0), 0);
+}
+
+function totalWallDefenders() {
+  return ['left', 'front', 'right'].reduce((total, side) => total +
+    (defenseSlots[side]?.units || []).reduce((slotTotal, slot) => slotTotal + (slot?.count || 0), 0), 0);
+}
+
+function isAbilitySuppressedByAyala(owner, side, waveIndex, phase = 'wave') {
+  if (side === 'cy') return false;
+  const enemyHasAyala = owner === 'attack'
+    ? defenseGeneralAbilities.ayala
+    : attackGeneralAbilities.ayala;
+  return enemyHasAyala && (phase === 'preCombat' || waveIndex <= 2);
+}
+
+function isAttackAbilityActive(flag, side, waveIndex, phase = 'wave') {
+  return Boolean(attackGeneralAbilities[flag]) &&
+    !isAbilitySuppressedByAyala('attack', side, waveIndex, phase);
+}
+
+function isDefenseAbilityActive(flag, side, waveIndex, phase = 'wave') {
+  return Boolean(defenseGeneralAbilities[flag]) &&
+    !isAbilitySuppressedByAyala('defense', side, waveIndex, phase);
+}
+
+function attackWallAbilityScale(side, waveIndex, phase = 'wave') {
+  return isDefenseAbilityActive('ironWill', side, waveIndex, phase) ? 0.8 : 1;
+}
+
+function defenseWallAbilityScale(side, waveIndex, phase = 'wave') {
+  return isAttackAbilityActive('ironWill', side, waveIndex, phase) ? 0.8 : 1;
+}
+
+function attackGeneralDebuffScale(side, waveIndex, { phase = 'wave' } = {}) {
+  return attackWallAbilityScale(side, waveIndex, phase);
+}
+
+function defenseGeneralDebuffScale(side, waveIndex, { phase = 'wave' } = {}) {
+  return defenseWallAbilityScale(side, waveIndex, phase);
+}
+
+function matchesPreviousAttackWave(wave, previousWaveResult) {
+  const previousWave = previousWaveResult?.sourceWave;
+  if (!previousWave) return false;
+  const currentSlots = wave?.slots || [];
+  const previousSlots = previousWave?.slots || [];
+  const unitSlotCount = Math.max(currentSlots.length, previousSlots.length);
+  const unitCountsMatch = Array.from({ length: unitSlotCount }, (_, index) =>
+    (currentSlots[index]?.count || 0) === (previousSlots[index]?.count || 0)
+  ).every(Boolean);
+
+  const currentTools = wave?.tools || [];
+  const previousTools = previousWave?.tools || [];
+  const toolSlotCount = Math.max(currentTools.length, previousTools.length);
+  const toolsMatch = Array.from({ length: toolSlotCount }, (_, index) =>
+    (currentTools[index]?.count || 0) === (previousTools[index]?.count || 0) &&
+    (currentTools[index]?.type || '') === (previousTools[index]?.type || '')
+  ).every(Boolean);
+
+  return unitCountsMatch && toolsMatch;
+}
+
+function pureDefenseUnitType(defenseUnits) {
+  const activeUnits = defenseUnits.filter(unit => unit.count > 0);
+  const exactUnitTypes = new Set(activeUnits.map(unit => toUnitKey(unit.type)));
+  return exactUnitTypes.size === 1 ? activeUnits[0].type2 : '';
+}
+
+function applyPercentageKills(units = [], predicate, rate = 0) {
+  const losses = new Map();
+  units.forEach(unit => {
+    if (!unit || unit.count <= 0 || !predicate(unit)) return;
+    const loss = unit.count * rate;
+    unit.count -= loss;
+    const key = toUnitKey(unit.type);
+    losses.set(key, (losses.get(key) || 0) + loss);
+  });
+  return losses;
+}
+
+function getPreviousAttackerLossStrength(previousWaveResult) {
+  const result = { ranged: 0, melee: 0 };
+  if (!previousWaveResult) return result;
+
+  (previousWaveResult.attackerUnits || []).forEach(unit => {
+    const loss = previousWaveResult.attackerLosses?.get(toUnitKey(unit.type)) || 0;
+    if (unit.type2 === 'ranged') {
+      result.ranged += loss * (unit.rangedCombatStrength || 0);
+    } else {
+      result.melee += loss * (unit.meleeCombatStrength || 0);
+    }
+  });
+  return result;
+}
+
+function getPreviousDefenderLossStrength(previousWaveResult) {
+  const result = { ranged: 0, melee: 0 };
+  if (!previousWaveResult) return result;
+
+  (previousWaveResult.defenderUnitStats || []).forEach(unit => {
+    const loss = previousWaveResult.defenderLosses?.get(toUnitKey(unit.type)) || 0;
+    result.ranged += loss * (unit.rangedDefenseStrength || 0);
+    result.melee += loss * (unit.meleeDefenseStrength || 0);
+  });
+  return result;
+}
+
 function formatNumber(value) {
   const numberValue = Number(value) || 0;
   return numberValue.toLocaleString();
@@ -288,8 +399,18 @@ function computeAttackBonusesPercent(side, toolTotals, waveIndex) {
   ranged += toolTotals.rangedStrength || 0;
   melee += toolTotals.meleeStrength || 0;
 
-  if (attackGeneralAbilities.waveStrengthBonus && waveIndex) {
-    const waveBonus = waveIndex * 4;
+  if (side !== 'cy' && isAttackAbilityActive('endlessPractice', side, waveIndex) && waveIndex) {
+    const waveBonus = waveIndex * 4 * attackWallAbilityScale(side, waveIndex);
+    ranged += waveBonus;
+    melee += waveBonus;
+  }
+  if (side !== 'cy' && isAttackAbilityActive('powerSurge', side, waveIndex) && waveIndex % 2 === 0) {
+    const bonus = 10 * attackWallAbilityScale(side, waveIndex);
+    ranged += bonus;
+    melee += bonus;
+  }
+  if (side !== 'cy' && isAttackAbilityActive('calmBeforeTheStorm', side, waveIndex)) {
+    const waveBonus = (waveIndex % 2 === 1 ? -50 : 60) * attackWallAbilityScale(side, waveIndex);
     ranged += waveBonus;
     melee += waveBonus;
   }
@@ -300,7 +421,7 @@ function computeAttackBonusesPercent(side, toolTotals, waveIndex) {
   };
 }
 
-function computeDefenseBonuses(side) {
+function computeDefenseBonuses(side, defenseToolScale = 1) {
   if (side === 'cy') {
     return { wall: 0, moat: 0, gate: 0 };
   }
@@ -321,7 +442,7 @@ function computeDefenseBonuses(side) {
 
       const applyEffect = effect => {
         if (!effect?.name) return;
-        const value = effect.value * tool.count;
+        const value = effect.value * tool.count * defenseToolScale;
         if (effect.name === 'Wall') bonuses.wall += value;
         if (effect.name === 'Moat') bonuses.moat += value;
         if (effect.name === 'Gate') bonuses.gate += value;
@@ -348,7 +469,7 @@ export function getCourtyardEntryMultiplier(enteredWallSides) {
   return 1;
 }
 
-function computeDefenseStrengthBonuses(side, waveIndex) {
+function computeDefenseStrengthBonuses(side, waveIndex, defenseToolScale = 1) {
   let ranged = 100 + (castellanStats.ranged || 0);
   let melee = 100 + (castellanStats.melee || 0);
   const courtyardToolTotals = getDefenseCourtyardEffectTotals();
@@ -370,7 +491,7 @@ function computeDefenseStrengthBonuses(side, waveIndex) {
 
       const applyEffect = effect => {
         if (!effect?.name) return;
-        const value = effect.value * tool.count;
+        const value = effect.value * tool.count * defenseToolScale;
         if (effect.name === 'MeleeStrength') melee += value;
         if (effect.name === 'RangedStrength') ranged += value;
       };
@@ -383,10 +504,15 @@ function computeDefenseStrengthBonuses(side, waveIndex) {
   ranged += combatStrengthBonus;
   melee += combatStrengthBonus;
 
-  if (defenseGeneralAbilities.waveStrengthBonus && waveIndex) {
-    const waveBonus = waveIndex * 4;
+  if (side !== 'cy' && isDefenseAbilityActive('endlessPractice', side, waveIndex) && waveIndex) {
+    const waveBonus = waveIndex * 4 * defenseWallAbilityScale(side, waveIndex);
     ranged += waveBonus;
     melee += waveBonus;
+  }
+  if (side !== 'cy' && isDefenseAbilityActive('powerSurge', side, waveIndex) && waveIndex % 2 === 0) {
+    const bonus = 10 * defenseWallAbilityScale(side, waveIndex);
+    ranged += bonus;
+    melee += bonus;
   }
 
   return { ranged, melee };
@@ -491,18 +617,89 @@ function computeAttackTotals(attackUnits = []) {
   return { rangedBase, meleeBase };
 }
 
-function computeWaveBattle(side, wave, defenseUnits, attackTotalMultiplier = 1, waveIndex = 1, defenseTotalMultiplier = 1) {
-  const attackUnits = buildAttackUnits(wave?.slots || []);
+function computeWaveBattle(
+  side,
+  wave,
+  defenseUnits,
+  attackTotalMultiplier = 1,
+  waveIndex = 1,
+  defenseTotalMultiplier = 1,
+  attackStrengthBonusPercent = 0,
+  previousWaveResult = null
+) {
+  const attackerUnitsBeforeAbilities = buildAttackUnits(wave?.slots || []);
+  const attackUnits = attackerUnitsBeforeAbilities.map(unit => ({ ...unit }));
+  const defenderBefore = new Map();
+  const defenderUnitStats = defenseUnits.map(unit => ({ ...unit }));
+  defenseUnits.forEach(unit => {
+    defenderBefore.set(toUnitKey(unit.type), unit.count);
+  });
+
+  let preCombatAttackerLosses = new Map();
+  let preCombatDefenderLosses = new Map();
+  if (side !== 'cy' && waveIndex === 1 &&
+      isAttackAbilityActive('ambush', side, waveIndex, 'preCombat') &&
+      totalPlannedWallAttackers() > totalWallDefenders()) {
+    preCombatDefenderLosses = applyPercentageKills(
+      defenseUnits,
+      () => true,
+      0.07 * attackGeneralDebuffScale(side, waveIndex, { phase: 'preCombat' })
+    );
+  }
+  if (side !== 'cy' && isDefenseAbilityActive('ambush', side, waveIndex, 'preCombat')) {
+    preCombatAttackerLosses = applyPercentageKills(
+      attackUnits,
+      () => true,
+      0.07 * defenseGeneralDebuffScale(side, waveIndex, { phase: 'preCombat' })
+    );
+  }
+
+  if (side !== 'cy' && waveIndex % 3 === 0) {
+    if (isAttackAbilityActive('tailwhip', side, waveIndex, 'preCombat') &&
+        totalPlannedWallAttackers() > totalWallDefenders()) {
+      const tailwhipLosses = applyPercentageKills(
+        defenseUnits,
+        unit => unit.type2 === 'melee',
+        0.025 * attackGeneralDebuffScale(side, waveIndex, { phase: 'preCombat' })
+      );
+      preCombatDefenderLosses = mergeLossMaps(preCombatDefenderLosses, tailwhipLosses);
+    }
+    if (isDefenseAbilityActive('tailwhip', side, waveIndex, 'preCombat')) {
+      const tailwhipLosses = applyPercentageKills(
+        attackUnits,
+        unit => unit.type2 === 'melee',
+        0.32 * defenseGeneralDebuffScale(side, waveIndex, { phase: 'preCombat' })
+      );
+      preCombatAttackerLosses = mergeLossMaps(preCombatAttackerLosses, tailwhipLosses);
+    }
+  }
+
   const attackTotals = computeAttackTotals(attackUnits);
   const toolTotals = sumAttackToolEffects(wave?.tools || []);
+  if (side !== 'cy' && waveIndex % 3 === 0 && isDefenseAbilityActive('toolFoulUp', side, waveIndex)) {
+    const toolEffectScale = 1 - 0.3 * defenseWallAbilityScale(side, waveIndex);
+    Object.keys(toolTotals).forEach(key => {
+      if (key !== 'shield') toolTotals[key] *= toolEffectScale;
+    });
+  }
   const attackBonus = computeAttackBonusesPercent(side, toolTotals, waveIndex);
+  attackBonus.rangedMult += attackStrengthBonusPercent / 100;
+  attackBonus.meleeMult += attackStrengthBonusPercent / 100;
 
   const moatReduction = (commanderStats.moatReduction || 0) + Math.max(0, -toolTotals.moat);
   const wallReduction = (commanderStats.wallReduction || 0) + Math.max(0, -toolTotals.wall);
   const gateReduction = (commanderStats.gateReduction || 0) + Math.max(0, -toolTotals.gate);
-  const shieldPercent = Math.max(0, -toolTotals.shield);
+  const reinforcedShieldScale = side !== 'cy' && waveIndex % 2 === 0 &&
+    isDefenseAbilityActive('reinforcedArrows', side, waveIndex)
+    ? 1 - 0.4 * defenseWallAbilityScale(side, waveIndex)
+    : 1;
+  const shieldPercent = Math.max(0, -toolTotals.shield) * reinforcedShieldScale;
 
-  const defenseBonuses = computeDefenseBonuses(side);
+  const defenseToolScale = side !== 'cy' && waveIndex % 3 === 0 &&
+    isAttackAbilityActive('toolFoulUp', side, waveIndex)
+    ? 1 - 0.3 * attackWallAbilityScale(side, waveIndex)
+    : 1;
+  const defenseBonuses = computeDefenseBonuses(side, defenseToolScale);
   const gateBonus = side === 'front' ? defenseBonuses.gate : 0;
   const defenseBonusMult = combineDefenseProtectionMultipliers(
     defenseBonuses.moat - moatReduction,
@@ -510,28 +707,86 @@ function computeWaveBattle(side, wave, defenseUnits, attackTotalMultiplier = 1, 
     gateBonus - gateReduction
   );
 
-  const defenseStrength = computeDefenseStrengthBonuses(side, waveIndex);
+  const defenseStrength = computeDefenseStrengthBonuses(side, waveIndex, defenseToolScale);
+
+  if (side !== 'cy' && waveIndex % 3 === 0) {
+    if (isAttackAbilityActive('hordebreaker', side, waveIndex)) {
+      const bonusPercent = Math.ceil(sumCounts(defenseUnits) / 100) * attackWallAbilityScale(side, waveIndex);
+      attackBonus.rangedMult += bonusPercent / 100;
+      attackBonus.meleeMult += bonusPercent / 100;
+    }
+    if (isDefenseAbilityActive('hordebreaker', side, waveIndex)) {
+      const bonusPercent = Math.floor(sumCounts(attackUnits) / 100) * defenseWallAbilityScale(side, waveIndex);
+      defenseStrength.ranged += bonusPercent;
+      defenseStrength.melee += bonusPercent;
+    }
+  }
+
+  const lastingWoundsActive = waveIndex >= 4 && waveIndex % 3 !== 0;
+  if (isAttackAbilityActive('lastingWounds', side, waveIndex) && lastingWoundsActive) {
+    defenseStrength.ranged -= 25 * attackGeneralDebuffScale(side, waveIndex, { ranged: true });
+    defenseStrength.melee -= 25 * attackGeneralDebuffScale(side, waveIndex);
+  }
+  if (isDefenseAbilityActive('lastingWounds', side, waveIndex) && lastingWoundsActive) {
+    attackBonus.rangedMult -= 0.25 * defenseGeneralDebuffScale(side, waveIndex, { ranged: true });
+    attackBonus.meleeMult -= 0.25 * defenseGeneralDebuffScale(side, waveIndex);
+  }
+
+  if (waveIndex % 2 === 0) {
+    if (isAttackAbilityActive('wingsWhirlwind', side, waveIndex)) {
+      attackBonus.rangedMult += 0.21 * attackWallAbilityScale(side, waveIndex);
+      defenseStrength.ranged -= 21 * attackGeneralDebuffScale(side, waveIndex, { ranged: true });
+    }
+    if (isDefenseAbilityActive('wingsWhirlwind', side, waveIndex)) {
+      defenseStrength.ranged += 21 * defenseWallAbilityScale(side, waveIndex);
+      attackBonus.rangedMult -= 0.21 * defenseGeneralDebuffScale(side, waveIndex, { ranged: true });
+    }
+  }
+
+  if (side !== 'cy') {
+    if (isAttackAbilityActive('wayOfPerfection', side, waveIndex) &&
+        waveIndex > 1 &&
+        matchesPreviousAttackWave(wave, previousWaveResult)) {
+      const bonus = 0.5 * attackWallAbilityScale(side, waveIndex);
+      attackBonus.rangedMult += bonus;
+      attackBonus.meleeMult += bonus;
+    }
+    if (isDefenseAbilityActive('wayOfPerfection', side, waveIndex)) {
+      const bonus = 50 * defenseWallAbilityScale(side, waveIndex);
+      const defenseType = pureDefenseUnitType(defenseUnits);
+      if (defenseType === 'ranged') defenseStrength.ranged += bonus;
+      if (defenseType === 'melee') defenseStrength.melee += bonus;
+    }
+  }
+
+  if (side !== 'cy' && waveIndex % 2 === 0) {
+    if (isAttackAbilityActive('dragonscaleArmor', side, waveIndex)) {
+      defenseStrength.melee -= 25 * attackGeneralDebuffScale(side, waveIndex);
+      defenseStrength.ranged -= 50 * attackGeneralDebuffScale(side, waveIndex);
+    }
+    if (isDefenseAbilityActive('dragonscaleArmor', side, waveIndex)) {
+      attackBonus.meleeMult -= 0.25 * defenseGeneralDebuffScale(side, waveIndex);
+      attackBonus.rangedMult -= 0.5 * defenseGeneralDebuffScale(side, waveIndex);
+    }
+  }
+
   const defenseRangedPercent = Math.max(defenseStrength.ranged - shieldPercent, 0);
   const defenseMeleePercent = defenseStrength.melee;
   const defenseRangedMult = defenseRangedPercent / 100;
   let defenseMeleeMult = defenseMeleePercent / 100;
 
   const defenseTotals = computeDefenseTotals(defenseUnits);
-  const defenderBefore = new Map();
-  defenseUnits.forEach(unit => {
-    defenderBefore.set(toUnitKey(unit.type), unit.count);
-  });
 
   const defenseBaseRanged = defenseTotals.meleeRangedBase + defenseTotals.rangedRangedBase;
   const defenseBaseMelee = defenseTotals.meleeMeleeBase + defenseTotals.rangedMeleeBase;
   const attackBaseRanged = attackTotals.rangedBase;
   const attackBaseMelee = attackTotals.meleeBase;
 
-  if (attackGeneralAbilities.conditionalMeleeBoost && side !== 'cy' && defenseBaseMelee > defenseBaseRanged) {
-    attackBonus.meleeMult += 1;
+  if (isAttackAbilityActive('wayOfTheSword', side, waveIndex) && side !== 'cy' && defenseBaseMelee > defenseBaseRanged) {
+    attackBonus.meleeMult += attackWallAbilityScale(side, waveIndex);
   }
-  if (defenseGeneralAbilities.conditionalMeleeBoost && side !== 'cy' && attackBaseMelee > attackBaseRanged) {
-    defenseMeleeMult += 1;
+  if (isDefenseAbilityActive('wayOfTheSword', side, waveIndex) && side !== 'cy' && attackBaseMelee > attackBaseRanged) {
+    defenseMeleeMult += defenseWallAbilityScale(side, waveIndex);
   }
 
   let totalAttackRanged = attackTotals.rangedBase * attackBonus.rangedMult * attackTotalMultiplier;
@@ -547,86 +802,79 @@ function computeWaveBattle(side, wave, defenseUnits, attackTotalMultiplier = 1, 
     defenseTotals.rangedMeleeBase * defenseRangedMult
   ) * defenseBonusMult;
 
+  let heartAttackRangedBonus = 0;
+  let heartAttackMeleeBonus = 0;
+  let heartDefenseRangedBonus = 0;
+  let heartDefenseMeleeBonus = 0;
+  if (side !== 'cy' && waveIndex % 2 === 0 && previousWaveResult) {
+    if (isAttackAbilityActive('heartOfAWarrior', side, waveIndex)) {
+      const previousLossStrength = getPreviousAttackerLossStrength(previousWaveResult);
+      const effectScale = attackWallAbilityScale(side, waveIndex);
+      heartAttackRangedBonus = previousLossStrength.ranged * 0.4 * effectScale;
+      heartAttackMeleeBonus = previousLossStrength.melee * 0.4 * effectScale;
+      totalAttackRanged += heartAttackRangedBonus;
+      totalAttackMelee += heartAttackMeleeBonus;
+    }
+    if (isDefenseAbilityActive('heartOfAWarrior', side, waveIndex)) {
+      const previousLossStrength = getPreviousDefenderLossStrength(previousWaveResult);
+      const effectScale = defenseWallAbilityScale(side, waveIndex);
+      heartDefenseRangedBonus = previousLossStrength.ranged * 0.62 * effectScale;
+      heartDefenseMeleeBonus = previousLossStrength.melee * 0.62 * effectScale;
+      totalDefenseRanged += heartDefenseRangedBonus;
+      totalDefenseMelee += heartDefenseMeleeBonus;
+    }
+  }
+
+  if (side === 'cy' && (attackGeneralAbilities.giantSlayer || defenseGeneralAbilities.giantSlayer)) {
+    const attackRangedBeforeBonus = totalAttackRanged;
+    const attackMeleeBeforeBonus = totalAttackMelee;
+    const defenseRangedBeforeBonus = totalDefenseRanged;
+    const defenseMeleeBeforeBonus = totalDefenseMelee;
+
+    if (attackGeneralAbilities.giantSlayer) {
+      totalAttackRanged += Math.min(defenseRangedBeforeBonus, attackRangedBeforeBonus * 3) * 0.09;
+      totalAttackMelee += Math.min(defenseMeleeBeforeBonus, attackMeleeBeforeBonus * 3) * 0.09;
+    }
+    if (defenseGeneralAbilities.giantSlayer) {
+      totalDefenseRanged += Math.min(attackRangedBeforeBonus, defenseRangedBeforeBonus * 3) * 0.09;
+      totalDefenseMelee += Math.min(attackMeleeBeforeBonus, defenseMeleeBeforeBonus * 3) * 0.09;
+    }
+  }
+
   if (defenseTotalMultiplier !== 1) {
     totalDefenseRanged *= defenseTotalMultiplier;
     totalDefenseMelee *= defenseTotalMultiplier;
   }
 
-  if (attackGeneralAbilities.periodicDebuff && waveIndex >= 4 && waveIndex % 3 !== 0) {
-    totalDefenseRanged *= 0.75;
-    totalDefenseMelee *= 0.75;
-  }
-  if (defenseGeneralAbilities.periodicDebuff && waveIndex >= 4 && waveIndex % 3 !== 0) {
-    totalAttackRanged *= 0.75;
-    totalAttackMelee *= 0.75;
-  }
+  let defenseRangedForAttackerCasualties = totalDefenseRanged;
+  let defenseMeleeForAttackerCasualties = totalDefenseMelee;
+  let attackRangedForDefenderCasualties = totalAttackRanged;
+  let attackMeleeForDefenderCasualties = totalAttackMelee;
 
-  if (attackGeneralAbilities.wingsWhirlwind) {
-    totalAttackRanged *= 1.21;
-    totalDefenseRanged *= 0.79;
-  }
-  if (defenseGeneralAbilities.wingsWhirlwind) {
-    totalDefenseRanged *= 1.21;
-    totalAttackRanged *= 0.79;
-  }
-
-  if (attackGeneralAbilities.oddEvenStrengthSwing) {
-    const swingMult = waveIndex % 2 === 1 ? 0.5 : 1.6;
-    totalAttackRanged *= swingMult;
-    totalAttackMelee *= swingMult;
-  }
-
-  if (attackGeneralAbilities.everySecondWaveStrength && waveIndex % 2 === 0) {
-    totalAttackRanged *= 1.1;
-    totalAttackMelee *= 1.1;
-  }
-
-  if (defenseGeneralAbilities.everySecondWaveStrength && waveIndex % 2 === 0) {
-    totalDefenseRanged *= 1.1;
-    totalDefenseMelee *= 1.1;
-  }
-
-  const totalAttack = totalAttackRanged + totalAttackMelee;
-  let totalDefense = totalDefenseRanged + totalDefenseMelee;
-
-  let baseAttackStrength = 0;
-  let baseDefenseStrength = 0;
-  let attackCourtyardStealBonus = 0;
-  let defenseCourtyardStealBonus = 0;
-
-  if (side === 'cy' && (attackGeneralAbilities.courtyardStealBonus || defenseGeneralAbilities.courtyardStealBonus)) {
-    baseAttackStrength = attackTotals.rangedBase + attackTotals.meleeBase;
-    baseDefenseStrength = defenseTotals.meleeRangedBase + defenseTotals.rangedRangedBase + defenseTotals.meleeMeleeBase + defenseTotals.rangedMeleeBase;
-
-    if (attackGeneralAbilities.courtyardStealBonus) {
-      attackCourtyardStealBonus = Math.min(totalDefense * 0.09, baseAttackStrength * 3);
-      const attackStrengthBeforeSteal = totalAttackRanged + totalAttackMelee;
-      const rangedShare = attackStrengthBeforeSteal > 0
-        ? totalAttackRanged / attackStrengthBeforeSteal
-        : 0;
-      const meleeShare = attackStrengthBeforeSteal > 0
-        ? totalAttackMelee / attackStrengthBeforeSteal
-        : 0;
-      totalAttackRanged += attackCourtyardStealBonus * rangedShare;
-      totalAttackMelee += attackCourtyardStealBonus * meleeShare;
+  if (side !== 'cy' && waveIndex % 3 === 0) {
+    if (isAttackAbilityActive('toweringShield', side, waveIndex)) {
+      const reduction = 14 * attackGeneralDebuffScale(side, waveIndex, { ranged: true });
+      const reducedDefenseRangedMult = Math.max((defenseRangedPercent - reduction) / 100, 0);
+      defenseRangedForAttackerCasualties = (
+        defenseTotals.meleeRangedBase * defenseMeleeMult +
+        defenseTotals.rangedRangedBase * reducedDefenseRangedMult
+      ) * defenseBonusMult + heartDefenseRangedBonus;
+      defenseMeleeForAttackerCasualties = (
+        defenseTotals.meleeMeleeBase * defenseMeleeMult +
+        defenseTotals.rangedMeleeBase * reducedDefenseRangedMult
+      ) * defenseBonusMult + heartDefenseMeleeBonus;
     }
-    if (defenseGeneralAbilities.courtyardStealBonus) {
-      defenseCourtyardStealBonus = Math.min(totalAttack * 0.09, baseDefenseStrength * 3);
-      const defenseStrengthBeforeSteal = totalDefenseRanged + totalDefenseMelee;
-      const rangedShare = defenseStrengthBeforeSteal > 0
-        ? totalDefenseRanged / defenseStrengthBeforeSteal
-        : 0;
-      const meleeShare = defenseStrengthBeforeSteal > 0
-        ? totalDefenseMelee / defenseStrengthBeforeSteal
-        : 0;
-      totalDefenseRanged += defenseCourtyardStealBonus * rangedShare;
-      totalDefenseMelee += defenseCourtyardStealBonus * meleeShare;
-      totalDefense = totalDefenseRanged + totalDefenseMelee;
+    if (isDefenseAbilityActive('toweringShield', side, waveIndex)) {
+      const reduction = 0.14 * defenseGeneralDebuffScale(side, waveIndex, { ranged: true });
+      const reducedAttackRangedMult = Math.max(attackBonus.rangedMult - reduction, 0);
+      attackRangedForDefenderCasualties =
+        attackTotals.rangedBase * reducedAttackRangedMult * attackTotalMultiplier +
+        heartAttackRangedBonus;
     }
   }
 
   const finalTotalAttack = totalAttackRanged + totalAttackMelee;
-  const finalTotalDefense = totalDefense;
+  const finalTotalDefense = totalDefenseRanged + totalDefenseMelee;
 
   const attackerTotalCount = sumCounts(attackUnits);
   const defenderTotalCount = defenseTotals.rangedCount + defenseTotals.meleeCount;
@@ -638,11 +886,17 @@ function computeWaveBattle(side, wave, defenseUnits, attackTotalMultiplier = 1, 
   const attackRangedShare = attackTotalStrength > 0 ? totalAttackRanged / attackTotalStrength : 0;
   const attackMeleeShare = attackTotalStrength > 0 ? totalAttackMelee / attackTotalStrength : 0;
 
-  const scaledDefenseRanged = hasAttackRanged
+  const normalScaledDefenseRanged = hasAttackRanged
     ? totalDefenseRanged * (hasAttackMelee ? attackRangedShare : 1)
     : 0;
-  const scaledDefenseMelee = hasAttackMelee
+  const normalScaledDefenseMelee = hasAttackMelee
     ? totalDefenseMelee * (hasAttackRanged ? attackMeleeShare : 1)
+    : 0;
+  const scaledDefenseRanged = hasAttackRanged
+    ? defenseRangedForAttackerCasualties * (hasAttackMelee ? attackRangedShare : 1)
+    : 0;
+  const scaledDefenseMelee = hasAttackMelee
+    ? defenseMeleeForAttackerCasualties * (hasAttackRanged ? attackMeleeShare : 1)
     : 0;
 
   const rangedKillRatio = hasAttackRanged
@@ -662,15 +916,15 @@ function computeWaveBattle(side, wave, defenseUnits, attackTotalMultiplier = 1, 
   const meleeLoss = Math.min(Math.ceil(attackMeleeCount * meleeKillRatio), attackMeleeCount);
 
   const defenderAttackForRatio = hasAttackRanged && !hasAttackMelee
-    ? totalAttackRanged
+    ? attackRangedForDefenderCasualties
     : !hasAttackRanged && hasAttackMelee
-      ? totalAttackMelee
-      : attackTotalStrength;
+      ? attackMeleeForDefenderCasualties
+      : attackRangedForDefenderCasualties + attackMeleeForDefenderCasualties;
   const defenderDefenseForRatio = hasAttackRanged && !hasAttackMelee
     ? totalDefenseRanged
     : !hasAttackRanged && hasAttackMelee
       ? totalDefenseMelee
-      : (scaledDefenseRanged + scaledDefenseMelee);
+      : (normalScaledDefenseRanged + normalScaledDefenseMelee);
   const defendersKilledRatio = defenderAttackForRatio <= 0
     ? 0
     : defenderAttackForRatio < defenderDefenseForRatio
@@ -696,26 +950,29 @@ function computeWaveBattle(side, wave, defenseUnits, attackTotalMultiplier = 1, 
     defenderMeleeLoss += Math.max(0, defenderMissing - extraRanged);
   }
 
-  const attackerLosses = new Map();
+  const combatAttackerLosses = new Map();
   const rangedLosses = distributeLossesByUnit(attackUnits.filter(u => u.type2 === 'ranged'), rangedLoss);
   const meleeLosses = distributeLossesByUnit(attackUnits.filter(u => u.type2 === 'melee'), meleeLoss);
   attackUnits.forEach(unit => {
     const key = toUnitKey(unit.type);
-    attackerLosses.set(key, (rangedLosses.get(key) || 0) + (meleeLosses.get(key) || 0));
+    combatAttackerLosses.set(key, (rangedLosses.get(key) || 0) + (meleeLosses.get(key) || 0));
   });
 
-  const defenderLosses = new Map();
+  const combatDefenderLosses = new Map();
   const rangedDefenderLosses = distributeLossesByUnit(defenseUnits.filter(u => u.type2 === 'ranged'), defenderRangedLoss);
   const meleeDefenderLosses = distributeLossesByUnit(defenseUnits.filter(u => u.type2 === 'melee'), defenderMeleeLoss);
   defenseUnits.forEach(unit => {
     const key = toUnitKey(unit.type);
-    defenderLosses.set(key, (rangedDefenderLosses.get(key) || 0) + (meleeDefenderLosses.get(key) || 0));
+    combatDefenderLosses.set(key, (rangedDefenderLosses.get(key) || 0) + (meleeDefenderLosses.get(key) || 0));
   });
 
   defenseUnits.forEach(unit => {
-    const loss = defenderLosses.get(toUnitKey(unit.type)) || 0;
+    const loss = combatDefenderLosses.get(toUnitKey(unit.type)) || 0;
     unit.count = Math.max(0, unit.count - loss);
   });
+
+  const attackerLosses = mergeLossMaps(preCombatAttackerLosses, combatAttackerLosses);
+  const defenderLosses = mergeLossMaps(preCombatDefenderLosses, combatDefenderLosses);
 
   const defenderRemaining = new Map();
   defenseUnits.forEach(unit => {
@@ -723,13 +980,15 @@ function computeWaveBattle(side, wave, defenseUnits, attackTotalMultiplier = 1, 
   });
 
   return {
-    attackerUnits: attackUnits,
+    sourceWave: wave,
+    attackerUnits: attackerUnitsBeforeAbilities,
     defenderUnits: defenseUnits,
+    defenderUnitStats,
     defenderBefore,
     attackerLosses,
     defenderLosses,
-    attackerTotalLoss,
-    defenderTotalLoss,
+    attackerTotalLoss: sumMapValues(attackerLosses),
+    defenderTotalLoss: sumMapValues(defenderLosses),
     defenderRemaining
   };
 }
@@ -740,10 +999,12 @@ function simulateSide(side) {
   const waveList = waves[side] || [];
 
   const attackerSurvivors = new Map();
+  let previousWaveResult = null;
 
   waveList.forEach((wave, index) => {
-    const waveResult = computeWaveBattle(side, wave, defenseUnits, 1, index + 1);
+    const waveResult = computeWaveBattle(side, wave, defenseUnits, 1, index + 1, 1, 0, previousWaveResult);
     results.waves.push(waveResult);
+    previousWaveResult = waveResult;
 
     waveResult.attackerUnits.forEach(unit => {
       const loss = waveResult.attackerLosses.get(toUnitKey(unit.type)) || 0;
@@ -877,20 +1138,25 @@ function computeBattleResults(side) {
 
   let attackTotalMultiplier = getCourtyardEntryMultiplier(enteredWallSides);
 
-  let defenseTotalMultiplier = 1;
-  if (attackGeneralAbilities.courtyardLossBonus || defenseGeneralAbilities.courtyardLossBonus) {
-    const wallAttackLosses = wallResults.reduce((acc, result) => acc + sumMapValues(result.totals?.attackerLosses), 0);
-    const wallDefenseLosses = wallResults.reduce((acc, result) => acc + sumMapValues(result.totals?.defenderLosses), 0);
+  let attackStrengthBonusPercent = 0;
+  let defenseStrengthBonusPercent = 0;
+  const wallAttackLosses = wallResults.reduce((acc, result) => acc + sumMapValues(result.totals?.attackerLosses), 0);
+  const wallDefenseLosses = wallResults.reduce((acc, result) => acc + sumMapValues(result.totals?.defenderLosses), 0);
 
-    if (attackGeneralAbilities.courtyardLossBonus) {
-      const bonusPercent = Math.min(Math.floor(wallAttackLosses / 100) * 0.7, 30);
-      attackTotalMultiplier *= 1 + bonusPercent / 100;
-    }
-    if (defenseGeneralAbilities.courtyardLossBonus) {
-      const bonusPercent = Math.min(Math.floor(wallDefenseLosses / 100) * 0.7, 30);
-      defenseTotalMultiplier *= 1 + bonusPercent / 100;
-    }
+  if (attackGeneralAbilities.vengeance) {
+    attackStrengthBonusPercent += Math.min(Math.floor(wallAttackLosses / 100) * 0.7, 30);
   }
+  if (defenseGeneralAbilities.vengeance) {
+    defenseStrengthBonusPercent += Math.min(Math.floor(wallDefenseLosses / 100) * 0.7, 30);
+  }
+
+  if (attackGeneralAbilities.exalted) {
+    attackStrengthBonusPercent += Math.min(wallDefenseLosses * 0.002, 15);
+  }
+  if (defenseGeneralAbilities.exalted) {
+    defenseStrengthBonusPercent += Math.min(Math.floor(wallAttackLosses / 100) * 0.25, 15);
+  }
+  const defenseTotalMultiplier = 1 + defenseStrengthBonusPercent / 100;
 
   const supportTotals = sumSupportToolEffects(waves['Support']?.[0]?.tools || []);
   const supportKills = new Map();
@@ -978,7 +1244,15 @@ function computeBattleResults(side) {
 
   const attackersMapForBattle = mapFromUnits(attackUnitsForBattle);
   const syntheticWave = { slots: mapToSlots(attackersMapForBattle, 'cy-attack'), tools: [] };
-  const waveResult = computeWaveBattle('cy', syntheticWave, defenseUnits, attackTotalMultiplier, 1, defenseTotalMultiplier);
+  const waveResult = computeWaveBattle(
+    'cy',
+    syntheticWave,
+    defenseUnits,
+    attackTotalMultiplier,
+    1,
+    defenseTotalMultiplier,
+    attackStrengthBonusPercent
+  );
 
   return {
     waves: [waveResult],

@@ -1,0 +1,230 @@
+import { attackGeneralAbilities, defenseGeneralAbilities } from './variables.js';
+import { readStoredJson, writeStoredJson } from './storage.js';
+
+const SUPPORTED_ABILITY_FLAGS = {
+  '1001': 'powerSurge',
+  '1003': 'giantSlayer',
+  '1007': 'hordebreaker',
+  '1010': 'endlessPractice',
+  '1011': 'wayOfTheSword',
+  '1012': 'ironWill',
+  '1013': 'toolFoulUp',
+  '1014': 'heartOfAWarrior',
+  '1015': 'toweringShield',
+  '1019': 'calmBeforeTheStorm',
+  '1021': 'ayala',
+  '1022': 'ambush',
+  '1025': 'reinforcedArrows',
+  '1029': 'wayOfPerfection',
+  '1030': 'vengeance',
+  '1033': 'wingsWhirlwind',
+  '1034': 'tailwhip',
+  '1035': 'dragonscaleArmor',
+  '1038': 'exalted',
+  '1039': 'lastingWounds'
+};
+
+const EMPTY_CATALOG = { generals: [], abilities: {} };
+let catalog = EMPTY_CATALOG;
+const savedLoadouts = {
+  attack: { generalId: '', slots: {} },
+  defense: { generalId: '', slots: {} }
+};
+
+function stringValue(value) {
+  return value == null ? '' : String(value);
+}
+
+function splitIds(value) {
+  return stringValue(value).split(',').map(id => id.trim()).filter(Boolean);
+}
+
+function buildLookup(items, key) {
+  return Object.fromEntries((items || [])
+    .filter(item => item?.[key] != null)
+    .map(item => [stringValue(item[key]), item]));
+}
+
+function getEffectValues(effect) {
+  return splitIds(effect?.effects).map(entry => entry.split('&')[1] || '0');
+}
+
+function replaceToken(text, index, value) {
+  return text.replace(new RegExp(`\\{${index}\\}`, 'g'), value);
+}
+
+function resolveDescription(groupId, ability, side, effectById, lang) {
+  let text = lang?.[`generals_abilities_desc_${side}_${groupId}`] || '';
+  if (!text || text === 'None') return text;
+
+  const effectId = side === 'attack'
+    ? ability.abilityAttackEffectID
+    : ability.abilityDefenseEffectID;
+  const values = getEffectValues(effectById[stringValue(effectId)]);
+  const trigger = stringValue(ability.triggerPerWave || '1');
+
+  if (groupId === '1021') {
+    const placeholder = lang?.generals_abilities_desc_upgrade_placeholder_1021;
+    const lastSuppressedWave = values[0] || '0';
+    return text.replace(
+      '{0}',
+      placeholder && Number(lastSuppressedWave) > 0
+        ? ` ${placeholder.replace('{0}', lastSuppressedWave)}`
+        : ''
+    ).trim();
+  }
+  if (groupId === '1023') {
+    return replaceToken(replaceToken(replaceToken(text, 0, values[0] || '0'), 1, '10'), 2, trigger).trim();
+  }
+  if (groupId === '1028') {
+    const value = values[0] || '0';
+    return replaceToken(replaceToken(replaceToken(text, 0, value), 1, side === 'attack' ? value : ''), 2, trigger).trim();
+  }
+  if (groupId === '1033') {
+    const value = values[0] || '0';
+    return replaceToken(replaceToken(replaceToken(text, 0, value), 1, value), 2, trigger).trim();
+  }
+  if (groupId === '1035') {
+    const value = values[0] || '0';
+    const doubled = Number.isFinite(Number(value)) ? String(Number(value) * 2) : value;
+    return replaceToken(replaceToken(replaceToken(text, 0, value), 1, doubled), 2, trigger).trim();
+  }
+
+  values.forEach((value, index) => {
+    text = replaceToken(text, index, value);
+  });
+  text = text.replace(/\{0\}/g, '');
+  text = text.replace(/\{1\}/g, trigger);
+  text = text.replace(/\{2\}/g, trigger);
+  return text.trim();
+}
+
+function buildAbilities(data, lang, abilityImages) {
+  const effectById = buildLookup(data?.generalAbilityEffects, 'abilityEffectID');
+  const grouped = {};
+
+  (data?.generalAbilities || []).forEach(ability => {
+    const groupId = stringValue(ability.abilityGroupID);
+    if (!groupId) return;
+    if (!grouped[groupId]) grouped[groupId] = [];
+    grouped[groupId].push(ability);
+  });
+
+  return Object.fromEntries(Object.entries(grouped).map(([groupId, levels]) => {
+    const ability = [...levels].sort((a, b) => Number(b.level || 0) - Number(a.level || 0))[0];
+    const attackAvailable = !!stringValue(ability.abilityAttackEffectID) && stringValue(ability.abilityAttackEffectID) !== '0';
+    const defenseAvailable = !!stringValue(ability.abilityDefenseEffectID) && stringValue(ability.abilityDefenseEffectID) !== '0';
+
+    return [groupId, {
+      groupId,
+      level: Number(ability.level || 3),
+      name: lang?.[`generals_abilities_name_${groupId}`] || ability.name || `Ability #${groupId}`,
+      icon: abilityImages?.[groupId] || '../../img_base/unknown-icon.webp',
+      attackAvailable,
+      defenseAvailable,
+      attackDescription: attackAvailable ? resolveDescription(groupId, ability, 'attack', effectById, lang) : '',
+      defenseDescription: defenseAvailable ? resolveDescription(groupId, ability, 'defense', effectById, lang) : '',
+      supported: Object.hasOwn(SUPPORTED_ABILITY_FLAGS, groupId)
+    }];
+  }));
+}
+
+function buildSlots(general, side, slotById) {
+  const property = side === 'attack' ? 'attackSlots' : 'defenseSlots';
+  return splitIds(general[property]).map((slotId, index) => ({
+    slotId,
+    index: index + 1,
+    groupIds: splitIds(slotById[slotId]?.abilityGroupIDs)
+  }));
+}
+
+function normalizeLoadout(side, loadout) {
+  const generalId = stringValue(loadout?.generalId);
+  const general = catalog.generals.find(item => item.id === generalId);
+  if (!general) return { generalId: '', slots: {} };
+
+  const validSlots = new Map(general[`${side}Slots`].map(slot => [slot.slotId, slot]));
+  const slots = {};
+  Object.entries(loadout?.slots || {}).forEach(([slotId, groupIdValue]) => {
+    const groupId = stringValue(groupIdValue);
+    const slot = validSlots.get(slotId);
+    const ability = catalog.abilities[groupId];
+    const sideAvailable = side === 'attack' ? ability?.attackAvailable : ability?.defenseAvailable;
+    if (slot?.groupIds.includes(groupId) && ability?.supported && sideAvailable) {
+      slots[slotId] = groupId;
+    }
+  });
+  return { generalId, slots };
+}
+
+function setAbilityFlags(side, loadout) {
+  const target = side === 'attack' ? attackGeneralAbilities : defenseGeneralAbilities;
+  Object.values(SUPPORTED_ABILITY_FLAGS).forEach(flag => {
+    if (Object.hasOwn(target, flag)) target[flag] = false;
+  });
+  Object.values(loadout.slots).forEach(groupId => {
+    const flag = SUPPORTED_ABILITY_FLAGS[groupId];
+    if (flag && Object.hasOwn(target, flag)) target[flag] = true;
+  });
+}
+
+export function initializeGeneralAbilityCatalog({ data, lang, imageMaps }) {
+  const slotById = buildLookup(data?.generalSlots, 'slotID');
+  const abilities = buildAbilities(data, lang, imageMaps?.abilities || {});
+  const generals = (data?.generals || [])
+    .filter(general => stringValue(
+      general.isNpcGeneral ?? general.isNPCGeneral ?? general.isnpcgeneral
+    ) !== '1')
+    .map(general => ({
+      id: stringValue(general.generalID),
+      rarityId: Number(general.generalRarityID ?? general.generalRarityId ?? general.generalrarityid) || 0,
+      name: lang?.[`generals_characters_${general.generalID}_name`] || general.generalName || `General #${general.generalID}`,
+      portrait: imageMaps?.fullPortraits?.[stringValue(general.generalID)] || '../../img_base/battle_simulator/unknown.png',
+      attackSlots: buildSlots(general, 'attack', slotById),
+      defenseSlots: buildSlots(general, 'defense', slotById)
+    }))
+    .sort((a, b) => b.rarityId - a.rarityId || a.name.localeCompare(b.name));
+
+  catalog = { generals, abilities };
+  ['attack', 'defense'].forEach(side => {
+    const stored = readStoredJson(`${side}GeneralLoadout`, null);
+    savedLoadouts[side] = normalizeLoadout(side, stored);
+    if (stored) setAbilityFlags(side, savedLoadouts[side]);
+  });
+  syncGeneralPortraits();
+}
+
+export function getGeneralAbilityCatalog() {
+  return catalog;
+}
+
+export function getGeneralLoadout(side) {
+  return {
+    generalId: savedLoadouts[side]?.generalId || '',
+    slots: { ...(savedLoadouts[side]?.slots || {}) }
+  };
+}
+
+export function commitGeneralLoadout(side, loadout) {
+  const normalized = normalizeLoadout(side, loadout);
+  savedLoadouts[side] = normalized;
+  setAbilityFlags(side, normalized);
+  writeStoredJson(`${side}GeneralLoadout`, normalized);
+  writeStoredJson(`${side}GeneralAbilities`, side === 'attack' ? attackGeneralAbilities : defenseGeneralAbilities);
+  syncGeneralPortraits();
+}
+
+export function syncGeneralPortraits() {
+  const configs = [
+    ['attack', '.general-img'],
+    ['defense', '.enemy-img']
+  ];
+  configs.forEach(([side, selector]) => {
+    const image = document.querySelector(selector);
+    if (!image) return;
+    const general = catalog.generals.find(item => item.id === savedLoadouts[side]?.generalId);
+    image.src = general?.portrait || '../../img_base/battle_simulator/unknown.png';
+    image.alt = general?.name || (side === 'attack' ? 'Attack general' : 'Defense general');
+    image.closest('.general-bg1, .general-bg2')?.setAttribute('title', general?.name || 'Select general');
+  });
+}

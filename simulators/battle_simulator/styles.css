@@ -934,37 +934,336 @@ body {
 
 }
 
-.general-ability-list {
-    width: 100%;
+.general-loadout-root {
+    min-height: 100%;
+    color: rgb(67, 51, 38);
 }
 
-.general-ability-row {
+.general-picker {
+    position: sticky;
+    top: 0;
+    z-index: 8;
+    padding: 6px;
+    background: rgb(68, 51, 38);
+    border-bottom: 3px solid rgb(119, 80, 54);
+}
+
+.general-picker-toggle {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    align-items: center;
-    column-gap: 12px;
+    grid-template-columns: 48px minmax(0, 1fr) 32px;
     width: 100%;
-    margin: 0;
-    padding: 10px 12px;
-    border-bottom: 2px solid rgb(119, 80, 54);
-    box-sizing: border-box;
-    cursor: pointer;
+    min-height: 56px;
+    align-items: center;
+    gap: 8px;
+    padding: 2px 10px 2px 4px;
+    border: 2px solid rgb(67, 51, 38);
+    border-radius: 0;
+    background: rgb(180, 140, 100);
+    color: rgb(67, 51, 38);
+    text-align: left;
 }
 
-.general-ability-row:last-child {
-    border-bottom: 0;
+.general-picker-toggle img,
+.general-picker-option img {
+    display: block;
+    width: 46px;
+    height: 50px;
+    object-fit: contain;
 }
 
-.general-ability-row input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    margin: 0;
-    align-self: center;
-    cursor: pointer;
+.general-picker-toggle strong {
+    overflow: hidden;
+    font-size: 18px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.general-ability-row span {
+.general-picker-arrow {
+    width: 0;
+    height: 0;
+    justify-self: end;
+    border-top: 12px solid rgb(67, 51, 38);
+    border-right: 11px solid transparent;
+    border-left: 11px solid transparent;
+}
+
+.general-picker-toggle[aria-expanded="true"] .general-picker-arrow {
+    transform: rotate(180deg);
+}
+
+.general-picker-menu {
+    position: absolute;
+    top: calc(100% - 6px);
+    right: 6px;
+    left: 6px;
+    z-index: 10;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-height: 48vh;
+    overflow-y: auto;
+    border: 3px solid rgb(67, 51, 38);
+    background: rgb(68, 51, 38);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.45);
+    scrollbar-color: rgb(180, 140, 100) rgb(67, 51, 38);
+    scrollbar-width: thin;
+}
+
+.general-picker-menu::-webkit-scrollbar {
+    width: 9px;
+}
+
+.general-picker-menu::-webkit-scrollbar-track {
+    background: rgb(67, 51, 38);
+}
+
+.general-picker-menu::-webkit-scrollbar-thumb {
+    border: 2px solid rgb(67, 51, 38);
+    background: rgb(180, 140, 100);
+}
+
+.general-picker-menu::-webkit-scrollbar-thumb:hover {
+    background: rgb(243, 194, 74);
+}
+
+.general-picker-menu[hidden] {
+    display: none;
+}
+
+.general-picker-option {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr);
     min-width: 0;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 6px;
+    border: 1px solid rgb(119, 80, 54);
+    border-radius: 0;
+    background: rgb(180, 140, 100);
+    color: rgb(67, 51, 38);
+    font-weight: 700;
+    text-align: left;
+}
+
+.general-picker-option img {
+    width: 38px;
+    height: 42px;
+}
+
+.general-picker-option:hover,
+.general-picker-option.selected {
+    background: rgb(243, 194, 74);
+}
+
+.general-loadout-editor {
+    display: grid;
+    grid-template-columns: 116px minmax(0, 1fr);
+    align-items: start;
+    min-height: calc(68vh - 71px);
+}
+
+.general-slot-list {
+    position: sticky;
+    top: 71px;
+    display: grid;
+    min-height: calc(68vh - 71px);
+    align-content: start;
+    gap: 4px;
+    padding: 5px;
+    background: rgb(68, 51, 38);
+    border-right: 3px solid rgb(119, 80, 54);
+}
+
+.general-slot-card {
+    position: relative;
+    display: grid;
+    min-width: 0;
+    min-height: 100px;
+    place-items: center;
+    align-content: center;
+    gap: 2px;
+    padding: 6px 3px 4px;
+    border: 2px solid rgb(119, 80, 54);
+    border-radius: 0;
+    background: rgb(145, 98, 65);
+    color: white;
+}
+
+.general-slot-card.selected {
+    border-color: rgb(243, 194, 74);
+    box-shadow: inset 0 0 0 2px rgb(243, 194, 74);
+}
+
+.general-slot-visual {
+    position: relative;
+    display: grid;
+    width: 60px;
+    height: 60px;
+    place-items: center;
+    overflow: visible;
+    border: 2px solid rgb(248, 238, 211);
+    border-radius: 50%;
+    background: rgba(68, 51, 38, 0.32);
+}
+
+.general-slot-visual img {
+    width: 58px;
+    height: 58px;
+    object-fit: contain;
+}
+
+.general-slot-visual.empty {
+    border-style: dashed;
+}
+
+.general-slot-placeholder {
+    font-size: 30px;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.general-slot-number {
+    position: absolute;
+    top: 3px;
+    left: 5px;
+    font-weight: 900;
+}
+
+.general-slot-name {
+    width: 100%;
+    display: -webkit-box;
+    overflow: hidden;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.05;
+    text-align: center;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.general-ability-choice-list {
+    min-width: 0;
+    padding: 5px 5px 5px 4px;
+}
+
+.general-ability-choice {
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr);
+    width: 100%;
+    min-height: 92px;
+    align-items: stretch;
+    margin: 0 0 5px;
+    padding: 0;
+    overflow: hidden;
+    border: 2px solid rgb(119, 80, 54);
+    border-radius: 0;
+    background: rgb(180, 140, 100);
+    color: rgb(67, 51, 38);
+    text-align: left;
+}
+
+.general-ability-choice.selected {
+    border-color: rgb(243, 194, 74);
+    background: rgb(243, 194, 74);
+}
+
+.general-ability-choice.disabled {
+    cursor: not-allowed;
+    filter: grayscale(0.8);
+    opacity: 0.62;
+}
+
+.general-ability-choice-icon {
+    position: relative;
+    display: grid;
+    place-items: center;
+    border-right: 2px solid rgb(119, 80, 54);
+    background: rgba(68, 51, 38, 0.18);
+}
+
+.general-ability-choice-icon img {
+    width: 58px;
+    height: 58px;
+    object-fit: contain;
+}
+
+.general-ability-choice-copy {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    padding: 8px 10px;
+}
+
+.general-ability-choice-copy strong {
+    font-size: 16px;
+}
+
+.general-ability-choice-copy small {
+    font-size: 13px;
+    line-height: 1.3;
+}
+
+.general-ability-choice-copy em {
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.general-ability-clear {
+    min-height: 58px;
+}
+
+.general-ability-clear-icon {
+    display: grid;
+    place-items: center;
+    border-right: 2px solid rgb(119, 80, 54);
+    font-size: 34px;
+    font-weight: 900;
+}
+
+.general-ability-clear span:last-child {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    padding: 6px 10px;
+}
+
+.general-ability-empty {
+    padding: 20px;
+    color: white;
+    text-align: center;
+}
+
+@media (max-width: 480px) {
+    .general-loadout-editor {
+        grid-template-columns: 96px minmax(0, 1fr);
+    }
+
+    .general-slot-card {
+        min-height: 92px;
+    }
+
+    .general-slot-visual {
+        width: 54px;
+        height: 54px;
+    }
+
+    .general-slot-visual img {
+        width: 52px;
+        height: 52px;
+    }
+
+    .general-ability-choice {
+        grid-template-columns: 66px minmax(0, 1fr);
+    }
+
+    .general-ability-choice-icon img {
+        width: 54px;
+        height: 54px;
+    }
 }
 
 .form-range {

@@ -46,10 +46,10 @@ window.addEventListener('load', () => {
     );
   });
 
-  document.querySelectorAll('.general-bg1, .general-img').forEach(btn =>
+  document.querySelectorAll('.general-bg1').forEach(btn =>
     btn.addEventListener('click', openAttackGeneralModal)
   );
-  document.querySelectorAll('.general-bg2, .enemy-img').forEach(btn =>
+  document.querySelectorAll('.general-bg2').forEach(btn =>
     btn.addEventListener('click', openDefenseGeneralModal)
   );
 

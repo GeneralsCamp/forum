@@ -20,6 +20,7 @@ import { generateAllModals } from "../ui/modals/modalGenerator.js";
 import { loadPresets } from "../ui/wavePresets.js";
 import { loadDefenseState } from "./defenseState.js";
 import { loadAttackState } from "./attackState.js";
+import { initializeGeneralAbilityCatalog } from "./generalAbilityCatalog.js";
 
 const EFFECT_TYPES = {
   29: "additionalWave",
@@ -264,7 +265,7 @@ function loadCatalog() {
       langCode: "en",
       itemLabel: "battle simulator",
       normalizeNameFn: normalizeName,
-      assets: { units: true },
+      assets: { units: true, generals: true },
       onReady: ({ lang, data, imageMaps, versions }) => {
         const allUnits = Array.isArray(data?.units) ? data.units : [];
         const unitsById = {};
@@ -285,8 +286,10 @@ function loadCatalog() {
         const unitImageUrlMap = imageMaps?.units || {};
         resolve({
           lang,
+          data,
           unitsById,
           unitsByType,
+          generalImageMaps: imageMaps?.generals || {},
           imageContext: {
             unitImageUrlMap,
             unitImageEntries: Object.entries(unitImageUrlMap),
@@ -393,7 +396,7 @@ function toolEffectRecord(tool) {
 
 export async function loadData() {
   try {
-    const { lang, unitsById, unitsByType, imageContext } = await loadCatalog();
+    const { lang, data, unitsById, unitsByType, imageContext, generalImageMaps } = await loadCatalog();
 
     const attackUnits = requireEntities(ATTACK_UNIT_IDS, unitsById, "Attack unit")
       .map((unit) => pickLevel(unit, unitsByType))
@@ -414,6 +417,7 @@ export async function loadData() {
     replaceArray(variables.supportTools, supportTools);
     replaceArray(variables.defense_tools, defenseTools);
     rebuildRuntimeLookups();
+    initializeGeneralAbilityCatalog({ data, lang, imageMaps: generalImageMaps });
 
     generateAllModals();
     initializeUnits();
