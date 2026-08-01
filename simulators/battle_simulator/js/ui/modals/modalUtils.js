@@ -3,6 +3,7 @@ export function bindSlider(sliderId, valueId, { value = 0, min = 0, max = 100, p
   const valueEl = document.getElementById(valueId);
   if (!slider || !valueEl) return;
 
+  const suffix = valueEl.dataset.valueSuffix || '';
   const formatCurrentValue = v => (v < 0 ? `-${Math.abs(v)}` : `${prefix}${v}`);
   const card = slider.closest('.modal-card-body');
   const minusButton = card?.querySelector(`.modal-slider-minus[data-slider-id="${sliderId}"]`);
@@ -12,7 +13,7 @@ export function bindSlider(sliderId, valueId, { value = 0, min = 0, max = 100, p
     const safeValue = Number.isFinite(parsed) ? parsed : min;
     const clampedValue = Math.max(min, Math.min(max, safeValue));
     slider.value = clampedValue;
-    valueEl.textContent = `${formatCurrentValue(clampedValue)} / ${max}`;
+    valueEl.textContent = `${formatCurrentValue(clampedValue)} / ${max}${suffix}`;
     if (minusButton) minusButton.disabled = clampedValue <= min;
     if (plusButton) plusButton.disabled = clampedValue >= max;
   };

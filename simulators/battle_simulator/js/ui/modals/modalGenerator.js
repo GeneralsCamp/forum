@@ -55,17 +55,20 @@ export function createModal(id, title, bodyContent, footerButtons) {
 
 export function generateInputCard(title, imageSrc, altText, sliderId, min, max, value, valueId) {
   value = value || 0;
+  const percentageValue = /\s*\(%\)\s*$/.test(title);
+  const displayTitle = percentageValue ? title.replace(/\s*\(%\)\s*$/, '') : title;
+  const valueSuffix = percentageValue ? '%' : '';
   return `
     <div class="col-12">
       <div class="modal-card-body mt-1">
-        <h6 class="card-title wave-editor-name">${title}</h6>
+        <h6 class="card-title wave-editor-name">${displayTitle}</h6>
         <div class="d-flex align-items-stretch">
           <img src="${imageSrc}" alt="${altText}" class="modal-image" />
           <div class="modal-input-main">
             <div class="wave-editor-controls">
               <button type="button" class="wave-editor-step modal-slider-minus" data-slider-id="${sliderId}" aria-label="Decrease">&minus;</button>
               <div class="wave-editor-value-wrap">
-                <strong id="${valueId}" class="wave-editor-value">${value} / ${max}</strong>
+                <strong id="${valueId}" class="wave-editor-value" data-value-suffix="${valueSuffix}">${value} / ${max}${valueSuffix}</strong>
                 <input type="range" id="${sliderId}" min="${min}" max="${max}" value="${value}" class="wave-editor-range">
               </div>
               <button type="button" class="wave-editor-step modal-slider-plus" data-slider-id="${sliderId}" aria-label="Increase">+</button>

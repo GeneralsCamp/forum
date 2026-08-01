@@ -1,6 +1,6 @@
 import { createUnitIcon, openUnitModal, summarizeUnitBonuses } from './uiUnits.js';
 import { createToolIcon, openToolModal, summarizeToolBonuses } from './uiTools.js';
-import { createCourtyardAssaultCard } from './uiCourtyard.js';
+import { createCourtyardAssaultCard, getCourtyardHeaderColor } from './uiCourtyard.js';
 import { createSupportWaveCard } from './uiSupport.js';
 import * as variables from '../data/variables.js';
 import { setOpenAllWavesState } from '../data/variables.js';
@@ -336,11 +336,13 @@ export function openAllWaves() {
     if (action === 'open') {
       courtyardCollapse.classList.add('show');
       courtyardHeader.classList.add('collapsed');
+      courtyardHeader.style.backgroundColor = '';
       if (courtyardArrow) courtyardArrow.style.transform = 'rotate(90deg)';
       openWaves['CY'] = true;
     } else {
       courtyardCollapse.classList.remove('show');
       courtyardHeader.classList.remove('collapsed');
+      courtyardHeader.style.backgroundColor = getCourtyardHeaderColor();
       if (courtyardArrow) courtyardArrow.style.transform = 'rotate(0deg)';
       openWaves['CY'] = false;
     }

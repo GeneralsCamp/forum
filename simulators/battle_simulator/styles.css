@@ -1215,6 +1215,17 @@ body {
     min-height: 52vh;
 }
 
+@media (max-width: 700px) {
+    #toolModalDefense .modal-content > .modal-body {
+        height: 68vh;
+        min-height: 68vh;
+        max-height: 68vh;
+        height: 68dvh;
+        min-height: 68dvh;
+        max-height: 68dvh;
+    }
+}
+
 #attackGeneralModal .modal-body,
 #defenseGeneralModal .modal-body,
 #basicsModal .modal-body,
@@ -2459,6 +2470,8 @@ input[type="number"] {
 
 .presets-footer .btn-apply:active,
 .presets-footer .btn-apply-all:active {
+    background: #3f760b !important;
+    color: white;
     box-shadow:
         inset 3px 3px 0 rgba(33, 74, 6, 0.92),
         inset -2px -2px 0 rgba(121, 184, 50, 0.32);
@@ -2466,6 +2479,8 @@ input[type="number"] {
 
 .presets-footer .btn-save:active,
 .presets-footer .btn-clear:active {
+    background: rgb(88, 117, 114) !important;
+    color: white;
     box-shadow:
         inset 3px 3px 0 rgba(37, 61, 61, 0.78),
         inset -2px -2px 0 rgba(184, 211, 207, 0.28);
