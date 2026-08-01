@@ -1,11 +1,5 @@
 import * as variables from "./variables.js";
-import {
-  ATTACK_TOOL_IDS,
-  ATTACK_UNIT_IDS,
-  DEFENSE_TOOL_IDS,
-  DEFENSE_UNIT_IDS,
-  SUPPORT_TOOL_IDS
-} from "./catalog.js";
+import { getBattleCatalog } from "./battleCatalogState.js";
 import { imageUrl } from "./imagePaths.js";
 import { coreInit } from "../../../../overviews/shared/CoreInit.mjs";
 import {
@@ -13,6 +7,10 @@ import {
   normalizeName
 } from "../../../../overviews/shared/RewardResolver.mjs";
 import { resolveUnitImageUrl } from "../../../../overviews/shared/UnitImageService.mjs";
+import {
+  composeAssetToDataUrl,
+  deriveCompanionUrls
+} from "../../../../overviews/shared/AssetComposer.mjs";
 import { initializeUnits } from "../ui/uiUnits.js";
 import { initializeTools } from "../ui/uiTools.js";
 import { initializeSupportTools } from "../ui/uiSupport.js";
@@ -20,6 +18,7 @@ import { generateAllModals } from "../ui/modals/modalGenerator.js";
 import { loadPresets } from "../ui/wavePresets.js";
 import { loadDefenseState } from "./defenseState.js";
 import { loadAttackState } from "./attackState.js";
+import { writeStoredJson } from "./storage.js";
 import { initializeGeneralAbilityCatalog } from "./generalAbilityCatalog.js";
 
 const EFFECT_TYPES = {
@@ -37,6 +36,7 @@ const EFFECT_TYPES = {
 };
 
 let catalogPromise = null;
+const composedUnitImageCache = new Map();
 
 function numberValue(entity, keys, fallback = 0) {
   const value = getProp(entity, keys);
@@ -89,6 +89,28 @@ function resolveImage(entity, imageContext) {
   }) || imageUrl();
 }
 
+async function composeUnitImage(image) {
+  const source = String(image || "");
+  const isComposable = source.startsWith("https://empire-html5.goodgamestudios.com/default/assets/itemassets/")
+    && /\.(webp|png)$/i.test(source);
+  if (!isComposable) return image;
+  if (!composedUnitImageCache.has(source)) {
+    const companions = deriveCompanionUrls(source);
+    composedUnitImageCache.set(source, composeAssetToDataUrl({
+      ...companions,
+      maxWidth: 96,
+      maxHeight: 96,
+      padding: 4
+    }).catch(() => source));
+  }
+  return composedUnitImageCache.get(source);
+}
+
+async function composeUnitRecord(unit) {
+  unit.image = await composeUnitImage(unit.image);
+  return unit;
+}
+
 function completeDerivedLevel(family) {
   const levels = family.map((candidate) => numberValue(candidate, ["level", "Level"], -1));
   const level10 = family.find((candidate) =>
@@ -124,7 +146,7 @@ function completeDerivedLevel(family) {
   return [...family, derived];
 }
 
-function pickLevel(entity, unitsByType) {
+function pickLevel(entity, unitsByType, requestedLevel = null) {
   const levelKey = normalizeName(sourceType(entity));
   const family = completeDerivedLevel((unitsByType.get(levelKey) || [])
     .filter((candidate) => getProp(candidate, ["level", "Level"]) !== null)
@@ -132,7 +154,7 @@ function pickLevel(entity, unitsByType) {
       numberValue(a, ["level", "Level"], -1) - numberValue(b, ["level", "Level"], -1)
     ));
   const baseLevel = numberValue(entity, ["level", "Level"], 0);
-  const selectedLevel = variables.unitLevels[levelKey] ?? baseLevel;
+  const selectedLevel = requestedLevel ?? variables.unitLevels[levelKey] ?? baseLevel;
   const selected = family.find((candidate) =>
     numberValue(candidate, ["level", "Level"], -1) === Number(selectedLevel)
   ) || entity;
@@ -146,7 +168,29 @@ function pickLevel(entity, unitsByType) {
   };
 }
 
-function toUnit(selection, index, kind, imageContext, lang) {
+function pickToolLevel(entity, unitsByType, requestedLevel = null) {
+  const levelKey = normalizeName(sourceType(entity));
+  const family = (unitsByType.get(levelKey) || [])
+    .filter((candidate) => getProp(candidate, ["level", "Level"]) !== null)
+    .sort((a, b) =>
+      numberValue(a, ["level", "Level"], -1) - numberValue(b, ["level", "Level"], -1)
+    );
+  const baseLevel = numberValue(entity, ["level", "Level"], 0);
+  const selectedLevel = requestedLevel ?? baseLevel;
+  const selected = family.find((candidate) =>
+    numberValue(candidate, ["level", "Level"], -1) === Number(selectedLevel)
+  ) || entity;
+
+  return {
+    entity: selected,
+    levelKey,
+    availableLevels: [...new Set(
+      family.map((candidate) => numberValue(candidate, ["level", "Level"], -1))
+    )].filter((level) => level >= 0)
+  };
+}
+
+function toUnit(selection, index, kind, imageContext, lang, catalogEntry = {}) {
   const { entity, levelKey, availableLevels } = selection;
   const rangedAttack = numberValue(entity, ["rangeAttack", "rangedAttack"]);
   const meleeAttack = numberValue(entity, ["meleeAttack"]);
@@ -156,6 +200,8 @@ function toUnit(selection, index, kind, imageContext, lang) {
   return {
     id: `unit${index + 1}`,
     wodID: sourceId(entity),
+    catalogWodID: String(catalogEntry.wodID || sourceId(entity)),
+    catalogIndex: index,
     sourceType: sourceType(entity),
     levelKey,
     level: numberValue(entity, ["level", "Level"], 0),
@@ -226,7 +272,10 @@ function effectIcon(type, defense = false) {
   return icons[type] || "unknown.png";
 }
 
-function toTool(entity, index, kind, imageContext, lang) {
+function toTool(selection, index, kind, imageContext, lang, catalogEntry = {}) {
+  const entity = selection?.entity || selection;
+  const levelKey = selection?.levelKey || normalizeName(sourceType(entity));
+  const availableLevels = selection?.availableLevels || [];
   const isDefense = kind === "defense";
   const effects = kind === "support"
     ? parseEffects(entity)
@@ -239,6 +288,10 @@ function toTool(entity, index, kind, imageContext, lang) {
   return {
     id: `tool${index + 1}`,
     wodID: sourceId(entity),
+    catalogWodID: String(catalogEntry.wodID || sourceId(entity)),
+    levelKey,
+    level: numberValue(entity, ["level", "Level"], 0),
+    availableLevels,
     name: localizedName(entity, lang),
     type: isDefense ? "defender" : "attacker",
     effect1Type: effect1.type || "",
@@ -247,6 +300,7 @@ function toTool(entity, index, kind, imageContext, lang) {
     effect2Value: effect2.value || 0,
     toolLimit: numberValue(entity, ["amountPerWave"]),
     travelSpeed: numberValue(entity, ["speed"]),
+    deleteToolAfterBattle: numberValue(entity, ["deleteToolAfterBattle"]),
     slotTypes: String(getProp(entity, ["slotTypes", "slottypes"]) || "")
       .split(",")
       .map((value) => value.trim())
@@ -303,17 +357,86 @@ function loadCatalog() {
   return catalogPromise;
 }
 
-function requireEntities(ids, unitsById, label) {
-  return ids.map((id) => {
-    const entity = unitsById[String(id)];
-    if (!entity) throw new Error(`${label} WOD ID ${id} was not found in the current items file.`);
-    return entity;
+function resolveUnitEntries(entries, unitsById, unitsByType, label) {
+  return (entries || []).map((entry) => {
+    const entity = unitsById[String(entry.wodID)];
+    if (!entity) throw new Error(`${label} WOD ID ${entry.wodID} was not found in the current items file.`);
+    return { selection: pickLevel(entity, unitsByType, entry.level), entry };
   });
+}
+
+function resolveToolEntries(entries, unitsById, unitsByType, label) {
+  return (entries || []).map((entry) => {
+    const entity = unitsById[String(entry.wodID)];
+    if (!entity) throw new Error(`${label} WOD ID ${entry.wodID} was not found in the current items file.`);
+    return { selection: pickToolLevel(entity, unitsByType, entry.level), entry };
+  });
+}
+
+function isSupportTool(entity) {
+  return String(getProp(entity, ["slotTypes", "slottypes"]) || "")
+    .split(",")
+    .map(value => value.trim())
+    .includes("10");
 }
 
 function replaceArray(target, values) {
   target.length = 0;
   target.push(...values);
+}
+
+function catalogIdentity(item, unit = false) {
+  return unit ? `${item.sourceType}|${item.level}` : String(item.wodID);
+}
+
+function remapCurrentSelections(previous) {
+  const maps = {
+    attackUnitsOld: new Map(previous.units.map((item, index) => [`Unit${index + 1}`, catalogIdentity(item, true)])),
+    attackUnitsNew: new Map(variables.units.map((item, index) => [catalogIdentity(item, true), `Unit${index + 1}`])),
+    defenseUnitsOld: new Map(previous.defenseUnits.map((item, index) => [`DefenseUnit${index + 1}`, catalogIdentity(item, true)])),
+    defenseUnitsNew: new Map(variables.defense_units.map((item, index) => [catalogIdentity(item, true), `DefenseUnit${index + 1}`])),
+    attackToolsOld: new Map(previous.tools.map((item, index) => [`Tool${index + 1}`, catalogIdentity(item)])),
+    attackToolsNew: new Map(variables.tools.map((item, index) => [catalogIdentity(item), `Tool${index + 1}`])),
+    supportToolsOld: new Map(previous.supportTools.map((item, index) => [`Tool${index + 1}`, catalogIdentity(item)])),
+    supportToolsNew: new Map(variables.supportTools.map((item, index) => [catalogIdentity(item), `Tool${index + 1}`])),
+    defenseToolsOld: new Map(previous.defenseTools.map(item => [`DefenseTool${item.id}`, catalogIdentity(item)])),
+    defenseToolsNew: new Map(variables.defense_tools.map(item => [catalogIdentity(item), `DefenseTool${item.id}`]))
+  };
+  const seen = new WeakSet();
+  const remap = (slots, oldMap, newMap) => (slots || []).forEach(slot => {
+    if (!slot || typeof slot !== 'object' || seen.has(slot)) return;
+    seen.add(slot);
+    if (!slot.type) return;
+    const identity = oldMap.get(slot.type);
+    if (!identity) return;
+    const nextType = newMap.get(identity);
+    slot.type = nextType || '';
+    if (!nextType) slot.count = 0;
+  });
+  ['left', 'front', 'right', 'CY'].forEach(side => {
+    (variables.waves[side] || []).forEach(wave => remap(wave.slots, maps.attackUnitsOld, maps.attackUnitsNew));
+    (variables.totalUnits[side] || []).forEach(slots => remap(slots, maps.attackUnitsOld, maps.attackUnitsNew));
+  });
+  ['left', 'front', 'right'].forEach(side => {
+    (variables.waves[side] || []).forEach(wave => remap(wave.tools, maps.attackToolsOld, maps.attackToolsNew));
+    (variables.totalTools[side] || []).forEach(slots => remap(slots, maps.attackToolsOld, maps.attackToolsNew));
+  });
+  (variables.waves.Support || []).forEach(wave => remap(wave.tools, maps.supportToolsOld, maps.supportToolsNew));
+  (variables.totalTools.Support || []).forEach(slots => remap(slots, maps.supportToolsOld, maps.supportToolsNew));
+  Object.values(variables.defenseSlots).forEach(side => {
+    remap(side.units, maps.defenseUnitsOld, maps.defenseUnitsNew);
+    ['wallTools', 'gateTools', 'moatTools', 'cyTools'].forEach(key =>
+      remap(side[key], maps.defenseToolsOld, maps.defenseToolsNew)
+    );
+  });
+  Object.values(variables.presets).forEach(preset => {
+    if (!preset) return;
+    ['left', 'front', 'right'].forEach(side => {
+      remap(preset.units?.[side], maps.attackUnitsOld, maps.attackUnitsNew);
+      remap(preset.tools?.[side], maps.attackToolsOld, maps.attackToolsNew);
+    });
+  });
+  writeStoredJson('variables.presets', variables.presets);
 }
 
 function rebuildRuntimeLookups() {
@@ -394,28 +517,42 @@ function toolEffectRecord(tool) {
   };
 }
 
-export async function loadData() {
+export async function loadData({ preserveCurrentState = false } = {}) {
   try {
+    const previousCatalog = {
+      units: [...variables.units],
+      defenseUnits: [...variables.defense_units],
+      tools: [...variables.tools],
+      supportTools: [...variables.supportTools],
+      defenseTools: [...variables.defense_tools]
+    };
     const { lang, data, unitsById, unitsByType, imageContext, generalImageMaps } = await loadCatalog();
+    const selectedCatalog = getBattleCatalog();
 
-    const attackUnits = requireEntities(ATTACK_UNIT_IDS, unitsById, "Attack unit")
-      .map((unit) => pickLevel(unit, unitsByType))
-      .map((unit, index) => toUnit(unit, index, "attacker", imageContext, lang));
-    const defenseUnits = requireEntities(DEFENSE_UNIT_IDS, unitsById, "Defense unit")
-      .map((unit) => pickLevel(unit, unitsByType))
-      .map((unit, index) => toUnit(unit, index, "defender", imageContext, lang));
-    const attackTools = requireEntities(ATTACK_TOOL_IDS, unitsById, "Attack tool")
-      .map((tool, index) => toTool(tool, index, "attack", imageContext, lang));
-    const supportTools = requireEntities(SUPPORT_TOOL_IDS, unitsById, "Support tool")
-      .map((tool, index) => toTool(tool, index, "support", imageContext, lang));
-    const defenseTools = requireEntities(DEFENSE_TOOL_IDS, unitsById, "Defense tool")
-      .map((tool, index) => toTool(tool, index, "defense", imageContext, lang));
+    const attackUnits = await Promise.all(resolveUnitEntries(selectedCatalog.attackUnits, unitsById, unitsByType, "Attack unit")
+      .map(({ selection, entry }, index) => composeUnitRecord(
+        toUnit(selection, index, "attacker", imageContext, lang, entry)
+      )));
+    const defenseUnits = await Promise.all(resolveUnitEntries(selectedCatalog.defenseUnits, unitsById, unitsByType, "Defense unit")
+      .map(({ selection, entry }, index) => composeUnitRecord(
+        toUnit(selection, index, "defender", imageContext, lang, entry)
+      )));
+    const selectedAttackTools = resolveToolEntries(selectedCatalog.attackTools, unitsById, unitsByType, "Attack tool");
+    const attackTools = selectedAttackTools
+      .filter(({ selection }) => !isSupportTool(selection.entity))
+      .map(({ selection, entry }, index) => toTool(selection, index, "attack", imageContext, lang, entry));
+    const supportTools = selectedAttackTools
+      .filter(({ selection }) => isSupportTool(selection.entity))
+      .map(({ selection, entry }, index) => toTool(selection, index, "support", imageContext, lang, entry));
+    const defenseTools = resolveToolEntries(selectedCatalog.defenseTools, unitsById, unitsByType, "Defense tool")
+      .map(({ selection, entry }, index) => toTool(selection, index, "defense", imageContext, lang, entry));
 
     replaceArray(variables.units, attackUnits);
     replaceArray(variables.defense_units, defenseUnits);
     replaceArray(variables.tools, attackTools);
     replaceArray(variables.supportTools, supportTools);
     replaceArray(variables.defense_tools, defenseTools);
+    if (preserveCurrentState) remapCurrentSelections(previousCatalog);
     rebuildRuntimeLookups();
     initializeGeneralAbilityCatalog({ data, lang, imageMaps: generalImageMaps });
 
@@ -424,10 +561,67 @@ export async function loadData() {
     initializeTools();
     initializeSupportTools();
     loadPresets();
-    loadDefenseState();
-    loadAttackState();
+    if (!preserveCurrentState) {
+      loadDefenseState();
+      loadAttackState();
+    }
   } catch (error) {
     console.error("Error loading in-game battle simulator data:", error);
     throw error;
   }
+}
+
+export async function resolveCatalogPreview(groupKind, wodID, requestedLevel = null) {
+  const { lang, unitsById, unitsByType, imageContext } = await loadCatalog();
+  const entity = unitsById[String(wodID)];
+  if (!entity) throw new Error(`WOD ID ${wodID} was not found in the current items file.`);
+  const unitKind = groupKind === 'attackUnit' || groupKind === 'defenseUnit';
+  const hasSoldierRole = Boolean(String(getProp(entity, ['role']) || '').trim());
+  if (unitKind && !hasSoldierRole) throw new Error(`WOD ID ${wodID} is a tool, not a soldier.`);
+  if (!unitKind && hasSoldierRole) throw new Error(`WOD ID ${wodID} is a soldier, not a tool.`);
+  if (unitKind) {
+    const selection = pickLevel(entity, unitsByType, requestedLevel);
+    return composeUnitRecord(
+      toUnit(selection, 0, groupKind === 'attackUnit' ? 'attacker' : 'defender', imageContext, lang, { wodID })
+    );
+  }
+  const toolKind = groupKind === 'attackTool'
+    ? (isSupportTool(entity) ? 'support' : 'attack')
+    : groupKind === 'supportTool' ? 'support' : 'defense';
+  const selection = pickToolLevel(entity, unitsByType, requestedLevel);
+  return toTool(selection, 0, toolKind, imageContext, lang, { wodID });
+}
+
+export async function resolveCatalogItem(wodID, requestedLevel = null) {
+  const { unitsById } = await loadCatalog();
+  const entity = unitsById[String(wodID)];
+  if (!entity) throw new Error(`WOD ID ${wodID} was not found in the current items file.`);
+
+  const hasSoldierRole = Boolean(String(getProp(entity, ["role"]) || "").trim());
+  let groupKey;
+  let groupKind;
+
+  if (hasSoldierRole) {
+    const attackStrength = Math.max(
+      numberValue(entity, ["rangeAttack", "rangedAttack"]),
+      numberValue(entity, ["meleeAttack"])
+    );
+    const defenseStrength = Math.max(
+      numberValue(entity, ["rangeDefence", "rangeDefense"]),
+      numberValue(entity, ["meleeDefence", "meleeDefense"])
+    );
+    const isDefense = defenseStrength > attackStrength;
+    groupKey = isDefense ? "defenseUnits" : "attackUnits";
+    groupKind = isDefense ? "defenseUnit" : "attackUnit";
+  } else {
+    const toolType = normalizeName(getProp(entity, ["typ"]) || "");
+    const isDefense = toolType === "defence" || toolType === "defense";
+    groupKey = isDefense ? "defenseTools" : "attackTools";
+    groupKind = isDefense ? "defenseTool" : "attackTool";
+  }
+
+  return {
+    groupKey,
+    preview: await resolveCatalogPreview(groupKind, wodID, requestedLevel)
+  };
 }

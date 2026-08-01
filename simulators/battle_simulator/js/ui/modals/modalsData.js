@@ -2,6 +2,30 @@ import { generateInputCard } from './modalGenerator.js';
 import { attackBasics, commanderStats, castellanStats, BASE_WAVE_MIN, BASE_WAVE_MAX } from '../../data/variables.js';
 
 export const modalsData = [
+  {
+    id: 'battleCatalogModal',
+    title: 'Custom Troops & Tools',
+    body: `
+      <div class="battle-catalog-editor">
+        <div class="catalog-filter-row">
+          <select id="battle-catalog-side" class="report-view-select" aria-label="Army side">
+            <option value="attack">Attack</option>
+            <option value="defense">Defense</option>
+          </select>
+          <select id="battle-catalog-kind" class="report-view-select" aria-label="Catalog type">
+            <option value="units">Troops</option>
+            <option value="tools">Tools</option>
+          </select>
+        </div>
+        <div class="catalog-custom-row">
+          <input id="catalog-custom-id" inputmode="numeric" placeholder="WOD ID" aria-label="WOD ID">
+          <button type="button" id="catalog-load-id" class="catalog-action">LOAD BY ID</button>
+        </div>
+        <div id="battle-catalog-list" class="catalog-entry-list"></div>
+      </div>
+    `,
+    footer: `<button type="button" id="confirmBattleCatalog" class="btn btn-success btn-confirm">Confirm</button>`
+  },
   //Presets modal
   {
     id: 'waveCopyModal',
@@ -25,17 +49,17 @@ export const modalsData = [
     `,
     footer: `
 <div class="row presets-footer">
-    <button class="btn btn-apply" id="applyPresetBtn">
-        <span>APPLY</span>
-    </button>
-    <button class="btn btn-apply-all" id="applyPresetAllBtn">
-        <span>APPLY ALL</span>
+    <button class="btn btn-clear" id="clearWaveBtn">
+        <span>CLEAR</span>
     </button>
     <button class="btn btn-save" id="savePresetBtn">
         <span>SAVE</span>
     </button>
-    <button class="btn btn-clear" id="clearWaveBtn">
-        <span>CLEAR</span>
+    <button class="btn btn-apply" id="applyPresetBtn">
+        <span>APPLY</span>
+    </button>
+    <button class="btn btn-apply-all" id="applyPresetAllBtn">
+        <span>APPLY TO ALL</span>
     </button>
 </div>
   `
@@ -244,7 +268,6 @@ export const modalsData = [
       'flank-tool-slider', 40, 50, attackBasics.maxTools.left,
       'flank-tool-value', 40, 50, attackBasics.maxTools.left
     )}
-        <div id="attack-unit-level-controls"></div>
     `,
     footer: `
         <button type="button" id="confirmBasics" class="btn btn-success btn-confirm">
@@ -379,7 +402,6 @@ export const modalsData = [
       'defense-gate-protection-slider', 0, 500, castellanStats.gateProtection,
       'defense-gate-protection-value', 0, 500, castellanStats.gateProtection
     )}
-      <div id="defense-unit-level-controls"></div>
   `,
     footer: `
       <button type="button" id="confirmCastellanStats" class="btn btn-success btn-confirm">

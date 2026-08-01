@@ -10,6 +10,7 @@ import { battleSimulation } from './ui/uiBattleReport.js';
 import { openAttackGeneralModal } from './ui/modals/attackGeneralModal.js';
 import { openDefenseGeneralModal } from './ui/modals/defenseGeneralModal.js';
 import { readStoredJson } from './data/storage.js';
+import { openBattleCatalogModal } from './ui/modals/battleCatalogModal.js';
 
 window.addEventListener('load', () => {
   const savedCommanderStats = readStoredJson('commanderStats');
@@ -57,6 +58,7 @@ window.addEventListener('load', () => {
   document.querySelector('.openAllWaves-button')?.addEventListener('click', openAllWaves);
   document.querySelector('.flanks-button.red-button')?.addEventListener('click', battleSimulation);
   document.querySelector('.preset-button')?.addEventListener('click', openWaveCopyModal);
+  document.querySelector('.catalog-button')?.addEventListener('click', openBattleCatalogModal);
 
   loadData().then(() => {
 

@@ -58,26 +58,30 @@
                 </button>
             </div>
 
-            <button class="btn btn-danger flanks-button red-button">
-                <img src="../../img_base/battle_simulator/icon_attack.png" alt="Icon" class="icon" />
-            </button>
+            <span id="current-flank" class="current-flank-inline">Front</span>
 
-            <button class="btn btn-dark flanks-button preset-button">
-                <img src="../../img_base/battle_simulator/icon_presets.png" alt="Copy Wave" class="icon" />
-            </button>
-
-            <button class="btn btn-dark flanks-button openAllWaves-button">
-
-            </button>
-
-        </div>
-
-        <div class="player-flank d-flex justify-content-between align-items-center">
-            <span id="current-flank">Front</span>
         </div>
 
         <div class="accordion scrollable-content" id="attackWaves">
             <div id="wave-container"></div>
+        </div>
+
+        <div class="battle-action-bar">
+            <button class="btn btn-dark flanks-button openAllWaves-button" aria-label="Open or close all waves"></button>
+
+            <button class="btn btn-dark flanks-button preset-button" aria-label="Presets">
+                <img src="../../img_base/battle_simulator/icon_presets.png" alt="" class="icon" />
+            </button>
+
+            <button class="btn btn-dark flanks-button catalog-button" aria-label="Troops and tools">
+                <svg class="catalog-plus-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 4V20M4 12H20"></path>
+                </svg>
+            </button>
+
+            <button class="btn flanks-button red-button battle-start-button">
+                SIMULATE ATTACK
+            </button>
         </div>
 
         <div id="notificationBar" class="notification-bar">

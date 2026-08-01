@@ -1,16 +1,12 @@
 import { bindSlider, bindConfirmButton } from './modalUtils.js';
-import { castellanStats, currentSide, currentSideDefense, defense_units } from '../../data/variables.js';
+import { castellanStats, currentSide, currentSideDefense } from '../../data/variables.js';
 import { switchSide } from '../uiWaves.js';
-import { loadData } from '../../data/dataLoader.js';
 import { switchDefenseSide } from '../uiDefense.js';
-import { renderUnitLevelControls, saveUnitLevelControls } from './unitLevelControls.js';
 import { writeStoredJson } from '../../data/storage.js';
 
 export function openCastellanStatsModal() {
   const modalEl = document.getElementById('castellanStatsModal');
   const modal = new bootstrap.Modal(modalEl);
-  renderUnitLevelControls('defense-unit-level-controls', defense_units);
-
   const sliders = [
     { sliderId: 'defense-melee-strength-slider', valueId: 'defense-melee-strength-value', value: castellanStats.melee, min: 0, max: 500 },
     { sliderId: 'defense-ranged-strength-slider', valueId: 'defense-ranged-strength-value', value: castellanStats.ranged, min: 0, max: 500 },
@@ -36,12 +32,9 @@ export function openCastellanStatsModal() {
   ];
 
   bindConfirmButton('confirmCastellanStats', confirmValues, modal, () => {
-    saveUnitLevelControls('defense-unit-level-controls');
     writeStoredJson('castellanStats', castellanStats);
-    loadData().then(() => {
-      switchSide(currentSide);
-      switchDefenseSide(currentSideDefense);
-    });
+    switchSide(currentSide);
+    switchDefenseSide(currentSideDefense);
   });
 
   modal.show();

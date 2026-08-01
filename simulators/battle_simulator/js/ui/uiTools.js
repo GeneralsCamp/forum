@@ -41,9 +41,10 @@ export function initializeTools(tools = variables.tools) {
   const list = toolModalBody.querySelector('#tool-editor-list');
 
   tools.forEach((tool, index) => {
+    const levelInfo = tool.availableLevels?.length > 1 ? ` (Lv.${tool.level})` : '';
     list.insertAdjacentHTML('beforeend', `
       <div class="wave-editor-row" data-tool-index="${index}">
-        <div class="wave-editor-name">${tool.name}</div>
+        <div class="wave-editor-name">${tool.name}${levelInfo}</div>
         <img src="${imageUrl(tool.image)}" alt="${tool.name}" class="wave-editor-image">
         <div class="wave-editor-main">
           <div class="wave-editor-controls">

@@ -11,6 +11,7 @@ export function initializeDefenseTools(defense_tools, slotType) {
 
   defense_tools.forEach((tool, index) => {
     if (toolSlotRestrictions[slotType].includes(tool.id)) {
+      const levelInfo = tool.availableLevels?.length > 1 ? ` (Lv.${tool.level})` : '';
       const effects = [
         `<span class="wave-editor-effect"><img src="${imageUrl(tool.effectImage1)}" alt="">+${tool.effect1Value}${tool.effect1Value > 149 ? '' : '%'}</span>`
       ];
@@ -20,7 +21,7 @@ export function initializeDefenseTools(defense_tools, slotType) {
 
       list.insertAdjacentHTML('beforeend', `
         <div class="wave-editor-row" data-defense-tool-index="${index}">
-          <div class="wave-editor-name">${tool.name}</div>
+          <div class="wave-editor-name">${tool.name}${levelInfo}</div>
           <img src="${imageUrl(tool.image)}" alt="${tool.name}" class="wave-editor-image">
           <div class="wave-editor-main">
             <div class="wave-editor-controls">

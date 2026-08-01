@@ -1,5 +1,5 @@
 // Add another in-game WOD ID to the appropriate list to expose it in the simulator.
-// Leveled unit families automatically get a level selector from their in-game records.
+// Leveled soldier and tool families automatically get a level selector from their in-game records.
 export const ATTACK_UNIT_IDS = [
   216, // Valkyrie ranger
   215, // Shield-maiden
@@ -56,3 +56,36 @@ export const DEFENSE_TOOL_IDS = [
   471, // Explosive arrows
   430  // Spear trap (crossplay ID; E4K WOD ID: 420)
 ];
+
+export const BATTLE_CATALOG_GROUPS = [
+  { key: 'attackUnits', label: 'Attack soldiers', kind: 'attackUnit' },
+  { key: 'defenseUnits', label: 'Defense soldiers', kind: 'defenseUnit' },
+  { key: 'attackTools', label: 'Attack tools', kind: 'attackTool' },
+  { key: 'defenseTools', label: 'Defense tools', kind: 'defenseTool' }
+];
+
+const entries = ids => ids.map(wodID => ({ wodID: String(wodID) }));
+
+export const BATTLE_CATALOG_PRESETS = {
+  default: {
+    name: 'Default simulator set',
+    attackUnits: entries(ATTACK_UNIT_IDS),
+    defenseUnits: entries(DEFENSE_UNIT_IDS),
+    attackTools: entries([...ATTACK_TOOL_IDS, ...SUPPORT_TOOL_IDS]),
+    defenseTools: entries(DEFENSE_TOOL_IDS)
+  }
+};
+
+export function cloneBattleCatalog(catalog = BATTLE_CATALOG_PRESETS.default) {
+  const normalizedCatalog = {
+    ...catalog,
+    attackTools: [
+      ...(catalog.attackTools || []),
+      ...(catalog.supportTools || [])
+    ]
+  };
+  return Object.fromEntries(BATTLE_CATALOG_GROUPS.map(({ key }) => [
+    key,
+    (normalizedCatalog[key] || []).map(entry => ({ ...entry, wodID: String(entry.wodID) }))
+  ]));
+}

@@ -734,6 +734,8 @@ function computeWaveBattle(
     }
   }
 
+  const hadCombat = sumCounts(attackUnits) > 0 && sumCounts(defenseUnits) > 0;
+
   const attackTotals = computeAttackTotals(attackUnits);
   const toolTotals = sumAttackToolEffects(wave?.tools || []);
   if (side !== 'cy' && waveIndex % 3 === 0 && isDefenseAbilityActive('toolFoulUp', side, waveIndex)) {
@@ -1140,6 +1142,7 @@ function computeWaveBattle(
     defenderLosses,
     attackerTotalLoss: sumMapValues(attackerLosses),
     defenderTotalLoss: sumMapValues(defenderLosses),
+    hadCombat,
     defenderRemaining,
     appliedAbilities: {
       attack: [...appliedAbilities.attack].filter(Boolean),
@@ -1291,6 +1294,7 @@ function computeBattleResults(side) {
   const defenseUnits = mapToUnits(combinedDefenders, true);
   const attackUnitsForBattle = mapToUnits(combinedAttackers, false);
   const attackersEnteredCY = Array.from(combinedAttackers.values()).reduce((sum, count) => sum + count, 0) > 0;
+  const courtyardBattleStarted = attackersEnteredCY && sumCounts(defenseUnits) > 0;
 
   let attackTotalMultiplier = getCourtyardEntryMultiplier(enteredWallSides);
 
@@ -1322,7 +1326,7 @@ function computeBattleResults(side) {
       supportKills.set(type, (supportKills.get(type) || 0) + loss);
     });
   };
-  if (attackersEnteredCY && (supportTotals.killAnyTroopsYard || supportTotals.killMeleeTroopsYard || supportTotals.killRangedTroopsYard)) {
+  if (courtyardBattleStarted && (supportTotals.killAnyTroopsYard || supportTotals.killMeleeTroopsYard || supportTotals.killRangedTroopsYard)) {
     if (supportTotals.killRangedTroopsYard > 0) {
       const losses = applyStrongestKills(
         defenseUnits.filter(unit => unit.type2 === 'ranged'),
@@ -1357,7 +1361,7 @@ function computeBattleResults(side) {
       defenseCyKills.set(type, (defenseCyKills.get(type) || 0) + loss);
     });
   };
-  if (attackersEnteredCY) {
+  if (courtyardBattleStarted) {
     const killTotals = {
       melee: 0,
       ranged: 0,
@@ -1439,6 +1443,7 @@ function computeBattleResults(side) {
     combinedDefenders,
     attackerWinsCount,
     courtyardEntryMultiplier: attackTotalMultiplier,
+    courtyardBattleStarted,
     supportKills
   };
 }
@@ -1465,9 +1470,12 @@ function aggregateTools(toolSlots = []) {
   const counts = new Map();
   toolSlots.forEach(tool => {
     if (!tool?.type || tool.count <= 0) return;
-    counts.set(tool.type, (counts.get(tool.type) || 0) + tool.count);
+    const current = counts.get(tool.type) || { count: 0, consumedCount: 0 };
+    current.count += tool.count;
+    if (tool.consumed !== false) current.consumedCount += tool.count;
+    counts.set(tool.type, current);
   });
-  return [...counts].map(([type, count]) => ({ type, count }));
+  return [...counts].map(([type, values]) => ({ type, ...values }));
 }
 
 function defenseToolsForSide(side) {
@@ -1502,14 +1510,14 @@ function toolDetails(type, owner, courtyardSupport = false) {
 
 function renderToolSummaryHTML(toolSummary, owner, courtyardSupport = false) {
   if (!toolSummary.length) return '<div class="report-empty">No tools used</div>';
-  return toolSummary.map(({ type, count }) => {
+  return toolSummary.map(({ type, count, consumedCount }) => {
     const details = toolDetails(type, owner, courtyardSupport);
     return `
       <div class="report-item report-tool-item" title="${escapeHtml(details.name)}">
         <img src="${imageUrl(details.image)}" alt="${escapeHtml(details.name)}">
         <span class="report-item-values">
           <strong>${formatNumber(count)}</strong>
-          <small>-${formatNumber(count)}</small>
+          <small>${consumedCount > 0 ? `-${formatNumber(consumedCount)}` : '-'}</small>
         </span>
       </div>
     `;
@@ -1534,6 +1542,26 @@ function abilityReportData(owner, appliedIds) {
     .map(groupId => catalog.abilities[String(groupId)])
     .filter(ability => ability && appliedIds.has(ability.groupId));
   return abilities;
+}
+
+function toolCatalogEntry(type, owner, courtyardSupport = false) {
+  const numericIndex = Math.max(0, Number(String(type).match(/\d+/)?.[0] || 1) - 1);
+  if (courtyardSupport) return supportTools[numericIndex];
+  return owner === 'defense' ? defense_tools[numericIndex] : tools[numericIndex];
+}
+
+function consumesWithoutCombat(tool, owner, courtyardSupport = false) {
+  if (!tool?.type || tool.count <= 0) return false;
+  const entry = toolCatalogEntry(tool.type, owner, courtyardSupport);
+  if (Number(entry?.deleteToolAfterBattle) > 0) return true;
+  return owner === 'defense' && String(entry?.wodID) === '450';
+}
+
+function toolsWithConsumption(toolSlots, owner, hadBattle, courtyardSupport = false) {
+  return (toolSlots || []).map(tool => ({
+    ...tool,
+    consumed: hadBattle || consumesWithoutCombat(tool, owner, courtyardSupport)
+  }));
 }
 
 function reportWaveResults(battleResults, side, view) {
@@ -1671,20 +1699,27 @@ function reportUnits(side, battleResults, view) {
   };
 }
 
-function reportTools(side, view) {
+function reportTools(side, view, battleResults) {
   if (side === 'cy') {
+    const hadBattle = Boolean(battleResults.courtyardBattleStarted);
     return {
-      attack: aggregateTools(waves.Support?.[0]?.tools || []),
-      defense: aggregateTools(defenseToolsForSide(side)),
+      attack: aggregateTools(toolsWithConsumption(waves.Support?.[0]?.tools || [], 'attack', hadBattle, true)),
+      defense: aggregateTools(toolsWithConsumption(defenseToolsForSide(side), 'defense', hadBattle)),
       courtyardSupport: true
     };
   }
-  const selectedAttackTools = view === 'summary'
-    ? (waves[side] || []).flatMap(wave => wave.tools || [])
-    : waves[side]?.[Number(view.replace('wave-', '')) - 1]?.tools || [];
+  const waveIndexes = view === 'summary'
+    ? (waves[side] || []).map((_, index) => index)
+    : [Number(view.replace('wave-', '')) - 1];
+  const selectedAttackTools = waveIndexes.flatMap(index => toolsWithConsumption(
+    waves[side]?.[index]?.tools || [],
+    'attack',
+    Boolean(battleResults.waves?.[index]?.hadCombat)
+  ));
+  const defenseHadBattle = waveIndexes.some(index => battleResults.waves?.[index]?.hadCombat);
   return {
     attack: aggregateTools(selectedAttackTools),
-    defense: aggregateTools(defenseToolsForSide(side)),
+    defense: aggregateTools(toolsWithConsumption(defenseToolsForSide(side), 'defense', defenseHadBattle)),
     courtyardSupport: false
   };
 }
@@ -1717,7 +1752,7 @@ function populateBattleReportModal(side) {
   setReportViewOptions(side);
   const battleResults = computeBattleResults(side);
   const unitsByOwner = reportUnits(side, battleResults, currentReportView);
-  const toolsByOwner = reportTools(side, currentReportView);
+  const toolsByOwner = reportTools(side, currentReportView, battleResults);
   const attackAbilities = getAppliedAbilityIds(battleResults, 'attack', currentReportView);
   const defenseAbilities = getAppliedAbilityIds(battleResults, 'defense', currentReportView);
   const sideLabel = document.getElementById('report-side-label');
