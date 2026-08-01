@@ -25,6 +25,13 @@ const SUPPORTED_ABILITY_FLAGS = {
   '1039': 'lastingWounds'
 };
 
+const SKIPPED_ABILITY_GROUPS = new Set([
+  '1016', // Wall Amount
+  '1026', // Battlefield Plunder
+  '1027', // Your Cut
+  '1028'  // Hidden Treasures
+]);
+
 const EMPTY_CATALOG = { generals: [], abilities: {} };
 let catalog = EMPTY_CATALOG;
 const savedLoadouts = {
@@ -151,7 +158,10 @@ function buildAbilities(data, lang, abilityImages) {
       defenseShortValueTemplate: defenseAvailable ? lang?.[`generals_abilities_desc_short_value_defense_${groupId}`] || '' : '',
       attackEffectValues,
       defenseEffectValues,
-      supported: Object.hasOwn(SUPPORTED_ABILITY_FLAGS, groupId)
+      supported: Object.hasOwn(SUPPORTED_ABILITY_FLAGS, groupId),
+      developmentStatus: Object.hasOwn(SUPPORTED_ABILITY_FLAGS, groupId)
+        ? 'supported'
+        : SKIPPED_ABILITY_GROUPS.has(groupId) ? 'skipped' : 'in-progress'
     }];
   }));
 }

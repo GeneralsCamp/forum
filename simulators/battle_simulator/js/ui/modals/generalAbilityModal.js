@@ -90,6 +90,16 @@ function renderChoices(root, catalog, mode, draft, selectedSlotId) {
     ${abilities.map(ability => {
       const disabled = !ability.supported;
       const description = mode === 'attack' ? ability.attackDescription : ability.defenseDescription;
+      const warning = disabled ? `
+        <span class="general-ability-warning ${ability.developmentStatus === 'skipped' ? 'skipped' : 'in-progress'}"
+          aria-label="${ability.developmentStatus === 'skipped' ? 'Not planned' : 'In progress'}">
+          <svg viewBox="0 0 100 90" aria-hidden="true">
+            <path class="warning-shape" d="M50 5 96 84H4Z"></path>
+            <path class="warning-mark" d="M46 28H54L53 59H47ZM46 68A4 4 0 1 1 54 68A4 4 0 1 1 46 68Z"></path>
+          </svg>
+          <small>${ability.developmentStatus === 'skipped' ? 'NOT PLANNED' : 'IN TESTING'}</small>
+        </span>
+      ` : '';
       return `
         <button type="button" class="general-ability-choice${ability.groupId === selectedGroupId ? ' selected' : ''}${disabled ? ' disabled' : ''}"
           data-ability-group="${escapeHtml(ability.groupId)}" ${disabled ? 'disabled' : ''}>
@@ -100,6 +110,7 @@ function renderChoices(root, catalog, mode, draft, selectedSlotId) {
             <strong>${escapeHtml(ability.name)}</strong>
             <small>${escapeHtml(description || 'No description available.')}</small>
           </span>
+          ${warning}
         </button>
       `;
     }).join('')}
