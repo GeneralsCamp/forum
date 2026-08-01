@@ -2,6 +2,7 @@ import {
   openAllWavesState,
   openWaves,
   setOpenAllWavesState,
+  getEffectiveWaveCount,
   totalUnits,
   totalTools,
   waves
@@ -38,6 +39,14 @@ export function loadAttackState() {
   WALL_SIDES.forEach(side => {
     if (Array.isArray(state.units?.[side])) totalUnits[side] = clone(state.units[side]);
     if (Array.isArray(state.tools?.[side])) totalTools[side] = clone(state.tools[side]);
+  });
+
+  const waveCount = getEffectiveWaveCount();
+  WALL_SIDES.forEach(side => {
+    waves[side] = Array.from({ length: waveCount }, (_, waveIndex) => ({
+      slots: clone(totalUnits[side]?.[waveIndex] || []),
+      tools: clone(totalTools[side]?.[waveIndex] || [])
+    }));
   });
 
   if (Array.isArray(state.supportTools)) {

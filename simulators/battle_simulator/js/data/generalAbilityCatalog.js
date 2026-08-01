@@ -99,6 +99,18 @@ function resolveDescription(groupId, ability, side, effectById, lang) {
   return text.trim();
 }
 
+function resolveShortDescription(groupId, side, values, lang) {
+  let text = lang?.[`generals_abilities_desc_short_${side}_${groupId}`] || '';
+  if (groupId === '1021') {
+    const placeholder = lang?.generals_abilities_desc_upgrade_placeholder_1021 || '';
+    const suffix = placeholder
+      ? ` ${replaceToken(placeholder, 0, values[0] || '0')}`
+      : '';
+    text = replaceToken(text, 0, suffix);
+  }
+  return text.replace(/\{\d+\}/g, '').trim();
+}
+
 function buildAbilities(data, lang, abilityImages) {
   const effectById = buildLookup(data?.generalAbilityEffects, 'abilityEffectID');
   const grouped = {};
@@ -114,6 +126,12 @@ function buildAbilities(data, lang, abilityImages) {
     const ability = [...levels].sort((a, b) => Number(b.level || 0) - Number(a.level || 0))[0];
     const attackAvailable = !!stringValue(ability.abilityAttackEffectID) && stringValue(ability.abilityAttackEffectID) !== '0';
     const defenseAvailable = !!stringValue(ability.abilityDefenseEffectID) && stringValue(ability.abilityDefenseEffectID) !== '0';
+    const attackEffectValues = attackAvailable
+      ? getEffectValues(effectById[stringValue(ability.abilityAttackEffectID)])
+      : [];
+    const defenseEffectValues = defenseAvailable
+      ? getEffectValues(effectById[stringValue(ability.abilityDefenseEffectID)])
+      : [];
 
     return [groupId, {
       groupId,
@@ -124,6 +142,12 @@ function buildAbilities(data, lang, abilityImages) {
       defenseAvailable,
       attackDescription: attackAvailable ? resolveDescription(groupId, ability, 'attack', effectById, lang) : '',
       defenseDescription: defenseAvailable ? resolveDescription(groupId, ability, 'defense', effectById, lang) : '',
+      attackShortDescription: attackAvailable ? resolveShortDescription(groupId, 'attack', attackEffectValues, lang) : '',
+      defenseShortDescription: defenseAvailable ? resolveShortDescription(groupId, 'defense', defenseEffectValues, lang) : '',
+      attackShortValueTemplate: attackAvailable ? lang?.[`generals_abilities_desc_short_value_attack_${groupId}`] || '' : '',
+      defenseShortValueTemplate: defenseAvailable ? lang?.[`generals_abilities_desc_short_value_defense_${groupId}`] || '' : '',
+      attackEffectValues,
+      defenseEffectValues,
       supported: Object.hasOwn(SUPPORTED_ABILITY_FLAGS, groupId)
     }];
   }));

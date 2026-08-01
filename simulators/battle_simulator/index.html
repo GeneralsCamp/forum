@@ -94,8 +94,14 @@
                             <button type="button" class="modal-header-action modal-header-close" data-bs-dismiss="modal" aria-label="Close">&times;</button>
                         </div>
                     </div>
-                    <div class="player-flanks d-flex justify-content-between align-items-center">
-                        <div class="row flanks ms-1">
+                    <div class="report-view-bar">
+                        <select id="report-view-select" class="report-view-select" aria-label="Battle report view">
+                            <option value="summary">Summary</option>
+                        </select>
+                    </div>
+                    <div class="report-side-bar">
+                        <span id="report-side-label" class="report-control-label">FRONT</span>
+                        <div class="report-side-buttons">
                             <button class="btn flanks-button-report sides" data-section="left">
                                 <img src="../../img_base/battle_simulator/left-icon.webp" alt="L">
                             </button>
@@ -110,40 +116,19 @@
                             </button>
                         </div>
                     </div>
-                    <div class="player-flank no-padding-fix margin-bug-fix d-flex">
-                        <div class="row section-header">
-                            <div class="col-6" style="background-color: rgb(183 52 52);">ATTACKER</div>
-                            <div class="col-6" style="background-color: rgb(44 115 141);">DEFENDER</div>
+                    <div class="report-column-heads">
+                        <div class="report-column-head report-column-head-attack">
+                            <span>ATTACKER</span>
+                            <strong id="report-attacker-total">0</strong>
+                        </div>
+                        <div class="report-column-head report-column-head-defense">
+                            <span>DEFENDER</span>
+                            <strong id="report-defender-total">0</strong>
                         </div>
                     </div>
                     <div class="modal-body battle-modal" id="battle-modal">
-
-                        <div class="player-flank no-padding-fix margin-bug-fix d-flex">
-                            <div class="row section-header report-troops-sum">
-                                <div class="col-6" style="background-color: rgb(183 52 52);">-</div>
-                                <div class="col-6" style="background-color: rgb(44 115 141);">-</div>
-                            </div>
-                        </div>
-
-                        <div class="player-flank text-center">
-                            <span>SUMMARIZE</span>
-                        </div>
-                        <div class="card-body margin-bug-fix report-wave">
-                            <div class="row">
-                                <div class="col bugfix report-attackers"
-                                    style="border-right: 1px solid rgb(180, 140, 100);">
-                                    <div class="row">
-                                    </div>
-                                </div>
-
-                                <div class="col bugfix report-defenders">
-                                    <div class="row">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="wave-summary-container" class="player-flank margin-bug-fix">
-                        </div>
+                        <div id="report-context-note" class="report-context-note"></div>
+                        <div id="report-detail-columns" class="report-detail-columns"></div>
                     </div>
                 </div>
             </div>

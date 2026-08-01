@@ -3,8 +3,21 @@
 }
 
 body {
-    background-color: #bd9a79;
+    min-height: 100vh;
+    background-color: #201711;
+    background-image: url('../../img_base/bg.png');
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
     font-family: Arial, sans-serif;
+}
+
+@media (max-width: 700px) {
+    body {
+        margin: 0 !important;
+        background-attachment: scroll;
+    }
 }
 
 .scrollable-content::-webkit-scrollbar {
@@ -460,6 +473,292 @@ body {
 
 .battle-report .unit-info .unit-loss.empty {
     color: transparent;
+}
+
+#battleReportModal .modal-dialog {
+    max-width: var(--battle-panel-max-width);
+}
+
+#battleReportModal .modal-body {
+    display: flex;
+    height: calc(68vh - 133px);
+    max-height: calc(68vh - 133px);
+    min-height: calc(68vh - 133px);
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.report-view-bar,
+.report-side-bar {
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 8px;
+    color: rgb(67, 51, 38);
+    background-color: rgb(234, 208, 178);
+    border-top: 2px solid rgb(67, 51, 38);
+}
+
+.report-view-bar {
+    min-height: 0;
+    padding: 3px;
+    background: rgb(68, 51, 38);
+    border-top: 0;
+    border-bottom: 3px solid rgb(119, 80, 54);
+}
+
+.report-side-bar {
+    justify-content: space-between;
+}
+
+.report-control-label {
+    flex: 0 0 auto;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.report-view-select {
+    width: 100%;
+    min-width: 0;
+    height: 38px;
+    padding: 2px 34px 2px 10px;
+    color: rgb(67, 51, 38);
+    background-color: rgb(180, 140, 100);
+    border: 2px solid rgb(67, 51, 38);
+    border-radius: 0;
+    font-size: 14px;
+    font-weight: 900;
+    outline: none;
+}
+
+.report-view-select option {
+    font-weight: 700;
+}
+
+.report-side-buttons {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.report-side-buttons .flanks-button-report {
+    box-sizing: border-box;
+    margin: 0;
+    border: 2px solid rgb(67, 51, 38);
+}
+
+.report-side-buttons .flanks-button-report:hover,
+.report-side-buttons .flanks-button-report:focus,
+.report-side-buttons .flanks-button-report:active {
+    margin: 0;
+    transform: none;
+}
+
+.report-column-heads {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-top: 3px solid rgb(67, 51, 38);
+    border-bottom: 3px solid rgb(67, 51, 38);
+}
+
+.report-column-head {
+    min-width: 0;
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+    padding: 5px 8px;
+    color: white;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.report-column-head strong {
+    overflow: hidden;
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.report-column-head-attack {
+    background-color: rgb(183, 52, 52);
+    border-right: 2px solid rgb(67, 51, 38);
+}
+
+.report-column-head-defense {
+    background-color: rgb(44, 115, 141);
+}
+
+.report-context-note {
+    flex: 0 0 auto;
+    padding: 5px 8px;
+    color: rgb(67, 51, 38);
+    background-color: rgb(243, 194, 74);
+    border-bottom: 2px solid rgb(67, 51, 38);
+    text-align: center;
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.report-detail-columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    min-height: 0;
+    flex: 1 1 auto;
+    align-items: stretch;
+    overflow: hidden;
+}
+
+.report-detail-column {
+    height: 100%;
+    min-width: 0;
+    padding-bottom: 10px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: rgb(145, 98, 65);
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.report-detail-column::-webkit-scrollbar {
+    display: none;
+}
+
+.report-detail-attack {
+    border-right: 2px solid rgb(67, 51, 38);
+}
+
+.report-section {
+    margin: 0;
+    padding: 0 5px 8px;
+}
+
+.report-section h6 {
+    margin: 0 -5px 5px;
+    padding: 5px 7px;
+    color: rgb(248, 238, 211);
+    background-color: rgb(119, 80, 54);
+    border-top: 1px solid rgb(67, 51, 38);
+    border-bottom: 1px solid rgb(67, 51, 38);
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.report-item-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 3px;
+}
+
+.battle-report .report-item-grid .unit-slot,
+.report-item {
+    width: 100%;
+    height: 44px;
+    min-width: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    color: rgb(67, 51, 38);
+    background-color: rgb(234, 208, 178);
+    border: 1px solid rgb(67, 51, 38);
+}
+
+.battle-report .report-item-grid .unit-slot:hover {
+    background-color: rgb(234, 208, 178);
+    cursor: default;
+}
+
+.battle-report .report-item-grid .unit-icon,
+.report-tool-item > img {
+    width: 52%;
+    height: 100%;
+    padding: 1px;
+    object-fit: contain;
+}
+
+.battle-report .report-item-grid .unit-info,
+.report-item-values {
+    width: 48%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-left: 1px solid rgb(119, 80, 54);
+}
+
+.battle-report .report-item-grid .unit-info .unit-count,
+.battle-report .report-item-grid .unit-info .unit-loss,
+.report-item-values strong,
+.report-item-values small {
+    width: 100%;
+    height: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgb(67, 51, 38);
+    background: transparent;
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.battle-report .report-item-grid .unit-info .unit-loss,
+.report-item-values small {
+    color: #a51f1f;
+    border-top: 1px solid rgb(119, 80, 54);
+}
+
+.report-abilities-section .report-item-grid {
+    display: block;
+}
+
+.report-ability-item {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 5px;
+    margin-bottom: 4px;
+    padding: 4px;
+    color: rgb(67, 51, 38);
+    background-color: rgb(234, 208, 178);
+    border: 1px solid rgb(67, 51, 38);
+}
+
+.report-ability-item img {
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+}
+
+.report-ability-item span,
+.report-ability-item small {
+    min-width: 0;
+    display: block;
+}
+
+.report-ability-item strong {
+    display: block;
+    margin-bottom: 2px;
+    font-size: 11px;
+    line-height: 1.15;
+}
+
+.report-ability-item small {
+    font-size: 9px;
+    line-height: 1.2;
+}
+
+.report-empty {
+    grid-column: 1 / -1;
+    padding: 10px 4px;
+    color: rgba(248, 238, 211, 0.82);
+    text-align: center;
+    font-size: 10px;
+    font-weight: 700;
 }
 
 .modal.fade .modal-dialog {
@@ -935,15 +1234,23 @@ body {
 }
 
 .general-loadout-root {
-    min-height: 100%;
+    display: flex;
+    height: 100%;
+    min-height: 0;
+    flex-direction: column;
     color: rgb(67, 51, 38);
 }
 
+#attackGeneralModal .modal-body,
+#defenseGeneralModal .modal-body {
+    overflow: hidden;
+}
+
 .general-picker {
-    position: sticky;
-    top: 0;
+    position: relative;
+    flex: 0 0 auto;
     z-index: 8;
-    padding: 6px;
+    padding: 3px;
     background: rgb(68, 51, 38);
     border-bottom: 3px solid rgb(119, 80, 54);
 }
@@ -1056,32 +1363,38 @@ body {
 
 .general-loadout-editor {
     display: grid;
-    grid-template-columns: 116px minmax(0, 1fr);
-    align-items: start;
-    min-height: calc(68vh - 71px);
+    grid-template-columns: 86px minmax(0, 1fr);
+    min-height: 0;
+    flex: 1 1 auto;
+    align-items: stretch;
+    overflow: hidden;
 }
 
 .general-slot-list {
-    position: sticky;
-    top: 71px;
+    position: static;
     display: grid;
-    min-height: calc(68vh - 71px);
+    height: 100%;
+    min-height: 0;
     align-content: start;
-    gap: 4px;
-    padding: 5px;
+    gap: 3px;
+    padding: 4px;
+    overflow-y: auto;
+    overflow-x: hidden;
     background: rgb(68, 51, 38);
     border-right: 3px solid rgb(119, 80, 54);
+    scrollbar-color: rgb(180, 140, 100) rgb(67, 51, 38);
+    scrollbar-width: thin;
 }
 
 .general-slot-card {
     position: relative;
     display: grid;
     min-width: 0;
-    min-height: 100px;
+    min-height: 78px;
     place-items: center;
     align-content: center;
     gap: 2px;
-    padding: 6px 3px 4px;
+    padding: 4px 2px;
     border: 2px solid rgb(119, 80, 54);
     border-radius: 0;
     background: rgb(145, 98, 65);
@@ -1096,8 +1409,8 @@ body {
 .general-slot-visual {
     position: relative;
     display: grid;
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     place-items: center;
     overflow: visible;
     border: 2px solid rgb(248, 238, 211);
@@ -1106,8 +1419,8 @@ body {
 }
 
 .general-slot-visual img {
-    width: 58px;
-    height: 58px;
+    width: 48px;
+    height: 48px;
     object-fit: contain;
 }
 
@@ -1124,7 +1437,8 @@ body {
 .general-slot-number {
     position: absolute;
     top: 3px;
-    left: 5px;
+    left: 4px;
+    font-size: 12px;
     font-weight: 900;
 }
 
@@ -1141,8 +1455,30 @@ body {
 }
 
 .general-ability-choice-list {
+    height: 100%;
     min-width: 0;
+    min-height: 0;
     padding: 5px 5px 5px 4px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-color: rgb(180, 140, 100) rgb(67, 51, 38);
+    scrollbar-width: thin;
+}
+
+.general-slot-list::-webkit-scrollbar,
+.general-ability-choice-list::-webkit-scrollbar {
+    width: 7px;
+}
+
+.general-slot-list::-webkit-scrollbar-track,
+.general-ability-choice-list::-webkit-scrollbar-track {
+    background: rgb(67, 51, 38);
+}
+
+.general-slot-list::-webkit-scrollbar-thumb,
+.general-ability-choice-list::-webkit-scrollbar-thumb {
+    border: 1px solid rgb(67, 51, 38);
+    background: rgb(180, 140, 100);
 }
 
 .general-ability-choice {
@@ -1239,21 +1575,21 @@ body {
 
 @media (max-width: 480px) {
     .general-loadout-editor {
-        grid-template-columns: 96px minmax(0, 1fr);
+        grid-template-columns: 76px minmax(0, 1fr);
     }
 
     .general-slot-card {
-        min-height: 92px;
+        min-height: 72px;
     }
 
     .general-slot-visual {
-        width: 54px;
-        height: 54px;
+        width: 46px;
+        height: 46px;
     }
 
     .general-slot-visual img {
-        width: 52px;
-        height: 52px;
+        width: 44px;
+        height: 44px;
     }
 
     .general-ability-choice {
