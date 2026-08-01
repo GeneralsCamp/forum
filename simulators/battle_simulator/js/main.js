@@ -12,6 +12,29 @@ import { openDefenseGeneralModal } from './ui/modals/defenseGeneralModal.js';
 import { readStoredJson } from './data/storage.js';
 import { openBattleCatalogModal } from './ui/modals/battleCatalogModal.js';
 
+function getFullscreenElement() {
+  return document.fullscreenElement || document.webkitFullscreenElement || null;
+}
+
+function syncFullscreenButton() {
+  document.querySelector('.fullscreen-button')?.classList.toggle('active', Boolean(getFullscreenElement()));
+}
+
+async function toggleFullscreen() {
+  try {
+    if (getFullscreenElement()) {
+      const exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen;
+      await exitFullscreen?.call(document);
+    } else {
+      const page = document.documentElement;
+      const requestFullscreen = page.requestFullscreen || page.webkitRequestFullscreen;
+      await requestFullscreen?.call(page);
+    }
+  } catch (_) {
+    syncFullscreenButton();
+  }
+}
+
 window.addEventListener('load', () => {
   const savedCommanderStats = readStoredJson('commanderStats');
   const savedCastellanStats = readStoredJson('castellanStats');
@@ -55,6 +78,7 @@ window.addEventListener('load', () => {
   );
 
   document.querySelectorAll('.flanks-button.sides').forEach(btn => btn.addEventListener('click', () => switchSide(btn.dataset.section)));
+  document.querySelector('.fullscreen-button')?.addEventListener('click', toggleFullscreen);
   document.querySelector('.openAllWaves-button')?.addEventListener('click', openAllWaves);
   document.querySelector('.flanks-button.red-button')?.addEventListener('click', battleSimulation);
   document.querySelector('.preset-button')?.addEventListener('click', openWaveCopyModal);
@@ -66,3 +90,6 @@ window.addEventListener('load', () => {
     switchSide(currentSide);
   });
 });
+
+document.addEventListener('fullscreenchange', syncFullscreenButton);
+document.addEventListener('webkitfullscreenchange', syncFullscreenButton);

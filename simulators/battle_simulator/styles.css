@@ -596,6 +596,7 @@ body {
 
 .battle-action-bar .preset-button,
 .battle-action-bar .catalog-button,
+.battle-action-bar .fullscreen-button,
 .battle-action-bar .openAllWaves-button {
     background-color: rgb(88, 117, 114);
     border-color: rgb(67, 51, 38);
@@ -604,6 +605,7 @@ body {
 
 .battle-action-bar .preset-button:hover,
 .battle-action-bar .catalog-button:hover,
+.battle-action-bar .fullscreen-button:hover,
 .battle-action-bar .openAllWaves-button:hover {
     background-color: rgb(101, 132, 141);
     border: 3px solid rgb(67, 51, 38);
@@ -611,8 +613,35 @@ body {
 }
 
 .battle-action-bar .openAllWaves-button.active,
-.battle-action-bar .openAllWaves-button.active:hover {
+.battle-action-bar .openAllWaves-button.active:hover,
+.battle-action-bar .fullscreen-button.active,
+.battle-action-bar .fullscreen-button.active:hover {
     background-color: rgb(243, 194, 74);
+}
+
+.battle-action-bar .fullscreen-button.active,
+.battle-action-bar .fullscreen-button.active:hover {
+    color: rgb(67, 51, 38);
+}
+
+.battle-action-bar .fullscreen-button {
+    display: none;
+}
+
+.battle-action-bar .fullscreen-icon {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.8;
+    stroke-linecap: square;
+    stroke-linejoin: miter;
+}
+
+@media (max-width: 700px) {
+    .battle-action-bar .fullscreen-button {
+        display: block;
+    }
 }
 
 .battle-action-bar .preset-button .icon {

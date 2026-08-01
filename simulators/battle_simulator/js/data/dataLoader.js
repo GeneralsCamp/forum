@@ -196,6 +196,10 @@ function toUnit(selection, index, kind, imageContext, lang, catalogEntry = {}) {
   const meleeAttack = numberValue(entity, ["meleeAttack"]);
   const rangedDefense = numberValue(entity, ["rangeDefence", "rangeDefense"]);
   const meleeDefense = numberValue(entity, ["meleeDefence", "meleeDefense"]);
+  const itemRole = normalizeName(getProp(entity, ["role"]) || "");
+  const unitType = itemRole === "ranged" || itemRole === "melee"
+    ? itemRole
+    : rangedAttack > meleeAttack ? "ranged" : "melee";
 
   return {
     id: `unit${index + 1}`,
@@ -209,7 +213,7 @@ function toUnit(selection, index, kind, imageContext, lang, catalogEntry = {}) {
     strengthGroup: unitStrengthGroup(entity),
     name: localizedName(entity, lang),
     type1: kind,
-    type2: rangedAttack > meleeAttack ? "ranged" : "melee",
+    type2: unitType,
     meleeCombatStrength: meleeAttack,
     rangedCombatStrength: rangedAttack,
     meleeDefenseStrength: meleeDefense,

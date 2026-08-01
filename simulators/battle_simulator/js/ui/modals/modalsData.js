@@ -4,7 +4,7 @@ import { attackBasics, commanderStats, castellanStats, BASE_WAVE_MIN, BASE_WAVE_
 export const modalsData = [
   {
     id: 'battleCatalogModal',
-    title: 'Custom Troops & Tools',
+    title: 'Custom Setup',
     body: `
       <div class="battle-catalog-editor">
         <div class="catalog-filter-row">
