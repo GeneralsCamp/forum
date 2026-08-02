@@ -231,7 +231,7 @@ function allocatePercentageLosses(entries = [], rate = 0) {
   const totalCount = activeEntries.reduce((total, entry) => total + entry.count, 0);
   if (totalCount <= 0 || rate <= 0) return new Map();
 
-  const killCount = Math.min(Math.ceil(totalCount * rate), totalCount);
+  const killCount = Math.min(Math.floor(totalCount * rate), totalCount);
   const indexedEntries = activeEntries.map((entry, index) => ({
     ...entry,
     allocationKey: String(index)
@@ -1578,6 +1578,7 @@ function simulateWallSides() {
     (waves[side] || []).flatMap((wave, waveOffset) =>
       buildAttackUnits(wave?.slots || []).map(unit => ({
         group: `${side}:${waveOffset}`,
+        waveOffset,
         type: toUnitKey(unit.type),
         count: unit.count
       }))
@@ -1590,13 +1591,22 @@ function simulateWallSides() {
       count: unit.count
     }))
   );
-  const attackerPreBattleLosses = isDefenseAbilityActive('ambush', 'left', 1, 'preCombat')
-    ? allocatePercentageLosses(attackerPreBattleEntries, 0.07)
-    : new Map();
+  const attackerPreBattleLosses = new Map();
+  if (isDefenseAbilityActive('ambush', 'left', 1, 'preCombat')) {
+    const ambushRate = generalAbilityEffectRate('1022', 'defense', 0.07);
+    for (let waveOffset = 0; waveOffset < waveCount; waveOffset += 1) {
+      const waveLosses = allocatePercentageLosses(
+        attackerPreBattleEntries.filter(entry => entry.waveOffset === waveOffset),
+        ambushRate
+      );
+      waveLosses.forEach((losses, group) => attackerPreBattleLosses.set(group, losses));
+    }
+  }
+  const attackAmbushRate = generalAbilityEffectRate('1022', 'attack', 0.07);
   const defenderPreBattleLosses =
     isAttackAbilityActive('ambush', 'left', 1, 'preCombat') &&
     totalPlannedWallAttackers() > totalWallDefenders()
-      ? allocatePercentageLosses(defenderPreBattleEntries, 0.07)
+      ? allocatePercentageLosses(defenderPreBattleEntries, attackAmbushRate)
       : new Map();
 
   for (let waveOffset = 0; waveOffset < waveCount; waveOffset += 1) {
