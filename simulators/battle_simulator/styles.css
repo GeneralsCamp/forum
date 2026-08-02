@@ -20,6 +20,11 @@ body {
         margin: 0 !important;
         background-attachment: scroll;
     }
+
+    html:fullscreen .attack-planning,
+    html:-webkit-full-screen .attack-planning {
+        padding-top: max(env(safe-area-inset-top, 0px), 28px);
+    }
 }
 
 .scrollable-content::-webkit-scrollbar {
@@ -314,8 +319,9 @@ body {
 .general-img,
 .enemy-img {
     display: block;
-    width: auto;
+    width: 60px;
     height: 76px;
+    object-fit: fill;
 }
 
 .attack-planning {
@@ -415,7 +421,8 @@ body {
 
 .general-bg1,
 .general-bg2 {
-    width: auto;
+    width: 60px;
+    min-width: 60px;
     height: 76px;
     min-height: 76px;
     padding: 0;
