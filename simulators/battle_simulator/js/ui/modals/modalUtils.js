@@ -1,14 +1,27 @@
-export function bindSlider(sliderId, valueId, { value = 0, min = 0, max = 100, prefix = '', step = 1 } = {}) {
+export function bindSlider(sliderId, valueId, {
+  value = 0,
+  min = 0,
+  max = 100,
+  prefix = '',
+  step = 1,
+  allowDecimal = false
+} = {}) {
   const slider = document.getElementById(sliderId);
   const valueEl = document.getElementById(valueId);
   if (!slider || !valueEl) return;
 
-  const formatCurrentValue = v => (v < 0 ? `-${Math.abs(v)}` : `${prefix}${v}`);
+  const formatNumber = v => (Number.isInteger(v) ? `${v}` : v.toFixed(1));
+  const formatCurrentValue = v => (v < 0
+    ? `-${formatNumber(Math.abs(v))}`
+    : `${prefix}${formatNumber(v)}`);
   const card = slider.closest('.modal-card-body');
   const minusButton = card?.querySelector(`.modal-slider-minus[data-slider-id="${sliderId}"]`);
   const plusButton = card?.querySelector(`.modal-slider-plus[data-slider-id="${sliderId}"]`);
   const setValue = nextValue => {
-    const parsed = Number.parseInt(nextValue, 10);
+    const numericValue = Number(String(nextValue).trim());
+    const parsed = allowDecimal
+      ? Math.round(numericValue * 10) / 10
+      : Math.trunc(numericValue);
     const safeValue = Number.isFinite(parsed) ? parsed : min;
     const clampedValue = Math.max(min, Math.min(max, safeValue));
     slider.value = clampedValue;
@@ -19,9 +32,11 @@ export function bindSlider(sliderId, valueId, { value = 0, min = 0, max = 100, p
 
   slider.min = min;
   slider.max = max;
+  if (allowDecimal) slider.step = 'any';
+  valueEl.inputMode = allowDecimal ? 'decimal' : 'numeric';
   setValue(value);
 
-  slider.oninput = () => setValue(slider.value);
+  slider.oninput = () => setValue(allowDecimal ? Math.round(Number(slider.value)) : slider.value);
 
   valueEl.onfocus = () => {
     const selection = window.getSelection();
@@ -60,7 +75,7 @@ export function bindConfirmButton(buttonId, confirmValues, modal, onConfirm) {
 
       keys.forEach((key, idx) => {
         if (idx === keys.length - 1) {
-          const value = parseInt(slider.value);
+          const value = Number(slider.value);
 
           if (key === 'left' && target['right'] !== undefined) {
             target['left'] = value;

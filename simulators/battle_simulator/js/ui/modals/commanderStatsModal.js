@@ -8,23 +8,28 @@ export function openCommanderStatsModal() {
   const modal = new bootstrap.Modal(modalEl);
 
   const sliders = [
-    { sliderId: 'melee-strength-slider', valueId: 'melee-strength-value', value: commanderStats.melee, min: 0, max: 1500 },
-    { sliderId: 'ranged-strength-slider', valueId: 'ranged-strength-value', value: commanderStats.ranged, min: 0, max: 1500 },
-    { sliderId: 'universal-strength-slider', valueId: 'universal-strength-value', value: commanderStats.universal, min: 0, max: 100 },
-    { sliderId: 'courtyard-strength-slider', valueId: 'courtyard-strength-value', value: commanderStats.courtyard, min: 0, max: 1500 },
-    { sliderId: 'wall-reduction-slider', valueId: 'wall-reduction-value', value: commanderStats.wallReduction, min: 0, max: 500 },
-    { sliderId: 'moat-reduction-slider', valueId: 'moat-reduction-value', value: commanderStats.moatReduction, min: 0, max: 300 },
-    { sliderId: 'gate-reduction-slider', valueId: 'gate-reduction-value', value: commanderStats.gateReduction, min: 0, max: 500 },
+    { sliderId: 'melee-strength-slider', valueId: 'melee-strength-value', value: commanderStats.melee, min: 0, max: 1500, allowDecimal: true },
+    { sliderId: 'ranged-strength-slider', valueId: 'ranged-strength-value', value: commanderStats.ranged, min: 0, max: 1500, allowDecimal: true },
+    { sliderId: 'universal-strength-slider', valueId: 'universal-strength-value', value: commanderStats.universal, min: 0, max: 100, allowDecimal: true },
+    { sliderId: 'courtyard-strength-slider', valueId: 'courtyard-strength-value', value: commanderStats.courtyard, min: 0, max: 1500, allowDecimal: true },
+    { sliderId: 'wall-reduction-slider', valueId: 'wall-reduction-value', value: commanderStats.wallReduction, min: 0, max: 500, allowDecimal: true },
+    { sliderId: 'moat-reduction-slider', valueId: 'moat-reduction-value', value: commanderStats.moatReduction, min: 0, max: 300, allowDecimal: true },
+    { sliderId: 'gate-reduction-slider', valueId: 'gate-reduction-value', value: commanderStats.gateReduction, min: 0, max: 500, allowDecimal: true },
     { sliderId: 'mead-unit-strength-slider', valueId: 'mead-unit-strength-value', value: commanderStats.meadStrength, min: 0, max: 20 },
     { sliderId: 'horror-unit-strength-slider', valueId: 'horror-unit-strength-value', value: commanderStats.horrorStrength, min: 0, max: 40 },
     { sliderId: 'hol-melee-strength-slider', valueId: 'hol-melee-strength-value', value: commanderStats.holMelee, min: 0, max: 13 },
     { sliderId: 'hol-ranged-strength-slider', valueId: 'hol-ranged-strength-value', value: commanderStats.holRanged, min: 0, max: 13 },
     { sliderId: 'hol-universal-strength-slider', valueId: 'hol-universal-strength-value', value: commanderStats.holUniversal, min: 0, max: 12 },
-    { sliderId: 'front-strength-slider', valueId: 'front-strength-value', value: commanderStats.frontStrength, min: 0, max: 200 },
-    { sliderId: 'flanks-strength-slider', valueId: 'flanks-strength-value', value: commanderStats.flanksStrength, min: 0, max: 200 }
+    { sliderId: 'front-strength-slider', valueId: 'front-strength-value', value: commanderStats.frontStrength, min: 0, max: 200, allowDecimal: true },
+    { sliderId: 'flanks-strength-slider', valueId: 'flanks-strength-value', value: commanderStats.flanksStrength, min: 0, max: 200, allowDecimal: true }
   ];
 
-  sliders.forEach(s => bindSlider(s.sliderId, s.valueId, { value: s.value, min: s.min, max: s.max }));
+  sliders.forEach(s => bindSlider(s.sliderId, s.valueId, {
+    value: s.value,
+    min: s.min,
+    max: s.max,
+    allowDecimal: s.allowDecimal
+  }));
 
   const confirmValues = [
     { sliderId: 'melee-strength-slider', property: 'melee', targetObject: commanderStats },
