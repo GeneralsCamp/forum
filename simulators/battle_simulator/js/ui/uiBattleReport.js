@@ -1059,7 +1059,7 @@ function computeWaveBattle(
       const minimumPercent = 100 + 50 * scale;
       const bonusPercent = 15 * scale;
       attackBonus.rangedMult = Math.max(attackBonus.rangedMult, minimumPercent / 100)
-        * (1 + bonusPercent / 100);
+        + bonusPercent / 100;
       markAttackAbility('longbows', [minimumPercent, bonusPercent]);
     }
 
@@ -1070,7 +1070,7 @@ function computeWaveBattle(
       const bonusPercent = 14 * scale;
       const rangedAfterShields = Math.max(defenseStrength.ranged - shieldPercent, 0);
       const stabilizedRanged = Math.max(rangedAfterShields, minimumPercent)
-        * (1 + bonusPercent / 100);
+        + bonusPercent;
       defenseStrength.ranged = stabilizedRanged + shieldPercent;
       markDefenseAbility('longbows', [minimumPercent, bonusPercent]);
     }
