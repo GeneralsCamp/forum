@@ -42,6 +42,10 @@ const savedLoadouts = {
   attack: { generalId: '', slots: {} },
   defense: { generalId: '', slots: {} }
 };
+const savedGeneralLoadouts = {
+  attack: {},
+  defense: {}
+};
 
 function stringValue(value) {
   return value == null ? '' : String(value);
@@ -231,7 +235,19 @@ export function initializeGeneralAbilityCatalog({ data, lang, imageMaps }) {
   catalog = { generals, abilities };
   ['attack', 'defense'].forEach(side => {
     const stored = readStoredJson(`${side}GeneralLoadout`, null);
+    const storedGeneralLoadouts = readStoredJson(`${side}GeneralLoadouts`, {});
+    savedGeneralLoadouts[side] = {};
+    Object.entries(storedGeneralLoadouts || {}).forEach(([generalId, loadout]) => {
+      const normalized = normalizeLoadout(side, {
+        generalId,
+        slots: loadout?.slots || loadout
+      });
+      if (normalized.generalId) savedGeneralLoadouts[side][normalized.generalId] = normalized;
+    });
     savedLoadouts[side] = normalizeLoadout(side, stored);
+    if (savedLoadouts[side].generalId) {
+      savedGeneralLoadouts[side][savedLoadouts[side].generalId] = savedLoadouts[side];
+    }
     if (stored) setAbilityFlags(side, savedLoadouts[side]);
   });
   syncGeneralPortraits();
@@ -241,18 +257,30 @@ export function getGeneralAbilityCatalog() {
   return catalog;
 }
 
-export function getGeneralLoadout(side) {
+export function getGeneralLoadout(side, generalId) {
+  const source = generalId === undefined
+    ? savedLoadouts[side]
+    : savedGeneralLoadouts[side]?.[stringValue(generalId)];
   return {
-    generalId: savedLoadouts[side]?.generalId || '',
-    slots: { ...(savedLoadouts[side]?.slots || {}) }
+    generalId: source?.generalId || stringValue(generalId),
+    slots: { ...(source?.slots || {}) }
   };
 }
 
-export function commitGeneralLoadout(side, loadout) {
+export function commitGeneralLoadout(side, loadout, generalLoadouts = {}) {
+  Object.entries(generalLoadouts).forEach(([generalId, slots]) => {
+    const remembered = normalizeLoadout(side, {
+      generalId,
+      slots: slots?.slots || slots
+    });
+    if (remembered.generalId) savedGeneralLoadouts[side][remembered.generalId] = remembered;
+  });
   const normalized = normalizeLoadout(side, loadout);
   savedLoadouts[side] = normalized;
+  if (normalized.generalId) savedGeneralLoadouts[side][normalized.generalId] = normalized;
   setAbilityFlags(side, normalized);
   writeStoredJson(`${side}GeneralLoadout`, normalized);
+  writeStoredJson(`${side}GeneralLoadouts`, savedGeneralLoadouts[side]);
   writeStoredJson(`${side}GeneralAbilities`, side === 'attack' ? attackGeneralAbilities : defenseGeneralAbilities);
   syncGeneralPortraits();
 }

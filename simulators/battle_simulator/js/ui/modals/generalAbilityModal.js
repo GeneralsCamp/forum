@@ -135,6 +135,8 @@ export function openGeneralAbilityModal(mode) {
     generalId: saved.generalId || '',
     slots: { ...saved.slots }
   };
+  const draftsByGeneral = {};
+  if (draft.generalId) draftsByGeneral[draft.generalId] = { ...draft.slots };
   let selectedSlotId = relevantSlots(generalById(catalog, draft.generalId), mode)[0]?.slotId || '';
 
   root.innerHTML = `
@@ -160,8 +162,14 @@ export function openGeneralAbilityModal(mode) {
 
     const generalOption = event.target.closest('.general-picker-option');
     if (generalOption) {
+      if (draft.generalId) draftsByGeneral[draft.generalId] = { ...draft.slots };
       draft.generalId = generalOption.dataset.generalId;
-      draft.slots = {};
+      if (draft.generalId && !draftsByGeneral[draft.generalId]) {
+        draftsByGeneral[draft.generalId] = {
+          ...getGeneralLoadout(mode, draft.generalId).slots
+        };
+      }
+      draft.slots = { ...(draftsByGeneral[draft.generalId] || {}) };
       selectedSlotId = relevantSlots(generalById(catalog, draft.generalId), mode)[0]?.slotId || '';
       rerender();
       return;
@@ -186,7 +194,8 @@ export function openGeneralAbilityModal(mode) {
   };
 
   document.getElementById(confirmId).onclick = () => {
-    commitGeneralLoadout(mode, draft);
+    if (draft.generalId) draftsByGeneral[draft.generalId] = { ...draft.slots };
+    commitGeneralLoadout(mode, draft, draftsByGeneral);
     bootstrap.Modal.getOrCreateInstance(modalElement).hide();
   };
 
