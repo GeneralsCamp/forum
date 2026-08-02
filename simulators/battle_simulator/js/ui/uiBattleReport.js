@@ -114,7 +114,9 @@ function isAbilitySuppressedByAyala(owner, side, waveIndex, phase = 'wave') {
   const enemyHasAyala = owner === 'attack'
     ? defenseGeneralAbilities.ayala
     : attackGeneralAbilities.ayala;
-  return enemyHasAyala && (phase === 'preCombat' || waveIndex <= 2);
+  const enemyOwner = owner === 'attack' ? 'defense' : 'attack';
+  const suppressedWaveCount = generalAbilityEffectValue('1021', enemyOwner, 2);
+  return enemyHasAyala && (phase === 'preCombat' || waveIndex <= suppressedWaveCount);
 }
 
 function isAttackAbilityActive(flag, side, waveIndex, phase = 'wave') {
@@ -157,8 +159,10 @@ function isWallAbilityScheduled(flag, owner, side, waveIndex) {
     return waveIndex % 3 === 0;
   }
   if (flag === 'lastingWounds') return waveIndex >= 4 && waveIndex % 3 !== 0;
-  if (flag === 'ayala') return waveIndex <= 2;
-  if (flag === 'ambush') return owner === 'defense' || waveIndex === 1;
+  if (flag === 'ayala') {
+    return waveIndex <= generalAbilityEffectValue('1021', owner, 2);
+  }
+  if (flag === 'ambush') return false;
   if (['giantSlayer', 'vengeance', 'exalted'].includes(flag)) return false;
   return true;
 }
@@ -191,15 +195,54 @@ function pureDefenseUnitType(defenseUnits) {
 }
 
 function applyPercentageKills(units = [], predicate, rate = 0) {
-  const losses = new Map();
-  units.forEach(unit => {
-    if (!unit || unit.count <= 0 || !predicate(unit)) return;
-    const loss = unit.count * rate;
-    unit.count -= loss;
-    const key = toUnitKey(unit.type);
-    losses.set(key, (losses.get(key) || 0) + loss);
+  const eligibleUnits = units.filter(unit => unit && unit.count > 0 && predicate(unit));
+  const eligibleCount = sumCounts(eligibleUnits);
+  if (eligibleCount <= 0 || rate <= 0) return new Map();
+
+  const killCount = Math.min(Math.ceil(eligibleCount * rate), eligibleCount);
+  const losses = distributeLossesByUnit(eligibleUnits, killCount);
+  eligibleUnits.forEach(unit => {
+    unit.count = Math.max(0, unit.count - (losses.get(toUnitKey(unit.type)) || 0));
   });
   return losses;
+}
+
+function allocatePercentageLosses(entries = [], rate = 0) {
+  const activeEntries = entries.filter(entry => entry && entry.count > 0);
+  const totalCount = activeEntries.reduce((total, entry) => total + entry.count, 0);
+  if (totalCount <= 0 || rate <= 0) return new Map();
+
+  const killCount = Math.min(Math.ceil(totalCount * rate), totalCount);
+  const indexedEntries = activeEntries.map((entry, index) => ({
+    ...entry,
+    allocationKey: String(index)
+  }));
+  const allocated = distributeLossesByUnit(
+    indexedEntries.map(entry => ({ type: entry.allocationKey, count: entry.count })),
+    killCount
+  );
+  const lossesByGroup = new Map();
+  indexedEntries.forEach(entry => {
+    const loss = allocated.get(entry.allocationKey) || 0;
+    if (loss <= 0) return;
+    if (!lossesByGroup.has(entry.group)) lossesByGroup.set(entry.group, new Map());
+    const groupLosses = lossesByGroup.get(entry.group);
+    groupLosses.set(entry.type, (groupLosses.get(entry.type) || 0) + loss);
+  });
+  return lossesByGroup;
+}
+
+function applyMappedKills(units = [], requestedLosses = new Map()) {
+  const appliedLosses = new Map();
+  units.forEach(unit => {
+    if (!unit || unit.count <= 0) return;
+    const key = toUnitKey(unit.type);
+    const loss = Math.min(unit.count, requestedLosses?.get(key) || 0);
+    if (loss <= 0) return;
+    unit.count -= loss;
+    appliedLosses.set(key, (appliedLosses.get(key) || 0) + loss);
+  });
+  return appliedLosses;
 }
 
 function getPreviousAttackerLossStrength(previousWaveResults) {
@@ -210,7 +253,8 @@ function getPreviousAttackerLossStrength(previousWaveResults) {
 
   results.forEach(previousWaveResult => {
     (previousWaveResult.attackerUnits || []).forEach(unit => {
-      const loss = previousWaveResult.attackerLosses?.get(toUnitKey(unit.type)) || 0;
+      const loss = (previousWaveResult.waveAttackerLosses || previousWaveResult.attackerLosses)
+        ?.get(toUnitKey(unit.type)) || 0;
       if (unit.type2 === 'ranged') {
         result.ranged += loss * (unit.rangedCombatStrength || 0);
       } else {
@@ -229,7 +273,8 @@ function getPreviousDefenderLossStrength(previousWaveResults) {
 
   results.forEach(previousWaveResult => {
     (previousWaveResult.defenderUnitStats || []).forEach(unit => {
-      const loss = previousWaveResult.defenderLosses?.get(toUnitKey(unit.type)) || 0;
+      const loss = (previousWaveResult.waveDefenderLosses || previousWaveResult.defenderLosses)
+        ?.get(toUnitKey(unit.type)) || 0;
       const baseCombatStrength = Math.max(
         unit.rangedCombatStrength || 0,
         unit.meleeCombatStrength || 0,
@@ -802,7 +847,9 @@ function computeWaveBattle(
   wallAttackerCounts = null,
   previousWallWaveResults = null,
   wallYourCutBonuses = null,
-  aspectDragonStrengths = null
+  aspectDragonStrengths = null,
+  allocatedPreBattleLosses = null,
+  wallArmyCounts = null
 ) {
   const attackerUnitsBeforeAbilities = buildAttackUnits(wave?.slots || []);
   const attackUnits = attackerUnitsBeforeAbilities.map(unit => ({ ...unit }));
@@ -826,37 +873,47 @@ function computeWaveBattle(
     defenderBefore.set(toUnitKey(unit.type), unit.count);
   });
 
-  let preCombatAttackerLosses = new Map();
-  let preCombatDefenderLosses = new Map();
-  if (side !== 'cy' && waveIndex === 1 &&
-      isAttackAbilityActive('ambush', side, waveIndex, 'preCombat') &&
-      totalPlannedWallAttackers() > totalWallDefenders()) {
-    preCombatDefenderLosses = applyPercentageKills(
-      defenseUnits,
-      () => true,
-      0.07
-    );
-    markAttackAbility('ambush', sumMapValues(preCombatDefenderLosses));
-  }
-  if (side !== 'cy' && isDefenseAbilityActive('ambush', side, waveIndex, 'preCombat')) {
-    preCombatAttackerLosses = applyPercentageKills(
+  let preBattleAttackerLosses = new Map();
+  let preBattleDefenderLosses = new Map();
+  let wavePreCombatAttackerLosses = new Map();
+  let wavePreCombatDefenderLosses = new Map();
+  if (side !== 'cy') {
+    preBattleAttackerLosses = applyMappedKills(
       attackUnits,
-      () => true,
-      0.07
+      allocatedPreBattleLosses?.attacker
     );
-    markDefenseAbility('ambush', sumMapValues(preCombatAttackerLosses));
+    preBattleDefenderLosses = applyMappedKills(
+      defenseUnits,
+      allocatedPreBattleLosses?.defender
+    );
   }
+  if (sumMapValues(preBattleDefenderLosses) > 0) {
+    markAttackAbility('ambush', sumMapValues(preBattleDefenderLosses));
+  }
+  if (sumMapValues(preBattleAttackerLosses) > 0) {
+    markDefenseAbility('ambush', sumMapValues(preBattleAttackerLosses));
+  }
+
+  const attackerUnitsAfterPreBattle = attackUnits.map(unit => ({ ...unit }));
+  const defenderAfterPreBattle = new Map();
+  defenseUnits.forEach(unit => {
+    defenderAfterPreBattle.set(toUnitKey(unit.type), unit.count);
+  });
 
   if (side !== 'cy' && waveIndex % 3 === 0) {
     if (isAttackAbilityActive('tailwhip', side, waveIndex, 'preCombat') &&
-        totalPlannedWallAttackers() > totalWallDefenders()) {
+        (wallArmyCounts?.attacker ?? totalPlannedWallAttackers()) >
+          (wallArmyCounts?.defender ?? totalWallDefenders())) {
       markAttackAbility('tailwhip', 2.5);
       const tailwhipLosses = applyPercentageKills(
         defenseUnits,
         unit => unit.type2 === 'melee',
         0.025
       );
-      preCombatDefenderLosses = mergeLossMaps(preCombatDefenderLosses, tailwhipLosses);
+      wavePreCombatDefenderLosses = mergeLossMaps(
+        wavePreCombatDefenderLosses,
+        tailwhipLosses
+      );
     }
     if (isDefenseAbilityActive('tailwhip', side, waveIndex, 'preCombat')) {
       markDefenseAbility('tailwhip', 32);
@@ -865,7 +922,10 @@ function computeWaveBattle(
         unit => unit.type2 === 'melee',
         0.32
       );
-      preCombatAttackerLosses = mergeLossMaps(preCombatAttackerLosses, tailwhipLosses);
+      wavePreCombatAttackerLosses = mergeLossMaps(
+        wavePreCombatAttackerLosses,
+        tailwhipLosses
+      );
     }
   }
 
@@ -924,6 +984,10 @@ function computeWaveBattle(
   );
 
   const defenseStrength = computeDefenseStrengthBonuses(side, waveIndex, defenseToolScale);
+  let attackMeleeAbilityMultiplier = 1;
+  let attackRangedAbilityMultiplier = 1;
+  let defenseMeleeAbilityMultiplier = 1;
+  let defenseRangedAbilityMultiplier = 1;
   if (side !== 'cy' && isDefenseAbilityActive('endlessPractice', side, waveIndex) && waveIndex) {
     markDefenseAbility('endlessPractice', waveIndex * 4 * defenseWallAbilityScale(side, waveIndex));
   }
@@ -1018,14 +1082,18 @@ function computeWaveBattle(
 
   const lastingWoundsActive = waveIndex >= 4 && waveIndex % 3 !== 0;
   if (isAttackAbilityActive('lastingWounds', side, waveIndex) && lastingWoundsActive) {
-    markAttackAbility('lastingWounds', 25 * attackGeneralDebuffScale(side, waveIndex));
-    defenseStrength.ranged -= 25 * attackGeneralDebuffScale(side, waveIndex, { ranged: true });
-    defenseStrength.melee -= 25 * attackGeneralDebuffScale(side, waveIndex);
+    const meleeReduction = 25 * attackGeneralDebuffScale(side, waveIndex);
+    const rangedReduction = 25 * attackGeneralDebuffScale(side, waveIndex, { ranged: true });
+    markAttackAbility('lastingWounds', meleeReduction);
+    defenseMeleeAbilityMultiplier *= 1 - meleeReduction / 100;
+    defenseRangedAbilityMultiplier *= 1 - rangedReduction / 100;
   }
   if (isDefenseAbilityActive('lastingWounds', side, waveIndex) && lastingWoundsActive) {
-    markDefenseAbility('lastingWounds', 25 * defenseGeneralDebuffScale(side, waveIndex));
-    attackBonus.rangedMult -= 0.25 * defenseGeneralDebuffScale(side, waveIndex, { ranged: true });
-    attackBonus.meleeMult -= 0.25 * defenseGeneralDebuffScale(side, waveIndex);
+    const meleeReduction = 25 * defenseGeneralDebuffScale(side, waveIndex);
+    const rangedReduction = 25 * defenseGeneralDebuffScale(side, waveIndex, { ranged: true });
+    markDefenseAbility('lastingWounds', meleeReduction);
+    attackMeleeAbilityMultiplier *= 1 - meleeReduction / 100;
+    attackRangedAbilityMultiplier *= 1 - rangedReduction / 100;
   }
 
   if (waveIndex % 2 === 0) {
@@ -1037,8 +1105,8 @@ function computeWaveBattle(
         waveIndex
       );
       markAttackAbility('aspectOfTheDragon', reduction);
-      defenseStrength.ranged -= reduction;
-      defenseStrength.melee -= reduction;
+      defenseMeleeAbilityMultiplier *= 1 - reduction / 100;
+      defenseRangedAbilityMultiplier *= 1 - reduction / 100;
     }
     if (side !== 'cy' && isDefenseAbilityActive('aspectOfTheDragon', side, waveIndex)) {
       const reduction = aspectDragonReductionPercent(
@@ -1048,22 +1116,22 @@ function computeWaveBattle(
         waveIndex
       );
       markDefenseAbility('aspectOfTheDragon', reduction);
-      attackBonus.rangedMult -= reduction / 100;
-      attackBonus.meleeMult -= reduction / 100;
+      attackMeleeAbilityMultiplier *= 1 - reduction / 100;
+      attackRangedAbilityMultiplier *= 1 - reduction / 100;
     }
     if (isAttackAbilityActive('wingsWhirlwind', side, waveIndex)) {
       const ownBonus = 21;
       const enemyReduction = 21 * attackGeneralDebuffScale(side, waveIndex, { ranged: true });
       markAttackAbility('wingsWhirlwind', [enemyReduction, ownBonus]);
       attackBonus.rangedMult += 0.21 * attackWallAbilityScale(side, waveIndex);
-      defenseStrength.ranged -= enemyReduction;
+      defenseRangedAbilityMultiplier *= 1 - enemyReduction / 100;
     }
     if (isDefenseAbilityActive('wingsWhirlwind', side, waveIndex)) {
       const ownBonus = 21;
       const enemyReduction = 21 * defenseGeneralDebuffScale(side, waveIndex, { ranged: true });
       markDefenseAbility('wingsWhirlwind', [enemyReduction, ownBonus]);
       defenseStrength.ranged += 21 * defenseWallAbilityScale(side, waveIndex);
-      attackBonus.rangedMult -= enemyReduction / 100;
+      attackRangedAbilityMultiplier *= 1 - enemyReduction / 100;
     }
   }
 
@@ -1126,18 +1194,24 @@ function computeWaveBattle(
     defenseMeleeMult += defenseWallAbilityScale(side, waveIndex);
   }
 
-  let totalAttackRanged = attackTotals.rangedBase * attackBonus.rangedMult * attackTotalMultiplier;
-  let totalAttackMelee = attackTotals.meleeBase * attackBonus.meleeMult * attackTotalMultiplier;
+  let totalAttackRanged = attackTotals.rangedBase
+    * attackBonus.rangedMult
+    * attackTotalMultiplier
+    * attackRangedAbilityMultiplier;
+  let totalAttackMelee = attackTotals.meleeBase
+    * attackBonus.meleeMult
+    * attackTotalMultiplier
+    * attackMeleeAbilityMultiplier;
 
   let totalDefenseRanged = (
     defenseTotals.meleeRangedBase * defenseMeleeMult +
     defenseTotals.rangedRangedBase * defenseRangedMult
-  ) * defenseBonusMult;
+  ) * defenseBonusMult * defenseRangedAbilityMultiplier;
 
   let totalDefenseMelee = (
     defenseTotals.meleeMeleeBase * defenseMeleeMult +
     defenseTotals.rangedMeleeBase * defenseRangedMult
-  ) * defenseBonusMult;
+  ) * defenseBonusMult * defenseMeleeAbilityMultiplier;
 
   let heartAttackRangedBonus = 0;
   let heartAttackMeleeBonus = 0;
@@ -1394,8 +1468,10 @@ function computeWaveBattle(
     unit.count = Math.max(0, unit.count - loss);
   });
 
-  const attackerLosses = mergeLossMaps(preCombatAttackerLosses, combatAttackerLosses);
-  const defenderLosses = mergeLossMaps(preCombatDefenderLosses, combatDefenderLosses);
+  const waveAttackerLosses = mergeLossMaps(wavePreCombatAttackerLosses, combatAttackerLosses);
+  const waveDefenderLosses = mergeLossMaps(wavePreCombatDefenderLosses, combatDefenderLosses);
+  const attackerLosses = mergeLossMaps(preBattleAttackerLosses, waveAttackerLosses);
+  const defenderLosses = mergeLossMaps(preBattleDefenderLosses, waveDefenderLosses);
 
   const defenderRemaining = new Map();
   defenseUnits.forEach(unit => {
@@ -1405,13 +1481,6 @@ function computeWaveBattle(
   if (side !== 'cy') {
     if (isAttackAbilityActive('ironWill', side, waveIndex)) markAttackAbility('ironWill', 20);
     if (isDefenseAbilityActive('ironWill', side, waveIndex)) markDefenseAbility('ironWill', 20);
-    if (attackGeneralAbilities.ayala && waveIndex <= 2) {
-      markAttackAbility('ayala', 'pre-combat and waves 1-2');
-    }
-    if (defenseGeneralAbilities.ayala && waveIndex <= 2) {
-      markDefenseAbility('ayala', 'pre-combat and waves 1-2');
-    }
-
     [
       ['attack', attackGeneralAbilities, markAttackAbility],
       ['defense', defenseGeneralAbilities, markDefenseAbility]
@@ -1428,9 +1497,15 @@ function computeWaveBattle(
   return {
     sourceWave: wave,
     attackerUnits: attackerUnitsBeforeAbilities,
+    attackerUnitsAfterPreBattle,
     defenderUnits: defenseUnits,
     defenderUnitStats,
     defenderBefore,
+    defenderAfterPreBattle,
+    preBattleAttackerLosses,
+    preBattleDefenderLosses,
+    waveAttackerLosses,
+    waveDefenderLosses,
     attackerLosses,
     defenderLosses,
     attackerTotalLoss: sumMapValues(attackerLosses),
@@ -1454,31 +1529,66 @@ function simulateWallSides() {
     previousWaveResult: null
   }]));
   const waveCount = Math.max(...wallSides.map(side => (waves[side] || []).length), 0);
+  const attackerPreBattleEntries = wallSides.flatMap(side =>
+    (waves[side] || []).flatMap((wave, waveOffset) =>
+      buildAttackUnits(wave?.slots || []).map(unit => ({
+        group: `${side}:${waveOffset}`,
+        type: toUnitKey(unit.type),
+        count: unit.count
+      }))
+    )
+  );
+  const defenderPreBattleEntries = wallSides.flatMap(side =>
+    state[side].defenseUnits.map(unit => ({
+      group: side,
+      type: toUnitKey(unit.type),
+      count: unit.count
+    }))
+  );
+  const attackerPreBattleLosses = isDefenseAbilityActive('ambush', 'left', 1, 'preCombat')
+    ? allocatePercentageLosses(attackerPreBattleEntries, 0.07)
+    : new Map();
+  const defenderPreBattleLosses =
+    isAttackAbilityActive('ambush', 'left', 1, 'preCombat') &&
+    totalPlannedWallAttackers() > totalWallDefenders()
+      ? allocatePercentageLosses(defenderPreBattleEntries, 0.07)
+      : new Map();
 
   for (let waveOffset = 0; waveOffset < waveCount; waveOffset += 1) {
     const previousWallWaveResults = wallSides
       .map(side => state[side].previousWaveResult)
       .filter(Boolean);
+    const adjustedAttackUnits = Object.fromEntries(wallSides.map(side => {
+      const unitsForWave = buildAttackUnits(waves[side]?.[waveOffset]?.slots || []);
+      applyMappedKills(
+        unitsForWave,
+        attackerPreBattleLosses.get(`${side}:${waveOffset}`) || new Map()
+      );
+      return [side, unitsForWave];
+    }));
+    const adjustedDefenseUnits = Object.fromEntries(wallSides.map(side => {
+      const unitsForSide = state[side].defenseUnits.map(unit => ({ ...unit }));
+      if (waveOffset === 0) {
+        applyMappedKills(unitsForSide, defenderPreBattleLosses.get(side) || new Map());
+      }
+      return [side, unitsForSide];
+    }));
     const wallDefenderCounts = Object.fromEntries(wallSides.map(side => [
       side,
-      sumCounts(state[side].defenseUnits)
+      sumCounts(adjustedDefenseUnits[side])
     ]));
     const wallAttackerCounts = Object.fromEntries(wallSides.map(side => [
       side,
-      sumCounts(buildAttackUnits(waves[side]?.[waveOffset]?.slots || []))
+      sumCounts(adjustedAttackUnits[side])
     ]));
-    const wallAttackUnits = wallSides.flatMap(side =>
-      buildAttackUnits(waves[side]?.[waveOffset]?.slots || [])
-    );
-    const wallDefenseUnits = wallSides.flatMap(side => state[side].defenseUnits);
+    const wallAttackUnits = wallSides.flatMap(side => adjustedAttackUnits[side]);
+    const wallDefenseUnits = wallSides.flatMap(side => adjustedDefenseUnits[side]);
     const wallYourCutBonuses = {
       attack: yourCutBonusPercent(wallAttackUnits, 'attack'),
       defense: yourCutBonusPercent(wallDefenseUnits, 'defense')
     };
     const weakestAttackStrengths = wallSides
-      .map(side => weakestAttackerStrength(
-        buildAttackUnits(waves[side]?.[waveOffset]?.slots || [])
-      ))
+      .map(side => weakestAttackerStrength(adjustedAttackUnits[side]))
       .filter(strength => strength > 0);
     const aspectDragonStrengths = {
       attacker: weakestAttackStrengths.length
@@ -1504,7 +1614,21 @@ function simulateWallSides() {
         wallAttackerCounts,
         previousWallWaveResults,
         wallYourCutBonuses,
-        aspectDragonStrengths
+        aspectDragonStrengths,
+        {
+          attacker: attackerPreBattleLosses.get(`${side}:${waveOffset}`) || new Map(),
+          defender: waveOffset === 0
+            ? defenderPreBattleLosses.get(side) || new Map()
+            : new Map()
+        },
+        {
+          attacker: attackerPreBattleEntries.reduce((total, entry) => total + entry.count, 0) -
+            [...attackerPreBattleLosses.values()].reduce(
+              (total, losses) => total + sumMapValues(losses),
+              0
+            ),
+          defender: Object.values(wallDefenderCounts).reduce((total, count) => total + count, 0)
+        }
       );
       sideState.results.waves.push(waveResult);
       sideState.previousWaveResult = waveResult;
@@ -1884,13 +2008,27 @@ function renderToolSummaryHTML(toolSummary, owner, courtyardSupport = false) {
 }
 
 function getAppliedAbilityIds(battleResults, owner, view) {
-  const waveResults = view === 'summary'
+  const preBattleIds = new Set(['1021', '1022']);
+  const preBattleOnlyIds = new Set(['1022']);
+  const waveResults = view === 'summary' || view === 'prebattle'
     ? battleResults.waves || []
     : [battleResults.waves?.[Number(view.replace('wave-', '')) - 1]].filter(Boolean);
   const ids = new Set();
   waveResults.forEach(result => {
-    (result?.appliedAbilities?.[owner] || []).forEach(groupId => ids.add(String(groupId)));
+    (result?.appliedAbilities?.[owner] || []).forEach(groupId => {
+      const id = String(groupId);
+      if (view === 'prebattle'
+        ? preBattleIds.has(id)
+        : view === 'summary' || !preBattleOnlyIds.has(id)) {
+        ids.add(id);
+      }
+    });
   });
+  const ownerAbilities = owner === 'attack' ? attackGeneralAbilities : defenseGeneralAbilities;
+  if (view === 'summary' || view === 'prebattle') {
+    if (ownerAbilities.ayala) ids.add('1021');
+    if (ownerAbilities.ambush) ids.add('1022');
+  }
   return ids;
 }
 
@@ -1925,13 +2063,19 @@ function toolsWithConsumption(toolSlots, owner, hadBattle, courtyardSupport = fa
 
 function reportWaveResults(battleResults, side, view) {
   if (side === 'cy') return [battleResults.waves?.[0]].filter(Boolean);
-  if (view === 'summary') return battleResults.waves || [];
+  if (view === 'summary' || view === 'prebattle') return battleResults.waves || [];
   return [battleResults.waves?.[Number(view.replace('wave-', '')) - 1]].filter(Boolean);
 }
 
 function reportAbilityValues(battleResults, owner, side, view, groupId) {
-  const result = reportWaveResults(battleResults, side, view)
-    .find(waveResult => waveResult?.appliedAbilityValues?.[owner]?.[groupId]);
+  const results = reportWaveResults(battleResults, side, view);
+  if (view === 'prebattle' && groupId === '1022') {
+    return [results.reduce((total, waveResult) =>
+      total + (Number(waveResult?.appliedAbilityValues?.[owner]?.[groupId]?.[0]) || 0), 0)];
+  }
+  const result = results.find(
+    waveResult => waveResult?.appliedAbilityValues?.[owner]?.[groupId]
+  );
   return result?.appliedAbilityValues?.[owner]?.[groupId] || [];
 }
 
@@ -2022,16 +2166,44 @@ function renderReportColumn(
 }
 
 function reportUnits(side, battleResults, view) {
+  if (view === 'prebattle' && side !== 'cy') {
+    const attackCounts = new Map();
+    const attackLosses = new Map();
+    const defenseLosses = new Map();
+    (battleResults.waves || []).forEach(waveResult => {
+      mapFromUnits(waveResult.attackerUnits || []).forEach((count, type) => {
+        attackCounts.set(type, (attackCounts.get(type) || 0) + count);
+      });
+      waveResult.preBattleAttackerLosses?.forEach((loss, type) => {
+        attackLosses.set(type, (attackLosses.get(type) || 0) + loss);
+      });
+      waveResult.preBattleDefenderLosses?.forEach((loss, type) => {
+        defenseLosses.set(type, (defenseLosses.get(type) || 0) + loss);
+      });
+    });
+    const defenseCounts = battleResults.waves?.[0]?.defenderBefore ||
+      slotsToCountMap(defenseSlots[side]?.units || []);
+    return {
+      attack: buildSummaryList(attackCounts, attackLosses),
+      defense: buildSummaryList(defenseCounts, defenseLosses, true)
+    };
+  }
+
   if (view !== 'summary' && side !== 'cy') {
     const waveIndex = Number(view.replace('wave-', '')) - 1;
     const waveResult = battleResults.waves?.[waveIndex];
     if (!waveResult) return { attack: [], defense: [] };
-    const attackCounts = mapFromUnits(waveResult.attackerUnits || []);
+    const attackCounts = mapFromUnits(
+      waveResult.attackerUnitsAfterPreBattle || waveResult.attackerUnits || []
+    );
     return {
-      attack: buildSummaryList(attackCounts, waveResult.attackerLosses || new Map()),
+      attack: buildSummaryList(
+        attackCounts,
+        waveResult.waveAttackerLosses || waveResult.attackerLosses || new Map()
+      ),
       defense: buildSummaryList(
-        waveResult.defenderBefore || new Map(),
-        waveResult.defenderLosses || new Map(),
+        waveResult.defenderAfterPreBattle || waveResult.defenderBefore || new Map(),
+        waveResult.waveDefenderLosses || waveResult.defenderLosses || new Map(),
         true
       )
     };
@@ -2059,6 +2231,9 @@ function reportUnits(side, battleResults, view) {
 }
 
 function reportTools(side, view, battleResults) {
+  if (view === 'prebattle') {
+    return { attack: [], defense: [], courtyardSupport: false };
+  }
   if (side === 'cy') {
     const hadBattle = Boolean(battleResults.courtyardBattleStarted);
     return {
@@ -2086,8 +2261,9 @@ function reportTools(side, view, battleResults) {
 function setReportViewOptions(side) {
   const select = document.getElementById('report-view-select');
   if (!select) return;
-  const options = ['<option value="summary">Summary</option>'];
+  const options = ['<option value="summary">Overview</option>'];
   if (side !== 'cy') {
+    options.push('<option value="prebattle">Pre-battle</option>');
     (waves[side] || []).forEach((wave, index) => {
       options.push(`<option value="wave-${index + 1}">Wave ${index + 1}</option>`);
     });
