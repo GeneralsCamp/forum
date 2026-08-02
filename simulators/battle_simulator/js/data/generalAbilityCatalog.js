@@ -11,6 +11,7 @@ const SUPPORTED_ABILITY_FLAGS = {
   '1013': 'toolFoulUp',
   '1014': 'heartOfAWarrior',
   '1015': 'toweringShield',
+  '1018': 'heroicDefense',
   '1019': 'calmBeforeTheStorm',
   '1021': 'ayala',
   '1022': 'ambush',

@@ -43,6 +43,7 @@ const ABILITY_GROUP_BY_FLAG = {
   toolFoulUp: '1013',
   heartOfAWarrior: '1014',
   toweringShield: '1015',
+  heroicDefense: '1018',
   calmBeforeTheStorm: '1019',
   ayala: '1021',
   ambush: '1022',
@@ -664,7 +665,8 @@ function computeWaveBattle(
   waveIndex = 1,
   defenseTotalMultiplier = 1,
   attackStrengthBonusPercent = 0,
-  previousWaveResult = null
+  previousWaveResult = null,
+  wallDefenderCounts = null
 ) {
   const attackerUnitsBeforeAbilities = buildAttackUnits(wave?.slots || []);
   const attackUnits = attackerUnitsBeforeAbilities.map(unit => ({ ...unit }));
@@ -792,6 +794,25 @@ function computeWaveBattle(
   }
   if (side !== 'cy' && isDefenseAbilityActive('powerSurge', side, waveIndex) && waveIndex % 2 === 0) {
     markDefenseAbility('powerSurge', 10 * defenseWallAbilityScale(side, waveIndex));
+  }
+
+  if ((side === 'left' || side === 'right') &&
+      waveIndex % 2 === 0 &&
+      isDefenseAbilityActive('heroicDefense', side, waveIndex)) {
+    const flankDefenders = Number(wallDefenderCounts?.[side]) || 0;
+    const allWallDefenders = ['left', 'front', 'right'].reduce(
+      (total, wallSide) => total + (Number(wallDefenderCounts?.[wallSide]) || 0),
+      0
+    );
+
+    if (flankDefenders > 0 && allWallDefenders > 0) {
+      const ratioMultiplier = Math.max(1, Math.floor(allWallDefenders / flankDefenders));
+      const bonusPercent = Math.min(50, 14 * ratioMultiplier)
+        * defenseWallAbilityScale(side, waveIndex);
+      defenseStrength.ranged += bonusPercent;
+      defenseStrength.melee += bonusPercent;
+      markDefenseAbility('heroicDefense', bonusPercent);
+    }
   }
 
   if (side !== 'cy' && waveIndex % 3 === 0) {
@@ -1150,46 +1171,82 @@ function computeWaveBattle(
   };
 }
 
-function simulateSide(side) {
-  const results = { waves: [], totals: { attackerLosses: new Map(), defenderLosses: new Map() } };
-  const defenseUnits = buildDefenseUnits(side);
-  const waveList = waves[side] || [];
+function simulateWallSides() {
+  const wallSides = ['left', 'front', 'right'];
+  const state = Object.fromEntries(wallSides.map(side => [side, {
+    results: { waves: [], totals: { attackerLosses: new Map(), defenderLosses: new Map() } },
+    defenseUnits: buildDefenseUnits(side),
+    attackerSurvivors: new Map(),
+    previousWaveResult: null
+  }]));
+  const waveCount = Math.max(...wallSides.map(side => (waves[side] || []).length), 0);
 
-  const attackerSurvivors = new Map();
-  let previousWaveResult = null;
+  for (let waveOffset = 0; waveOffset < waveCount; waveOffset += 1) {
+    const wallDefenderCounts = Object.fromEntries(wallSides.map(side => [
+      side,
+      sumCounts(state[side].defenseUnits)
+    ]));
 
-  waveList.forEach((wave, index) => {
-    const waveResult = computeWaveBattle(side, wave, defenseUnits, 1, index + 1, 1, 0, previousWaveResult);
-    results.waves.push(waveResult);
-    previousWaveResult = waveResult;
+    wallSides.forEach(side => {
+      const wave = waves[side]?.[waveOffset];
+      if (!wave) return;
 
-    waveResult.attackerUnits.forEach(unit => {
-      const loss = waveResult.attackerLosses.get(toUnitKey(unit.type)) || 0;
-      const survivors = Math.max(0, unit.count - loss);
-      attackerSurvivors.set(
-        toUnitKey(unit.type),
-        (attackerSurvivors.get(toUnitKey(unit.type)) || 0) + survivors
+      const sideState = state[side];
+      const waveResult = computeWaveBattle(
+        side,
+        wave,
+        sideState.defenseUnits,
+        1,
+        waveOffset + 1,
+        1,
+        0,
+        sideState.previousWaveResult,
+        wallDefenderCounts
       );
+      sideState.results.waves.push(waveResult);
+      sideState.previousWaveResult = waveResult;
+
+      waveResult.attackerUnits.forEach(unit => {
+        const loss = waveResult.attackerLosses.get(toUnitKey(unit.type)) || 0;
+        const survivors = Math.max(0, unit.count - loss);
+        sideState.attackerSurvivors.set(
+          toUnitKey(unit.type),
+          (sideState.attackerSurvivors.get(toUnitKey(unit.type)) || 0) + survivors
+        );
+      });
+
+      waveResult.attackerLosses.forEach((loss, type) => {
+        sideState.results.totals.attackerLosses.set(
+          type,
+          (sideState.results.totals.attackerLosses.get(type) || 0) + loss
+        );
+      });
+      waveResult.defenderLosses.forEach((loss, type) => {
+        sideState.results.totals.defenderLosses.set(
+          type,
+          (sideState.results.totals.defenderLosses.get(type) || 0) + loss
+        );
+      });
+    });
+  }
+
+  return Object.fromEntries(wallSides.map(side => {
+    const sideState = state[side];
+    const defenderSurvivors = new Map();
+    sideState.defenseUnits.forEach(unit => {
+      defenderSurvivors.set(toUnitKey(unit.type), unit.count);
     });
 
-    waveResult.attackerLosses.forEach((loss, type) => {
-      results.totals.attackerLosses.set(type, (results.totals.attackerLosses.get(type) || 0) + loss);
-    });
-    waveResult.defenderLosses.forEach((loss, type) => {
-      results.totals.defenderLosses.set(type, (results.totals.defenderLosses.get(type) || 0) + loss);
-    });
-  });
+    return [side, {
+      ...sideState.results,
+      attackerSurvivors: sideState.attackerSurvivors,
+      defenderSurvivors
+    }];
+  }));
+}
 
-  const defenderSurvivors = new Map();
-  defenseUnits.forEach(unit => {
-    defenderSurvivors.set(toUnitKey(unit.type), unit.count);
-  });
-
-  return {
-    ...results,
-    attackerSurvivors,
-    defenderSurvivors
-  };
+function simulateSide(side) {
+  return simulateWallSides()[side];
 }
 
 function mergeUnitMaps(...maps) {
@@ -1254,7 +1311,8 @@ function computeBattleResults(side) {
   }
 
   const wallSides = ['left', 'front', 'right'];
-  const wallResults = wallSides.map(simulateSide);
+  const simulatedWallSides = simulateWallSides();
+  const wallResults = wallSides.map(wallSide => simulatedWallSides[wallSide]);
   const enteredWallSides = wallResults.map(result =>
     sumMapValues(result.attackerSurvivors) > 0
   );

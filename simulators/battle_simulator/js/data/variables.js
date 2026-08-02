@@ -89,6 +89,7 @@ export let defenseGeneralAbilities = {
   toolFoulUp: false,
   heartOfAWarrior: false,
   toweringShield: false,
+  heroicDefense: false,
   longbows: false,
   ayala: false,
   ambush: false,
