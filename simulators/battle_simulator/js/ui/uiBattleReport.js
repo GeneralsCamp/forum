@@ -140,6 +140,26 @@ function defenseGeneralDebuffScale(side, waveIndex, { phase = 'wave' } = {}) {
   return defenseWallAbilityScale(side, waveIndex, phase);
 }
 
+function isWallAbilityScheduled(flag, owner, side, waveIndex) {
+  if (side === 'cy') return false;
+
+  if (flag === 'heroicDefense') {
+    return owner === 'defense' && (side === 'left' || side === 'right') && waveIndex % 2 === 0;
+  }
+  if (['powerSurge', 'heartOfAWarrior', 'longbows', 'reinforcedArrows',
+    'wingsWhirlwind', 'dragonscaleArmor'].includes(flag)) {
+    return waveIndex % 2 === 0;
+  }
+  if (['hordebreaker', 'toolFoulUp', 'tailwhip', 'toweringShield'].includes(flag)) {
+    return waveIndex % 3 === 0;
+  }
+  if (flag === 'lastingWounds') return waveIndex >= 4 && waveIndex % 3 !== 0;
+  if (flag === 'ayala') return waveIndex <= 2;
+  if (flag === 'ambush') return owner === 'defense' || waveIndex === 1;
+  if (['giantSlayer', 'vengeance', 'exalted'].includes(flag)) return false;
+  return true;
+}
+
 function matchesPreviousAttackWave(wave, previousWaveResult) {
   const previousWave = previousWaveResult?.sourceWave;
   if (!previousWave) return false;
@@ -666,22 +686,22 @@ function computeWaveBattle(
   defenseTotalMultiplier = 1,
   attackStrengthBonusPercent = 0,
   previousWaveResult = null,
-  wallDefenderCounts = null
+  wallDefenderCounts = null,
+  wallAttackerCounts = null
 ) {
   const attackerUnitsBeforeAbilities = buildAttackUnits(wave?.slots || []);
   const attackUnits = attackerUnitsBeforeAbilities.map(unit => ({ ...unit }));
   const appliedAbilities = { attack: new Set(), defense: new Set() };
   const appliedAbilityValues = { attack: {}, defense: {} };
-  const abilityPhaseHasBattle = sumCounts(attackerUnitsBeforeAbilities) > 0 && sumCounts(defenseUnits) > 0;
   const markAttackAbility = (flag, values = []) => {
     const groupId = ABILITY_GROUP_BY_FLAG[flag];
-    if (!abilityPhaseHasBattle || !groupId) return;
+    if (!groupId) return;
     appliedAbilities.attack.add(groupId);
     appliedAbilityValues.attack[groupId] = Array.isArray(values) ? values : [values];
   };
   const markDefenseAbility = (flag, values = []) => {
     const groupId = ABILITY_GROUP_BY_FLAG[flag];
-    if (!abilityPhaseHasBattle || !groupId) return;
+    if (!groupId) return;
     appliedAbilities.defense.add(groupId);
     appliedAbilityValues.defense[groupId] = Array.isArray(values) ? values : [values];
   };
@@ -817,13 +837,23 @@ function computeWaveBattle(
 
   if (side !== 'cy' && waveIndex % 3 === 0) {
     if (isAttackAbilityActive('hordebreaker', side, waveIndex)) {
-      const bonusPercent = Math.ceil(sumCounts(defenseUnits) / 100) * attackWallAbilityScale(side, waveIndex);
+      const allWallDefenders = ['left', 'front', 'right'].reduce(
+        (total, wallSide) => total + (Number(wallDefenderCounts?.[wallSide]) || 0),
+        0
+      );
+      const bonusPercent = Math.floor(allWallDefenders / 100)
+        * attackWallAbilityScale(side, waveIndex);
       markAttackAbility('hordebreaker', bonusPercent);
       attackBonus.rangedMult += bonusPercent / 100;
       attackBonus.meleeMult += bonusPercent / 100;
     }
     if (isDefenseAbilityActive('hordebreaker', side, waveIndex)) {
-      const bonusPercent = Math.floor(sumCounts(attackUnits) / 100) * defenseWallAbilityScale(side, waveIndex);
+      const allWallAttackers = ['left', 'front', 'right'].reduce(
+        (total, wallSide) => total + (Number(wallAttackerCounts?.[wallSide]) || 0),
+        0
+      );
+      const bonusPercent = Math.floor(allWallAttackers / 100)
+        * defenseWallAbilityScale(side, waveIndex);
       markDefenseAbility('hordebreaker', bonusPercent);
       defenseStrength.ranged += bonusPercent;
       defenseStrength.melee += bonusPercent;
@@ -1149,6 +1179,18 @@ function computeWaveBattle(
     if (defenseGeneralAbilities.ayala && waveIndex <= 2) {
       markDefenseAbility('ayala', 'pre-combat and waves 1-2');
     }
+
+    [
+      ['attack', attackGeneralAbilities, markAttackAbility],
+      ['defense', defenseGeneralAbilities, markDefenseAbility]
+    ].forEach(([owner, abilities, markAbility]) => {
+      Object.entries(ABILITY_GROUP_BY_FLAG).forEach(([flag, groupId]) => {
+        if (!abilities[flag] || appliedAbilities[owner].has(groupId)) return;
+        if (isWallAbilityScheduled(flag, owner, side, waveIndex)) {
+          markAbility(flag, [0, 0, 0]);
+        }
+      });
+    });
   }
 
   return {
@@ -1186,6 +1228,10 @@ function simulateWallSides() {
       side,
       sumCounts(state[side].defenseUnits)
     ]));
+    const wallAttackerCounts = Object.fromEntries(wallSides.map(side => [
+      side,
+      sumCounts(buildAttackUnits(waves[side]?.[waveOffset]?.slots || []))
+    ]));
 
     wallSides.forEach(side => {
       const wave = waves[side]?.[waveOffset];
@@ -1201,7 +1247,8 @@ function simulateWallSides() {
         1,
         0,
         sideState.previousWaveResult,
-        wallDefenderCounts
+        wallDefenderCounts,
+        wallAttackerCounts
       );
       sideState.results.waves.push(waveResult);
       sideState.previousWaveResult = waveResult;

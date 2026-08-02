@@ -27,6 +27,7 @@ const SUPPORTED_ABILITY_FLAGS = {
 };
 
 const SKIPPED_ABILITY_GROUPS = new Set([
+  '1005', // Intimidate
   '1016', // Wall Amount
   '1026', // Battlefield Plunder
   '1027', // Your Cut

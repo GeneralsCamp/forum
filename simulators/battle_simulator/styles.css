@@ -301,6 +301,12 @@ body {
     margin-top: 3px;
 }
 
+#wave-container > .card,
+#wave-container > .card > .card-header {
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+}
+
 .card-header.collapsed {
     background-color: rgb(243, 194, 74) !important;
 }
@@ -1248,8 +1254,8 @@ body {
 
 .wave-editor-limit {
     width: calc(100% + 16px);
-    margin: 0 -8px 6px;
-    padding: 3px 8px;
+    margin: 0 -8px 4px;
+    padding: 1px 8px;
     background: rgb(119, 80, 54);
     border-top: 2px solid rgb(45, 33, 25);
     text-align: center;
@@ -1257,21 +1263,21 @@ body {
 
 .wave-editor-limit span {
     color: white;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 800;
-    line-height: 18px;
+    line-height: 16px;
 }
 
 .wave-editor-slots {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 9px;
+    gap: 7px;
 }
 
 .wave-editor-slots.courtyard-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 84px));
+    grid-template-columns: repeat(4, minmax(0, 63px));
     width: 100%;
 }
 
@@ -1284,8 +1290,8 @@ body {
 .wave-editor-slot {
     position: relative;
     display: flex;
-    width: 84px;
-    height: 84px;
+    width: 63px;
+    height: 63px;
     align-items: center;
     justify-content: center;
     padding: 3px;
@@ -1310,7 +1316,7 @@ body {
 }
 
 .wave-editor-slot b {
-    font-size: 31px;
+    font-size: 23px;
     line-height: 1;
 }
 

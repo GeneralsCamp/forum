@@ -9,13 +9,28 @@ function supportToolType(tool) {
   return `Tool${tool.id.replace(/\D/g, '')}`;
 }
 
+function isPercentageEffect(type) {
+  return ['combatStrength', 'yardStrength', 'courtyard'].includes(type);
+}
+
+function formatSupportEffect(type, value) {
+  if (!isPercentageEffect(type)) return String(value);
+  return `${value > 0 ? '+' : ''}${value}%`;
+}
+
 function supportToolEffects(tool) {
   const effects = [];
   if (tool.effect1Type && tool.effect1Value !== 0) {
-    effects.push([imageUrl(tool.effectImage1), tool.effect1Value]);
+    effects.push([
+      imageUrl(tool.effectImage1),
+      formatSupportEffect(tool.effect1Type, tool.effect1Value)
+    ]);
   }
   if (tool.effect2Type && tool.effect2Value !== 0) {
-    effects.push([imageUrl(tool.effectImage2), `${tool.effect2Value > 0 ? '+' : ''}${tool.effect2Value}%`]);
+    effects.push([
+      imageUrl(tool.effectImage2),
+      formatSupportEffect(tool.effect2Type, tool.effect2Value)
+    ]);
   }
   if (tool.toolLimit > 0) {
     effects.push(['../../img_base/battle_simulator/unitLimit-icon.png', tool.toolLimit]);
@@ -214,25 +229,28 @@ export function summarizeSupportToolBonuses(supportTools) {
     const effectData = variables.supportToolEffects[tool.type];
     if (!effectData) return;
 
-    if (effectData.effect1.name && effectData.effect1.value !== 0) {
-      if (!totalEffects[effectData.effect1.name]) totalEffects[effectData.effect1.name] = { totalEffect1: 0, icon: effectData.effect1.icon, totalEffect2: 0 };
-      totalEffects[effectData.effect1.name].totalEffect1 += tool.count * effectData.effect1.value;
-    }
-
-    if (effectData.effect2.name && effectData.effect2.value !== 0) {
-      if (!totalEffects[effectData.effect2.name]) totalEffects[effectData.effect2.name] = { totalEffect1: 0, icon: effectData.effect2.icon, totalEffect2: 0 };
-      totalEffects[effectData.effect2.name].totalEffect2 += tool.count * effectData.effect2.value;
-    }
+    [effectData.effect1, effectData.effect2].forEach(effect => {
+      if (!effect?.name || effect.value === 0) return;
+      if (!totalEffects[effect.name]) {
+        totalEffects[effect.name] = {
+          total: 0,
+          icon: effect.icon,
+          type: `${effect.name.charAt(0).toLowerCase()}${effect.name.slice(1)}`
+        };
+      }
+      totalEffects[effect.name].total += tool.count * effect.value;
+    });
   });
 
-  const effectsArray = Object.entries(totalEffects).map(([name, { totalEffect1, totalEffect2, icon }]) => ({ name, totalEffect1, totalEffect2, icon }));
-  effectsArray.sort((a, b) => (Math.abs(b.totalEffect1) + Math.abs(b.totalEffect2)) - (Math.abs(a.totalEffect1) + Math.abs(a.totalEffect2)));
+  const effectsArray = Object.entries(totalEffects)
+    .map(([name, data]) => ({ name, ...data }))
+    .sort((a, b) => Math.abs(b.total) - Math.abs(a.total));
 
-  let result = '';
-  effectsArray.forEach(({ name, totalEffect1, totalEffect2, icon }) => {
-    if (totalEffect1 !== 0) result += `<div class="col-6 effect-slot"><img src="${imageUrl(icon)}" alt="${name}" /> ${totalEffect1}</div>`;
-    if (totalEffect2 !== 0) result += `<div class="col-6 effect-slot"><img src="${imageUrl(icon)}" alt="${name}" /> +${totalEffect2}%</div>`;
-  });
+  const result = effectsArray.map(({ name, total, icon, type }) => `
+    <div class="col-6 effect-slot">
+      <img src="${imageUrl(icon)}" alt="${name}" /> ${formatSupportEffect(type, total)}
+    </div>
+  `).join('');
 
   return result ? `<div class="row">${result}</div>` : '';
 }
