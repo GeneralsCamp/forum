@@ -14,6 +14,7 @@ const SUPPORTED_ABILITY_FLAGS = {
   '1015': 'toweringShield',
   '1018': 'heroicDefense',
   '1019': 'calmBeforeTheStorm',
+  '1020': 'aspectOfTheDragon',
   '1021': 'ayala',
   '1022': 'ambush',
   '1023': 'longbows',

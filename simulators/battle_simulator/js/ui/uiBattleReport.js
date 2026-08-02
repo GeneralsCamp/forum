@@ -46,6 +46,7 @@ const ABILITY_GROUP_BY_FLAG = {
   toweringShield: '1015',
   heroicDefense: '1018',
   calmBeforeTheStorm: '1019',
+  aspectOfTheDragon: '1020',
   ayala: '1021',
   ambush: '1022',
   longbows: '1023',
@@ -127,19 +128,19 @@ function isDefenseAbilityActive(flag, side, waveIndex, phase = 'wave') {
 }
 
 function attackWallAbilityScale(side, waveIndex, phase = 'wave') {
-  return isDefenseAbilityActive('ironWill', side, waveIndex, phase) ? 0.8 : 1;
+  return 1;
 }
 
 function defenseWallAbilityScale(side, waveIndex, phase = 'wave') {
-  return isAttackAbilityActive('ironWill', side, waveIndex, phase) ? 0.8 : 1;
+  return 1;
 }
 
 function attackGeneralDebuffScale(side, waveIndex, { phase = 'wave' } = {}) {
-  return attackWallAbilityScale(side, waveIndex, phase);
+  return isDefenseAbilityActive('ironWill', side, waveIndex, phase) ? 0.8 : 1;
 }
 
 function defenseGeneralDebuffScale(side, waveIndex, { phase = 'wave' } = {}) {
-  return defenseWallAbilityScale(side, waveIndex, phase);
+  return isAttackAbilityActive('ironWill', side, waveIndex, phase) ? 0.8 : 1;
 }
 
 function isWallAbilityScheduled(flag, owner, side, waveIndex) {
@@ -149,7 +150,7 @@ function isWallAbilityScheduled(flag, owner, side, waveIndex) {
     return owner === 'defense' && (side === 'left' || side === 'right') && waveIndex % 2 === 0;
   }
   if (['powerSurge', 'riseToTheTask', 'heartOfAWarrior', 'longbows', 'reinforcedArrows',
-    'wingsWhirlwind', 'dragonscaleArmor', 'yourCut'].includes(flag)) {
+    'wingsWhirlwind', 'dragonscaleArmor', 'aspectOfTheDragon', 'yourCut'].includes(flag)) {
     return waveIndex % 2 === 0;
   }
   if (['hordebreaker', 'toolFoulUp', 'tailwhip', 'toweringShield'].includes(flag)) {
@@ -746,7 +747,46 @@ function strongestDefenseBase(defenseUnits = []) {
       0,
       Number(unit?.rangedDefenseStrength) || 0,
       Number(unit?.meleeDefenseStrength) || 0
-    ), 0);
+  ), 0);
+}
+
+function weakestAttackerStrength(attackUnits = []) {
+  const strengths = attackUnits
+    .filter(unit => (Number(unit?.count) || 0) > 0)
+    .map(unit => Math.max(
+      0,
+      Number(unit?.rangedCombatStrength) || 0,
+      Number(unit?.meleeCombatStrength) || 0
+    ))
+    .filter(strength => strength > 0);
+  return strengths.length ? Math.min(...strengths) : 0;
+}
+
+function strongestDefenderStrength(defenseUnits = []) {
+  return defenseUnits.reduce((strongest, unit) => {
+    if ((Number(unit?.count) || 0) <= 0) return strongest;
+    return Math.max(
+      strongest,
+      Number(unit?.rangedDefenseStrength) || 0,
+      Number(unit?.meleeDefenseStrength) || 0
+    );
+  }, 0);
+}
+
+function aspectDragonReductionPercent(owner, strengths, side, waveIndex) {
+  const attackerStrength = Math.max(0, Number(strengths?.attacker) || 0);
+  const defenderStrength = Math.max(0, Number(strengths?.defender) || 0);
+  const maximum = Math.max(attackerStrength, defenderStrength);
+  if (maximum <= 0) return 0;
+
+  const difference = Math.floor(
+    (1 - Math.min(attackerStrength, defenderStrength) / maximum) * 100
+  );
+  const abilityValue = generalAbilityEffectValue('1020', owner, 1.8);
+  const ironWillScale = owner === 'attack'
+    ? attackGeneralDebuffScale(side, waveIndex)
+    : defenseGeneralDebuffScale(side, waveIndex);
+  return Math.min(30, difference * abilityValue * ironWillScale);
 }
 
 function computeWaveBattle(
@@ -761,7 +801,8 @@ function computeWaveBattle(
   wallDefenderCounts = null,
   wallAttackerCounts = null,
   previousWallWaveResults = null,
-  wallYourCutBonuses = null
+  wallYourCutBonuses = null,
+  aspectDragonStrengths = null
 ) {
   const attackerUnitsBeforeAbilities = buildAttackUnits(wave?.slots || []);
   const attackUnits = attackerUnitsBeforeAbilities.map(unit => ({ ...unit }));
@@ -793,7 +834,7 @@ function computeWaveBattle(
     preCombatDefenderLosses = applyPercentageKills(
       defenseUnits,
       () => true,
-      0.07 * attackGeneralDebuffScale(side, waveIndex, { phase: 'preCombat' })
+      0.07
     );
     markAttackAbility('ambush', sumMapValues(preCombatDefenderLosses));
   }
@@ -801,7 +842,7 @@ function computeWaveBattle(
     preCombatAttackerLosses = applyPercentageKills(
       attackUnits,
       () => true,
-      0.07 * defenseGeneralDebuffScale(side, waveIndex, { phase: 'preCombat' })
+      0.07
     );
     markDefenseAbility('ambush', sumMapValues(preCombatAttackerLosses));
   }
@@ -809,20 +850,20 @@ function computeWaveBattle(
   if (side !== 'cy' && waveIndex % 3 === 0) {
     if (isAttackAbilityActive('tailwhip', side, waveIndex, 'preCombat') &&
         totalPlannedWallAttackers() > totalWallDefenders()) {
-      markAttackAbility('tailwhip', 2.5 * attackGeneralDebuffScale(side, waveIndex, { phase: 'preCombat' }));
+      markAttackAbility('tailwhip', 2.5);
       const tailwhipLosses = applyPercentageKills(
         defenseUnits,
         unit => unit.type2 === 'melee',
-        0.025 * attackGeneralDebuffScale(side, waveIndex, { phase: 'preCombat' })
+        0.025
       );
       preCombatDefenderLosses = mergeLossMaps(preCombatDefenderLosses, tailwhipLosses);
     }
     if (isDefenseAbilityActive('tailwhip', side, waveIndex, 'preCombat')) {
-      markDefenseAbility('tailwhip', 32 * defenseGeneralDebuffScale(side, waveIndex, { phase: 'preCombat' }));
+      markDefenseAbility('tailwhip', 32);
       const tailwhipLosses = applyPercentageKills(
         attackUnits,
         unit => unit.type2 === 'melee',
-        0.32 * defenseGeneralDebuffScale(side, waveIndex, { phase: 'preCombat' })
+        0.32
       );
       preCombatAttackerLosses = mergeLossMaps(preCombatAttackerLosses, tailwhipLosses);
     }
@@ -988,17 +1029,41 @@ function computeWaveBattle(
   }
 
   if (waveIndex % 2 === 0) {
+    if (side !== 'cy' && isAttackAbilityActive('aspectOfTheDragon', side, waveIndex)) {
+      const reduction = aspectDragonReductionPercent(
+        'attack',
+        aspectDragonStrengths,
+        side,
+        waveIndex
+      );
+      markAttackAbility('aspectOfTheDragon', reduction);
+      defenseStrength.ranged -= reduction;
+      defenseStrength.melee -= reduction;
+    }
+    if (side !== 'cy' && isDefenseAbilityActive('aspectOfTheDragon', side, waveIndex)) {
+      const reduction = aspectDragonReductionPercent(
+        'defense',
+        aspectDragonStrengths,
+        side,
+        waveIndex
+      );
+      markDefenseAbility('aspectOfTheDragon', reduction);
+      attackBonus.rangedMult -= reduction / 100;
+      attackBonus.meleeMult -= reduction / 100;
+    }
     if (isAttackAbilityActive('wingsWhirlwind', side, waveIndex)) {
-      const value = 21 * attackWallAbilityScale(side, waveIndex);
-      markAttackAbility('wingsWhirlwind', [value, value]);
+      const ownBonus = 21;
+      const enemyReduction = 21 * attackGeneralDebuffScale(side, waveIndex, { ranged: true });
+      markAttackAbility('wingsWhirlwind', [enemyReduction, ownBonus]);
       attackBonus.rangedMult += 0.21 * attackWallAbilityScale(side, waveIndex);
-      defenseStrength.ranged -= 21 * attackGeneralDebuffScale(side, waveIndex, { ranged: true });
+      defenseStrength.ranged -= enemyReduction;
     }
     if (isDefenseAbilityActive('wingsWhirlwind', side, waveIndex)) {
-      const value = 21 * defenseWallAbilityScale(side, waveIndex);
-      markDefenseAbility('wingsWhirlwind', [value, value]);
+      const ownBonus = 21;
+      const enemyReduction = 21 * defenseGeneralDebuffScale(side, waveIndex, { ranged: true });
+      markDefenseAbility('wingsWhirlwind', [enemyReduction, ownBonus]);
       defenseStrength.ranged += 21 * defenseWallAbilityScale(side, waveIndex);
-      attackBonus.rangedMult -= 0.21 * defenseGeneralDebuffScale(side, waveIndex, { ranged: true });
+      attackBonus.rangedMult -= enemyReduction / 100;
     }
   }
 
@@ -1410,6 +1475,18 @@ function simulateWallSides() {
       attack: yourCutBonusPercent(wallAttackUnits, 'attack'),
       defense: yourCutBonusPercent(wallDefenseUnits, 'defense')
     };
+    const weakestAttackStrengths = wallSides
+      .map(side => weakestAttackerStrength(
+        buildAttackUnits(waves[side]?.[waveOffset]?.slots || [])
+      ))
+      .filter(strength => strength > 0);
+    const aspectDragonStrengths = {
+      attacker: weakestAttackStrengths.length
+        ? Math.floor(weakestAttackStrengths.reduce((sum, strength) => sum + strength, 0) /
+          weakestAttackStrengths.length)
+        : 0,
+      defender: strongestDefenderStrength(wallDefenseUnits)
+    };
 
     wallSides.forEach(side => {
       const sideState = state[side];
@@ -1426,7 +1503,8 @@ function simulateWallSides() {
         wallDefenderCounts,
         wallAttackerCounts,
         previousWallWaveResults,
-        wallYourCutBonuses
+        wallYourCutBonuses,
+        aspectDragonStrengths
       );
       sideState.results.waves.push(waveResult);
       sideState.previousWaveResult = waveResult;

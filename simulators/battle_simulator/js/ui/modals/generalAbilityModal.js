@@ -92,12 +92,11 @@ function renderChoices(root, catalog, mode, draft, selectedSlotId) {
       const description = mode === 'attack' ? ability.attackDescription : ability.defenseDescription;
       const warning = disabled ? `
         <span class="general-ability-warning ${ability.developmentStatus === 'skipped' ? 'skipped' : 'in-progress'}"
-          aria-label="${ability.developmentStatus === 'skipped' ? 'Not planned' : 'In progress'}">
+          aria-hidden="true">
           <svg viewBox="0 0 100 90" aria-hidden="true">
             <path class="warning-shape" d="M50 5 96 84H4Z"></path>
             <path class="warning-mark" d="M46 28H54L53 59H47ZM46 68A4 4 0 1 1 54 68A4 4 0 1 1 46 68Z"></path>
           </svg>
-          <small>${ability.developmentStatus === 'skipped' ? 'NOT PLANNED' : 'IN TESTING'}</small>
         </span>
       ` : '';
       return `
