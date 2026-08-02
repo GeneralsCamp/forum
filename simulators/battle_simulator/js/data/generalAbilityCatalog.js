@@ -17,6 +17,7 @@ const SUPPORTED_ABILITY_FLAGS = {
   '1022': 'ambush',
   '1023': 'longbows',
   '1025': 'reinforcedArrows',
+  '1027': 'yourCut',
   '1029': 'wayOfPerfection',
   '1030': 'vengeance',
   '1033': 'wingsWhirlwind',
@@ -30,7 +31,6 @@ const SKIPPED_ABILITY_GROUPS = new Set([
   '1005', // Intimidate
   '1016', // Wall Amount
   '1026', // Battlefield Plunder
-  '1027', // Your Cut
   '1028'  // Hidden Treasures
 ]);
 

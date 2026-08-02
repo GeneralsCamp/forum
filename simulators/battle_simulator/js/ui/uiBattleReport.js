@@ -49,6 +49,7 @@ const ABILITY_GROUP_BY_FLAG = {
   ambush: '1022',
   longbows: '1023',
   reinforcedArrows: '1025',
+  yourCut: '1027',
   wayOfPerfection: '1029',
   vengeance: '1030',
   wingsWhirlwind: '1033',
@@ -147,7 +148,7 @@ function isWallAbilityScheduled(flag, owner, side, waveIndex) {
     return owner === 'defense' && (side === 'left' || side === 'right') && waveIndex % 2 === 0;
   }
   if (['powerSurge', 'heartOfAWarrior', 'longbows', 'reinforcedArrows',
-    'wingsWhirlwind', 'dragonscaleArmor'].includes(flag)) {
+    'wingsWhirlwind', 'dragonscaleArmor', 'yourCut'].includes(flag)) {
     return waveIndex % 2 === 0;
   }
   if (['hordebreaker', 'toolFoulUp', 'tailwhip', 'toweringShield'].includes(flag)) {
@@ -240,12 +241,31 @@ function getPreviousDefenderLossStrength(previousWaveResults) {
 }
 
 function generalAbilityEffectRate(groupId, owner, fallback) {
+  return generalAbilityEffectValue(groupId, owner, fallback * 100) / 100;
+}
+
+function generalAbilityEffectValue(groupId, owner, fallback) {
   const ability = getGeneralAbilityCatalog().abilities?.[groupId];
   const values = owner === 'attack'
     ? ability?.attackEffectValues
     : ability?.defenseEffectValues;
   const percent = Number(values?.[0]);
-  return Number.isFinite(percent) ? percent / 100 : fallback;
+  return Number.isFinite(percent) ? percent : fallback;
+}
+
+function averageLootCapacity(units = []) {
+  const totals = units.reduce((result, unit) => {
+    const count = Math.max(0, Number(unit?.count) || 0);
+    result.count += count;
+    result.loot += count * Math.max(0, Number(unit?.LootingCapacity) || 0);
+    return result;
+  }, { count: 0, loot: 0 });
+  return totals.count > 0 ? totals.loot / totals.count : 0;
+}
+
+function yourCutBonusPercent(units, owner) {
+  const coefficient = generalAbilityEffectValue('1027', owner, 0.7);
+  return Math.min(30, averageLootCapacity(units) * coefficient);
 }
 
 function formatNumber(value) {
@@ -619,7 +639,8 @@ function buildDefenseUnits(side) {
         rangedCombatStrength: unit.rangedCombatStrength || 0,
         meleeCombatStrength: unit.meleeCombatStrength || 0,
         rangedDefenseStrength: unit.rangedDefenseStrength || 0,
-        meleeDefenseStrength: unit.meleeDefenseStrength || 0
+        meleeDefenseStrength: unit.meleeDefenseStrength || 0,
+        LootingCapacity: unit.LootingCapacity || 0
       });
     }
   });
@@ -668,7 +689,8 @@ function buildAttackUnits(slots = []) {
         type2: unit.type2,
         strengthGroup: unit.strengthGroup,
         rangedCombatStrength: unit.rangedCombatStrength || 0,
-        meleeCombatStrength: unit.meleeCombatStrength || 0
+        meleeCombatStrength: unit.meleeCombatStrength || 0,
+        LootingCapacity: unit.LootingCapacity || 0
       });
     }
   });
@@ -712,7 +734,8 @@ function computeWaveBattle(
   previousWaveResult = null,
   wallDefenderCounts = null,
   wallAttackerCounts = null,
-  previousWallWaveResults = null
+  previousWallWaveResults = null,
+  wallYourCutBonuses = null
 ) {
   const attackerUnitsBeforeAbilities = buildAttackUnits(wave?.slots || []);
   const attackUnits = attackerUnitsBeforeAbilities.map(unit => ({ ...unit }));
@@ -839,6 +862,23 @@ function computeWaveBattle(
   }
   if (side !== 'cy' && isDefenseAbilityActive('powerSurge', side, waveIndex) && waveIndex % 2 === 0) {
     markDefenseAbility('powerSurge', 10 * defenseWallAbilityScale(side, waveIndex));
+  }
+
+  if (side !== 'cy' && waveIndex % 2 === 0) {
+    if (isAttackAbilityActive('yourCut', side, waveIndex)) {
+      const bonusPercent = (Number(wallYourCutBonuses?.attack) || 0)
+        * attackWallAbilityScale(side, waveIndex);
+      attackBonus.rangedMult += bonusPercent / 100;
+      attackBonus.meleeMult += bonusPercent / 100;
+      markAttackAbility('yourCut', bonusPercent);
+    }
+    if (isDefenseAbilityActive('yourCut', side, waveIndex)) {
+      const bonusPercent = (Number(wallYourCutBonuses?.defense) || 0)
+        * defenseWallAbilityScale(side, waveIndex);
+      defenseStrength.ranged += bonusPercent;
+      defenseStrength.melee += bonusPercent;
+      markDefenseAbility('yourCut', bonusPercent);
+    }
   }
 
   if ((side === 'left' || side === 'right') &&
@@ -1297,6 +1337,14 @@ function simulateWallSides() {
       side,
       sumCounts(buildAttackUnits(waves[side]?.[waveOffset]?.slots || []))
     ]));
+    const wallAttackUnits = wallSides.flatMap(side =>
+      buildAttackUnits(waves[side]?.[waveOffset]?.slots || [])
+    );
+    const wallDefenseUnits = wallSides.flatMap(side => state[side].defenseUnits);
+    const wallYourCutBonuses = {
+      attack: yourCutBonusPercent(wallAttackUnits, 'attack'),
+      defense: yourCutBonusPercent(wallDefenseUnits, 'defense')
+    };
 
     wallSides.forEach(side => {
       const sideState = state[side];
@@ -1312,7 +1360,8 @@ function simulateWallSides() {
         sideState.previousWaveResult,
         wallDefenderCounts,
         wallAttackerCounts,
-        previousWallWaveResults
+        previousWallWaveResults,
+        wallYourCutBonuses
       );
       sideState.results.waves.push(waveResult);
       sideState.previousWaveResult = waveResult;
