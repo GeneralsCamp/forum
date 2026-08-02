@@ -548,11 +548,6 @@ function computeAttackBonusesPercent(side, toolTotals, waveIndex) {
   ranged += toolTotals.rangedStrength || 0;
   melee += toolTotals.meleeStrength || 0;
 
-  if (side !== 'cy' && isAttackAbilityActive('endlessPractice', side, waveIndex) && waveIndex) {
-    const waveBonus = waveIndex * 4 * attackWallAbilityScale(side, waveIndex);
-    ranged += waveBonus;
-    melee += waveBonus;
-  }
   if (side !== 'cy' && isAttackAbilityActive('powerSurge', side, waveIndex) && waveIndex % 2 === 0) {
     const bonus = 10 * attackWallAbilityScale(side, waveIndex);
     ranged += bonus;
@@ -653,11 +648,6 @@ function computeDefenseStrengthBonuses(side, waveIndex, defenseToolScale = 1) {
   ranged += combatStrengthBonus;
   melee += combatStrengthBonus;
 
-  if (side !== 'cy' && isDefenseAbilityActive('endlessPractice', side, waveIndex) && waveIndex) {
-    const waveBonus = waveIndex * 4 * defenseWallAbilityScale(side, waveIndex);
-    ranged += waveBonus;
-    melee += waveBonus;
-  }
   if (side !== 'cy' && isDefenseAbilityActive('powerSurge', side, waveIndex) && waveIndex % 2 === 0) {
     const bonus = 10 * defenseWallAbilityScale(side, waveIndex);
     ranged += bonus;
@@ -795,43 +785,34 @@ function strongestDefenseBase(defenseUnits = []) {
   ), 0);
 }
 
-function weakestAttackerStrength(attackUnits = []) {
-  const strengths = attackUnits
-    .filter(unit => (Number(unit?.count) || 0) > 0)
-    .map(unit => Math.max(
+function averageUnitStrength(units = [], strengthProperties = []) {
+  const totals = units.reduce((result, unit) => {
+    const count = Math.max(0, Number(unit?.count) || 0);
+    if (!count) return result;
+    const strength = Math.max(
       0,
-      Number(unit?.rangedCombatStrength) || 0,
-      Number(unit?.meleeCombatStrength) || 0
-    ))
-    .filter(strength => strength > 0);
-  return strengths.length ? Math.min(...strengths) : 0;
-}
-
-function strongestDefenderStrength(defenseUnits = []) {
-  return defenseUnits.reduce((strongest, unit) => {
-    if ((Number(unit?.count) || 0) <= 0) return strongest;
-    return Math.max(
-      strongest,
-      Number(unit?.rangedDefenseStrength) || 0,
-      Number(unit?.meleeDefenseStrength) || 0
+      ...strengthProperties.map(property => Number(unit?.[property]) || 0)
     );
-  }, 0);
+    result.count += count;
+    result.strength += count * strength;
+    return result;
+  }, { count: 0, strength: 0 });
+  return totals.count > 0 ? totals.strength / totals.count : 0;
 }
 
 function aspectDragonReductionPercent(owner, strengths, side, waveIndex) {
   const attackerStrength = Math.max(0, Number(strengths?.attacker) || 0);
   const defenderStrength = Math.max(0, Number(strengths?.defender) || 0);
-  const maximum = Math.max(attackerStrength, defenderStrength);
-  if (maximum <= 0) return 0;
+  if (attackerStrength <= 0 || defenderStrength <= 0) return 0;
 
   const difference = Math.floor(
-    (1 - Math.min(attackerStrength, defenderStrength) / maximum) * 100
-  );
-  const abilityValue = generalAbilityEffectValue('1020', owner, 1.8);
+    Math.abs(attackerStrength / defenderStrength - 1) * 100
+  ) / 100;
+  const abilityValue = generalAbilityEffectValue('1020', owner, owner === 'attack' ? 1.6 : 1.8);
   const ironWillScale = owner === 'attack'
     ? attackGeneralDebuffScale(side, waveIndex)
     : defenseGeneralDebuffScale(side, waveIndex);
-  return Math.min(30, difference * abilityValue * ironWillScale);
+  return Math.min(30, difference * abilityValue * 100 * ironWillScale);
 }
 
 function computeWaveBattle(
@@ -941,8 +922,11 @@ function computeWaveBattle(
     });
   }
   const attackBonus = computeAttackBonusesPercent(side, toolTotals, waveIndex);
+  let attackEndlessPracticeMultiplier = 1;
   if (side !== 'cy' && isAttackAbilityActive('endlessPractice', side, waveIndex) && waveIndex) {
-    markAttackAbility('endlessPractice', waveIndex * 4 * attackWallAbilityScale(side, waveIndex));
+    const bonus = waveIndex * 4 * attackWallAbilityScale(side, waveIndex);
+    attackEndlessPracticeMultiplier += bonus / 100;
+    markAttackAbility('endlessPractice', bonus);
   }
   if (side !== 'cy' && isAttackAbilityActive('powerSurge', side, waveIndex) && waveIndex % 2 === 0) {
     markAttackAbility('powerSurge', 10 * attackWallAbilityScale(side, waveIndex));
@@ -988,8 +972,11 @@ function computeWaveBattle(
   let attackRangedAbilityMultiplier = 1;
   let defenseMeleeAbilityMultiplier = 1;
   let defenseRangedAbilityMultiplier = 1;
+  let defenseEndlessPracticeMultiplier = 1;
   if (side !== 'cy' && isDefenseAbilityActive('endlessPractice', side, waveIndex) && waveIndex) {
-    markDefenseAbility('endlessPractice', waveIndex * 4 * defenseWallAbilityScale(side, waveIndex));
+    const bonus = waveIndex * 4 * defenseWallAbilityScale(side, waveIndex);
+    defenseEndlessPracticeMultiplier += bonus / 100;
+    markDefenseAbility('endlessPractice', bonus);
   }
   if (side !== 'cy' && isDefenseAbilityActive('powerSurge', side, waveIndex) && waveIndex % 2 === 0) {
     markDefenseAbility('powerSurge', 10 * defenseWallAbilityScale(side, waveIndex));
@@ -1370,6 +1357,19 @@ function computeWaveBattle(
     }
   }
 
+  if (attackEndlessPracticeMultiplier !== 1) {
+    totalAttackRanged *= attackEndlessPracticeMultiplier;
+    totalAttackMelee *= attackEndlessPracticeMultiplier;
+    attackRangedForDefenderCasualties *= attackEndlessPracticeMultiplier;
+    attackMeleeForDefenderCasualties *= attackEndlessPracticeMultiplier;
+  }
+  if (defenseEndlessPracticeMultiplier !== 1) {
+    totalDefenseRanged *= defenseEndlessPracticeMultiplier;
+    totalDefenseMelee *= defenseEndlessPracticeMultiplier;
+    defenseRangedForAttackerCasualties *= defenseEndlessPracticeMultiplier;
+    defenseMeleeForAttackerCasualties *= defenseEndlessPracticeMultiplier;
+  }
+
   const finalTotalAttack = totalAttackRanged + totalAttackMelee;
   const finalTotalDefense = totalDefenseRanged + totalDefenseMelee;
 
@@ -1587,15 +1587,25 @@ function simulateWallSides() {
       attack: yourCutBonusPercent(wallAttackUnits, 'attack'),
       defense: yourCutBonusPercent(wallDefenseUnits, 'defense')
     };
-    const weakestAttackStrengths = wallSides
-      .map(side => weakestAttackerStrength(adjustedAttackUnits[side]))
-      .filter(strength => strength > 0);
+    const currentAndFutureAttackUnits = wallSides.flatMap(side =>
+      (waves[side] || []).slice(waveOffset).flatMap((futureWave, futureOffset) => {
+        const units = buildAttackUnits(futureWave?.slots || []);
+        applyMappedKills(
+          units,
+          attackerPreBattleLosses.get(`${side}:${waveOffset + futureOffset}`) || new Map()
+        );
+        return units;
+      })
+    );
     const aspectDragonStrengths = {
-      attacker: weakestAttackStrengths.length
-        ? Math.floor(weakestAttackStrengths.reduce((sum, strength) => sum + strength, 0) /
-          weakestAttackStrengths.length)
-        : 0,
-      defender: strongestDefenderStrength(wallDefenseUnits)
+      attacker: averageUnitStrength(
+        currentAndFutureAttackUnits,
+        ['rangedCombatStrength', 'meleeCombatStrength']
+      ),
+      defender: averageUnitStrength(
+        wallDefenseUnits,
+        ['rangedDefenseStrength', 'meleeDefenseStrength']
+      )
     };
 
     wallSides.forEach(side => {

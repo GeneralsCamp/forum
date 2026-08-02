@@ -302,18 +302,18 @@ export const modalsData = [
     )}
         ${generateInputCard(
       'Wall reduction (%)', '../../img_base/battle_simulator/commander-modal1.png', 'wall-reduction',
-      'wall-reduction-slider', 0, 410, commanderStats.wallReduction,
-      'wall-reduction-value', 0, 410, commanderStats.wallReduction
+      'wall-reduction-slider', 0, 500, commanderStats.wallReduction,
+      'wall-reduction-value', 0, 500, commanderStats.wallReduction
     )}
         ${generateInputCard(
       'Moat reduction (%)', '../../img_base/battle_simulator/commander-modal2.png', 'moat-reduction',
-      'moat-reduction-slider', 0, 210, commanderStats.moatReduction,
-      'moat-reduction-value', 0, 210, commanderStats.moatReduction
+      'moat-reduction-slider', 0, 300, commanderStats.moatReduction,
+      'moat-reduction-value', 0, 300, commanderStats.moatReduction
     )}
         ${generateInputCard(
       'Gate reduction (%)', '../../img_base/battle_simulator/commander-modal3.png', 'gate-reduction',
-      'gate-reduction-slider', 0, 410, commanderStats.gateReduction,
-      'gate-reduction-value', 0, 410, commanderStats.gateReduction
+      'gate-reduction-slider', 0, 500, commanderStats.gateReduction,
+      'gate-reduction-value', 0, 500, commanderStats.gateReduction
     )}
         ${generateInputCard(
       'Mead unit strength', '../../img_base/battle_simulator/commander-modal4.png', 'mead-unit-strength',
@@ -394,8 +394,8 @@ export const modalsData = [
     )}
       ${generateInputCard(
       'Moat protection (%)', '../../img_base/battle_simulator/castellan-modal5.png', 'moat-protection',
-      'defense-moat-protection-slider', 0, 400, castellanStats.moatProtection,
-      'defense-moat-protection-value', 0, 400, castellanStats.moatProtection
+      'defense-moat-protection-slider', 0, 300, castellanStats.moatProtection,
+      'defense-moat-protection-value', 0, 300, castellanStats.moatProtection
     )}
       ${generateInputCard(
       'Gate protection (%)', '../../img_base/battle_simulator/castellan-modal6.png', 'gate-protection',
