@@ -3,6 +3,7 @@ import { readStoredJson, writeStoredJson } from './storage.js';
 
 const SUPPORTED_ABILITY_FLAGS = {
   '1001': 'powerSurge',
+  '1002': 'riseToTheTask',
   '1003': 'giantSlayer',
   '1007': 'hordebreaker',
   '1010': 'endlessPractice',

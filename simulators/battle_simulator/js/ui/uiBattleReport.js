@@ -35,6 +35,7 @@ const SIDE_LABELS = {
 };
 const ABILITY_GROUP_BY_FLAG = {
   powerSurge: '1001',
+  riseToTheTask: '1002',
   giantSlayer: '1003',
   hordebreaker: '1007',
   endlessPractice: '1010',
@@ -147,7 +148,7 @@ function isWallAbilityScheduled(flag, owner, side, waveIndex) {
   if (flag === 'heroicDefense') {
     return owner === 'defense' && (side === 'left' || side === 'right') && waveIndex % 2 === 0;
   }
-  if (['powerSurge', 'heartOfAWarrior', 'longbows', 'reinforcedArrows',
+  if (['powerSurge', 'riseToTheTask', 'heartOfAWarrior', 'longbows', 'reinforcedArrows',
     'wingsWhirlwind', 'dragonscaleArmor', 'yourCut'].includes(flag)) {
     return waveIndex % 2 === 0;
   }
@@ -723,6 +724,31 @@ function computeAttackTotals(attackUnits = []) {
   return { rangedBase, meleeBase };
 }
 
+function strongestAttackBase(attackUnits = []) {
+  return attackUnits.reduce((totals, unit) => {
+    const count = Math.max(0, Number(unit?.count) || 0);
+    const strength = Math.max(
+      0,
+      Number(unit?.rangedCombatStrength) || 0,
+      Number(unit?.meleeCombatStrength) || 0
+    );
+    const value = count * strength;
+    totals.total += value;
+    if (unit?.type2 === 'ranged') totals.ranged += value;
+    else totals.melee += value;
+    return totals;
+  }, { total: 0, ranged: 0, melee: 0 });
+}
+
+function strongestDefenseBase(defenseUnits = []) {
+  return defenseUnits.reduce((total, unit) => total +
+    Math.max(0, Number(unit?.count) || 0) * Math.max(
+      0,
+      Number(unit?.rangedDefenseStrength) || 0,
+      Number(unit?.meleeDefenseStrength) || 0
+    ), 0);
+}
+
 function computeWaveBattle(
   side,
   wave,
@@ -1163,6 +1189,45 @@ function computeWaveBattle(
       attackRangedForDefenderCasualties =
         attackTotals.rangedBase * reducedAttackRangedMult * attackTotalMultiplier +
         heartAttackRangedBonus;
+    }
+  }
+
+  if (side !== 'cy' && waveIndex % 2 === 0) {
+    const riseAttackBase = strongestAttackBase(attackUnits);
+    const riseDefenseBase = strongestDefenseBase(defenseUnits);
+
+    if (isAttackAbilityActive('riseToTheTask', side, waveIndex)) {
+      const rate = generalAbilityEffectRate('1002', 'attack', 0.55);
+      const bonus = Math.min(
+        Math.max(0, riseDefenseBase - riseAttackBase.total) * rate,
+        riseAttackBase.total
+      ) * attackWallAbilityScale(side, waveIndex);
+      const rangedShare = riseAttackBase.total > 0
+        ? riseAttackBase.ranged / riseAttackBase.total
+        : 0;
+      const meleeShare = riseAttackBase.total > 0
+        ? riseAttackBase.melee / riseAttackBase.total
+        : 0;
+
+      totalAttackRanged += bonus * rangedShare;
+      totalAttackMelee += bonus * meleeShare;
+      attackRangedForDefenderCasualties += bonus * rangedShare;
+      attackMeleeForDefenderCasualties += bonus * meleeShare;
+      markAttackAbility('riseToTheTask', bonus);
+    }
+
+    if (isDefenseAbilityActive('riseToTheTask', side, waveIndex)) {
+      const rate = generalAbilityEffectRate('1002', 'defense', 0.55);
+      const bonus = Math.min(
+        Math.max(0, riseAttackBase.total - riseDefenseBase) * rate,
+        riseDefenseBase
+      ) * defenseWallAbilityScale(side, waveIndex);
+
+      totalDefenseRanged += bonus;
+      totalDefenseMelee += bonus;
+      defenseRangedForAttackerCasualties += bonus;
+      defenseMeleeForAttackerCasualties += bonus;
+      markDefenseAbility('riseToTheTask', bonus);
     }
   }
 
