@@ -104,6 +104,20 @@ function totalPlannedWallAttackers() {
       (wave?.slots || []).reduce((slotTotal, slot) => slotTotal + (slot?.count || 0), 0), 0), 0);
 }
 
+function effectiveWallWaveCount() {
+  const wallSides = ['left', 'front', 'right'];
+  const configuredWaveCount = Math.max(0, ...wallSides.map(side => (waves[side] || []).length));
+
+  for (let waveIndex = configuredWaveCount - 1; waveIndex >= 0; waveIndex -= 1) {
+    const hasAttackers = wallSides.some(side =>
+      (waves[side]?.[waveIndex]?.slots || []).some(slot => slot?.type && Number(slot.count) > 0)
+    );
+    if (hasAttackers) return waveIndex + 1;
+  }
+
+  return 0;
+}
+
 function totalWallDefenders() {
   return ['left', 'front', 'right'].reduce((total, side) => total +
     (defenseSlots[side]?.units || []).reduce((slotTotal, slot) => slotTotal + (slot?.count || 0), 0), 0);
@@ -553,11 +567,6 @@ function computeAttackBonusesPercent(side, toolTotals, waveIndex) {
   ranged += toolTotals.rangedStrength || 0;
   melee += toolTotals.meleeStrength || 0;
 
-  if (side !== 'cy' && isAttackAbilityActive('powerSurge', side, waveIndex) && waveIndex % 2 === 0) {
-    const bonus = 10 * attackWallAbilityScale(side, waveIndex);
-    ranged += bonus;
-    melee += bonus;
-  }
   if (side !== 'cy' && isAttackAbilityActive('calmBeforeTheStorm', side, waveIndex)) {
     const waveBonus = (waveIndex % 2 === 1 ? -50 : 60) * attackWallAbilityScale(side, waveIndex);
     ranged += waveBonus;
@@ -652,12 +661,6 @@ function computeDefenseStrengthBonuses(side, waveIndex, defenseToolScale = 1) {
 
   ranged += combatStrengthBonus;
   melee += combatStrengthBonus;
-
-  if (side !== 'cy' && isDefenseAbilityActive('powerSurge', side, waveIndex) && waveIndex % 2 === 0) {
-    const bonus = 10 * defenseWallAbilityScale(side, waveIndex);
-    ranged += bonus;
-    melee += bonus;
-  }
 
   return { ranged, melee };
 }
@@ -930,13 +933,16 @@ function computeWaveBattle(
   }
   const attackBonus = computeAttackBonusesPercent(side, toolTotals, waveIndex);
   let attackEndlessPracticeMultiplier = 1;
+  let attackPowerSurgeMultiplier = 1;
   if (side !== 'cy' && isAttackAbilityActive('endlessPractice', side, waveIndex) && waveIndex) {
     const bonus = waveIndex * 4 * attackWallAbilityScale(side, waveIndex);
     attackEndlessPracticeMultiplier += bonus / 100;
     markAttackAbility('endlessPractice', bonus);
   }
   if (side !== 'cy' && isAttackAbilityActive('powerSurge', side, waveIndex) && waveIndex % 2 === 0) {
-    markAttackAbility('powerSurge', 10 * attackWallAbilityScale(side, waveIndex));
+    const bonus = 10 * attackWallAbilityScale(side, waveIndex);
+    attackPowerSurgeMultiplier += bonus / 100;
+    markAttackAbility('powerSurge', bonus);
   }
   if (side !== 'cy' && isAttackAbilityActive('calmBeforeTheStorm', side, waveIndex)) {
     markAttackAbility(
@@ -982,13 +988,16 @@ function computeWaveBattle(
   let attackWayOfPerfectionMultiplier = 1;
   let defenseWayOfPerfectionMultiplier = 1;
   let defenseEndlessPracticeMultiplier = 1;
+  let defensePowerSurgeMultiplier = 1;
   if (side !== 'cy' && isDefenseAbilityActive('endlessPractice', side, waveIndex) && waveIndex) {
     const bonus = waveIndex * 4 * defenseWallAbilityScale(side, waveIndex);
     defenseEndlessPracticeMultiplier += bonus / 100;
     markDefenseAbility('endlessPractice', bonus);
   }
   if (side !== 'cy' && isDefenseAbilityActive('powerSurge', side, waveIndex) && waveIndex % 2 === 0) {
-    markDefenseAbility('powerSurge', 10 * defenseWallAbilityScale(side, waveIndex));
+    const bonus = 10 * defenseWallAbilityScale(side, waveIndex);
+    defensePowerSurgeMultiplier += bonus / 100;
+    markDefenseAbility('powerSurge', bonus);
   }
 
   if (side !== 'cy' && waveIndex % 2 === 0) {
@@ -1058,8 +1067,7 @@ function computeWaveBattle(
       const scale = attackWallAbilityScale(side, waveIndex);
       const minimumPercent = 100 + 50 * scale;
       const bonusPercent = 15 * scale;
-      attackBonus.rangedMult = Math.max(attackBonus.rangedMult, minimumPercent / 100)
-        + bonusPercent / 100;
+      attackBonus.rangedMult += (minimumPercent - 100 + bonusPercent) / 100;
       markAttackAbility('longbows', [minimumPercent, bonusPercent]);
     }
 
@@ -1068,10 +1076,7 @@ function computeWaveBattle(
       const scale = defenseWallAbilityScale(side, waveIndex);
       const minimumPercent = 100 + 40 * scale;
       const bonusPercent = 14 * scale;
-      const rangedAfterShields = Math.max(defenseStrength.ranged - shieldPercent, 0);
-      const stabilizedRanged = Math.max(rangedAfterShields, minimumPercent)
-        + bonusPercent;
-      defenseStrength.ranged = stabilizedRanged + shieldPercent;
+      defenseStrength.ranged += minimumPercent - 100 + bonusPercent;
       markDefenseAbility('longbows', [minimumPercent, bonusPercent]);
     }
   }
@@ -1372,6 +1377,18 @@ function computeWaveBattle(
     totalDefenseMelee *= defenseEndlessPracticeMultiplier;
     defenseRangedForAttackerCasualties *= defenseEndlessPracticeMultiplier;
     defenseMeleeForAttackerCasualties *= defenseEndlessPracticeMultiplier;
+  }
+  if (attackPowerSurgeMultiplier !== 1) {
+    totalAttackRanged *= attackPowerSurgeMultiplier;
+    totalAttackMelee *= attackPowerSurgeMultiplier;
+    attackRangedForDefenderCasualties *= attackPowerSurgeMultiplier;
+    attackMeleeForDefenderCasualties *= attackPowerSurgeMultiplier;
+  }
+  if (defensePowerSurgeMultiplier !== 1) {
+    totalDefenseRanged *= defensePowerSurgeMultiplier;
+    totalDefenseMelee *= defensePowerSurgeMultiplier;
+    defenseRangedForAttackerCasualties *= defensePowerSurgeMultiplier;
+    defenseMeleeForAttackerCasualties *= defensePowerSurgeMultiplier;
   }
   if (attackWayOfPerfectionMultiplier !== 1) {
     totalAttackRanged *= attackWayOfPerfectionMultiplier;
@@ -2058,8 +2075,9 @@ function renderToolSummaryHTML(toolSummary, owner, courtyardSupport = false) {
 function getAppliedAbilityIds(battleResults, owner, view) {
   const preBattleIds = new Set(['1021', '1022']);
   const preBattleOnlyIds = new Set(['1022']);
+  const visibleWaveResults = (battleResults.waves || []).slice(0, effectiveWallWaveCount());
   const waveResults = view === 'summary' || view === 'prebattle'
-    ? battleResults.waves || []
+    ? visibleWaveResults
     : [battleResults.waves?.[Number(view.replace('wave-', '')) - 1]].filter(Boolean);
   const ids = new Set();
   waveResults.forEach(result => {
@@ -2111,7 +2129,9 @@ function toolsWithConsumption(toolSlots, owner, hadBattle, courtyardSupport = fa
 
 function reportWaveResults(battleResults, side, view) {
   if (side === 'cy') return [battleResults.waves?.[0]].filter(Boolean);
-  if (view === 'summary' || view === 'prebattle') return battleResults.waves || [];
+  if (view === 'summary' || view === 'prebattle') {
+    return (battleResults.waves || []).slice(0, effectiveWallWaveCount());
+  }
   return [battleResults.waves?.[Number(view.replace('wave-', '')) - 1]].filter(Boolean);
 }
 
@@ -2291,7 +2311,7 @@ function reportTools(side, view, battleResults) {
     };
   }
   const waveIndexes = view === 'summary'
-    ? (waves[side] || []).map((_, index) => index)
+    ? Array.from({ length: effectiveWallWaveCount() }, (_, index) => index)
     : [Number(view.replace('wave-', '')) - 1];
   const selectedAttackTools = waveIndexes.flatMap(index => toolsWithConsumption(
     waves[side]?.[index]?.tools || [],
@@ -2312,7 +2332,8 @@ function setReportViewOptions(side) {
   const options = ['<option value="summary">Overview</option>'];
   if (side !== 'cy') {
     options.push('<option value="prebattle">Pre-battle</option>');
-    (waves[side] || []).forEach((wave, index) => {
+    const visibleWaveCount = effectiveWallWaveCount();
+    Array.from({ length: visibleWaveCount }).forEach((_, index) => {
       options.push(`<option value="wave-${index + 1}">Wave ${index + 1}</option>`);
     });
   }
