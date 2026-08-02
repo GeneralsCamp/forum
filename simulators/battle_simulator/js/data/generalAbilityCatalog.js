@@ -138,7 +138,9 @@ function buildAbilities(data, lang, abilityImages) {
 
   return Object.fromEntries(Object.entries(grouped).map(([groupId, levels]) => {
     const ability = [...levels].sort((a, b) => Number(b.level || 0) - Number(a.level || 0))[0];
-    const attackAvailable = !!stringValue(ability.abilityAttackEffectID) && stringValue(ability.abilityAttackEffectID) !== '0';
+    const attackAvailable = groupId !== '1025' &&
+      !!stringValue(ability.abilityAttackEffectID) &&
+      stringValue(ability.abilityAttackEffectID) !== '0';
     const defenseAvailable = !!stringValue(ability.abilityDefenseEffectID) && stringValue(ability.abilityDefenseEffectID) !== '0';
     const attackEffectValues = attackAvailable
       ? getEffectValues(effectById[stringValue(ability.abilityAttackEffectID)])

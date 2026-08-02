@@ -1,9 +1,8 @@
-export function bindSlider(sliderId, valueId, { value = 0, min = 0, max = 100, prefix = '' } = {}) {
+export function bindSlider(sliderId, valueId, { value = 0, min = 0, max = 100, prefix = '', step = 1 } = {}) {
   const slider = document.getElementById(sliderId);
   const valueEl = document.getElementById(valueId);
   if (!slider || !valueEl) return;
 
-  const suffix = valueEl.dataset.valueSuffix || '';
   const formatCurrentValue = v => (v < 0 ? `-${Math.abs(v)}` : `${prefix}${v}`);
   const card = slider.closest('.modal-card-body');
   const minusButton = card?.querySelector(`.modal-slider-minus[data-slider-id="${sliderId}"]`);
@@ -13,7 +12,7 @@ export function bindSlider(sliderId, valueId, { value = 0, min = 0, max = 100, p
     const safeValue = Number.isFinite(parsed) ? parsed : min;
     const clampedValue = Math.max(min, Math.min(max, safeValue));
     slider.value = clampedValue;
-    valueEl.textContent = `${formatCurrentValue(clampedValue)} / ${max}${suffix}`;
+    valueEl.textContent = formatCurrentValue(clampedValue);
     if (minusButton) minusButton.disabled = clampedValue <= min;
     if (plusButton) plusButton.disabled = clampedValue >= max;
   };
@@ -24,8 +23,27 @@ export function bindSlider(sliderId, valueId, { value = 0, min = 0, max = 100, p
 
   slider.oninput = () => setValue(slider.value);
 
-  if (minusButton) minusButton.onclick = () => setValue(Number(slider.value) - 1);
-  if (plusButton) plusButton.onclick = () => setValue(Number(slider.value) + 1);
+  valueEl.onfocus = () => {
+    const selection = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(valueEl);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  };
+  valueEl.onkeydown = event => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      valueEl.blur();
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      valueEl.textContent = formatCurrentValue(Number(slider.value));
+      valueEl.blur();
+    }
+  };
+  valueEl.onblur = () => setValue(valueEl.textContent);
+
+  if (minusButton) minusButton.onclick = () => setValue(Number(slider.value) - step);
+  if (plusButton) plusButton.onclick = () => setValue(Number(slider.value) + step);
 }
 
 export function bindConfirmButton(buttonId, confirmValues, modal, onConfirm) {

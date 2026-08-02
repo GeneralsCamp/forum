@@ -68,7 +68,7 @@ export function generateInputCard(title, imageSrc, altText, sliderId, min, max, 
             <div class="wave-editor-controls">
               <button type="button" class="wave-editor-step modal-slider-minus" data-slider-id="${sliderId}" aria-label="Decrease">&minus;</button>
               <div class="wave-editor-value-wrap">
-                <strong id="${valueId}" class="wave-editor-value" data-value-suffix="${valueSuffix}">${value} / ${max}${valueSuffix}</strong>
+                <strong class="wave-editor-value"><span id="${valueId}" class="wave-editor-current-value" data-value-suffix="${valueSuffix}" contenteditable="true" inputmode="numeric" spellcheck="false">${value}</span> / ${max}${valueSuffix}</strong>
                 <input type="range" id="${sliderId}" min="${min}" max="${max}" value="${value}" class="wave-editor-range">
               </div>
               <button type="button" class="wave-editor-step modal-slider-plus" data-slider-id="${sliderId}" aria-label="Increase">+</button>

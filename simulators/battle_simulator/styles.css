@@ -1434,6 +1434,17 @@ body {
     font-size: 18px;
 }
 
+.wave-editor-current-value {
+    cursor: text;
+    outline: none;
+    border-bottom: 1px solid transparent;
+}
+
+.wave-editor-current-value:hover,
+.wave-editor-current-value:focus {
+    border-bottom-color: rgba(67, 51, 38, 0.45);
+}
+
 .wave-editor-range {
     width: 100%;
     accent-color: rgb(145, 40, 30);

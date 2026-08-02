@@ -11,14 +11,19 @@ export function openCastellanStatsModal() {
     { sliderId: 'defense-melee-strength-slider', valueId: 'defense-melee-strength-value', value: castellanStats.melee, min: 0, max: 500 },
     { sliderId: 'defense-ranged-strength-slider', valueId: 'defense-ranged-strength-value', value: castellanStats.ranged, min: 0, max: 500 },
     { sliderId: 'defense-courtyard-strength-slider', valueId: 'defense-courtyard-strength-value', value: castellanStats.courtyard, min: 0, max: 600 },
-    { sliderId: 'wall-unit-limit-slider', valueId: 'wall-unit-limit-value', value: castellanStats.wallUnitLimit, min: 100, max: 50000 },
-    { sliderId: 'cy-unit-limit-slider', valueId: 'cy-unit-limit-value', value: castellanStats.cyUnitLimit, min: 100, max: 5000000 },
+    { sliderId: 'wall-unit-limit-slider', valueId: 'wall-unit-limit-value', value: castellanStats.wallUnitLimit, min: 100, max: 50000, step: 100 },
+    { sliderId: 'cy-unit-limit-slider', valueId: 'cy-unit-limit-value', value: castellanStats.cyUnitLimit, min: 100, max: 5000000, step: 1000 },
     { sliderId: 'defense-wall-protection-slider', valueId: 'defense-wall-protection-value', value: castellanStats.wallProtection, min: 0, max: 500 },
     { sliderId: 'defense-moat-protection-slider', valueId: 'defense-moat-protection-value', value: castellanStats.moatProtection, min: 0, max: 300 },
     { sliderId: 'defense-gate-protection-slider', valueId: 'defense-gate-protection-value', value: castellanStats.gateProtection, min: 0, max: 500 }
   ];
 
-  sliders.forEach(s => bindSlider(s.sliderId, s.valueId, { value: s.value, min: s.min, max: s.max }));
+  sliders.forEach(s => bindSlider(s.sliderId, s.valueId, {
+    value: s.value,
+    min: s.min,
+    max: s.max,
+    step: s.step
+  }));
 
   const confirmValues = [
     { sliderId: 'defense-melee-strength-slider', property: 'melee', targetObject: castellanStats },
