@@ -199,31 +199,53 @@ function applyPercentageKills(units = [], predicate, rate = 0) {
   return losses;
 }
 
-function getPreviousAttackerLossStrength(previousWaveResult) {
+function getPreviousAttackerLossStrength(previousWaveResults) {
   const result = { ranged: 0, melee: 0 };
-  if (!previousWaveResult) return result;
+  const results = Array.isArray(previousWaveResults)
+    ? previousWaveResults
+    : previousWaveResults ? [previousWaveResults] : [];
 
-  (previousWaveResult.attackerUnits || []).forEach(unit => {
-    const loss = previousWaveResult.attackerLosses?.get(toUnitKey(unit.type)) || 0;
-    if (unit.type2 === 'ranged') {
-      result.ranged += loss * (unit.rangedCombatStrength || 0);
-    } else {
-      result.melee += loss * (unit.meleeCombatStrength || 0);
-    }
+  results.forEach(previousWaveResult => {
+    (previousWaveResult.attackerUnits || []).forEach(unit => {
+      const loss = previousWaveResult.attackerLosses?.get(toUnitKey(unit.type)) || 0;
+      if (unit.type2 === 'ranged') {
+        result.ranged += loss * (unit.rangedCombatStrength || 0);
+      } else {
+        result.melee += loss * (unit.meleeCombatStrength || 0);
+      }
+    });
   });
   return result;
 }
 
-function getPreviousDefenderLossStrength(previousWaveResult) {
-  const result = { ranged: 0, melee: 0 };
-  if (!previousWaveResult) return result;
+function getPreviousDefenderLossStrength(previousWaveResults) {
+  let total = 0;
+  const results = Array.isArray(previousWaveResults)
+    ? previousWaveResults
+    : previousWaveResults ? [previousWaveResults] : [];
 
-  (previousWaveResult.defenderUnitStats || []).forEach(unit => {
-    const loss = previousWaveResult.defenderLosses?.get(toUnitKey(unit.type)) || 0;
-    result.ranged += loss * (unit.rangedDefenseStrength || 0);
-    result.melee += loss * (unit.meleeDefenseStrength || 0);
+  results.forEach(previousWaveResult => {
+    (previousWaveResult.defenderUnitStats || []).forEach(unit => {
+      const loss = previousWaveResult.defenderLosses?.get(toUnitKey(unit.type)) || 0;
+      const baseCombatStrength = Math.max(
+        unit.rangedCombatStrength || 0,
+        unit.meleeCombatStrength || 0,
+        unit.rangedDefenseStrength || 0,
+        unit.meleeDefenseStrength || 0
+      );
+      total += loss * baseCombatStrength;
+    });
   });
-  return result;
+  return total;
+}
+
+function generalAbilityEffectRate(groupId, owner, fallback) {
+  const ability = getGeneralAbilityCatalog().abilities?.[groupId];
+  const values = owner === 'attack'
+    ? ability?.attackEffectValues
+    : ability?.defenseEffectValues;
+  const percent = Number(values?.[0]);
+  return Number.isFinite(percent) ? percent / 100 : fallback;
 }
 
 function formatNumber(value) {
@@ -594,6 +616,8 @@ function buildDefenseUnits(side) {
         type: slot.type,
         count: slot.count,
         type2: unit.type2,
+        rangedCombatStrength: unit.rangedCombatStrength || 0,
+        meleeCombatStrength: unit.meleeCombatStrength || 0,
         rangedDefenseStrength: unit.rangedDefenseStrength || 0,
         meleeDefenseStrength: unit.meleeDefenseStrength || 0
       });
@@ -687,7 +711,8 @@ function computeWaveBattle(
   attackStrengthBonusPercent = 0,
   previousWaveResult = null,
   wallDefenderCounts = null,
-  wallAttackerCounts = null
+  wallAttackerCounts = null,
+  previousWallWaveResults = null
 ) {
   const attackerUnitsBeforeAbilities = buildAttackUnits(wave?.slots || []);
   const attackUnits = attackerUnitsBeforeAbilities.map(unit => ({ ...unit }));
@@ -987,24 +1012,34 @@ function computeWaveBattle(
   let heartAttackMeleeBonus = 0;
   let heartDefenseRangedBonus = 0;
   let heartDefenseMeleeBonus = 0;
-  if (side !== 'cy' && waveIndex % 2 === 0 && previousWaveResult) {
+  if (side !== 'cy' && waveIndex % 2 === 0 && previousWallWaveResults?.length) {
     if (isAttackAbilityActive('heartOfAWarrior', side, waveIndex)) {
-      const previousLossStrength = getPreviousAttackerLossStrength(previousWaveResult);
-      const effectScale = attackWallAbilityScale(side, waveIndex);
-      heartAttackRangedBonus = previousLossStrength.ranged * 0.4 * effectScale;
-      heartAttackMeleeBonus = previousLossStrength.melee * 0.4 * effectScale;
-      markAttackAbility('heartOfAWarrior', heartAttackRangedBonus + heartAttackMeleeBonus);
-      totalAttackRanged += heartAttackRangedBonus;
-      totalAttackMelee += heartAttackMeleeBonus;
+      if (sumCounts(attackUnits) > 0) {
+        const previousLossStrength = getPreviousAttackerLossStrength(previousWallWaveResults);
+        const abilityRate = generalAbilityEffectRate('1014', 'attack', 0.4);
+        const effectScale = attackWallAbilityScale(side, waveIndex);
+        heartAttackRangedBonus = previousLossStrength.ranged * abilityRate * effectScale;
+        heartAttackMeleeBonus = previousLossStrength.melee * abilityRate * effectScale;
+        markAttackAbility('heartOfAWarrior', heartAttackRangedBonus + heartAttackMeleeBonus);
+        totalAttackRanged += heartAttackRangedBonus;
+        totalAttackMelee += heartAttackMeleeBonus;
+      } else {
+        markAttackAbility('heartOfAWarrior', 0);
+      }
     }
     if (isDefenseAbilityActive('heartOfAWarrior', side, waveIndex)) {
-      const previousLossStrength = getPreviousDefenderLossStrength(previousWaveResult);
-      const effectScale = defenseWallAbilityScale(side, waveIndex);
-      heartDefenseRangedBonus = previousLossStrength.ranged * 0.62 * effectScale;
-      heartDefenseMeleeBonus = previousLossStrength.melee * 0.62 * effectScale;
-      markDefenseAbility('heartOfAWarrior', heartDefenseRangedBonus + heartDefenseMeleeBonus);
-      totalDefenseRanged += heartDefenseRangedBonus;
-      totalDefenseMelee += heartDefenseMeleeBonus;
+      if (sumCounts(defenseUnits) > 0) {
+        const previousLossStrength = getPreviousDefenderLossStrength(previousWallWaveResults);
+        const abilityRate = generalAbilityEffectRate('1014', 'defense', 0.62);
+        const effectScale = defenseWallAbilityScale(side, waveIndex);
+        heartDefenseRangedBonus = previousLossStrength * abilityRate * effectScale;
+        heartDefenseMeleeBonus = heartDefenseRangedBonus;
+        markDefenseAbility('heartOfAWarrior', heartDefenseRangedBonus);
+        totalDefenseRanged += heartDefenseRangedBonus;
+        totalDefenseMelee += heartDefenseMeleeBonus;
+      } else {
+        markDefenseAbility('heartOfAWarrior', 0);
+      }
     }
   }
 
@@ -1224,6 +1259,9 @@ function simulateWallSides() {
   const waveCount = Math.max(...wallSides.map(side => (waves[side] || []).length), 0);
 
   for (let waveOffset = 0; waveOffset < waveCount; waveOffset += 1) {
+    const previousWallWaveResults = wallSides
+      .map(side => state[side].previousWaveResult)
+      .filter(Boolean);
     const wallDefenderCounts = Object.fromEntries(wallSides.map(side => [
       side,
       sumCounts(state[side].defenseUnits)
@@ -1234,10 +1272,8 @@ function simulateWallSides() {
     ]));
 
     wallSides.forEach(side => {
-      const wave = waves[side]?.[waveOffset];
-      if (!wave) return;
-
       const sideState = state[side];
+      const wave = waves[side]?.[waveOffset] || { slots: [], tools: [] };
       const waveResult = computeWaveBattle(
         side,
         wave,
@@ -1248,7 +1284,8 @@ function simulateWallSides() {
         0,
         sideState.previousWaveResult,
         wallDefenderCounts,
-        wallAttackerCounts
+        wallAttackerCounts,
+        previousWallWaveResults
       );
       sideState.results.waves.push(waveResult);
       sideState.previousWaveResult = waveResult;
