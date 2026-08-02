@@ -1048,17 +1048,44 @@ function computeWaveBattle(
     const attackMeleeBeforeBonus = totalAttackMelee;
     const defenseRangedBeforeBonus = totalDefenseRanged;
     const defenseMeleeBeforeBonus = totalDefenseMelee;
+    const attackStrengthBeforeBonus = attackRangedBeforeBonus + attackMeleeBeforeBonus;
+    const attackRangedShare = attackStrengthBeforeBonus > 0
+      ? attackRangedBeforeBonus / attackStrengthBeforeBonus
+      : 0;
+    const attackMeleeShare = attackStrengthBeforeBonus > 0
+      ? attackMeleeBeforeBonus / attackStrengthBeforeBonus
+      : 0;
 
     if (attackGeneralAbilities.giantSlayer) {
-      const rangedBonus = Math.min(defenseRangedBeforeBonus, attackRangedBeforeBonus * 3) * 0.09;
-      const meleeBonus = Math.min(defenseMeleeBeforeBonus, attackMeleeBeforeBonus * 3) * 0.09;
+      const abilityRate = generalAbilityEffectRate('1003', 'attack', 0.09);
+      const rangedBonus = Math.min(
+        defenseRangedBeforeBonus * attackRangedShare,
+        attackRangedBeforeBonus * 3
+      ) * abilityRate;
+      const meleeBonus = Math.min(
+        defenseMeleeBeforeBonus * attackMeleeShare,
+        attackMeleeBeforeBonus * 3
+      ) * abilityRate;
       markAttackAbility('giantSlayer', rangedBonus + meleeBonus);
       totalAttackRanged += rangedBonus;
       totalAttackMelee += meleeBonus;
     }
     if (defenseGeneralAbilities.giantSlayer) {
-      const rangedBonus = Math.min(attackRangedBeforeBonus, defenseRangedBeforeBonus * 3) * 0.09;
-      const meleeBonus = Math.min(attackMeleeBeforeBonus, defenseMeleeBeforeBonus * 3) * 0.09;
+      const abilityRate = generalAbilityEffectRate('1003', 'defense', 0.09);
+      const weightedDefenseRanged = defenseRangedBeforeBonus * attackRangedShare;
+      const weightedDefenseMelee = defenseMeleeBeforeBonus * attackMeleeShare;
+      const rangedBonusBase = attackRangedBeforeBonus <= 0
+        ? 0
+        : weightedDefenseRanged > 0 && attackRangedBeforeBonus / weightedDefenseRanged <= 3
+          ? attackRangedBeforeBonus
+          : defenseRangedBeforeBonus * 3;
+      const meleeBonusBase = attackMeleeBeforeBonus <= 0
+        ? 0
+        : weightedDefenseMelee > 0 && attackMeleeBeforeBonus / weightedDefenseMelee <= 3
+          ? attackMeleeBeforeBonus
+          : defenseMeleeBeforeBonus * 3;
+      const rangedBonus = rangedBonusBase * abilityRate;
+      const meleeBonus = meleeBonusBase * abilityRate;
       markDefenseAbility('giantSlayer', rangedBonus + meleeBonus);
       totalDefenseRanged += rangedBonus;
       totalDefenseMelee += meleeBonus;
