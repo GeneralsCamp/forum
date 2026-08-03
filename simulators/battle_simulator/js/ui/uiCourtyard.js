@@ -2,7 +2,7 @@ import * as variables from '../data/variables.js';
 import { saveAttackState } from '../data/attackState.js';
 import { createUnitIcon, openUnitModal } from './uiUnits.js';
 
-export function createCourtyardAssaultCard() {
+export function createCourtyardAssaultCard(onClear) {
   if (!variables.waves['CY']) {
     const savedCourtyardSlots = variables.totalUnits.CY?.[0];
     variables.waves['CY'] = [{
@@ -47,6 +47,12 @@ export function createCourtyardAssaultCard() {
           </span>
         </div>
       </button>
+      <button type="button" class="wave-clear-button" aria-label="Clear wave">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="8"></circle>
+          <path d="M6.5 17.5L17.5 6.5"></path>
+        </svg>
+      </button>
       <span class="arrow" aria-hidden="true" style="transform: ${isOpen ? 'rotate(90deg)' : 'rotate(0deg)'};"></span>
     </h6>
   `;
@@ -61,13 +67,13 @@ export function createCourtyardAssaultCard() {
     <div class="card-body">
       <div class="row d-flex align-items-start">
         <div class="col-8 bugfix">
-          <img src="../../img_base/battle_simulator/troops-icon.webp" alt="Units" style="width:20px;height:20px;vertical-align:middle;" />
+          <img src="../../img_base/battle_simulator/troops-icon.webp" alt="Units" style="width:15px;height:15px;vertical-align:middle;" />
           <span class="units">Units ${wave.slots.reduce((acc, s) => acc + s.count, 0)} / ${maxUnitsCY}</span>
           <div class="row ms-1 mt-1">
-            ${Array.from({ length: 4 }, (_, i) => `<div class="unit-slot" id="unit-slot-CY-${i + 1}">+</div>`).join('')}
+            ${Array.from({ length: 4 }, (_, i) => `<div class="unit-slot${wave.slots[i]?.count > 0 ? '' : ' empty-wave-slot'}" id="unit-slot-CY-${i + 1}">+</div>`).join('')}
           </div>
           <div class="row ms-1 mt-1">
-            ${Array.from({ length: 4 }, (_, i) => `<div class="unit-slot" id="unit-slot-CY-${i + 5}">+</div>`).join('')}
+            ${Array.from({ length: 4 }, (_, i) => `<div class="unit-slot${wave.slots[i + 4]?.count > 0 ? '' : ' empty-wave-slot'}" id="unit-slot-CY-${i + 5}">+</div>`).join('')}
           </div>
         </div>
         <div class="col-4">
@@ -81,7 +87,21 @@ export function createCourtyardAssaultCard() {
   document.getElementById('wave-container').appendChild(courtyardCard);
 
   const button = courtyardHeader.querySelector('button');
+  const clearButton = courtyardHeader.querySelector('.wave-clear-button');
   const arrow = courtyardHeader.querySelector('.arrow');
+
+  clearButton.addEventListener('click', event => {
+    event.preventDefault();
+    event.stopPropagation();
+    wave.slots.forEach(slot => {
+      slot.type = '';
+      slot.count = 0;
+    });
+    if (!variables.totalUnits.CY) variables.totalUnits.CY = [];
+    variables.totalUnits.CY[0] = wave.slots.map(slot => ({ ...slot }));
+    saveAttackState();
+    onClear?.();
+  });
 
   button.addEventListener('click', () => {
     const collapsed = button.classList.contains('collapsed');

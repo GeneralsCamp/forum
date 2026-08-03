@@ -58,7 +58,8 @@ function renderDefenseUnitEditor(selectedIndex, selectedValue, maximum) {
 }
 
 export function openDefenseUnitsModal(side, slotNumber) {
-  const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('unitModalDefense'));
+  const modalElement = document.getElementById('unitModalDefense');
+  const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
   const slotElement = document.getElementById(`unit-slot-${side}-${slotNumber}`);
 
   const wallMaxUnits = castellanStats.wallUnitLimit;
@@ -104,7 +105,6 @@ export function openDefenseUnitsModal(side, slotNumber) {
     setSelection
   );
   renderDefenseUnitEditor(initialSelectedIndex, currentSlotUnitCount, availableUnits);
-
   document.getElementById('confirmDefenseUnits').onclick = function () {
     let totalUnitsInSlot = 0;
     let selectedUnitType = '';
@@ -126,11 +126,18 @@ export function openDefenseUnitsModal(side, slotNumber) {
     slotElement.innerHTML = totalUnitsInSlot > 0
       ? createDefenseUnitIcon({ type: selectedUnitType, count: totalUnitsInSlot })
       : '+';
+    slotElement.classList.toggle('empty-wave-slot', totalUnitsInSlot <= 0);
 
     calculateTroopDefenseStrength(side);
     saveDefenseState();
     modal.hide();
   };
 
+  if (initialSelectedIndex >= 0 && currentSlotUnitCount > 0) {
+    modalElement.addEventListener('shown.bs.modal', () => {
+      modalElement.querySelector(`[data-defense-unit-index="${initialSelectedIndex}"]`)
+        ?.scrollIntoView({ block: 'center', behavior: 'auto' });
+    }, { once: true });
+  }
   modal.show();
 }

@@ -263,7 +263,7 @@ export function summarizeSupportToolBonuses(supportTools) {
   return result ? `<div class="row">${result}</div>` : '';
 }
 
-export function createSupportWaveCard() {
+export function createSupportWaveCard(onClear) {
   if (!variables.waves['Support']) {
     variables.waves['Support'] = [{ tools: Array.from({ length: 3 }, (_, i) => ({ type: '', count: 0, id: `tool-slot-Support-${i + 1}` })) }];
   }
@@ -281,6 +281,12 @@ export function createSupportWaveCard() {
       <button class="btn btn-link ${isOpen ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse"
               data-bs-target="#collapseSupp" aria-expanded="${isOpen ? 'true' : 'false'}" aria-controls="collapseSupp"
               style="width:100%; text-align:left;">Support wave</button>
+      <button type="button" class="wave-clear-button" aria-label="Clear wave">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="8"></circle>
+          <path d="M6.5 17.5L17.5 6.5"></path>
+        </svg>
+      </button>
       <span class="arrow" aria-hidden="true" style="transform: ${isOpen ? 'rotate(90deg)' : 'rotate(0deg)'};"></span>
     </h6>
   `;
@@ -295,11 +301,11 @@ export function createSupportWaveCard() {
       <div class="row d-flex align-items-start">
         <div class="col-6 bugfix">
           <span class="tools">
-            <img src="../../img_base/battle_simulator/tools-icon.webp" alt="Tools" style="width:20px;height:20px;vertical-align:middle;" />
+            <img src="../../img_base/battle_simulator/tools-icon.webp" alt="Tools" style="width:15px;height:15px;vertical-align:middle;" />
             Tools ${supportWave.tools.reduce((acc, t) => acc + t.count, 0)} / 3
           </span>
           <div class="row ms-1 mt-1">
-            ${Array.from({ length: 3 }, (_, i) => `<div class="tool-slot" id="tool-slot-Support-${i + 1}">+</div>`).join('')}
+            ${Array.from({ length: 3 }, (_, i) => `<div class="tool-slot${supportWave.tools[i]?.count > 0 ? '' : ' empty-wave-slot'}" id="tool-slot-Support-${i + 1}">+</div>`).join('')}
           </div>
         </div>
         <div class="col">
@@ -313,7 +319,21 @@ export function createSupportWaveCard() {
   document.getElementById('wave-container').appendChild(supportCard);
 
   const button = supportHeader.querySelector('button');
+  const clearButton = supportHeader.querySelector('.wave-clear-button');
   const arrow = supportHeader.querySelector('.arrow');
+
+  clearButton.addEventListener('click', event => {
+    event.preventDefault();
+    event.stopPropagation();
+    supportWave.tools.forEach(tool => {
+      tool.type = '';
+      tool.count = 0;
+    });
+    if (!variables.totalTools.Support) variables.totalTools.Support = [];
+    variables.totalTools.Support[0] = supportWave.tools.map(tool => ({ ...tool }));
+    saveAttackState();
+    onClear?.();
+  });
 
   button.addEventListener('click', () => {
     const collapsed = button.classList.contains('collapsed');

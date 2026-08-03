@@ -65,7 +65,8 @@ export function getUsedCourtyardToolTypes(slots = []) {
 }
 
 export function openDefenseToolsModal(side, toolType, slotIndex) {
-  const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('toolModalDefense'));
+  const modalElement = document.getElementById('toolModalDefense');
+  const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
   const slotElement = document.getElementById(`tool-slot-${side}-${toolType}-${slotIndex}`);
   initializeDefenseTools(defense_tools, toolType);
 
@@ -100,7 +101,6 @@ export function openDefenseToolsModal(side, toolType, slotIndex) {
     (index, value) => renderDefenseToolEditor(value > 0 ? index : -1, unavailableIndexes)
   );
   renderDefenseToolEditor(initialSelectedIndex, unavailableIndexes);
-
   document.getElementById('confirmDefenseTools').onclick = function () {
     const selectedRow = document.querySelector('#toolModalDefense [data-defense-tool-index].selected');
     const selectedIndex = selectedRow ? Number(selectedRow.dataset.defenseToolIndex) : -1;
@@ -131,5 +131,11 @@ export function openDefenseToolsModal(side, toolType, slotIndex) {
     modal.hide();
   };
 
+  if (initialSelectedIndex >= 0 && currentSlotData.count > 0) {
+    modalElement.addEventListener('shown.bs.modal', () => {
+      modalElement.querySelector(`[data-defense-tool-index="${initialSelectedIndex}"]`)
+        ?.scrollIntoView({ block: 'center', behavior: 'auto' });
+    }, { once: true });
+  }
   modal.show();
 }

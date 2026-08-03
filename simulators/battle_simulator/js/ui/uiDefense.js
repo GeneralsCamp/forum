@@ -57,7 +57,7 @@ export function generateUnitSlots(side) {
   container.innerHTML = '';
   for (let i = 0; i < 7; i++) {
     const slot = document.createElement('div');
-    slot.classList.add('unit-slot');
+    slot.classList.add('unit-slot', 'empty-wave-slot');
     slot.id = `unit-slot-${side}-${i + 1}`;
     slot.addEventListener('click', () => openDefenseUnitsModal(side, i + 1));
     slot.textContent = "+";
@@ -146,11 +146,13 @@ export function loadDefenseSlots(side) {
     if (!slotElement) return;
 
     if (slot) {
+      slotElement.classList.toggle('empty-wave-slot', !(slot.count > 0));
       slotElement.dataset.type = slot.type;
       slotElement.dataset.count = slot.count;
 
       slotElement.innerHTML = slot.count > 0 ? createDefenseUnitIcon(slot) : '+';
     } else {
+      slotElement.classList.add('empty-wave-slot');
       slotElement.dataset.type = '';
       slotElement.dataset.count = 0;
       slotElement.innerHTML = '+';

@@ -69,8 +69,8 @@ export const modalsData = [
     id: 'defenseBasicsModal',
     title: 'Defense Basics',
     body: `
-        <div class="player-flanks d-flex justify-content-between align-items-center">
-            <div class="row flanks ms-1">
+        <div class="defense-side-bar">
+            <div class="defense-side-buttons">
                 <button class="btn flanks-button-defense sides" data-section="left">
                     <img src="../../img_base/battle_simulator/left-icon.webp" alt="L">
                 </button>
@@ -84,9 +84,7 @@ export const modalsData = [
                     <img src="../../img_base/battle_simulator/cy-icon.webp" alt="CY">
                 </button>
             </div>
-        </div>
-        <div class="player-flank d-flex">
-            <span id="current-defense-flank">Castle wall: Front</span>
+            <span id="current-defense-flank">Front</span>
         </div>
         <div class="col-12">
             <div class="card w-100">

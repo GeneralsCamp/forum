@@ -155,6 +155,11 @@ body {
     padding: 5px;
 }
 
+#wave-container > .card > .collapse > .card-body,
+#wave-container > .card > .collapsing > .card-body {
+    padding-top: 0;
+}
+
 .wave-body-columns {
     position: relative;
 }
@@ -162,11 +167,15 @@ body {
 .wave-body-columns::after {
     content: "";
     position: absolute;
-    top: -5px;
+    top: 0;
     bottom: -5px;
     left: 50%;
-    width: 1px;
-    background-color: rgb(180, 140, 100);
+    width: 2px;
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0.8) 0 50%,
+        rgba(119, 80, 54, 0.42) 50% 100%
+    );
     pointer-events: none;
 }
 
@@ -327,8 +336,67 @@ body {
     border-top-right-radius: 0 !important;
 }
 
+#wave-container > .card > .card-header > h6,
+#wave-container > .card > .card-header > h6 > .btn-link {
+    min-height: 34px;
+}
+
 .card-header.collapsed {
     background-color: rgb(243, 194, 74) !important;
+}
+
+.wave-clear-button {
+    display: none;
+    flex: 0 0 26px;
+    width: 26px;
+    height: 26px;
+    margin: 0 20px 0 2px;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgb(67, 51, 38);
+    border-radius: 0;
+    background-color: rgb(88, 117, 114);
+    color: #fff;
+    box-shadow:
+        inset 1px 1px 0 rgba(184, 211, 207, 0.34),
+        inset -1px -1px 0 rgba(37, 61, 61, 0.5);
+}
+
+.card-header .wave-clear-button,
+.card-header .wave-clear-button:hover,
+.card-header .wave-clear-button:active {
+    color: #fff !important;
+}
+
+.card-header.collapsed .wave-clear-button {
+    display: inline-flex;
+}
+
+.wave-clear-button:hover {
+    border-color: rgb(67, 51, 38);
+    background-color: rgb(101, 132, 141);
+    filter: brightness(1.08);
+}
+
+.wave-clear-button:active {
+    box-shadow:
+        inset 1px 1px 0 rgba(37, 61, 61, 0.5),
+        inset -1px -1px 0 rgba(184, 211, 207, 0.22);
+    transform: translateY(1px);
+}
+
+.wave-clear-button svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.8;
+}
+
+#wave-container .card-body .units,
+#wave-container .card-body .tools {
+    font-size: 11px;
 }
 
 .general-img,
@@ -387,51 +455,51 @@ body {
 .square2.commander {
     background-image: url('../../img_base/battle_simulator/icon_commander_0.png');
     background-color: rgb(179, 109, 109);
-    border: 3px solid rgb(67, 51, 38);
+    border: 2px solid rgb(67, 51, 38);
     box-shadow:
-        inset 3px 3px 0 rgba(219, 141, 141, 0.48),
-        inset -3px -3px 0 rgba(91, 39, 39, 0.78);
+        inset 2px 2px 0 rgba(219, 141, 141, 0.48),
+        inset -2px -2px 0 rgba(91, 39, 39, 0.78);
 }
 
 .square2.attack-basics {
     background-image: url('../../img_base/battle_simulator/icon_basics.png');
     background-color: rgb(179, 109, 109);
-    border: 3px solid rgb(67, 51, 38);
+    border: 2px solid rgb(67, 51, 38);
     box-shadow:
-        inset 3px 3px 0 rgba(219, 141, 141, 0.48),
-        inset -3px -3px 0 rgba(91, 39, 39, 0.78);
+        inset 2px 2px 0 rgba(219, 141, 141, 0.48),
+        inset -2px -2px 0 rgba(91, 39, 39, 0.78);
 }
 
 .square2.defense-basics {
     background-image: url('../../img_base/battle_simulator/icon_basics.png');
     background-color: rgb(88, 117, 114);
-    border: 3px solid rgb(67, 51, 38);
+    border: 2px solid rgb(67, 51, 38);
     box-shadow:
-        inset 3px 3px 0 rgba(184, 211, 207, 0.48),
-        inset -3px -3px 0 rgba(37, 61, 61, 0.78);
+        inset 2px 2px 0 rgba(184, 211, 207, 0.48),
+        inset -2px -2px 0 rgba(37, 61, 61, 0.78);
 }
 
 .square2.castellan {
     background-image: url('../../img_base/battle_simulator/icon_castellan_0.png');
     background-color: rgb(88, 117, 114);
-    border: 3px solid rgb(67, 51, 38);
+    border: 2px solid rgb(67, 51, 38);
     box-shadow:
-        inset 3px 3px 0 rgba(184, 211, 207, 0.48),
-        inset -3px -3px 0 rgba(37, 61, 61, 0.78);
+        inset 2px 2px 0 rgba(184, 211, 207, 0.48),
+        inset -2px -2px 0 rgba(37, 61, 61, 0.78);
 }
 
 .square2.commander:active,
 .square2.attack-basics:active {
     box-shadow:
-        inset 3px 3px 0 rgba(91, 39, 39, 0.78),
-        inset -2px -2px 0 rgba(219, 141, 141, 0.28);
+        inset 2px 2px 0 rgba(91, 39, 39, 0.78),
+        inset -1px -1px 0 rgba(219, 141, 141, 0.28);
 }
 
 .square2.defense-basics:active,
 .square2.castellan:active {
     box-shadow:
-        inset 3px 3px 0 rgba(37, 61, 61, 0.78),
-        inset -2px -2px 0 rgba(184, 211, 207, 0.28);
+        inset 2px 2px 0 rgba(37, 61, 61, 0.78),
+        inset -1px -1px 0 rgba(184, 211, 207, 0.28);
 }
 
 .general-bg1,
@@ -581,18 +649,41 @@ body {
     display: grid !important;
     grid-template-columns: minmax(0, 1fr) 86px;
     align-items: center;
-    height: 36px;
-    min-height: 36px;
+    height: 30px;
+    min-height: 30px;
+    padding: 0 2px;
     box-sizing: border-box;
     overflow: hidden;
     border-bottom: 2px solid rgb(67, 51, 38);
 }
 
 .player-flanks .flanks {
+    display: flex;
+    align-items: center;
+    align-self: stretch;
     flex: 0 0 auto;
     width: auto;
     flex-wrap: nowrap;
-    margin-right: 0;
+    gap: 4px;
+    margin: 0 0 0 4px !important;
+    --bs-gutter-x: 0;
+}
+
+.attack-planning > .player-flanks .flanks-button {
+    flex: 0 0 26px;
+    width: 26px;
+    height: 26px;
+    margin: 0;
+    padding: 0;
+}
+
+.attack-planning > .player-flanks .flanks-button:hover {
+    margin: 0;
+}
+
+.attack-planning > .player-flanks .flanks-button img {
+    width: auto;
+    height: 16px;
 }
 
 .battle-action-bar .flanks-button {
@@ -601,11 +692,11 @@ body {
     height: 38px;
     margin: 0;
     padding: 0;
-    border: 3px solid rgb(67, 51, 38);
+    border: 2px solid rgb(67, 51, 38);
     border-radius: 0;
     box-shadow:
-        inset 3px 3px 0 rgba(184, 211, 207, 0.48),
-        inset -3px -3px 0 rgba(37, 61, 61, 0.78);
+        inset 2px 2px 0 rgba(184, 211, 207, 0.48),
+        inset -2px -2px 0 rgba(37, 61, 61, 0.78);
 }
 
 .battle-action-bar .flanks-button:hover {
@@ -617,8 +708,8 @@ body {
 
 .battle-action-bar .flanks-button:active {
     box-shadow:
-        inset 3px 3px 0 rgba(37, 61, 61, 0.78),
-        inset -2px -2px 0 rgba(184, 211, 207, 0.28);
+        inset 2px 2px 0 rgba(37, 61, 61, 0.78),
+        inset -1px -1px 0 rgba(184, 211, 207, 0.28);
     transform: translateY(1px);
 }
 
@@ -636,7 +727,7 @@ body {
 .battle-action-bar .fullscreen-button:hover,
 .battle-action-bar .openAllWaves-button:hover {
     background-color: rgb(101, 132, 141);
-    border: 3px solid rgb(67, 51, 38);
+    border: 2px solid rgb(67, 51, 38);
     color: #fff;
 }
 
@@ -692,20 +783,20 @@ body {
     font-size: 15px;
     font-weight: 900;
     box-shadow:
-        inset 3px 3px 0 rgba(121, 184, 50, 0.58),
-        inset -3px -3px 0 rgba(33, 74, 6, 0.92);
+        inset 2px 2px 0 rgba(121, 184, 50, 0.58),
+        inset -2px -2px 0 rgba(33, 74, 6, 0.92);
 }
 
 .battle-action-bar .battle-start-button:hover {
     background: #3f760b;
-    border: 3px solid rgb(67, 51, 38);
+    border: 2px solid rgb(67, 51, 38);
     color: #fff;
 }
 
 .battle-action-bar .battle-start-button:active {
     box-shadow:
-        inset 3px 3px 0 rgba(33, 74, 6, 0.92),
-        inset -2px -2px 0 rgba(121, 184, 50, 0.32);
+        inset 2px 2px 0 rgba(33, 74, 6, 0.92),
+        inset -1px -1px 0 rgba(121, 184, 50, 0.32);
 }
 
 #battleReportModal .modal-dialog {
@@ -749,6 +840,8 @@ body {
 
 .report-side-bar {
     justify-content: space-between;
+    min-height: 34px;
+    padding: 3px 8px;
 }
 
 .report-control-label {
@@ -788,13 +881,21 @@ body {
 .report-side-buttons {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 4px;
 }
 
 .report-side-buttons .flanks-button-report {
     box-sizing: border-box;
+    width: 26px;
+    height: 26px;
+    padding: 0;
     margin: 0;
     border: 2px solid rgb(67, 51, 38);
+}
+
+.report-side-buttons .flanks-button-report img {
+    width: auto;
+    height: 16px;
 }
 
 .report-side-buttons .flanks-button-report:hover,
@@ -1114,7 +1215,7 @@ body {
     justify-content: center;
     margin: 0;
     padding: 0;
-    border: 3px solid rgb(67, 51, 38);
+    border: 2px solid rgb(67, 51, 38);
     border-radius: 0;
     color: white;
     font-family: Arial, sans-serif;
@@ -1127,8 +1228,8 @@ body {
 .modal-header-actions .btn-confirm {
     background: #3f760b;
     box-shadow:
-        inset 3px 3px 0 rgba(121, 184, 50, 0.58),
-        inset -3px -3px 0 rgba(33, 74, 6, 0.92);
+        inset 2px 2px 0 rgba(121, 184, 50, 0.58),
+        inset -2px -2px 0 rgba(33, 74, 6, 0.92);
 }
 
 .modal-header-actions .btn-confirm::before {
@@ -1139,8 +1240,8 @@ body {
 .modal-header-close {
     background: #a62e20;
     box-shadow:
-        inset 3px 3px 0 rgba(235, 105, 82, 0.52),
-        inset -3px -3px 0 rgba(105, 22, 14, 0.82);
+        inset 2px 2px 0 rgba(235, 105, 82, 0.52),
+        inset -2px -2px 0 rgba(105, 22, 14, 0.82);
 }
 
 .modal-header-close::before {
@@ -1162,14 +1263,14 @@ body {
 
 .modal-header-actions .btn-confirm:active {
     box-shadow:
-        inset 3px 3px 0 rgba(33, 74, 6, 0.92),
-        inset -2px -2px 0 rgba(121, 184, 50, 0.32);
+        inset 2px 2px 0 rgba(33, 74, 6, 0.92),
+        inset -1px -1px 0 rgba(121, 184, 50, 0.32);
 }
 
 .modal-header-close:active {
     box-shadow:
-        inset 3px 3px 0 rgba(105, 22, 14, 0.82),
-        inset -2px -2px 0 rgba(235, 105, 82, 0.3);
+        inset 2px 2px 0 rgba(105, 22, 14, 0.82),
+        inset -1px -1px 0 rgba(235, 105, 82, 0.3);
 }
 
 .modal-inline-actions {
@@ -1341,8 +1442,9 @@ body {
 }
 
 .wave-editor-slot.active {
+    border-width: 2px;
     border-color: rgb(243, 194, 74);
-    box-shadow: inset 0 0 0 2px rgb(83, 58, 40), 0 0 0 2px rgb(243, 194, 74);
+    box-shadow: inset 0 0 0 1px rgb(83, 58, 40), 0 0 0 1px rgb(243, 194, 74);
 }
 
 .wave-editor-slot img {
@@ -1436,7 +1538,7 @@ body {
     width: 46px;
     height: 46px;
     padding: 0;
-    border: 3px solid rgb(67, 51, 38);
+    border: 2px solid rgb(67, 51, 38);
     border-radius: 0;
     background: rgb(119, 80, 54);
     color: white;
@@ -2085,6 +2187,74 @@ body {
     overflow: hidden;
 }
 
+#wave-container .tool-count,
+#wave-container .unit-count,
+.defense-modal-fix .unit-count {
+    height: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 1px;
+    background-color: rgba(248, 238, 211, 0.8);
+    color: #17110d;
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1;
+}
+
+#wave-container .tool-slot,
+#wave-container .unit-slot {
+    background: linear-gradient(135deg, rgb(255, 247, 222), rgb(246, 232, 199));
+    border-color: rgb(67, 51, 38);
+    font-family: "Arial Black", Arial, sans-serif;
+    font-size: 29px;
+    font-weight: 900;
+    line-height: 1;
+    box-shadow:
+        inset 1px 1px 0 rgba(255, 255, 255, 0.58),
+        inset -1px -1px 0 rgba(150, 105, 70, 0.28),
+        1px 1px 0 rgba(67, 51, 38, 0.36);
+}
+
+#wave-container .tool-icon {
+    width: 63%;
+}
+
+#wave-container .unit-icon {
+    width: 23px;
+}
+
+#wave-container .empty-wave-slot,
+.defense-modal-fix .empty-wave-slot {
+    position: relative;
+    font-size: 0;
+}
+
+#wave-container .empty-wave-slot::before,
+#wave-container .empty-wave-slot::after,
+.defense-modal-fix .empty-wave-slot::before,
+.defense-modal-fix .empty-wave-slot::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    background-color: rgb(67, 51, 38);
+    transform: translate(-50%, -50%);
+}
+
+#wave-container .empty-wave-slot::before,
+.defense-modal-fix .empty-wave-slot::before {
+    width: 21px;
+    height: 7px;
+}
+
+#wave-container .empty-wave-slot::after,
+.defense-modal-fix .empty-wave-slot::after {
+    width: 7px;
+    height: 21px;
+}
+
 .unit-loss {
     margin-top: 2px;
     text-align: center;
@@ -2324,6 +2494,48 @@ input[type="number"] {
     color: black;
 }
 
+.defense-side-bar {
+    display: flex;
+    min-height: 34px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 3px 8px;
+    border-top: 2px solid rgb(67, 51, 38);
+    border-bottom: 2px solid rgb(67, 51, 38);
+    background-color: rgb(145, 98, 65);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.defense-side-buttons {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.defense-side-buttons .flanks-button-defense {
+    box-sizing: border-box;
+    flex: 0 0 26px;
+    width: 26px;
+    height: 26px;
+    margin: 0;
+    padding: 0;
+    border: 2px solid rgb(67, 51, 38);
+}
+
+.defense-side-buttons .flanks-button-defense:hover,
+.defense-side-buttons .flanks-button-defense:focus,
+.defense-side-buttons .flanks-button-defense:active {
+    margin: 0;
+    transform: none;
+}
+
+.defense-side-buttons .flanks-button-defense img {
+    width: auto;
+    height: 16px;
+}
+
 #toolBonuses {
     font-size: 12px;
 }
@@ -2462,6 +2674,10 @@ input[type="number"] {
 .card-header.collapsed img {
     opacity: 0;
     visibility: hidden;
+}
+
+.card-header.collapsed .right-content {
+    display: none;
 }
 
 .card-header .effect-icon {
@@ -2605,14 +2821,14 @@ input[type="number"] {
     gap: 5px;
     margin: 0;
     padding: 4px 6px;
-    border: 3px solid rgb(67, 51, 38) !important;
+    border: 2px solid rgb(67, 51, 38) !important;
     border-radius: 0;
     background: rgb(119, 80, 54);
     color: white;
     font-weight: 700;
     box-shadow:
-        inset 3px 3px 0 rgba(184, 211, 207, 0.48),
-        inset -3px -3px 0 rgba(37, 61, 61, 0.78);
+        inset 2px 2px 0 rgba(184, 211, 207, 0.48),
+        inset -2px -2px 0 rgba(37, 61, 61, 0.78);
     transition: filter 80ms ease, border-color 80ms ease;
 }
 
@@ -2630,8 +2846,8 @@ input[type="number"] {
 .presets-footer .btn-apply-all {
     background: #3f760b;
     box-shadow:
-        inset 3px 3px 0 rgba(121, 184, 50, 0.58),
-        inset -3px -3px 0 rgba(33, 74, 6, 0.92);
+        inset 2px 2px 0 rgba(121, 184, 50, 0.58),
+        inset -2px -2px 0 rgba(33, 74, 6, 0.92);
 }
 
 .presets-footer .btn-save {
@@ -2647,8 +2863,8 @@ input[type="number"] {
     background: #3f760b !important;
     color: white;
     box-shadow:
-        inset 3px 3px 0 rgba(33, 74, 6, 0.92),
-        inset -2px -2px 0 rgba(121, 184, 50, 0.32);
+        inset 2px 2px 0 rgba(33, 74, 6, 0.92),
+        inset -1px -1px 0 rgba(121, 184, 50, 0.32);
 }
 
 .presets-footer .btn-save:active,
@@ -2656,8 +2872,8 @@ input[type="number"] {
     background: rgb(88, 117, 114) !important;
     color: white;
     box-shadow:
-        inset 3px 3px 0 rgba(37, 61, 61, 0.78),
-        inset -2px -2px 0 rgba(184, 211, 207, 0.28);
+        inset 2px 2px 0 rgba(37, 61, 61, 0.78),
+        inset -1px -1px 0 rgba(184, 211, 207, 0.28);
 }
 
 .presets-footer .btn span {
@@ -2730,11 +2946,11 @@ input[type="number"] {
   color: #fff;
   font-weight: 900;
   background: rgb(88, 117, 114);
-  border: 3px solid rgb(67, 51, 38);
+  border: 2px solid rgb(67, 51, 38);
   border-radius: 0;
   box-shadow:
-    inset 3px 3px 0 rgba(184, 211, 207, 0.48),
-    inset -3px -3px 0 rgba(37, 61, 61, 0.78);
+    inset 2px 2px 0 rgba(184, 211, 207, 0.48),
+    inset -2px -2px 0 rgba(37, 61, 61, 0.78);
 }
 
 .catalog-action:hover,
@@ -2748,8 +2964,8 @@ input[type="number"] {
 .catalog-action:active,
 .catalog-remove:active {
   box-shadow:
-    inset 3px 3px 0 rgba(37, 61, 61, 0.78),
-    inset -2px -2px 0 rgba(184, 211, 207, 0.28);
+    inset 2px 2px 0 rgba(37, 61, 61, 0.78),
+    inset -1px -1px 0 rgba(184, 211, 207, 0.28);
 }
 
 .catalog-level-control {

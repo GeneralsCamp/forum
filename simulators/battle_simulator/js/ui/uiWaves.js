@@ -19,7 +19,7 @@ export function generateWaves(side, numberOfWaves) {
   const waveContainer = document.getElementById('wave-container');
   waveContainer.innerHTML = '';
 
-  createSupportWaveCard();
+  createSupportWaveCard(() => generateWaves(side, numberOfWaves));
 
   const maxUnits = variables.attackBasics.maxUnits[side];
   const maxTools = variables.attackBasics.maxTools[side];
@@ -115,6 +115,12 @@ export function generateWaves(side, numberOfWaves) {
                   </span>
               </div>
           </button>
+          <button type="button" class="wave-clear-button" aria-label="Clear wave">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="8"></circle>
+                  <path d="M6.5 17.5L17.5 6.5"></path>
+              </svg>
+          </button>
           <span class="arrow" aria-hidden="true" style="transform: ${variables.openWaves[i] ? 'rotate(90deg)' : 'rotate(0deg)'};"></span>
       </h6>
       `;
@@ -131,20 +137,20 @@ export function generateWaves(side, numberOfWaves) {
     <div class="card-body">
         <div class="row d-flex align-items-stretch wave-body-columns">
             <div class="col">
-                <img src="../../img_base/battle_simulator/troops-icon.webp" alt="Units" style="width: 20px; height: 20px; vertical-align: middle;" />
+                <img src="../../img_base/battle_simulator/troops-icon.webp" alt="Units" style="width: 15px; height: 15px; vertical-align: middle;" />
                 <span class="units" id="units-${side}-${i}">Units ${wave.slots.reduce((acc, slot) => acc + slot.count, 0)} / ${maxUnits}</span>
                 <div class="d-flex mt-1">
-                    ${wave.slots.map(slot => `<div class="unit-slot" id="${slot.id}">${slot.count > 0 ? createUnitIcon(slot) : '+'}</div>`).join('')}
+                    ${wave.slots.map(slot => `<div class="unit-slot${slot.count > 0 ? '' : ' empty-wave-slot'}" id="${slot.id}">${slot.count > 0 ? createUnitIcon(slot) : '+'}</div>`).join('')}
                 </div>
                 <div class="bonus-summary mt-2" id="unit-bonuses-${side}-${i}">
                     ${summarizeUnitBonuses(wave.slots)}
                 </div>
             </div>
             <div class="col">
-                <img src="../../img_base/battle_simulator/tools-icon.webp" alt="Tools" style="width: 20px; height: 20px; vertical-align: middle;" />
+                <img src="../../img_base/battle_simulator/tools-icon.webp" alt="Tools" style="width: 15px; height: 15px; vertical-align: middle;" />
                 <span class="tools" id="tools-${side}-${i}">Tools ${wave.tools.reduce((acc, tool) => acc + tool.count, 0)} / ${maxTools}</span>
                 <div class="d-flex mt-1">
-                    ${wave.tools.map(tool => `<div class="tool-slot" id="${tool.id}">${tool.count > 0 ? createToolIcon(tool) : '+'}</div>`).join('')}
+                    ${wave.tools.map(tool => `<div class="tool-slot${tool.count > 0 ? '' : ' empty-wave-slot'}" id="${tool.id}">${tool.count > 0 ? createToolIcon(tool) : '+'}</div>`).join('')}
                 </div>
                 <div class="bonus-summary mt-2" id="tool-bonuses-${side}-${i}">
                     ${summarizeToolBonuses(wave.tools)}
@@ -160,7 +166,24 @@ export function generateWaves(side, numberOfWaves) {
     waveContainer.appendChild(card);
 
     const button = cardHeader.querySelector('button');
+    const clearButton = cardHeader.querySelector('.wave-clear-button');
     const arrow = cardHeader.querySelector('.arrow');
+
+    clearButton.addEventListener('click', event => {
+      event.preventDefault();
+      event.stopPropagation();
+      wave.slots.forEach(slot => {
+        slot.type = '';
+        slot.count = 0;
+      });
+      wave.tools.forEach(tool => {
+        tool.type = '';
+        tool.count = 0;
+      });
+      variables.totalUnits[side][i - 1] = wave.slots.map(slot => ({ ...slot }));
+      variables.totalTools[side][i - 1] = wave.tools.map(tool => ({ ...tool }));
+      generateWaves(side, numberOfWaves);
+    });
 
     button.addEventListener('click', function () {
       if (this.classList.contains('collapsed')) {
@@ -207,7 +230,7 @@ export function generateWaves(side, numberOfWaves) {
       saveAttackState();
     });
   }
-  createCourtyardAssaultCard();
+  createCourtyardAssaultCard(() => generateWaves(side, numberOfWaves));
   initWaveSwipe();
   saveAttackState();
 }
