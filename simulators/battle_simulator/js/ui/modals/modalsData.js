@@ -325,12 +325,12 @@ export const modalsData = [
     )}
         ${generateInputCard(
       'Beef unit strength', '../../img_base/beefwastage.png', 'beef-unit-strength',
-      'beef-unit-strength-slider', 0, 30, commanderStats.beefStrength,
+      'beef-unit-strength-slider', 0, 55, commanderStats.beefStrength,
       'beef-unit-strength-value'
     )}
         ${generateInputCard(
       'Mead unit strength', '../../img_base/main_page/mead-icon.webp', 'mead-unit-strength',
-      'mead-unit-strength-slider', 0, 30, commanderStats.meadStrength,
+      'mead-unit-strength-slider', 0, 55, commanderStats.meadStrength,
       'mead-unit-strength-value'
     )}
         ${generateInputCard(
