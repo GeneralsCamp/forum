@@ -59,6 +59,7 @@ function localizedName(entity, lang) {
 }
 
 function unitStrengthGroup(entity) {
+  if (numberValue(entity, ["beefSupply"]) > 0) return "beef";
   if (numberValue(entity, ["meadSupply"]) > 0) return "mead";
 
   const ingameFamily = normalizeName(getProp(entity, ["comment1"]));

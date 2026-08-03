@@ -33,24 +33,34 @@ export let commanderStats = {
   wallReduction: 0,
   moatReduction: 0,
   gateReduction: 0,
+  beefStrength: 0,
   meadStrength: 0,
   horrorStrength: 0,
   holMelee: 0,
   holRanged: 0,
   holUniversal: 0,
   frontStrength: 0,
-  flanksStrength: 0
+  flanksStrength: 0,
+  finalAssaultRangedUnits: 0,
+  finalAssaultShieldMaidens: 0
 };
 
 export let castellanStats = {
   melee: 0,
   ranged: 0,
+  universal: 0,
   courtyard: 0,
   wallUnitLimit: 100,
   cyUnitLimit: 100,
   wallProtection: 0,
   moatProtection: 0,
   gateProtection: 0,
+  frontStrength: 0,
+  flanksStrength: 0,
+  holMelee: 0,
+  holRanged: 0,
+  holUniversal: 0,
+  courtyardValkyrieSupport: 0,
 };
 
 export let attackGeneralAbilities = {
@@ -115,7 +125,7 @@ export let attackBasics = {
 };
 
 export const BASE_WAVE_MIN = 4;
-export const BASE_WAVE_MAX = 25;
+export const BASE_WAVE_MAX = 50;
 export const ADDITIONAL_WAVE_MAX = 3;
 
 function sumSelectedEffects(selectedTools, effectsByType) {

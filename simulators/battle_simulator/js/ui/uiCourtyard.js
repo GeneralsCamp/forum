@@ -156,11 +156,13 @@ export function summarizeCourtyardUnitBonuses() {
     let ranged = slot.count * unitStat.rangedCombatStrength;
     let melee = slot.count * unitStat.meleeCombatStrength;
 
-    const groupStrength = unitStat.strengthGroup === 'mead'
-      ? variables.commanderStats.meadStrength
-      : unitStat.strengthGroup === 'horror'
-        ? variables.commanderStats.horrorStrength
-        : 0;
+    const groupStrength = unitStat.strengthGroup === 'beef'
+      ? variables.commanderStats.beefStrength
+      : unitStat.strengthGroup === 'mead'
+        ? variables.commanderStats.meadStrength
+        : unitStat.strengthGroup === 'horror'
+          ? variables.commanderStats.horrorStrength
+          : 0;
     if (unitStat.rangedCombatStrength > unitStat.meleeCombatStrength) {
       ranged += slot.count * (groupStrength || 0);
     } else {

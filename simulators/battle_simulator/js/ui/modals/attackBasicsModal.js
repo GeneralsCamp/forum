@@ -8,9 +8,9 @@ export function openBasicsModal() {
   const modal = new bootstrap.Modal(modalEl);
   const sliders = [
     { sliderId: 'waves-slider', valueId: 'waves-value', value: attackBasics.maxWaves, min: BASE_WAVE_MIN, max: BASE_WAVE_MAX },
-    { sliderId: 'front-unit-slider', valueId: 'front-unit-value', value: attackBasics.maxUnits.front, min: 192, max: 1600 },
-    { sliderId: 'flank-unit-slider', valueId: 'flank-unit-value', value: attackBasics.maxUnits.left, min: 64, max: 800 },
-    { sliderId: 'courtyard-unit-slider', valueId: 'courtyard-unit-value', value: attackBasics.maxUnitsCY, min: 2089, max: 6000 },
+    { sliderId: 'front-unit-slider', valueId: 'front-unit-value', value: attackBasics.maxUnits.front, min: 192, max: 10000 },
+    { sliderId: 'flank-unit-slider', valueId: 'flank-unit-value', value: attackBasics.maxUnits.left, min: 64, max: 5000 },
+    { sliderId: 'courtyard-unit-slider', valueId: 'courtyard-unit-value', value: attackBasics.maxUnitsCY, min: 2089, max: 10000 },
     { sliderId: 'flank-tool-slider', valueId: 'flank-tool-value', value: attackBasics.maxTools.left, min: 40, max: 50 }
   ];
 

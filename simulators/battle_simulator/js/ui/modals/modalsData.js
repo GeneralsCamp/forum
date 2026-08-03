@@ -248,18 +248,18 @@ export const modalsData = [
     )}
         ${generateInputCard(
       'Front unit limit', '../../img_base/battle_simulator/attack-modal2.png', 'front-unit-limit',
-      'front-unit-slider', 192, 1600, attackBasics.maxUnits.front,
-      'front-unit-value', 192, 1600, attackBasics.maxUnits.front
+      'front-unit-slider', 192, 10000, attackBasics.maxUnits.front,
+      'front-unit-value', false
     )}
         ${generateInputCard(
       'Flank unit limit', '../../img_base/battle_simulator/attack-modal3.png', 'flank-unit-limit',
-      'flank-unit-slider', 64, 800, attackBasics.maxUnits.left,
-      'flank-unit-value', 64, 800, attackBasics.maxUnits.left
+      'flank-unit-slider', 64, 5000, attackBasics.maxUnits.left,
+      'flank-unit-value', false
     )}
         ${generateInputCard(
       'Courtyard unit limit', '../../img_base/battle_simulator/attack-modal4.png', 'courtyard-unit-limit',
-      'courtyard-unit-slider', 2089, 6000, attackBasics.maxUnitsCY,
-      'courtyard-unit-value', 2089, 6000, attackBasics.maxUnitsCY
+      'courtyard-unit-slider', 2089, 10000, attackBasics.maxUnitsCY,
+      'courtyard-unit-value', false
     )}
         ${generateInputCard(
       'Flank tool limit', '../../img_base/battle_simulator/attack-modal5.png', 'flank-tool-limit',
@@ -280,73 +280,88 @@ export const modalsData = [
     body: `
         ${generateInputCard(
       'Melee strength (%)', '../../img_base/battle_simulator/melee-icon.png', 'melee-strength',
-      'melee-strength-slider', 0, 1500, commanderStats.meleeStrength,
-      'melee-strength-value', 0, 1500, commanderStats.meleeStrength
+      'melee-strength-slider', 0, 5000, commanderStats.melee,
+      'melee-strength-value', false
     )}
         ${generateInputCard(
       'Ranged strength (%)', '../../img_base/battle_simulator/ranged-icon.png', 'ranged-strength',
-      'ranged-strength-slider', 0, 1500, commanderStats.rangedStrength,
-      'ranged-strength-value', 0, 1500, commanderStats.rangedStrength
+      'ranged-strength-slider', 0, 5000, commanderStats.ranged,
+      'ranged-strength-value', false
     )}
         ${generateInputCard(
       'Combat strength (%)', '../../img_base/battle_simulator/universal-icon.png', 'universal-strength',
-      'universal-strength-slider', 0, 100, commanderStats.combatStrength,
-      'universal-strength-value', 0, 100, commanderStats.combatStrength
-    )}
-        ${generateInputCard(
-      'Courtyard strength (%)', '../../img_base/battle_simulator/cy-icon.png', 'courtyard-strength',
-      'courtyard-strength-slider', 0, 1500, commanderStats.courtyardStrength,
-      'courtyard-strength-value', 0, 1500, commanderStats.courtyardStrength
-    )}
-        ${generateInputCard(
-      'Wall reduction (%)', '../../img_base/battle_simulator/commander-modal1.png', 'wall-reduction',
-      'wall-reduction-slider', 0, 500, commanderStats.wallReduction,
-      'wall-reduction-value', 0, 500, commanderStats.wallReduction
-    )}
-        ${generateInputCard(
-      'Moat reduction (%)', '../../img_base/battle_simulator/commander-modal2.png', 'moat-reduction',
-      'moat-reduction-slider', 0, 300, commanderStats.moatReduction,
-      'moat-reduction-value', 0, 300, commanderStats.moatReduction
-    )}
-        ${generateInputCard(
-      'Gate reduction (%)', '../../img_base/battle_simulator/commander-modal3.png', 'gate-reduction',
-      'gate-reduction-slider', 0, 500, commanderStats.gateReduction,
-      'gate-reduction-value', 0, 500, commanderStats.gateReduction
-    )}
-        ${generateInputCard(
-      'Mead unit strength', '../../img_base/battle_simulator/commander-modal4.png', 'mead-unit-strength',
-      'mead-unit-strength-slider', 0, 20, commanderStats.meadUnitStrength,
-      'mead-unit-strength-value', 0, 30, commanderStats.meadUnitStrength
-    )}
-        ${generateInputCard(
-      'Horror unit strength', '../../img_base/battle_simulator/commander-modal5.png', 'horror-unit-strength',
-      'horror-unit-strength-slider', 0, 40, commanderStats.horrorUnitStrength,
-      'horror-unit-strength-value', 0, 40, commanderStats.horrorUnitStrength
-    )}
-        ${generateInputCard(
-      'HoL melee strength (%)', '../../img_base/battle_simulator/melee-icon.png', 'hol-melee-strength',
-      'hol-melee-strength-slider', 0, 13, commanderStats.holMeleeStrength,
-      'hol-melee-strength-value', 0, 13, commanderStats.holMeleeStrength
-    )}
-        ${generateInputCard(
-      'HoL ranged strength (%)', '../../img_base/battle_simulator/ranged-icon.png', 'hol-ranged-strength',
-      'hol-ranged-strength-slider', 0, 13, commanderStats.holRangedStrength,
-      'hol-ranged-strength-value', 0, 13, commanderStats.holRangedStrength
-    )}
-        ${generateInputCard(
-      'HoL combat strength (%)', '../../img_base/battle_simulator/universal-icon.png', 'hol-universal-strength',
-      'hol-universal-strength-slider', 0, 12, commanderStats.holCombatStrength,
-      'hol-universal-strength-value', 0, 12, commanderStats.holCombatStrength
+      'universal-strength-slider', 0, 1000, commanderStats.universal,
+      'universal-strength-value', false
     )}
         ${generateInputCard(
       'Strength in front (%)', '../../img_base/battle_simulator/front-strength.png', 'front-strength',
-      'front-strength-slider', 0, 200, commanderStats.strengthInFront,
-      'front-strength-value', 0, 200, commanderStats.strengthInFront
+      'front-strength-slider', 0, 5000, commanderStats.frontStrength,
+      'front-strength-value', false
     )}
         ${generateInputCard(
       'Strength in flanks (%)', '../../img_base/battle_simulator/flanks-strength.png', 'flanks-strength',
-      'flanks-strength-slider', 0, 200, commanderStats.strengthInFlanks,
-      'flanks-strength-value', 0, 200, commanderStats.strengthInFlanks
+      'flanks-strength-slider', 0, 5000, commanderStats.flanksStrength,
+      'flanks-strength-value', false
+    )}
+        ${generateInputCard(
+      'Courtyard strength (%)', '../../img_base/battle_simulator/cy-icon.png', 'courtyard-strength',
+      'courtyard-strength-slider', 0, 5000, commanderStats.courtyard,
+      'courtyard-strength-value', false
+    )}
+        ${generateInputCard(
+      'Wall reduction (%)', '../../img_base/battle_simulator/commander-modal1.png', 'wall-reduction',
+      'wall-reduction-slider', 0, 2500, commanderStats.wallReduction,
+      'wall-reduction-value', false
+    )}
+        ${generateInputCard(
+      'Moat reduction (%)', '../../img_base/battle_simulator/commander-modal2.png', 'moat-reduction',
+      'moat-reduction-slider', 0, 2500, commanderStats.moatReduction,
+      'moat-reduction-value', false
+    )}
+        ${generateInputCard(
+      'Gate reduction (%)', '../../img_base/battle_simulator/commander-modal3.png', 'gate-reduction',
+      'gate-reduction-slider', 0, 2500, commanderStats.gateReduction,
+      'gate-reduction-value', false
+    )}
+        ${generateInputCard(
+      'Beef unit strength', '../../img_base/beefwastage.png', 'beef-unit-strength',
+      'beef-unit-strength-slider', 0, 30, commanderStats.beefStrength,
+      'beef-unit-strength-value'
+    )}
+        ${generateInputCard(
+      'Mead unit strength', '../../img_base/main_page/mead-icon.webp', 'mead-unit-strength',
+      'mead-unit-strength-slider', 0, 30, commanderStats.meadStrength,
+      'mead-unit-strength-value'
+    )}
+        ${generateInputCard(
+      'Horror unit strength', '../../img_base/battle_simulator/commander-modal5.png', 'horror-unit-strength',
+      'horror-unit-strength-slider', 0, 40, commanderStats.horrorStrength,
+      'horror-unit-strength-value'
+    )}
+        ${generateInputCard(
+      'HoL melee strength (%)', '../../img_base/battle_simulator/melee-icon.png', 'hol-melee-strength',
+      'hol-melee-strength-slider', 0, 13, commanderStats.holMelee,
+      'hol-melee-strength-value'
+    )}
+        ${generateInputCard(
+      'HoL ranged strength (%)', '../../img_base/battle_simulator/ranged-icon.png', 'hol-ranged-strength',
+      'hol-ranged-strength-slider', 0, 13, commanderStats.holRanged,
+      'hol-ranged-strength-value'
+    )}
+        ${generateInputCard(
+      'HoL combat strength (%)', '../../img_base/battle_simulator/universal-icon.png', 'hol-universal-strength',
+      'hol-universal-strength-slider', 0, 12, commanderStats.holUniversal,
+      'hol-universal-strength-value'
+    )}
+        ${generateInputCard(
+      'Valkyrie ranger support', '../../img_base/battle_simulator/unknown.png', 'final-assault-ranged-units',
+      'final-assault-ranged-units-slider', 0, 1500, commanderStats.finalAssaultRangedUnits,
+      'final-assault-ranged-units-value'
+    )}
+        ${generateInputCard(
+      'Shield-maiden support', '../../img_base/battle_simulator/unknown.png', 'final-assault-shield-maidens',
+      'final-assault-shield-maidens-slider', 0, 1050, commanderStats.finalAssaultShieldMaidens,
+      'final-assault-shield-maidens-value'
     )}
     `,
     footer: `
@@ -362,43 +377,78 @@ export const modalsData = [
     body: `
       ${generateInputCard(
       'Melee strength (%)', '../../img_base/battle_simulator/castellan-modal1.png', 'melee-strength',
-      'defense-melee-strength-slider', 0, 500, castellanStats.melee,
-      'defense-melee-strength-value', 0, 500, castellanStats.melee
+      'defense-melee-strength-slider', 0, 10000, castellanStats.melee,
+      'defense-melee-strength-value', false
     )}
       ${generateInputCard(
       'Ranged strength (%)', '../../img_base/battle_simulator/castellan-modal2.png', 'ranged-strength',
-      'defense-ranged-strength-slider', 0, 500, castellanStats.ranged,
-      'defense-ranged-strength-value', 0, 500, castellanStats.ranged
+      'defense-ranged-strength-slider', 0, 10000, castellanStats.ranged,
+      'defense-ranged-strength-value', false
+    )}
+      ${generateInputCard(
+      'Combat strength (%)', '../../img_base/battle_simulator/combatStrengthDefense-icon.png', 'defense-universal-strength',
+      'defense-universal-strength-slider', 0, 500, castellanStats.universal,
+      'defense-universal-strength-value', false
+    )}
+      ${generateInputCard(
+      'Strength in front (%)', '../../img_base/battle_simulator/front-strength.png', 'defense-front-strength',
+      'defense-front-strength-slider', 0, 20000, castellanStats.frontStrength,
+      'defense-front-strength-value', false
+    )}
+      ${generateInputCard(
+      'Strength in flanks (%)', '../../img_base/battle_simulator/flanks-strength.png', 'defense-flanks-strength',
+      'defense-flanks-strength-slider', 0, 20000, castellanStats.flanksStrength,
+      'defense-flanks-strength-value', false
     )}
       ${generateInputCard(
       'Courtyard strength (%)', '../../img_base/battle_simulator/cy-icon.png', 'courtyard-strength',
-      'defense-courtyard-strength-slider', 0, 600, castellanStats.courtyardStrength,
-      'defense-courtyard-strength-value', 0, 600, castellanStats.courtyardStrength
+      'defense-courtyard-strength-slider', 0, 10000, castellanStats.courtyard,
+      'defense-courtyard-strength-value', false
     )}
       ${generateInputCard(
       'Wall unit limit', '../../img_base/battle_simulator/castellan-modal3.png', 'wall-unit-limit',
       'wall-unit-limit-slider', 100, 50000, castellanStats.wallUnitLimit,
-      'wall-unit-limit-value', 100, 50000, castellanStats.wallUnitLimit
+      'wall-unit-limit-value', false
     )}
       ${generateInputCard(
       'Courtyard unit limit', '../../img_base/battle_simulator/attack-modal4.png', 'cy-unit-limit',
       'cy-unit-limit-slider', 100, 5000000, castellanStats.cyUnitLimit,
-      'cy-unit-limit-value', 100, 5000000, castellanStats.cyUnitLimit
+      'cy-unit-limit-value', false
     )}
       ${generateInputCard(
       'Wall protection (%)', '../../img_base/battle_simulator/castellan-modal4.png', 'wall-protection',
-      'defense-wall-protection-slider', 0, 500, castellanStats.wallProtection,
-      'defense-wall-protection-value', 0, 500, castellanStats.wallProtection
+      'defense-wall-protection-slider', 0, 20000, castellanStats.wallProtection,
+      'defense-wall-protection-value', false
     )}
       ${generateInputCard(
       'Moat protection (%)', '../../img_base/battle_simulator/castellan-modal5.png', 'moat-protection',
-      'defense-moat-protection-slider', 0, 300, castellanStats.moatProtection,
-      'defense-moat-protection-value', 0, 300, castellanStats.moatProtection
+      'defense-moat-protection-slider', 0, 20000, castellanStats.moatProtection,
+      'defense-moat-protection-value', false
     )}
       ${generateInputCard(
       'Gate protection (%)', '../../img_base/battle_simulator/castellan-modal6.png', 'gate-protection',
-      'defense-gate-protection-slider', 0, 500, castellanStats.gateProtection,
-      'defense-gate-protection-value', 0, 500, castellanStats.gateProtection
+      'defense-gate-protection-slider', 0, 20000, castellanStats.gateProtection,
+      'defense-gate-protection-value', false
+    )}
+      ${generateInputCard(
+      'HoL melee strength (%)', '../../img_base/battle_simulator/castellan-modal1.png', 'defense-hol-melee-strength',
+      'defense-hol-melee-strength-slider', 0, 13, castellanStats.holMelee,
+      'defense-hol-melee-strength-value'
+    )}
+      ${generateInputCard(
+      'HoL ranged strength (%)', '../../img_base/battle_simulator/castellan-modal2.png', 'defense-hol-ranged-strength',
+      'defense-hol-ranged-strength-slider', 0, 13, castellanStats.holRanged,
+      'defense-hol-ranged-strength-value'
+    )}
+      ${generateInputCard(
+      'HoL combat strength (%)', '../../img_base/battle_simulator/combatStrengthDefense-icon.png', 'defense-hol-universal-strength',
+      'defense-hol-universal-strength-slider', 0, 12, castellanStats.holUniversal,
+      'defense-hol-universal-strength-value'
+    )}
+      ${generateInputCard(
+      'Valkyrie sniper support', '../../img_base/battle_simulator/unknown.png', 'courtyard-valkyrie-support',
+      'courtyard-valkyrie-support-slider', 0, 15000, castellanStats.courtyardValkyrieSupport,
+      'courtyard-valkyrie-support-value'
     )}
   `,
     footer: `

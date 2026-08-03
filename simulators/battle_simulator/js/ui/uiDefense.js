@@ -222,8 +222,10 @@ export function loadDefenseTools(side) {
 
 export function displayDefenseBonuses(side) {
   const bonuses = {
-    melee: 100 + castellanStats.melee,
-    ranged: 100 + castellanStats.ranged,
+    melee: 100 + castellanStats.melee + (castellanStats.universal || 0)
+      + (castellanStats.holMelee || 0) + (castellanStats.holUniversal || 0),
+    ranged: 100 + castellanStats.ranged + (castellanStats.universal || 0)
+      + (castellanStats.holRanged || 0) + (castellanStats.holUniversal || 0),
     wall: castellanStats.wallProtection,
     moat: castellanStats.moatProtection,
     gate: castellanStats.gateProtection,
@@ -233,6 +235,14 @@ export function displayDefenseBonuses(side) {
   const courtyardToolTotals = getDefenseCourtyardEffectTotals();
   const combatStrengthBonus = courtyardToolTotals.CombatStrength || 0;
   bonuses.courtyard += courtyardToolTotals.Courtyard || 0;
+
+  if (side === 'front') {
+    bonuses.melee += castellanStats.frontStrength || 0;
+    bonuses.ranged += castellanStats.frontStrength || 0;
+  } else if (side === 'left' || side === 'right') {
+    bonuses.melee += castellanStats.flanksStrength || 0;
+    bonuses.ranged += castellanStats.flanksStrength || 0;
+  }
 
   if (combatStrengthBonus > 0) {
     bonuses.melee += combatStrengthBonus;
@@ -325,8 +335,10 @@ export function calculateTroopDefenseStrength(side) {
   let totalMeleeDefense = 0;
   let totalRangedDefense = 0;
 
-  let totalMeleeBonus = castellanStats.melee;
-  let totalRangedBonus = castellanStats.ranged;
+  let totalMeleeBonus = castellanStats.melee + (castellanStats.universal || 0)
+    + (castellanStats.holMelee || 0) + (castellanStats.holUniversal || 0);
+  let totalRangedBonus = castellanStats.ranged + (castellanStats.universal || 0)
+    + (castellanStats.holRanged || 0) + (castellanStats.holUniversal || 0);
 
   const courtyardToolTotals = getDefenseCourtyardEffectTotals();
   const combatStrengthBonus = courtyardToolTotals.CombatStrength || 0;
@@ -335,6 +347,12 @@ export function calculateTroopDefenseStrength(side) {
     const courtyardStrength = (castellanStats.courtyard || 0) + (courtyardToolTotals.Courtyard || 0);
     totalMeleeBonus += courtyardStrength;
     totalRangedBonus += courtyardStrength;
+  } else if (side === 'front') {
+    totalMeleeBonus += castellanStats.frontStrength || 0;
+    totalRangedBonus += castellanStats.frontStrength || 0;
+  } else {
+    totalMeleeBonus += castellanStats.flanksStrength || 0;
+    totalRangedBonus += castellanStats.flanksStrength || 0;
   }
 
   ['wallTools', 'moatTools', 'gateTools'].forEach(slotType => {

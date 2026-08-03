@@ -637,8 +637,10 @@ export function getCourtyardEntryMultiplier(enteredWallSides) {
 }
 
 function computeDefenseStrengthBonuses(side, waveIndex, defenseToolScale = 1) {
-  let ranged = 100 + (castellanStats.ranged || 0);
-  let melee = 100 + (castellanStats.melee || 0);
+  let ranged = 100 + (castellanStats.ranged || 0) + (castellanStats.universal || 0)
+    + (castellanStats.holRanged || 0) + (castellanStats.holUniversal || 0);
+  let melee = 100 + (castellanStats.melee || 0) + (castellanStats.universal || 0)
+    + (castellanStats.holMelee || 0) + (castellanStats.holUniversal || 0);
   const courtyardToolTotals = getDefenseCourtyardEffectTotals();
   const combatStrengthBonus = courtyardToolTotals.CombatStrength || 0;
 
@@ -646,6 +648,12 @@ function computeDefenseStrengthBonuses(side, waveIndex, defenseToolScale = 1) {
     const courtyardStrength = (castellanStats.courtyard || 0) + (courtyardToolTotals.Courtyard || 0);
     ranged += courtyardStrength;
     melee += courtyardStrength;
+  } else if (side === 'front') {
+    ranged += castellanStats.frontStrength || 0;
+    melee += castellanStats.frontStrength || 0;
+  } else {
+    ranged += castellanStats.flanksStrength || 0;
+    melee += castellanStats.flanksStrength || 0;
   }
 
   ['wallTools', 'moatTools', 'gateTools'].forEach(slotType => {
@@ -759,11 +767,13 @@ function computeAttackTotals(attackUnits = []) {
     let ranged = unit.count * unit.rangedCombatStrength;
     let melee = unit.count * unit.meleeCombatStrength;
 
-    const groupStrength = unit.strengthGroup === 'mead'
-      ? commanderStats.meadStrength
-      : unit.strengthGroup === 'horror'
-        ? commanderStats.horrorStrength
-        : 0;
+    const groupStrength = unit.strengthGroup === 'beef'
+      ? commanderStats.beefStrength
+      : unit.strengthGroup === 'mead'
+        ? commanderStats.meadStrength
+        : unit.strengthGroup === 'horror'
+          ? commanderStats.horrorStrength
+          : 0;
     if (unit.rangedCombatStrength > unit.meleeCombatStrength) {
       ranged += unit.count * (groupStrength || 0);
     } else {
@@ -1804,6 +1814,16 @@ function mapToUnits(map, isDefense) {
   return result;
 }
 
+function findRuntimeUnitType(catalogWodID, isDefense, level = null) {
+  const collection = isDefense ? defense_units : units;
+  const unit = collection.find(candidate =>
+    String(candidate.catalogWodID) === String(catalogWodID)
+    && (level === null || Number(candidate.level) === Number(level))
+  );
+  if (!unit) return '';
+  return `${isDefense ? 'DefenseUnit' : 'Unit'}${unit.id.replace(/\D/g, '')}`;
+}
+
 function mapToSlots(map, prefix) {
   let i = 0;
   const slots = [];
@@ -1861,10 +1881,31 @@ function computeBattleResults(side) {
   const combinedAttackers = mergeUnitMaps(cyAttackersMap, wallAttackerSurvivors);
   const combinedDefenders = mergeUnitMaps(cyDefendersMap, wallDefenderSurvivors);
 
+  const attackersEnteredCY = Array.from(combinedAttackers.values()).reduce((sum, count) => sum + count, 0) > 0;
+  const courtyardBattleStarted = attackersEnteredCY && sumMapValues(combinedDefenders) > 0;
+
+  if (courtyardBattleStarted) {
+    const attackSupportCount = Math.max(0, Math.floor(Number(commanderStats.finalAssaultRangedUnits) || 0));
+    const attackSupportType = findRuntimeUnitType(216, false);
+    if (attackSupportCount > 0 && attackSupportType) {
+      combinedAttackers.set(attackSupportType, (combinedAttackers.get(attackSupportType) || 0) + attackSupportCount);
+    }
+
+    const shieldMaidenCount = Math.max(0, Math.floor(Number(commanderStats.finalAssaultShieldMaidens) || 0));
+    const shieldMaidenType = findRuntimeUnitType(215, false, 10);
+    if (shieldMaidenCount > 0 && shieldMaidenType) {
+      combinedAttackers.set(shieldMaidenType, (combinedAttackers.get(shieldMaidenType) || 0) + shieldMaidenCount);
+    }
+
+    const defenseSupportCount = Math.max(0, Math.floor(Number(castellanStats.courtyardValkyrieSupport) || 0));
+    const defenseSupportType = findRuntimeUnitType(228, true);
+    if (defenseSupportCount > 0 && defenseSupportType) {
+      combinedDefenders.set(defenseSupportType, (combinedDefenders.get(defenseSupportType) || 0) + defenseSupportCount);
+    }
+  }
+
   const defenseUnits = mapToUnits(combinedDefenders, true);
   const attackUnitsForBattle = mapToUnits(combinedAttackers, false);
-  const attackersEnteredCY = Array.from(combinedAttackers.values()).reduce((sum, count) => sum + count, 0) > 0;
-  const courtyardBattleStarted = attackersEnteredCY && sumCounts(defenseUnits) > 0;
 
   let attackTotalMultiplier = getCourtyardEntryMultiplier(enteredWallSides);
 

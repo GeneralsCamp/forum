@@ -53,8 +53,9 @@ export function createModal(id, title, bodyContent, footerButtons) {
   document.body.appendChild(modal);
 }
 
-export function generateInputCard(title, imageSrc, altText, sliderId, min, max, value, valueId) {
+export function generateInputCard(title, imageSrc, altText, sliderId, min, max, value, valueId, showMaximum = true) {
   value = value || 0;
+  const maximumVisible = typeof showMaximum === 'boolean' ? showMaximum : true;
   const percentageValue = /\s*\(%\)\s*$/.test(title);
   const displayTitle = percentageValue ? title.replace(/\s*\(%\)\s*$/, '') : title;
   const valueSuffix = percentageValue ? '%' : '';
@@ -68,7 +69,9 @@ export function generateInputCard(title, imageSrc, altText, sliderId, min, max, 
             <div class="wave-editor-controls">
               <button type="button" class="wave-editor-step modal-slider-minus" data-slider-id="${sliderId}" aria-label="Decrease">&minus;</button>
               <div class="wave-editor-value-wrap">
-                <strong class="wave-editor-value"><span id="${valueId}" class="wave-editor-current-value" data-value-suffix="${valueSuffix}" contenteditable="true" inputmode="numeric" spellcheck="false">${value}</span> / ${max}${valueSuffix}</strong>
+                <strong class="wave-editor-value"><span id="${valueId}" class="wave-editor-current-value" data-value-suffix="${valueSuffix}" contenteditable="true" inputmode="numeric" spellcheck="false">${value}</span>${maximumVisible
+                  ? `<span class="modal-slider-limit"> / ${max}${valueSuffix}</span>`
+                  : `<span class="wave-editor-current-suffix">${valueSuffix}</span>`}</strong>
                 <input type="range" id="${sliderId}" min="${min}" max="${max}" value="${value}" class="wave-editor-range">
               </div>
               <button type="button" class="wave-editor-step modal-slider-plus" data-slider-id="${sliderId}" aria-label="Increase">+</button>

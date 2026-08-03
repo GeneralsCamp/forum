@@ -240,11 +240,13 @@ export function summarizeUnitBonuses(slots) {
     let ranged = slot.count * (unitStat.rangedCombatStrength || 0);
     let melee = slot.count * (unitStat.meleeCombatStrength || 0);
 
-    const groupStrength = unitStat.strengthGroup === 'mead'
-      ? commanderStats.meadStrength
-      : unitStat.strengthGroup === 'horror'
-        ? commanderStats.horrorStrength
-        : 0;
+    const groupStrength = unitStat.strengthGroup === 'beef'
+      ? commanderStats.beefStrength
+      : unitStat.strengthGroup === 'mead'
+        ? commanderStats.meadStrength
+        : unitStat.strengthGroup === 'horror'
+          ? commanderStats.horrorStrength
+          : 0;
     if (unitStat.rangedCombatStrength > unitStat.meleeCombatStrength) {
       ranged += slot.count * (groupStrength || 0);
     } else {
