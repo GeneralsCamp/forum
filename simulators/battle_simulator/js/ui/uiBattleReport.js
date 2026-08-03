@@ -1458,17 +1458,14 @@ function computeWaveBattle(
     : 0;
   const combatRngMultiplier = side === 'cy' ? 1 : currentRngMultiplier;
   const attackerLossMultiplier = 2 - combatRngMultiplier;
-  const rangedKillRatio = Math.min(1, normalRangedKillRatio * attackerLossMultiplier);
-  const meleeKillRatio = Math.min(1, normalMeleeKillRatio * attackerLossMultiplier);
+  let rangedKillRatio = Math.min(1, normalRangedKillRatio * attackerLossMultiplier);
+  let meleeKillRatio = Math.min(1, normalMeleeKillRatio * attackerLossMultiplier);
 
   const attackRangedCount = attackUnits.reduce((acc, u) => acc + (u.type2 === 'ranged' ? u.count : 0), 0);
   const attackMeleeCount = attackUnits.reduce((acc, u) => acc + (u.type2 === 'melee' ? u.count : 0), 0);
 
   const defenderRangedCount = defenseTotals.rangedCount;
   const defenderMeleeCount = defenseTotals.meleeCount;
-
-  const rangedLoss = Math.min(Math.ceil(attackRangedCount * rangedKillRatio), attackRangedCount);
-  const meleeLoss = Math.min(Math.ceil(attackMeleeCount * meleeKillRatio), attackMeleeCount);
 
   const defenderAttackForRatio = hasAttackRanged && !hasAttackMelee
     ? attackRangedForDefenderCasualties
@@ -1485,8 +1482,19 @@ function computeWaveBattle(
     : defenderAttackForRatio < defenderDefenseForRatio
       ? Math.pow(defenderAttackForRatio / defenderDefenseForRatio, 1.5)
       : 1;
-  const defendersKilledRatio = Math.min(1, normalDefendersKilledRatio * combatRngMultiplier);
+  let defendersKilledRatio = Math.min(1, normalDefendersKilledRatio * combatRngMultiplier);
 
+  if (attackerTotalCount > 0 && defenderTotalCount > 0) {
+    if (normalDefendersKilledRatio >= 1) {
+      defendersKilledRatio = 1;
+    } else {
+      rangedKillRatio = hasAttackRanged ? 1 : 0;
+      meleeKillRatio = hasAttackMelee ? 1 : 0;
+    }
+  }
+
+  const rangedLoss = Math.min(Math.ceil(attackRangedCount * rangedKillRatio), attackRangedCount);
+  const meleeLoss = Math.min(Math.ceil(attackMeleeCount * meleeKillRatio), attackMeleeCount);
   const attackerTotalLoss = Math.min(rangedLoss + meleeLoss, attackerTotalCount);
   const defenderTotalLoss = attackerTotalCount <= 0
     ? 0
@@ -2364,19 +2372,18 @@ function reportTools(side, view, battleResults) {
     Boolean(battleResults.waves?.[index]?.hadCombat)
   ));
   const encounteredWaveCount = waveIndexes.filter(index =>
-    sumCounts(
-      battleResults.waves?.[index]?.attackerUnitsAfterPreBattle ||
-      battleResults.waves?.[index]?.attackerUnits ||
-      []
-    ) > 0
+    Boolean(battleResults.waves?.[index]?.hadCombat)
   ).length;
+  const selectedDefenseTools = view !== 'summary' && encounteredWaveCount === 0
+    ? []
+    : aggregateDefenseToolsByWaves(
+        defenseToolsForSide(side),
+        waveIndexes.length,
+        encounteredWaveCount
+      );
   return {
     attack: aggregateTools(selectedAttackTools),
-    defense: aggregateDefenseToolsByWaves(
-      defenseToolsForSide(side),
-      waveIndexes.length,
-      encounteredWaveCount
-    ),
+    defense: selectedDefenseTools,
     courtyardSupport: false
   };
 }
