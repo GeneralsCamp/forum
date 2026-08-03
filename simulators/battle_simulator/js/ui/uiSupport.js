@@ -2,6 +2,7 @@ import * as variables from '../data/variables.js';
 import { saveAttackState } from '../data/attackState.js';
 import { imageUrl } from '../data/imagePaths.js';
 import { switchSide } from './uiWaves.js';
+import { itemLevelBadge, runtimeItem } from './itemLevelBadge.js';
 
 let supportToolEditorState = null;
 
@@ -91,8 +92,9 @@ function renderSupportToolEditor() {
   const slotsElement = document.getElementById('support-tool-editor-slots');
   slotsElement.innerHTML = state.slots.map((slot, index) => {
     const image = slot.type ? imageUrl(variables.supportToolImages?.[slot.type]) : '';
+    const tool = runtimeItem(slot.type, variables.supportTools);
     return `<button type="button" class="wave-editor-slot ${index === state.activeSlot ? 'active' : ''}" data-slot-index="${index}">
-      ${image ? `<img src="${image}" alt=""><span>${slot.count || 0}</span>` : '<b>+</b>'}
+      ${image ? `<img src="${image}" alt="">${itemLevelBadge(tool)}<span>${slot.count || 0}</span>` : '<b>+</b>'}
     </button>`;
   }).join('');
   slotsElement.querySelectorAll('[data-slot-index]').forEach(button => {
@@ -169,11 +171,13 @@ export function initializeSupportTools(supportTools = variables.supportTools) {
   const list = supportToolModalBody.querySelector('#support-tool-editor-list');
 
   supportTools.forEach((tool, index) => {
-    const levelInfo = tool.availableLevels?.length > 1 ? ` (Lv.${tool.level})` : '';
     list.insertAdjacentHTML('beforeend', `
       <div class="wave-editor-row" data-support-tool-index="${index}">
-        <div class="wave-editor-name">${tool.name}${levelInfo}</div>
-        <img src="${imageUrl(tool.image)}" alt="${tool.name}" class="wave-editor-image">
+        <div class="wave-editor-name">${tool.name}</div>
+        <div class="wave-editor-image-wrap">
+          <img src="${imageUrl(tool.image)}" alt="${tool.name}" class="wave-editor-image">
+          ${itemLevelBadge(tool)}
+        </div>
         <div class="wave-editor-main">
           <div class="wave-editor-controls">
             <button type="button" class="wave-editor-step support-tool-minus" aria-label="Decrease">&minus;</button>
@@ -218,7 +222,9 @@ export function createSupportToolIcon(slot) {
   count.classList.add('tool-count');
   count.textContent = slot.count > 0 ? slot.count : '';
 
-  container.append(icon, count);
+  container.append(icon);
+  container.insertAdjacentHTML('beforeend', itemLevelBadge(runtimeItem(slot.type, variables.supportTools)));
+  container.append(count);
   return container.outerHTML;
 }
 

@@ -129,8 +129,8 @@ export function generateWaves(side, numberOfWaves) {
 
     const bodyContent = `
     <div class="card-body">
-        <div class="row d-flex align-items-stretch">
-            <div class="col" style="border-right: 1px solid rgb(180, 140, 100);">
+        <div class="row d-flex align-items-stretch wave-body-columns">
+            <div class="col">
                 <img src="../../img_base/battle_simulator/troops-icon.webp" alt="Units" style="width: 20px; height: 20px; vertical-align: middle;" />
                 <span class="units" id="units-${side}-${i}">Units ${wave.slots.reduce((acc, slot) => acc + slot.count, 0)} / ${maxUnits}</span>
                 <div class="d-flex mt-1">

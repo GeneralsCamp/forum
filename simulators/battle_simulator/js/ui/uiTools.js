@@ -1,6 +1,7 @@
 import * as variables from '../data/variables.js';
 import { imageUrl } from '../data/imagePaths.js';
 import { generateWaves } from './uiWaves.js';
+import { itemLevelBadge, runtimeItem } from './itemLevelBadge.js';
 
 let toolEditorState = null;
 
@@ -41,11 +42,13 @@ export function initializeTools(tools = variables.tools) {
   const list = toolModalBody.querySelector('#tool-editor-list');
 
   tools.forEach((tool, index) => {
-    const levelInfo = tool.availableLevels?.length > 1 ? ` (Lv.${tool.level})` : '';
     list.insertAdjacentHTML('beforeend', `
       <div class="wave-editor-row" data-tool-index="${index}">
-        <div class="wave-editor-name">${tool.name}${levelInfo}</div>
-        <img src="${imageUrl(tool.image)}" alt="${tool.name}" class="wave-editor-image">
+        <div class="wave-editor-name">${tool.name}</div>
+        <div class="wave-editor-image-wrap">
+          <img src="${imageUrl(tool.image)}" alt="${tool.name}" class="wave-editor-image">
+          ${itemLevelBadge(tool)}
+        </div>
         <div class="wave-editor-main">
           <div class="wave-editor-controls">
             <button type="button" class="wave-editor-step tool-minus" aria-label="Decrease">&minus;</button>
@@ -137,8 +140,9 @@ function renderToolEditor() {
   const slotsElement = document.getElementById('tool-editor-slots');
   slotsElement.innerHTML = state.slots.map((slot, index) => {
     const image = slot.type ? imageUrl(variables.toolImages?.[slot.type]) : '';
+    const tool = runtimeItem(slot.type, variables.tools);
     return `<button type="button" class="wave-editor-slot ${index === state.activeSlot ? 'active' : ''}" data-slot-index="${index}">
-      ${image ? `<img src="${image}" alt=""><span>${slot.count || 0}</span>` : '<b>+</b>'}
+      ${image ? `<img src="${image}" alt="">${itemLevelBadge(tool)}<span>${slot.count || 0}</span>` : '<b>+</b>'}
     </button>`;
   }).join('');
   slotsElement.querySelectorAll('[data-slot-index]').forEach(button => {
@@ -183,6 +187,7 @@ export function createToolIcon(slot) {
   countDisplay.textContent = slot.count > 0 ? slot.count : '';
 
   toolIconContainer.appendChild(toolIcon);
+  toolIconContainer.insertAdjacentHTML('beforeend', itemLevelBadge(runtimeItem(slot.type, variables.tools)));
   toolIconContainer.appendChild(countDisplay);
 
   return toolIconContainer.outerHTML;

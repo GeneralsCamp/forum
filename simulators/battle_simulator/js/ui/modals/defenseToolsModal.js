@@ -2,6 +2,7 @@ import { defense_tools, defenseSlots, toolSlotRestrictions } from '../../data/va
 import { imageUrl } from '../../data/imagePaths.js';
 import { createDefenseToolIcon, getToolIcon, displayDefenseBonuses, calculateTroopDefenseStrength } from '../uiDefense.js';
 import { saveDefenseState } from '../../data/defenseState.js';
+import { itemLevelBadge } from '../itemLevelBadge.js';
 
 export function initializeDefenseTools(defense_tools, slotType) {
   const toolModalBody = document.querySelector('#toolModalDefense .modal-body');
@@ -11,7 +12,6 @@ export function initializeDefenseTools(defense_tools, slotType) {
 
   defense_tools.forEach((tool, index) => {
     if (toolSlotRestrictions[slotType].includes(tool.id)) {
-      const levelInfo = tool.availableLevels?.length > 1 ? ` (Lv.${tool.level})` : '';
       const effects = [
         `<span class="wave-editor-effect"><img src="${imageUrl(tool.effectImage1)}" alt="">+${tool.effect1Value}${tool.effect1Value > 149 ? '' : '%'}</span>`
       ];
@@ -21,8 +21,11 @@ export function initializeDefenseTools(defense_tools, slotType) {
 
       list.insertAdjacentHTML('beforeend', `
         <div class="wave-editor-row" data-defense-tool-index="${index}">
-          <div class="wave-editor-name">${tool.name}${levelInfo}</div>
-          <img src="${imageUrl(tool.image)}" alt="${tool.name}" class="wave-editor-image">
+          <div class="wave-editor-name">${tool.name}</div>
+          <div class="wave-editor-image-wrap">
+            <img src="${imageUrl(tool.image)}" alt="${tool.name}" class="wave-editor-image">
+            ${itemLevelBadge(tool)}
+          </div>
           <div class="wave-editor-main">
             <div class="wave-editor-controls">
               <button type="button" class="wave-editor-step defense-tool-minus" aria-label="Decrease">&minus;</button>
@@ -93,22 +96,12 @@ export function openDefenseToolsModal(side, toolType, slotIndex) {
   renderDefenseToolEditor(initialSelectedIndex, unavailableIndexes);
 
   document.getElementById('confirmDefenseTools').onclick = function () {
-    let selectedToolType = '';
-    defense_tools.forEach((tool, index) => {
-      const toolRange = document.getElementById(`defense_tool${index + 1}`);
-      const toolCount = parseInt(toolRange?.value || 0);
-
-      if (toolCount > 0) {
-        if (toolSlotRestrictions[toolType].includes(tool.id)) {
-          selectedToolType = `DefenseTool${tool.id}`;
-        } else {
-          alert(`This tool cannot be placed in a ${toolType} slot.`);
-          toolRange.value = 0;
-          toolRange.disabled = true;
-          selectedToolType = '';
-        }
-      }
-    });
+    const selectedRow = document.querySelector('#toolModalDefense [data-defense-tool-index].selected');
+    const selectedIndex = selectedRow ? Number(selectedRow.dataset.defenseToolIndex) : -1;
+    const selectedTool = selectedIndex >= 0 ? defense_tools[selectedIndex] : null;
+    const selectedToolType = selectedTool && toolSlotRestrictions[toolType].includes(selectedTool.id)
+      ? `DefenseTool${selectedTool.id}`
+      : '';
 
     if (selectedToolType === '') {
       if (toolType === 'cy') {

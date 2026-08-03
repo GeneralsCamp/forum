@@ -1,7 +1,8 @@
-import { defenseSlots, defenseSides, defense_units, toolEffectsDefense, castellanStats, unitImagesDefense, toolImagesDefense, getDefenseCourtyardEffectTotals } from '../data/variables.js';
+import { defenseSlots, defenseSides, defense_units, defense_tools, toolEffectsDefense, castellanStats, unitImagesDefense, toolImagesDefense, getDefenseCourtyardEffectTotals } from '../data/variables.js';
 import { imageUrl } from '../data/imagePaths.js';
 import { openDefenseToolsModal } from './modals/defenseToolsModal.js';
 import { openDefenseUnitsModal } from './modals/defenseUnitsModal.js';
+import { itemLevelBadge, runtimeItem } from './itemLevelBadge.js';
 
 export function createDefenseUnitIcon(slot) {
   const unitIconContainer = document.createElement('div');
@@ -18,6 +19,7 @@ export function createDefenseUnitIcon(slot) {
   countDisplay.textContent = slot.count > 0 ? slot.count : '';
 
   unitIconContainer.appendChild(unitIcon);
+  unitIconContainer.insertAdjacentHTML('beforeend', itemLevelBadge(runtimeItem(slot.type, defense_units)));
   unitIconContainer.appendChild(countDisplay);
 
   return unitIconContainer.outerHTML;
@@ -36,6 +38,7 @@ export function createDefenseToolIcon(slot) {
   toolIcon.alt = slot.type;
 
   toolIconContainer.appendChild(toolIcon);
+  toolIconContainer.insertAdjacentHTML('beforeend', itemLevelBadge(runtimeItem(slot.type, defense_tools)));
   return toolIconContainer.outerHTML;
 }
 

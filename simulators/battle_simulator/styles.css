@@ -155,6 +155,21 @@ body {
     padding: 5px;
 }
 
+.wave-body-columns {
+    position: relative;
+}
+
+.wave-body-columns::after {
+    content: "";
+    position: absolute;
+    top: -5px;
+    bottom: -5px;
+    left: 50%;
+    width: 1px;
+    background-color: rgb(180, 140, 100);
+    pointer-events: none;
+}
+
 .card-body .row .bugfix .row>* {
     padding-left: 0 !important;
     padding-right: 0 !important;
@@ -901,11 +916,19 @@ body {
     cursor: default;
 }
 
-.battle-report .report-item-grid .unit-icon,
-.report-tool-item > img {
+.battle-report .report-item-grid .report-item-icon-wrap {
     width: 52%;
     height: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     padding: 1px;
+}
+
+.battle-report .report-item-grid .report-item-icon-wrap > img {
+    width: 100%;
+    height: 100%;
     object-fit: contain;
 }
 
@@ -1252,7 +1275,7 @@ body {
 .wave-editor-sticky {
     position: sticky;
     top: 0;
-    z-index: 3;
+    z-index: 10;
     padding: 0 8px 5px;
     background: rgb(68, 51, 38);
     border-bottom: 3px solid rgb(119, 80, 54);
@@ -1375,10 +1398,16 @@ body {
     text-align: center;
 }
 
-.wave-editor-image {
+.wave-editor-image-wrap {
     align-self: start;
+    position: relative;
     width: 78px;
     height: 78px;
+}
+
+.wave-editor-image {
+    width: 100%;
+    height: 100%;
     padding: 3px;
     object-fit: contain;
 }
@@ -1489,7 +1518,7 @@ body {
         grid-template-columns: 66px minmax(0, 1fr);
     }
 
-    .wave-editor-image {
+    .wave-editor-image-wrap {
         width: 66px;
         height: 74px;
     }
@@ -1959,9 +1988,65 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
+    overflow: visible;
     width: 100%;
     height: 38px;
+}
+
+.item-level-badge {
+    position: absolute;
+    z-index: 3;
+    top: 1px;
+    left: 1px;
+    right: auto;
+    bottom: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    min-width: 0;
+    height: 18px;
+    padding: 0;
+    border: 2px solid #3275b9;
+    border-radius: 50%;
+    background: #fff;
+    color: #000;
+    font-size: 10px;
+    font-weight: 900;
+    line-height: 1;
+    box-sizing: border-box;
+    pointer-events: none;
+}
+
+.wave-editor-image-wrap .item-level-badge {
+    width: 21px;
+    height: 21px;
+    font-size: 11px;
+}
+
+.wave-editor-slot .item-level-badge {
+    right: auto;
+    bottom: auto;
+    min-width: 0;
+    padding: 0;
+    background: #fff;
+    color: #000;
+}
+
+#wave-container .item-level-badge,
+.defense-modal-fix .item-level-badge {
+    width: 13px;
+    height: 13px;
+    border-width: 1.5px;
+    font-size: 8px;
+}
+
+.battle-report .item-level-badge {
+    top: 0;
+    left: 0;
+    width: 16px;
+    height: 16px;
+    font-size: 9px;
 }
 
 .tool-icon {

@@ -2,6 +2,7 @@ import { defense_units, defenseSlots, castellanStats } from '../../data/variable
 import { imageUrl } from '../../data/imagePaths.js';
 import { calculateTroopDefenseStrength, createDefenseUnitIcon } from '../uiDefense.js';
 import { saveDefenseState } from '../../data/defenseState.js';
+import { itemLevelBadge } from '../itemLevelBadge.js';
 
 export function initializeDefenseUnits(defense_units) {
   const unitModalBody = document.querySelector('#unitModalDefense .modal-body');
@@ -18,12 +19,13 @@ export function initializeDefenseUnits(defense_units) {
       effects.push(`<span class="wave-editor-effect"><img src="../../img_base/battle_simulator/castellan-modal2.png" alt="">+${unit.rangedDefenseStrength}</span>`);
     }
 
-    const levelInfo = unit.availableLevels?.length > 1 ? `(Lv.${unit.level})` : '';
-
     list.insertAdjacentHTML('beforeend', `
       <div class="wave-editor-row" data-defense-unit-index="${index}">
-        <div class="wave-editor-name">${unit.name} ${levelInfo}</div>
-        <img src="${imageUrl(unit.image)}" alt="${unit.name}" class="wave-editor-image">
+        <div class="wave-editor-name">${unit.name}</div>
+        <div class="wave-editor-image-wrap">
+          <img src="${imageUrl(unit.image)}" alt="${unit.name}" class="wave-editor-image">
+          ${itemLevelBadge(unit)}
+        </div>
         <div class="wave-editor-main">
           <div class="wave-editor-controls">
             <button type="button" class="wave-editor-step defense-unit-minus" aria-label="Decrease">&minus;</button>

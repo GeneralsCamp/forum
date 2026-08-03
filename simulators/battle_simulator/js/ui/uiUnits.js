@@ -1,6 +1,7 @@
 import * as variables from '../data/variables.js';
 import { imageUrl } from '../data/imagePaths.js';
 import { switchSide, updateHeaderColor} from './uiWaves.js';
+import { itemLevelBadge, runtimeItem } from './itemLevelBadge.js';
 
 let unitEditorState = null;
 
@@ -35,11 +36,13 @@ export function initializeUnits(units = variables.units) {
   const list = unitModalBody.querySelector('#unit-editor-list');
 
   units.forEach((unit, index) => {
-    const levelInfo = unit.availableLevels?.length > 1 ? `(Lv.${unit.level})` : '';
     list.insertAdjacentHTML('beforeend', `
       <div class="wave-editor-row" data-unit-index="${index}">
-        <div class="wave-editor-name">${unit.name} ${levelInfo}</div>
-        <img src="${imageUrl(unit.image)}" alt="${unit.name}" class="wave-editor-image">
+        <div class="wave-editor-name">${unit.name}</div>
+        <div class="wave-editor-image-wrap">
+          <img src="${imageUrl(unit.image)}" alt="${unit.name}" class="wave-editor-image">
+          ${itemLevelBadge(unit)}
+        </div>
         <div class="wave-editor-main">
           <div class="wave-editor-controls">
             <button type="button" class="wave-editor-step unit-minus" aria-label="Decrease">&minus;</button>
@@ -108,8 +111,9 @@ function renderUnitEditor() {
   slotsElement.classList.toggle('courtyard-grid', state.side === 'CY');
   slotsElement.innerHTML = state.slots.map((slot, index) => {
     const image = slot.type ? imageUrl(variables.unitImages?.[slot.type]) : '';
+    const unit = runtimeItem(slot.type, variables.units);
     return `<button type="button" class="wave-editor-slot ${index === state.activeSlot ? 'active' : ''}" data-slot-index="${index}">
-      ${image ? `<img src="${image}" alt=""><span>${slot.count || 0}</span>` : '<b>+</b>'}
+      ${image ? `<img src="${image}" alt="">${itemLevelBadge(unit)}<span>${slot.count || 0}</span>` : '<b>+</b>'}
     </button>`;
   }).join('');
   slotsElement.querySelectorAll('[data-slot-index]').forEach(button => {
@@ -152,6 +156,7 @@ export function createUnitIcon(slot) {
   countDisplay.textContent = slot.count > 0 ? slot.count : '';
 
   unitIconContainer.appendChild(unitIcon);
+  unitIconContainer.insertAdjacentHTML('beforeend', itemLevelBadge(runtimeItem(slot.type, variables.units)));
   unitIconContainer.appendChild(countDisplay);
 
   return unitIconContainer.outerHTML;

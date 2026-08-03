@@ -25,6 +25,7 @@ import {
 import { initPresetSwipe } from './swipe.js';
 import { imageUrl } from '../data/imagePaths.js';
 import { getGeneralAbilityCatalog, getGeneralLoadout } from '../data/generalAbilityCatalog.js';
+import { itemLevelBadge, runtimeItem } from './itemLevelBadge.js';
 
 const SIDE_KEYS = ['left', 'front', 'right', 'cy'];
 const SIDE_LABELS = {
@@ -507,9 +508,13 @@ function mapFromUnits(units = []) {
 function renderUnitSummaryHTML(unitsSummary, imageMap, isDefense = false) {
   return unitsSummary.map(({ type, count, loss }) => {
     const unitImage = imageMap[type] || 'unknown.png';
+    const item = runtimeItem(type, isDefense ? defense_units : units);
     return `
       <div class="unit-slot report-unit">
-        <img src="${imageUrl(unitImage)}" class="unit-icon" alt="${type}">
+        <span class="report-item-icon-wrap">
+          <img src="${imageUrl(unitImage)}" class="unit-icon" alt="${type}">
+          ${itemLevelBadge(item)}
+        </span>
         <div class="unit-info">
           <div class="unit-count">${formatNumber(count)}</div>
           ${loss > 0 ? `<div class="unit-loss">-${formatNumber(loss)}</div>` : `<div class="unit-loss">-</div>`}
@@ -2036,6 +2041,21 @@ function aggregateTools(toolSlots = []) {
   return [...counts].map(([type, values]) => ({ type, ...values }));
 }
 
+function aggregateDefenseToolsByWaves(toolSlots = [], plannedWaveCount = 0, encounteredWaveCount = 0) {
+  const counts = new Map();
+  toolSlots.forEach(tool => {
+    if (!tool?.type || tool.count <= 0) return;
+    const current = counts.get(tool.type) || { count: 0, consumedCount: 0 };
+    const waveUseCount = consumesWithoutCombat(tool, 'defense')
+      ? plannedWaveCount
+      : encounteredWaveCount;
+    current.count += tool.count * plannedWaveCount;
+    current.consumedCount += tool.count * waveUseCount;
+    counts.set(tool.type, current);
+  });
+  return [...counts].map(([type, values]) => ({ type, ...values }));
+}
+
 function defenseToolsForSide(side) {
   if (side === 'cy') return defenseSlots.cy?.cyTools || [];
   const slots = defenseSlots[side] || {};
@@ -2051,18 +2071,21 @@ function toolDetails(type, owner, courtyardSupport = false) {
   if (courtyardSupport) {
     return {
       name: supportTools[numericIndex]?.name || type,
-      image: supportToolImages[type] || supportTools[numericIndex]?.image
+      image: supportToolImages[type] || supportTools[numericIndex]?.image,
+      level: supportTools[numericIndex]?.level
     };
   }
   if (owner === 'defense') {
     return {
       name: defense_tools[numericIndex]?.name || type,
-      image: toolImagesDefense[type] || defense_tools[numericIndex]?.image
+      image: toolImagesDefense[type] || defense_tools[numericIndex]?.image,
+      level: defense_tools[numericIndex]?.level
     };
   }
   return {
     name: tools[numericIndex]?.name || type,
-    image: toolImages[type] || tools[numericIndex]?.image
+    image: toolImages[type] || tools[numericIndex]?.image,
+    level: tools[numericIndex]?.level
   };
 }
 
@@ -2072,7 +2095,10 @@ function renderToolSummaryHTML(toolSummary, owner, courtyardSupport = false) {
     const details = toolDetails(type, owner, courtyardSupport);
     return `
       <div class="report-item report-tool-item" title="${escapeHtml(details.name)}">
-        <img src="${imageUrl(details.image)}" alt="${escapeHtml(details.name)}">
+        <span class="report-item-icon-wrap">
+          <img src="${imageUrl(details.image)}" alt="${escapeHtml(details.name)}">
+          ${itemLevelBadge(details)}
+        </span>
         <span class="report-item-values">
           <strong>${formatNumber(count)}</strong>
           <small>${consumedCount > 0 ? `-${formatNumber(consumedCount)}` : '-'}</small>
@@ -2328,10 +2354,20 @@ function reportTools(side, view, battleResults) {
     'attack',
     Boolean(battleResults.waves?.[index]?.hadCombat)
   ));
-  const defenseHadBattle = waveIndexes.some(index => battleResults.waves?.[index]?.hadCombat);
+  const encounteredWaveCount = waveIndexes.filter(index =>
+    sumCounts(
+      battleResults.waves?.[index]?.attackerUnitsAfterPreBattle ||
+      battleResults.waves?.[index]?.attackerUnits ||
+      []
+    ) > 0
+  ).length;
   return {
     attack: aggregateTools(selectedAttackTools),
-    defense: aggregateTools(toolsWithConsumption(defenseToolsForSide(side), 'defense', defenseHadBattle)),
+    defense: aggregateDefenseToolsByWaves(
+      defenseToolsForSide(side),
+      waveIndexes.length,
+      encounteredWaveCount
+    ),
     courtyardSupport: false
   };
 }
