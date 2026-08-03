@@ -1460,11 +1460,18 @@ function computeWaveBattle(
     ? defenseMeleeForAttackerCasualties * (hasAttackRanged ? attackMeleeShare : 1)
     : 0;
 
+  const casualtyExponent = 1.5;
+  const courtyardCasualtyFactor = side === 'cy' ? 1.235 : 1;
+
   const normalRangedKillRatio = hasAttackRanged
-    ? (totalAttackRanged > scaledDefenseRanged ? Math.pow(scaledDefenseRanged / totalAttackRanged, 1.5) : 1)
+    ? (totalAttackRanged > scaledDefenseRanged
+      ? Math.min(1, Math.pow(scaledDefenseRanged / totalAttackRanged, casualtyExponent) * courtyardCasualtyFactor)
+      : 1)
     : 0;
   const normalMeleeKillRatio = hasAttackMelee
-    ? (totalAttackMelee > scaledDefenseMelee ? Math.pow(scaledDefenseMelee / totalAttackMelee, 1.5) : 1)
+    ? (totalAttackMelee > scaledDefenseMelee
+      ? Math.min(1, Math.pow(scaledDefenseMelee / totalAttackMelee, casualtyExponent) * courtyardCasualtyFactor)
+      : 1)
     : 0;
   const combatRngMultiplier = side === 'cy' ? 1 : currentRngMultiplier;
   const attackerLossMultiplier = 2 - combatRngMultiplier;
@@ -1490,7 +1497,10 @@ function computeWaveBattle(
   const normalDefendersKilledRatio = defenderAttackForRatio <= 0
     ? 0
     : defenderAttackForRatio < defenderDefenseForRatio
-      ? Math.pow(defenderAttackForRatio / defenderDefenseForRatio, 1.5)
+      ? Math.min(
+        1,
+        Math.pow(defenderAttackForRatio / defenderDefenseForRatio, casualtyExponent) * courtyardCasualtyFactor
+      )
       : 1;
   let defendersKilledRatio = Math.min(1, normalDefendersKilledRatio * combatRngMultiplier);
 
@@ -1503,19 +1513,28 @@ function computeWaveBattle(
     }
   }
 
-  const rangedLoss = Math.min(Math.ceil(attackRangedCount * rangedKillRatio), attackRangedCount);
-  const meleeLoss = Math.min(Math.ceil(attackMeleeCount * meleeKillRatio), attackMeleeCount);
+  const roundCasualties = side === 'cy' ? Math.round : Math.ceil;
+  const rangedLoss = Math.min(roundCasualties(attackRangedCount * rangedKillRatio), attackRangedCount);
+  const meleeLoss = Math.min(roundCasualties(attackMeleeCount * meleeKillRatio), attackMeleeCount);
   const attackerTotalLoss = Math.min(rangedLoss + meleeLoss, attackerTotalCount);
-  const defenderTotalLoss = attackerTotalCount <= 0
+  let defenderTotalLoss = attackerTotalCount <= 0
     ? 0
-    : Math.min(Math.ceil(defenderTotalCount * defendersKilledRatio), defenderTotalCount);
+    : Math.min(roundCasualties(defenderTotalCount * defendersKilledRatio), defenderTotalCount);
 
   const defenderCountTotal = defenderRangedCount + defenderMeleeCount;
   const defenderRangedShare = defenderCountTotal > 0 ? defenderRangedCount / defenderCountTotal : 0;
   const defenderMeleeShare = defenderCountTotal > 0 ? defenderMeleeCount / defenderCountTotal : 0;
-  let defenderRangedLoss = Math.round(defenderTotalLoss * defenderRangedShare);
+  const rawDefenderTotalLoss = defenderTotalCount * defendersKilledRatio;
+  let defenderRangedLoss = side === 'cy'
+    ? Math.round(rawDefenderTotalLoss * defenderRangedShare)
+    : Math.round(defenderTotalLoss * defenderRangedShare);
   defenderRangedLoss = Math.min(defenderRangedLoss, defenderRangedCount);
-  let defenderMeleeLoss = Math.min(defenderTotalLoss - defenderRangedLoss, defenderMeleeCount);
+  let defenderMeleeLoss = side === 'cy'
+    ? Math.min(Math.round(rawDefenderTotalLoss * defenderMeleeShare), defenderMeleeCount)
+    : Math.min(defenderTotalLoss - defenderRangedLoss, defenderMeleeCount);
+  if (side === 'cy') {
+    defenderTotalLoss = defenderRangedLoss + defenderMeleeLoss;
+  }
   const defenderMissing = defenderTotalLoss - (defenderRangedLoss + defenderMeleeLoss);
   if (defenderMissing > 0) {
     const rangedCapacity = defenderRangedCount - defenderRangedLoss;
