@@ -736,9 +736,15 @@ body {
 .report-view-bar {
     min-height: 0;
     padding: 3px;
+    gap: 3px;
     background: rgb(68, 51, 38);
     border-top: 0;
     border-bottom: 3px solid rgb(119, 80, 54);
+}
+
+.report-view-bar .report-view-select {
+    width: 50%;
+    flex: 1 1 0;
 }
 
 .report-side-bar {

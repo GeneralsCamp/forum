@@ -63,10 +63,14 @@ const ABILITY_GROUP_BY_FLAG = {
 };
 
 let currentReportView = 'summary';
+let currentRngMultiplier = 1;
 
 export function battleSimulation() {
   const battleReportModal = new bootstrap.Modal(document.getElementById('battleReportModal'));
   currentReportView = 'summary';
+  currentRngMultiplier = 1;
+  const rngSelect = document.getElementById('report-rng-select');
+  if (rngSelect) rngSelect.value = '1';
   battleReportModal.show();
   switchReportSide(currentSideReport);
 
@@ -1446,12 +1450,15 @@ function computeWaveBattle(
     ? defenseMeleeForAttackerCasualties * (hasAttackRanged ? attackMeleeShare : 1)
     : 0;
 
-  const rangedKillRatio = hasAttackRanged
+  const normalRangedKillRatio = hasAttackRanged
     ? (totalAttackRanged > scaledDefenseRanged ? Math.pow(scaledDefenseRanged / totalAttackRanged, 1.5) : 1)
     : 0;
-  const meleeKillRatio = hasAttackMelee
+  const normalMeleeKillRatio = hasAttackMelee
     ? (totalAttackMelee > scaledDefenseMelee ? Math.pow(scaledDefenseMelee / totalAttackMelee, 1.5) : 1)
     : 0;
+  const attackerLossMultiplier = 2 - currentRngMultiplier;
+  const rangedKillRatio = Math.min(1, normalRangedKillRatio * attackerLossMultiplier);
+  const meleeKillRatio = Math.min(1, normalMeleeKillRatio * attackerLossMultiplier);
 
   const attackRangedCount = attackUnits.reduce((acc, u) => acc + (u.type2 === 'ranged' ? u.count : 0), 0);
   const attackMeleeCount = attackUnits.reduce((acc, u) => acc + (u.type2 === 'melee' ? u.count : 0), 0);
@@ -1472,11 +1479,12 @@ function computeWaveBattle(
     : !hasAttackRanged && hasAttackMelee
       ? totalDefenseMelee
       : (normalScaledDefenseRanged + normalScaledDefenseMelee);
-  const defendersKilledRatio = defenderAttackForRatio <= 0
+  const normalDefendersKilledRatio = defenderAttackForRatio <= 0
     ? 0
     : defenderAttackForRatio < defenderDefenseForRatio
       ? Math.pow(defenderAttackForRatio / defenderDefenseForRatio, 1.5)
       : 1;
+  const defendersKilledRatio = Math.min(1, normalDefendersKilledRatio * currentRngMultiplier);
 
   const attackerTotalLoss = Math.min(rangedLoss + meleeLoss, attackerTotalCount);
   const defenderTotalLoss = attackerTotalCount <= 0
@@ -2460,6 +2468,12 @@ document.querySelectorAll('.flanks-button-report.sides')?.forEach(button => {
 
 document.getElementById('report-view-select')?.addEventListener('change', event => {
   currentReportView = event.target.value;
+  const activeSide = document.querySelector('.flanks-button-report.active')?.dataset.section || currentSideReport;
+  populateBattleReportModal(activeSide);
+});
+
+document.getElementById('report-rng-select')?.addEventListener('change', event => {
+  currentRngMultiplier = Number(event.target.value) || 1;
   const activeSide = document.querySelector('.flanks-button-report.active')?.dataset.section || currentSideReport;
   populateBattleReportModal(activeSide);
 });
