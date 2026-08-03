@@ -3,6 +3,7 @@ import { saveAttackState } from '../data/attackState.js';
 import { imageUrl } from '../data/imagePaths.js';
 import { switchSide } from './uiWaves.js';
 import { itemLevelBadge, runtimeItem } from './itemLevelBadge.js';
+import { bindEditableCounts, renderEditableCount } from './editableCount.js';
 
 let supportToolEditorState = null;
 
@@ -116,7 +117,7 @@ function renderSupportToolEditor() {
     range.max = maximum;
     range.value = Math.min(value, maximum);
     range.disabled = maximum === 0 && !selected;
-    row.querySelector('.wave-editor-value').textContent = `${value} / ${maximum}`;
+    renderEditableCount(row, value, maximum);
     row.querySelector('.support-tool-minus').disabled = value <= 0;
     row.querySelector('.support-tool-plus').disabled = value >= maximum;
     row.classList.toggle('selected', selected);
@@ -182,7 +183,7 @@ export function initializeSupportTools(supportTools = variables.supportTools) {
           <div class="wave-editor-controls">
             <button type="button" class="wave-editor-step support-tool-minus" aria-label="Decrease">&minus;</button>
             <div class="wave-editor-value-wrap">
-              <strong class="wave-editor-value">0 / 0</strong>
+              <strong class="wave-editor-value"><span class="wave-editor-current-value" contenteditable="true" inputmode="numeric" spellcheck="false">0</span> / <span class="wave-editor-maximum">0</span></strong>
               <input type="range" class="wave-editor-range" min="0" max="0" value="0">
             </div>
             <button type="button" class="wave-editor-step support-tool-plus" aria-label="Increase">+</button>
@@ -206,6 +207,7 @@ export function initializeSupportTools(supportTools = variables.supportTools) {
     const row = event.target.closest('[data-support-tool-index]');
     setSupportToolEditorValue(Number(row.dataset.supportToolIndex), Number(event.target.value));
   });
+  bindEditableCounts(list, row => Number(row.dataset.supportToolIndex), setSupportToolEditorValue);
 }
 
 export function createSupportToolIcon(slot) {

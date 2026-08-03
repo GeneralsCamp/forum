@@ -2,6 +2,7 @@ import * as variables from '../data/variables.js';
 import { imageUrl } from '../data/imagePaths.js';
 import { switchSide, updateHeaderColor} from './uiWaves.js';
 import { itemLevelBadge, runtimeItem } from './itemLevelBadge.js';
+import { bindEditableCounts, renderEditableCount } from './editableCount.js';
 
 let unitEditorState = null;
 
@@ -47,7 +48,7 @@ export function initializeUnits(units = variables.units) {
           <div class="wave-editor-controls">
             <button type="button" class="wave-editor-step unit-minus" aria-label="Decrease">&minus;</button>
             <div class="wave-editor-value-wrap">
-              <strong class="wave-editor-value">0</strong>
+              <strong class="wave-editor-value"><span class="wave-editor-current-value" contenteditable="true" inputmode="numeric" spellcheck="false">0</span> / <span class="wave-editor-maximum">0</span></strong>
               <input type="range" class="wave-editor-range" min="0" max="0" value="0">
             </div>
             <button type="button" class="wave-editor-step unit-plus" aria-label="Increase">+</button>
@@ -71,6 +72,7 @@ export function initializeUnits(units = variables.units) {
     const row = event.target.closest('[data-unit-index]');
     setUnitEditorValue(Number(row.dataset.unitIndex), Number(event.target.value));
   });
+  bindEditableCounts(list, row => Number(row.dataset.unitIndex), setUnitEditorValue);
 }
 
 function setUnitEditorValue(unitIndex, requestedValue) {
@@ -134,7 +136,7 @@ function renderUnitEditor() {
     const range = row.querySelector('.wave-editor-range');
     range.max = maxForSlot;
     range.value = value;
-    row.querySelector('.wave-editor-value').textContent = `${value} / ${maxForSlot}`;
+    renderEditableCount(row, value, maxForSlot);
     row.querySelector('.unit-minus').disabled = value <= 0;
     row.querySelector('.unit-plus').disabled = value >= maxForSlot;
     row.classList.toggle('selected', selected);

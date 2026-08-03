@@ -3,6 +3,7 @@ import { imageUrl } from '../../data/imagePaths.js';
 import { createDefenseToolIcon, getToolIcon, displayDefenseBonuses, calculateTroopDefenseStrength } from '../uiDefense.js';
 import { saveDefenseState } from '../../data/defenseState.js';
 import { itemLevelBadge } from '../itemLevelBadge.js';
+import { bindEditableCounts, renderEditableCount } from '../editableCount.js';
 
 export function initializeDefenseTools(defense_tools, slotType) {
   const toolModalBody = document.querySelector('#toolModalDefense .modal-body');
@@ -30,7 +31,7 @@ export function initializeDefenseTools(defense_tools, slotType) {
             <div class="wave-editor-controls">
               <button type="button" class="wave-editor-step defense-tool-minus" aria-label="Decrease">&minus;</button>
               <div class="wave-editor-value-wrap">
-                <strong id="defense_tool${index + 1}-value" class="wave-editor-value">0 / 1</strong>
+                <strong id="defense_tool${index + 1}-value" class="wave-editor-value"><span class="wave-editor-current-value" contenteditable="true" inputmode="numeric" spellcheck="false">0</span> / <span class="wave-editor-maximum">1</span></strong>
                 <input type="range" id="defense_tool${index + 1}" min="0" max="1" value="0" class="wave-editor-range">
               </div>
               <button type="button" class="wave-editor-step defense-tool-plus" aria-label="Increase">+</button>
@@ -51,7 +52,7 @@ function renderDefenseToolEditor(selectedIndex, unavailableIndexes = new Set()) 
     const range = row.querySelector('.wave-editor-range');
     range.value = selected ? 1 : 0;
     range.disabled = unavailable;
-    row.querySelector('.wave-editor-value').textContent = `${selected ? 1 : 0} / 1`;
+    renderEditableCount(row, selected ? 1 : 0, 1);
     row.querySelector('.defense-tool-minus').disabled = !selected;
     row.querySelector('.defense-tool-plus').disabled = selected || unavailable;
     row.classList.toggle('selected', selected);
@@ -93,6 +94,11 @@ export function openDefenseToolsModal(side, toolType, slotIndex) {
     row.querySelector('.defense-tool-minus').onclick = () => setSelection(0);
     row.querySelector('.defense-tool-plus').onclick = () => setSelection(1);
   });
+  bindEditableCounts(
+    document.getElementById('defense-tool-editor-list'),
+    row => Number(row.dataset.defenseToolIndex),
+    (index, value) => renderDefenseToolEditor(value > 0 ? index : -1, unavailableIndexes)
+  );
   renderDefenseToolEditor(initialSelectedIndex, unavailableIndexes);
 
   document.getElementById('confirmDefenseTools').onclick = function () {

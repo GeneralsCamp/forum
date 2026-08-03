@@ -1,3 +1,5 @@
+import { restrictNumericEntry } from '../editableCount.js';
+
 export function bindSlider(sliderId, valueId, {
   value = 0,
   min = 0,
@@ -34,6 +36,7 @@ export function bindSlider(sliderId, valueId, {
   slider.max = max;
   if (allowDecimal) slider.step = 'any';
   valueEl.inputMode = allowDecimal ? 'decimal' : 'numeric';
+  restrictNumericEntry(valueEl, allowDecimal);
   setValue(value);
 
   slider.oninput = () => setValue(allowDecimal ? Math.round(Number(slider.value)) : slider.value);

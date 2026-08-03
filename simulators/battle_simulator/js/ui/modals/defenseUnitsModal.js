@@ -3,6 +3,7 @@ import { imageUrl } from '../../data/imagePaths.js';
 import { calculateTroopDefenseStrength, createDefenseUnitIcon } from '../uiDefense.js';
 import { saveDefenseState } from '../../data/defenseState.js';
 import { itemLevelBadge } from '../itemLevelBadge.js';
+import { bindEditableCounts, renderEditableCount } from '../editableCount.js';
 
 export function initializeDefenseUnits(defense_units) {
   const unitModalBody = document.querySelector('#unitModalDefense .modal-body');
@@ -30,7 +31,7 @@ export function initializeDefenseUnits(defense_units) {
           <div class="wave-editor-controls">
             <button type="button" class="wave-editor-step defense-unit-minus" aria-label="Decrease">&minus;</button>
             <div class="wave-editor-value-wrap">
-              <strong id="defense_unit${index + 1}-value" class="wave-editor-value">0 / 0</strong>
+              <strong id="defense_unit${index + 1}-value" class="wave-editor-value"><span class="wave-editor-current-value" contenteditable="true" inputmode="numeric" spellcheck="false">0</span> / <span class="wave-editor-maximum">0</span></strong>
               <input type="range" id="defense_unit${index + 1}" min="0" max="0" value="0" class="wave-editor-range">
             </div>
             <button type="button" class="wave-editor-step defense-unit-plus" aria-label="Increase">+</button>
@@ -49,7 +50,7 @@ function renderDefenseUnitEditor(selectedIndex, selectedValue, maximum) {
     const range = row.querySelector('.wave-editor-range');
     range.max = maximum;
     range.value = value;
-    row.querySelector('.wave-editor-value').textContent = `${value} / ${maximum}`;
+    renderEditableCount(row, value, maximum);
     row.querySelector('.defense-unit-minus').disabled = value <= 0;
     row.querySelector('.defense-unit-plus').disabled = value >= maximum;
     row.classList.toggle('selected', value > 0);
@@ -97,6 +98,11 @@ export function openDefenseUnitsModal(side, slotNumber) {
     row.querySelector('.defense-unit-minus').onclick = () => setSelection(index, Number(range.value) - 1);
     row.querySelector('.defense-unit-plus').onclick = () => setSelection(index, Number(range.value) + 1);
   });
+  bindEditableCounts(
+    document.getElementById('defense-unit-editor-list'),
+    row => Number(row.dataset.defenseUnitIndex),
+    setSelection
+  );
   renderDefenseUnitEditor(initialSelectedIndex, currentSlotUnitCount, availableUnits);
 
   document.getElementById('confirmDefenseUnits').onclick = function () {
