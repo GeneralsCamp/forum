@@ -1456,7 +1456,8 @@ function computeWaveBattle(
   const normalMeleeKillRatio = hasAttackMelee
     ? (totalAttackMelee > scaledDefenseMelee ? Math.pow(scaledDefenseMelee / totalAttackMelee, 1.5) : 1)
     : 0;
-  const attackerLossMultiplier = 2 - currentRngMultiplier;
+  const combatRngMultiplier = side === 'cy' ? 1 : currentRngMultiplier;
+  const attackerLossMultiplier = 2 - combatRngMultiplier;
   const rangedKillRatio = Math.min(1, normalRangedKillRatio * attackerLossMultiplier);
   const meleeKillRatio = Math.min(1, normalMeleeKillRatio * attackerLossMultiplier);
 
@@ -1484,7 +1485,7 @@ function computeWaveBattle(
     : defenderAttackForRatio < defenderDefenseForRatio
       ? Math.pow(defenderAttackForRatio / defenderDefenseForRatio, 1.5)
       : 1;
-  const defendersKilledRatio = Math.min(1, normalDefendersKilledRatio * currentRngMultiplier);
+  const defendersKilledRatio = Math.min(1, normalDefendersKilledRatio * combatRngMultiplier);
 
   const attackerTotalLoss = Math.min(rangedLoss + meleeLoss, attackerTotalCount);
   const defenderTotalLoss = attackerTotalCount <= 0
