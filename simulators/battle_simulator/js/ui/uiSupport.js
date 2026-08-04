@@ -94,8 +94,8 @@ function renderSupportToolEditor() {
   slotsElement.innerHTML = state.slots.map((slot, index) => {
     const image = slot.type ? imageUrl(variables.supportToolImages?.[slot.type]) : '';
     const tool = runtimeItem(slot.type, variables.supportTools);
-    return `<button type="button" class="wave-editor-slot ${index === state.activeSlot ? 'active' : ''}" data-slot-index="${index}">
-      ${image ? `<img src="${image}" alt="">${itemLevelBadge(tool)}<span>${slot.count || 0}</span>` : '<b>+</b>'}
+    return `<button type="button" class="wave-editor-slot ${image ? '' : 'empty-wave-slot '}${index === state.activeSlot ? 'active' : ''}" data-slot-index="${index}">
+      ${image ? `<img src="${image}" alt="">${itemLevelBadge(tool)}<span>${slot.count || 0}</span>` : ''}
     </button>`;
   }).join('');
   slotsElement.querySelectorAll('[data-slot-index]').forEach(button => {

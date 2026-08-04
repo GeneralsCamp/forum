@@ -114,8 +114,8 @@ function renderUnitEditor() {
   slotsElement.innerHTML = state.slots.map((slot, index) => {
     const image = slot.type ? imageUrl(variables.unitImages?.[slot.type]) : '';
     const unit = runtimeItem(slot.type, variables.units);
-    return `<button type="button" class="wave-editor-slot ${index === state.activeSlot ? 'active' : ''}" data-slot-index="${index}">
-      ${image ? `<img src="${image}" alt="">${itemLevelBadge(unit)}<span>${slot.count || 0}</span>` : '<b>+</b>'}
+    return `<button type="button" class="wave-editor-slot ${image ? '' : 'empty-wave-slot '}${index === state.activeSlot ? 'active' : ''}" data-slot-index="${index}">
+      ${image ? `<img src="${image}" alt="">${itemLevelBadge(unit)}<span>${slot.count || 0}</span>` : ''}
     </button>`;
   }).join('');
   slotsElement.querySelectorAll('[data-slot-index]').forEach(button => {

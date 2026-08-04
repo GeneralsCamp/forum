@@ -1453,11 +1453,6 @@ body {
     object-fit: contain;
 }
 
-.wave-editor-slot b {
-    font-size: 23px;
-    line-height: 1;
-}
-
 .wave-editor-slot span {
     position: absolute;
     right: 2px;
@@ -2226,7 +2221,8 @@ body {
 }
 
 #wave-container .empty-wave-slot,
-.defense-modal-fix .empty-wave-slot {
+.defense-modal-fix .empty-wave-slot,
+.wave-editor-slot.empty-wave-slot {
     position: relative;
     font-size: 0;
 }
@@ -2234,7 +2230,9 @@ body {
 #wave-container .empty-wave-slot::before,
 #wave-container .empty-wave-slot::after,
 .defense-modal-fix .empty-wave-slot::before,
-.defense-modal-fix .empty-wave-slot::after {
+.defense-modal-fix .empty-wave-slot::after,
+.wave-editor-slot.empty-wave-slot::before,
+.wave-editor-slot.empty-wave-slot::after {
     content: "";
     position: absolute;
     top: 50%;
@@ -2244,13 +2242,15 @@ body {
 }
 
 #wave-container .empty-wave-slot::before,
-.defense-modal-fix .empty-wave-slot::before {
+.defense-modal-fix .empty-wave-slot::before,
+.wave-editor-slot.empty-wave-slot::before {
     width: 21px;
     height: 7px;
 }
 
 #wave-container .empty-wave-slot::after,
-.defense-modal-fix .empty-wave-slot::after {
+.defense-modal-fix .empty-wave-slot::after,
+.wave-editor-slot.empty-wave-slot::after {
     width: 7px;
     height: 21px;
 }
