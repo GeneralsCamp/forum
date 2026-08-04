@@ -1306,9 +1306,10 @@ function computeWaveBattle(
           : defenseMeleeBeforeBonus * 3;
       const rangedBonus = rangedBonusBase * abilityRate;
       const meleeBonus = meleeBonusBase * abilityRate;
-      markDefenseAbility('giantSlayer', rangedBonus + meleeBonus);
-      totalDefenseRanged += rangedBonus;
-      totalDefenseMelee += meleeBonus;
+      const totalBonus = rangedBonus + meleeBonus;
+      markDefenseAbility('giantSlayer', totalBonus);
+      totalDefenseRanged += totalBonus;
+      totalDefenseMelee += totalBonus;
     }
   }
 
@@ -1461,16 +1462,15 @@ function computeWaveBattle(
     : 0;
 
   const casualtyExponent = 1.5;
-  const courtyardCasualtyFactor = side === 'cy' ? 1.235 : 1;
 
   const normalRangedKillRatio = hasAttackRanged
     ? (totalAttackRanged > scaledDefenseRanged
-      ? Math.min(1, Math.pow(scaledDefenseRanged / totalAttackRanged, casualtyExponent) * courtyardCasualtyFactor)
+      ? Math.pow(scaledDefenseRanged / totalAttackRanged, casualtyExponent)
       : 1)
     : 0;
   const normalMeleeKillRatio = hasAttackMelee
     ? (totalAttackMelee > scaledDefenseMelee
-      ? Math.min(1, Math.pow(scaledDefenseMelee / totalAttackMelee, casualtyExponent) * courtyardCasualtyFactor)
+      ? Math.pow(scaledDefenseMelee / totalAttackMelee, casualtyExponent)
       : 1)
     : 0;
   const combatRngMultiplier = side === 'cy' ? 1 : currentRngMultiplier;
@@ -1497,10 +1497,7 @@ function computeWaveBattle(
   const normalDefendersKilledRatio = defenderAttackForRatio <= 0
     ? 0
     : defenderAttackForRatio < defenderDefenseForRatio
-      ? Math.min(
-        1,
-        Math.pow(defenderAttackForRatio / defenderDefenseForRatio, casualtyExponent) * courtyardCasualtyFactor
-      )
+      ? Math.pow(defenderAttackForRatio / defenderDefenseForRatio, casualtyExponent)
       : 1;
   let defendersKilledRatio = Math.min(1, normalDefendersKilledRatio * combatRngMultiplier);
 
@@ -1513,7 +1510,7 @@ function computeWaveBattle(
     }
   }
 
-  const roundCasualties = side === 'cy' ? Math.round : Math.ceil;
+  const roundCasualties = Math.ceil;
   const rangedLoss = Math.min(roundCasualties(attackRangedCount * rangedKillRatio), attackRangedCount);
   const meleeLoss = Math.min(roundCasualties(attackMeleeCount * meleeKillRatio), attackMeleeCount);
   const attackerTotalLoss = Math.min(rangedLoss + meleeLoss, attackerTotalCount);
@@ -1523,18 +1520,9 @@ function computeWaveBattle(
 
   const defenderCountTotal = defenderRangedCount + defenderMeleeCount;
   const defenderRangedShare = defenderCountTotal > 0 ? defenderRangedCount / defenderCountTotal : 0;
-  const defenderMeleeShare = defenderCountTotal > 0 ? defenderMeleeCount / defenderCountTotal : 0;
-  const rawDefenderTotalLoss = defenderTotalCount * defendersKilledRatio;
-  let defenderRangedLoss = side === 'cy'
-    ? Math.round(rawDefenderTotalLoss * defenderRangedShare)
-    : Math.round(defenderTotalLoss * defenderRangedShare);
+  let defenderRangedLoss = Math.round(defenderTotalLoss * defenderRangedShare);
   defenderRangedLoss = Math.min(defenderRangedLoss, defenderRangedCount);
-  let defenderMeleeLoss = side === 'cy'
-    ? Math.min(Math.round(rawDefenderTotalLoss * defenderMeleeShare), defenderMeleeCount)
-    : Math.min(defenderTotalLoss - defenderRangedLoss, defenderMeleeCount);
-  if (side === 'cy') {
-    defenderTotalLoss = defenderRangedLoss + defenderMeleeLoss;
-  }
+  let defenderMeleeLoss = Math.min(defenderTotalLoss - defenderRangedLoss, defenderMeleeCount);
   const defenderMissing = defenderTotalLoss - (defenderRangedLoss + defenderMeleeLoss);
   if (defenderMissing > 0) {
     const rangedCapacity = defenderRangedCount - defenderRangedLoss;
@@ -1917,7 +1905,7 @@ function computeBattleResults(side) {
     }
 
     const defenseSupportCount = Math.max(0, Math.floor(Number(castellanStats.courtyardValkyrieSupport) || 0));
-    const defenseSupportType = findRuntimeUnitType(228, true);
+    const defenseSupportType = findRuntimeUnitType(493, true, 11);
     if (defenseSupportCount > 0 && defenseSupportType) {
       combinedDefenders.set(defenseSupportType, (combinedDefenders.get(defenseSupportType) || 0) + defenseSupportCount);
     }
@@ -1942,7 +1930,7 @@ function computeBattleResults(side) {
     ? Math.min(wallDefenseLosses * 0.002, 15)
     : 0;
   const defenseExaltedBonus = defenseGeneralAbilities.exalted
-    ? Math.min(Math.floor(wallAttackLosses / 100) * 0.25, 15)
+    ? Math.min(wallAttackLosses * 0.0025, 15)
     : 0;
 
   attackStrengthBonusPercent += attackVengeanceBonus;
