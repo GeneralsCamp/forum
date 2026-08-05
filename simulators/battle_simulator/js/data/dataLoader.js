@@ -542,6 +542,10 @@ export async function loadData({ preserveCurrentState = false } = {}) {
       .map(({ selection, entry }, index) => composeUnitRecord(
         toUnit(selection, index, "defender", imageContext, lang, entry)
       )));
+    const attackUnitsForDefense = attackUnits.map((unit, index) => ({
+      ...unit,
+      id: `unit${defenseUnits.length + index + 1}`
+    }));
     const selectedAttackTools = resolveToolEntries(selectedCatalog.attackTools, unitsById, unitsByType, "Attack tool");
     const attackTools = selectedAttackTools
       .filter(({ selection }) => !isSupportTool(selection.entity))
@@ -553,7 +557,10 @@ export async function loadData({ preserveCurrentState = false } = {}) {
       .map(({ selection, entry }, index) => toTool(selection, index, "defense", imageContext, lang, entry));
 
     replaceArray(variables.units, attackUnits);
-    replaceArray(variables.defense_units, defenseUnits);
+    replaceArray(variables.defense_units, [
+      ...defenseUnits,
+      ...attackUnitsForDefense
+    ]);
     replaceArray(variables.tools, attackTools);
     replaceArray(variables.supportTools, supportTools);
     replaceArray(variables.defense_tools, defenseTools);

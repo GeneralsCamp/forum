@@ -232,27 +232,22 @@ function applyPercentageKills(units = [], predicate, rate = 0) {
 }
 
 function allocatePercentageLosses(entries = [], rate = 0) {
-  const activeEntries = entries.filter(entry => entry && entry.count > 0);
+  const activeEntries = entries
+    .filter(entry => entry && entry.count > 0)
+    .sort((a, b) => b.strength - a.strength);
   const totalCount = activeEntries.reduce((total, entry) => total + entry.count, 0);
   if (totalCount <= 0 || rate <= 0) return new Map();
 
-  const killCount = Math.min(Math.floor(totalCount * rate), totalCount);
-  const indexedEntries = activeEntries.map((entry, index) => ({
-    ...entry,
-    allocationKey: String(index)
-  }));
-  const allocated = distributeLossesByUnit(
-    indexedEntries.map(entry => ({ type: entry.allocationKey, count: entry.count })),
-    killCount
-  );
+  let remaining = Math.min(Math.floor(totalCount * rate), totalCount);
   const lossesByGroup = new Map();
-  indexedEntries.forEach(entry => {
-    const loss = allocated.get(entry.allocationKey) || 0;
-    if (loss <= 0) return;
+  for (const entry of activeEntries) {
+    if (remaining <= 0) break;
+    const loss = Math.min(entry.count, remaining);
     if (!lossesByGroup.has(entry.group)) lossesByGroup.set(entry.group, new Map());
     const groupLosses = lossesByGroup.get(entry.group);
     groupLosses.set(entry.type, (groupLosses.get(entry.type) || 0) + loss);
-  });
+    remaining -= loss;
+  }
   return lossesByGroup;
 }
 
@@ -1516,7 +1511,7 @@ function computeWaveBattle(
   const attackerTotalLoss = Math.min(rangedLoss + meleeLoss, attackerTotalCount);
   let defenderTotalLoss = attackerTotalCount <= 0
     ? 0
-    : Math.min(roundCasualties(defenderTotalCount * defendersKilledRatio), defenderTotalCount);
+    : Math.min(Math.round(defenderTotalCount * defendersKilledRatio), defenderTotalCount);
 
   const defenderCountTotal = defenderRangedCount + defenderMeleeCount;
   const defenderRangedShare = defenderCountTotal > 0 ? defenderRangedCount / defenderCountTotal : 0;
@@ -1619,7 +1614,8 @@ function simulateWallSides() {
         group: `${side}:${waveOffset}`,
         waveOffset,
         type: toUnitKey(unit.type),
-        count: unit.count
+        count: unit.count,
+        strength: Math.max(unit.rangedCombatStrength || 0, unit.meleeCombatStrength || 0)
       }))
     )
   );
@@ -1627,26 +1623,36 @@ function simulateWallSides() {
     state[side].defenseUnits.map(unit => ({
       group: side,
       type: toUnitKey(unit.type),
-      count: unit.count
+      count: unit.count,
+      strength: Math.max(unit.rangedDefenseStrength || 0, unit.meleeDefenseStrength || 0)
     }))
   );
   const attackerPreBattleLosses = new Map();
   if (isDefenseAbilityActive('ambush', 'left', 1, 'preCombat')) {
     const ambushRate = generalAbilityEffectRate('1022', 'defense', 0.07);
-    for (let waveOffset = 0; waveOffset < waveCount; waveOffset += 1) {
-      const waveLosses = allocatePercentageLosses(
-        attackerPreBattleEntries.filter(entry => entry.waveOffset === waveOffset),
-        ambushRate
-      );
-      waveLosses.forEach((losses, group) => attackerPreBattleLosses.set(group, losses));
-    }
+    wallSides.forEach(side => {
+      for (let waveOffset = 0; waveOffset < waveCount; waveOffset += 1) {
+        const group = `${side}:${waveOffset}`;
+        const waveLosses = allocatePercentageLosses(
+          attackerPreBattleEntries.filter(entry => entry.group === group),
+          ambushRate
+        );
+        attackerPreBattleLosses.set(group, waveLosses.get(group) || new Map());
+      }
+    });
   }
   const attackAmbushRate = generalAbilityEffectRate('1022', 'attack', 0.07);
-  const defenderPreBattleLosses =
-    isAttackAbilityActive('ambush', 'left', 1, 'preCombat') &&
-    totalPlannedWallAttackers() > totalWallDefenders()
-      ? allocatePercentageLosses(defenderPreBattleEntries, attackAmbushRate)
-      : new Map();
+  const defenderPreBattleLosses = new Map();
+  if (isAttackAbilityActive('ambush', 'left', 1, 'preCombat') &&
+      totalPlannedWallAttackers() > totalWallDefenders()) {
+    wallSides.forEach(side => {
+      const sideLosses = allocatePercentageLosses(
+        defenderPreBattleEntries.filter(entry => entry.group === side),
+        attackAmbushRate
+      );
+      defenderPreBattleLosses.set(side, sideLosses.get(side) || new Map());
+    });
+  }
 
   for (let waveOffset = 0; waveOffset < waveCount; waveOffset += 1) {
     const previousWallWaveResults = wallSides
@@ -1933,8 +1939,8 @@ function computeBattleResults(side) {
     ? Math.min(wallAttackLosses * 0.0025, 15)
     : 0;
 
-  attackStrengthBonusPercent += attackVengeanceBonus;
-  defenseStrengthBonusPercent += defenseVengeanceBonus;
+  attackStrengthBonusPercent += attackVengeanceBonus + attackExaltedBonus;
+  defenseStrengthBonusPercent += defenseVengeanceBonus + defenseExaltedBonus;
   const defenseTotalMultiplier = 1 + defenseStrengthBonusPercent / 100;
 
   const supportTotals = sumSupportToolEffects(waves['Support']?.[0]?.tools || []);
@@ -2039,8 +2045,8 @@ function computeBattleResults(side) {
     null,
     null,
     null,
-    1 + attackExaltedBonus / 100,
-    1 + defenseExaltedBonus / 100
+    1,
+    1
   );
   if (attackVengeanceBonus > 0) {
     waveResult.appliedAbilities.attack.push(ABILITY_GROUP_BY_FLAG.vengeance);
@@ -2469,6 +2475,10 @@ function populateBattleReportModal(side) {
   const toolsByOwner = reportTools(side, currentReportView, battleResults);
   const attackAbilities = getAppliedAbilityIds(battleResults, 'attack', currentReportView);
   const defenseAbilities = getAppliedAbilityIds(battleResults, 'defense', currentReportView);
+  if (side === 'cy') {
+    attackAbilities.delete('1021');
+    defenseAbilities.delete('1021');
+  }
   const sideLabel = document.getElementById('report-side-label');
   const columns = document.getElementById('report-detail-columns');
   const context = document.getElementById('report-context-note');
