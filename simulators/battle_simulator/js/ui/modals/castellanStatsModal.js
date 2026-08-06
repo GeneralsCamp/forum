@@ -8,7 +8,7 @@ import { imageUrl } from '../../data/imagePaths.js';
 export function openCastellanStatsModal() {
   const modalEl = document.getElementById('castellanStatsModal');
   const modal = new bootstrap.Modal(modalEl);
-  const courtyardSupportUnit = defense_units.find(unit => String(unit.catalogWodID) === '228');
+  const courtyardSupportUnit = defense_units.find(unit => String(unit.catalogWodID) === '493');
   const courtyardSupportImage = modalEl.querySelector('img[alt="courtyard-valkyrie-support"]');
   if (courtyardSupportUnit && courtyardSupportImage) courtyardSupportImage.src = imageUrl(courtyardSupportUnit.image);
   const sliders = [
