@@ -626,8 +626,8 @@ export function combineDefenseProtectionMultipliers(moatBonus, wallBonus, gateBo
 
 export function getCourtyardEntryMultiplier(enteredWallSides) {
   const enteredCount = enteredWallSides.filter(Boolean).length;
-  if (enteredCount === 3) return 1.3;
-  if (enteredCount === 1) return 0.7;
+  if (enteredCount === 3) return 1.2217885;
+  if (enteredCount === 1) return 0.7883735;
   return 1;
 }
 
@@ -2179,7 +2179,7 @@ function renderToolSummaryHTML(toolSummary, owner, courtyardSupport = false) {
   }).join('');
 }
 
-function getAppliedAbilityIds(battleResults, owner, view) {
+function getAppliedAbilityIds(battleResults, owner, view, side) {
   const preBattleIds = new Set(['1021', '1022']);
   const preBattleOnlyIds = new Set(['1022']);
   const visibleWaveResults = (battleResults.waves || []).slice(0, effectiveWallWaveCount());
@@ -2198,7 +2198,7 @@ function getAppliedAbilityIds(battleResults, owner, view) {
     });
   });
   const ownerAbilities = owner === 'attack' ? attackGeneralAbilities : defenseGeneralAbilities;
-  if (view === 'summary' || view === 'prebattle') {
+  if (side !== 'cy' && (view === 'summary' || view === 'prebattle')) {
     if (ownerAbilities.ayala) ids.add('1021');
     if (ownerAbilities.ambush) ids.add('1022');
   }
@@ -2509,8 +2509,8 @@ function populateBattleReportModal(side) {
   const battleResults = computeBattleResults(side);
   const unitsByOwner = reportUnits(side, battleResults, currentReportView);
   const toolsByOwner = reportTools(side, currentReportView, battleResults);
-  const attackAbilities = getAppliedAbilityIds(battleResults, 'attack', currentReportView);
-  const defenseAbilities = getAppliedAbilityIds(battleResults, 'defense', currentReportView);
+  const attackAbilities = getAppliedAbilityIds(battleResults, 'attack', currentReportView, side);
+  const defenseAbilities = getAppliedAbilityIds(battleResults, 'defense', currentReportView, side);
   if (side === 'cy') {
     attackAbilities.delete('1021');
     defenseAbilities.delete('1021');
@@ -2528,10 +2528,15 @@ function populateBattleReportModal(side) {
   if (context) {
     if (side === 'cy') {
       const wins = battleResults.attackerWinsCount ?? 0;
-      const multiplier = battleResults.courtyardEntryMultiplier ?? 1;
+
       context.textContent = wins === 0
         ? 'NO COURTYARD BATTLE'
-        : `${multiplier === 1.3 ? '+30%' : multiplier === 0.7 ? '-30%' : '0%'} ATTACKER STRENGTH`;
+        : wins === 3
+         ? '+30% ATTACKER STRENGTH'
+          : wins === 1
+            ? '-30% ATTACKER STRENGTH'
+            : '0% ATTACKER STRENGTH';
+
       context.hidden = false;
     } else {
       context.textContent = '';

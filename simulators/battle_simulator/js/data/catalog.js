@@ -14,8 +14,10 @@ export const ATTACK_UNIT_IDS = [
 ];
 
 export const DEFENSE_UNIT_IDS = [
-  228, // Valkyrie sniper
-  217, // Protector of the north
+  238, // Valkyrie sniper lvl.10
+  493, // Valkyrie sniper lvl.11
+  227, // Protector of the north lvl.10
+  489, // Protector of the north lvl.11
   12,  // Veteran composite bowman
   11   // Veteran flame bearer
 ];
@@ -54,7 +56,7 @@ export const DEFENSE_TOOL_IDS = [
   440, // Fire trap
   460, // Mobile cauldron
   471, // Explosive arrows
-  430  // Spear trap (crossplay ID; E4K WOD ID: 420)
+  430  // Spear trap
 ];
 
 export const BATTLE_CATALOG_GROUPS = [
