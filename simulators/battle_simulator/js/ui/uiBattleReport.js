@@ -2269,10 +2269,38 @@ function formatAbilityValue(value, groupId) {
 function reportAbilityDescription(ability, owner, side, view, battleResults) {
   const keyPrefix = owner === 'attack' ? 'attack' : 'defense';
   const genericDescription = ability[`${keyPrefix}ShortDescription`] || '';
-  if (view === 'summary' && side !== 'cy') return genericDescription;
-  if (ability.groupId === '1021') return genericDescription;
 
-  const template = ability[`${keyPrefix}ShortValueTemplate`] || genericDescription;
+if (ability.groupId === '1021') {
+  if (view.startsWith('wave-')) {
+    const waveNumber = Number(view.replace('wave-', ''));
+
+    const template =
+      ability[`${keyPrefix}ShortValueTemplate`] ||
+      'Voided all abilities of enemy general in {0}';
+
+    return template.replace(/\{0\}/g, `Wave ${waveNumber}`);
+  }
+
+  if (view === 'prebattle') {
+    return genericDescription
+      .replace(/\{0\}/g, '')
+      .replace(/\s+and up to wave\s+\d+\s*$/i, '')
+      .trim();
+  }
+
+  return genericDescription
+    .replace(/\{0\}/g, '')
+    .trim();
+}
+
+  if (view === 'summary' && side !== 'cy') {
+    return genericDescription;
+  }
+
+  const template =
+    ability[`${keyPrefix}ShortValueTemplate`] ||
+    genericDescription;
+
   const calculatedValues = reportAbilityValues(
     battleResults,
     owner,
@@ -2280,10 +2308,18 @@ function reportAbilityDescription(ability, owner, side, view, battleResults) {
     view,
     ability.groupId
   );
-  const fallbackValues = ability[`${keyPrefix}EffectValues`] || [];
+
+  const fallbackValues =
+    ability[`${keyPrefix}EffectValues`] || [];
+
   return template.replace(/\{(\d+)\}/g, (token, index) => {
-    const value = calculatedValues[Number(index)] ?? fallbackValues[Number(index)];
-    return value == null ? token : formatAbilityValue(value, ability.groupId);
+    const value =
+      calculatedValues[Number(index)] ??
+      fallbackValues[Number(index)];
+
+    return value == null
+      ? token
+      : formatAbilityValue(value, ability.groupId);
   });
 }
 
