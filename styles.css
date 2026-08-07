@@ -450,6 +450,10 @@ html {
     .category-card-shell:hover .category-icon img {
         animation: category-icon-wiggle 620ms ease-in-out both;
     }
+
+    .category-card-shell:has(.category-box.disabled):hover .category-icon img {
+        animation: none;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {

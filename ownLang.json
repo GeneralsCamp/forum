@@ -102,6 +102,9 @@
       "castle_layout": {
         "name": "Castle Layout Simulator"
       },
+      "battle_simulator": {
+        "name": "Battle Simulator (BETA)"
+      },
       "hall_of_legends": {
         "name": "Hall of Legends Simulator"
       }
@@ -209,6 +212,9 @@
       },
       "castle_layout": {
         "name": "محاكي تخطيط القلعة"
+      },
+      "battle_simulator": {
+        "name": "محاكي المعركة (بيتا)"
       },
       "hall_of_legends": {
         "name": "محاكي قاعة الأساطير"
@@ -318,6 +324,9 @@
       "castle_layout": {
         "name": "Simulador De Diseño De Castillos"
       },
+      "battle_simulator": {
+        "name": "Simulador de Batalla (BETA)"
+      },
       "hall_of_legends": {
         "name": "Simulador Del Salón De Las Leyendas"
       }
@@ -425,6 +434,9 @@
       },
       "castle_layout": {
         "name": "Симулатор На Оформлението На Замъка"
+      },
+      "battle_simulator": {
+        "name": "Симулатор на битки (БЕТА)"
       },
       "hall_of_legends": {
         "name": "Симулатор На Залата На Легендите"
@@ -534,6 +546,9 @@
       "castle_layout": {
         "name": "Simulador De Layout De Castelo"
       },
+      "battle_simulator": {
+        "name": "Simulador de Batalha (BETA)"
+      },
       "hall_of_legends": {
         "name": "Simulador Do Salão Das Lendas"
       }
@@ -641,6 +656,9 @@
       },
       "castle_layout": {
         "name": "Simulátor Rozložení Hradu"
+      },
+      "battle_simulator": {
+        "name": "Simulátor Bitvy (BETA)"
       },
       "hall_of_legends": {
         "name": "Simulátor Síně Legend"
@@ -750,6 +768,9 @@
       "castle_layout": {
         "name": "Burganlagen-Simulator"
       },
+      "battle_simulator": {
+        "name": "Schlacht-Simulator (BETA)"
+      },
       "hall_of_legends": {
         "name": "Halle-Der-Legenden-Simulator"
       }
@@ -857,6 +878,9 @@
       },
       "castle_layout": {
         "name": "Simulator Til Borglayout"
+      },
+      "battle_simulator": {
+        "name": "Kam Simulator (BETA)"
       },
       "hall_of_legends": {
         "name": "Legendernes Hal-Simulator"
@@ -966,6 +990,9 @@
       "castle_layout": {
         "name": "Linnan Asettelusimulaattori"
       },
+      "battle_simulator": {
+        "name": "Taistelusimulaattori (BETA)"
+      },
       "hall_of_legends": {
         "name": "Legendojen Salin Simulaattori"
       }
@@ -1073,6 +1100,9 @@
       },
       "castle_layout": {
         "name": "Simulateur D'aménagement De Château"
+      },
+      "battle_simulator": {
+        "name": "Simulateur de Bataille (BÊTA)"
       },
       "hall_of_legends": {
         "name": "Simulateur Du Hall Des Légendes"
@@ -1182,6 +1212,9 @@
       "castle_layout": {
         "name": "Προσομοιωτής Διάταξης Κάστρου"
       },
+      "battle_simulator": {
+        "name": "Προσομοιωτής Μάχης (BETA)"
+      },
       "hall_of_legends": {
         "name": "Προσομοιωτής Αίθουσας Θρύλων"
       }
@@ -1289,6 +1322,9 @@
       },
       "castle_layout": {
         "name": "Kastély Elrendezés Szimulátor"
+      },
+      "battle_simulator": {
+        "name": "Csata Szimulátor (BETA)"
       },
       "hall_of_legends": {
         "name": "Legendák Csarnoka Szimulátor"
@@ -1398,6 +1434,9 @@
       "castle_layout": {
         "name": "Simulatore Della Disposizione Del Castello"
       },
+      "battle_simulator": {
+        "name": "Simulatore di Battaglia (BETA)"
+      },
       "hall_of_legends": {
         "name": "Simulatore Della Sala Delle Leggende"
       }
@@ -1505,6 +1544,9 @@
       },
       "castle_layout": {
         "name": "城レイアウトシミュレーター"
+      },
+      "battle_simulator": {
+        "name": "バトルシミュレーター（ベータ）"
       },
       "hall_of_legends": {
         "name": "伝説の殿堂シミュレーター"
@@ -1614,6 +1656,9 @@
       "castle_layout": {
         "name": "성 배치 시뮬레이터"
       },
+      "battle_simulator": {
+        "name": "전투 시뮬레이터 (베타)"
+      },
       "hall_of_legends": {
         "name": "전설의 전당 시뮬레이터"
       }
@@ -1721,6 +1766,9 @@
       },
       "castle_layout": {
         "name": "Pilies Išdėstymo Simuliatorius"
+      },
+      "battle_simulator": {
+        "name": "Mūšio Simuliatorius (BETA)"
       },
       "hall_of_legends": {
         "name": "Legendų Salės Simuliatorius"
@@ -1830,6 +1878,9 @@
       "castle_layout": {
         "name": "Kasteelindelingssimulator"
       },
+      "battle_simulator": {
+        "name": "Gevechtssimulator (BÈTA)"
+      },
       "hall_of_legends": {
         "name": "Hal Der Legenden-Simulator"
       }
@@ -1937,6 +1988,9 @@
       },
       "castle_layout": {
         "name": "Simulator For Slottsoppsett"
+      },
+      "battle_simulator": {
+        "name": "Kam Simulator (BETA)"
       },
       "hall_of_legends": {
         "name": "Legendenes Hall-Simulator"
@@ -2046,6 +2100,9 @@
       "castle_layout": {
         "name": "Symulator Układu Zamku"
       },
+      "battle_simulator": {
+        "name": "Symulator Bitwy (BETA)"
+      },
       "hall_of_legends": {
         "name": "Symulator Sali Legend"
       }
@@ -2153,6 +2210,9 @@
       },
       "castle_layout": {
         "name": "Simulator De Amenajare A Castelului"
+      },
+      "battle_simulator": {
+        "name": "Simulator de Bătălie (BETA)"
       },
       "hall_of_legends": {
         "name": "Simulatorul Sălii Legendelor"
@@ -2262,6 +2322,9 @@
       "castle_layout": {
         "name": "Симулятор Планировки Замка"
       },
+      "battle_simulator": {
+        "name": "Симулятор Битвы (БЕТА)"
+      },
       "hall_of_legends": {
         "name": "Симулятор Зала Легенд"
       }
@@ -2369,6 +2432,9 @@
       },
       "castle_layout": {
         "name": "Simulator För Slottslayout"
+      },
+      "battle_simulator": {
+        "name": "Stridssimulator (BETA)"
       },
       "hall_of_legends": {
         "name": "Legendernas Sal-Simulator"
@@ -2478,6 +2544,9 @@
       "castle_layout": {
         "name": "Simulátor Rozloženia Hradu"
       },
+      "battle_simulator": {
+        "name": "Simulátor Bitky (BETA)"
+      },
       "hall_of_legends": {
         "name": "Simulátor Siene Legiend"
       }
@@ -2585,6 +2654,9 @@
       },
       "castle_layout": {
         "name": "Kale Düzeni Simülatörü"
+      },
+      "battle_simulator": {
+        "name": "Savaş Simülatörü (BETA)"
       },
       "hall_of_legends": {
         "name": "Efsaneler Salonu Simülatörü"
