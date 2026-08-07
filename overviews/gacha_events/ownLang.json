@@ -1,6 +1,7 @@
 {
   "en": {
     "ui": {
+      "spins": "Spins",
       "amount": "Amount",
       "chance": "Chance",
       "ranking": "Ranking",
@@ -18,6 +19,7 @@
   },
   "de": {
     "ui": {
+      "spins": "Drehungen",
       "amount": "Menge",
       "chance": "Chance",
       "ranking": "Rang",
@@ -35,6 +37,7 @@
   },
   "fr": {
     "ui": {
+      "spins": "Tours",
       "amount": "Quantité",
       "chance": "Chance",
       "ranking": "Classement",
@@ -52,6 +55,7 @@
   },
   "pl": {
     "ui": {
+      "spins": "Obroty",
       "amount": "Ilość",
       "chance": "Szansa",
       "ranking": "Ranking",
@@ -69,6 +73,7 @@
   },
   "hu": {
     "ui": {
+      "spins": "Pörgetések",
       "amount": "Mennyiség",
       "chance": "Esély",
       "ranking": "Helyezés",
@@ -86,6 +91,7 @@
   },
   "ro": {
     "ui": {
+      "spins": "Rotiri",
       "amount": "Cantitate",
       "chance": "Șansă",
       "ranking": "Clasament",
@@ -103,6 +109,7 @@
   },
   "es": {
     "ui": {
+      "spins": "Giros",
       "amount": "Cantidad",
       "chance": "Probabilidad",
       "ranking": "Clasificación",
@@ -120,6 +127,7 @@
   },
   "ru": {
     "ui": {
+      "spins": "Прокрутки",
       "amount": "Количество",
       "chance": "Шанс",
       "ranking": "Рейтинг",
@@ -137,6 +145,7 @@
   },
   "el": {
     "ui": {
+      "spins": "Περιστροφές",
       "amount": "Ποσότητα",
       "chance": "Πιθανότητα",
       "ranking": "Κατάταξη",
@@ -154,6 +163,7 @@
   },
   "nl": {
     "ui": {
+      "spins": "Draaiingen",
       "amount": "Aantal",
       "chance": "Kans",
       "ranking": "Ranglijst",
@@ -171,6 +181,7 @@
   },
   "cs": {
     "ui": {
+      "spins": "Roztočení",
       "amount": "Množství",
       "chance": "Šance",
       "ranking": "Pořadí",
@@ -188,6 +199,7 @@
   },
   "ar": {
     "ui": {
+      "spins": "عمليات السحب",
       "amount": "الكمية",
       "chance": "الاحتمال",
       "ranking": "الترتيب",
@@ -205,6 +217,7 @@
   },
   "it": {
     "ui": {
+      "spins": "Giri",
       "amount": "Quantità",
       "chance": "Probabilità",
       "ranking": "Classifica",
@@ -222,6 +235,7 @@
   },
   "ja": {
     "ui": {
+      "spins": "回転",
       "amount": "数量",
       "chance": "確率",
       "ranking": "ランキング",
@@ -239,6 +253,7 @@
   },
   "bg": {
     "ui": {
+      "spins": "Завъртания",
       "amount": "Количество",
       "chance": "Шанс",
       "ranking": "Класиране",
@@ -256,6 +271,7 @@
   },
   "pt": {
     "ui": {
+      "spins": "Giros",
       "amount": "Quantidade",
       "chance": "Chance",
       "ranking": "Classificação",
@@ -273,6 +289,7 @@
   },
   "da": {
     "ui": {
+      "spins": "Drejninger",
       "amount": "Mængde",
       "chance": "Chance",
       "ranking": "Rangering",
@@ -290,6 +307,7 @@
   },
   "fi": {
     "ui": {
+      "spins": "Pyöräytykset",
       "amount": "Määrä",
       "chance": "Todennäköisyys",
       "ranking": "Sijoitus",
@@ -307,6 +325,7 @@
   },
   "ko": {
     "ui": {
+      "spins": "회전",
       "amount": "수량",
       "chance": "확률",
       "ranking": "순위",
@@ -324,6 +343,7 @@
   },
   "lt": {
     "ui": {
+      "spins": "Sukimai",
       "amount": "Kiekis",
       "chance": "Tikimybė",
       "ranking": "Reitingas",
@@ -341,6 +361,7 @@
   },
   "no": {
     "ui": {
+      "spins": "Spinn",
       "amount": "Mengde",
       "chance": "Sjanse",
       "ranking": "Rangering",
@@ -358,6 +379,7 @@
   },
   "sv": {
     "ui": {
+      "spins": "Snurr",
       "amount": "Antal",
       "chance": "Chans",
       "ranking": "Rankning",
@@ -375,6 +397,7 @@
   },
   "sk": {
     "ui": {
+      "spins": "Roztočenia",
       "amount": "Množstvo",
       "chance": "Šanca",
       "ranking": "Poradie",
@@ -392,6 +415,7 @@
   },
   "tr": {
     "ui": {
+      "spins": "Çevirme",
       "amount": "Miktar",
       "chance": "Olasılık",
       "ranking": "Sıralama",

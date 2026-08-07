@@ -100,7 +100,7 @@ function applyOwnLang() {
         no_levels: L.no_levels ?? "No levels",
 
         top_rewards: L.top_rewards ?? "TOP rewards",
-        level: L.level ?? "Level"
+        spins: L.spins ?? "spins"
     };
 }
 
@@ -341,6 +341,23 @@ function getEventLabel(event) {
     return name;
 }
 
+function getGachaSpinRange(gachaEvent) {
+    const minPulls = Number(getProp(gachaEvent, ["minPulls", "minpulls"]));
+    const maxPulls = Number(getProp(gachaEvent, ["maxPulls", "maxpulls"]));
+
+    if (!Number.isFinite(minPulls) || !Number.isFinite(maxPulls)) return "";
+
+    // The game data starts counting from pull 0, while players count their
+    // first spin as 1.
+    const firstSpin = minPulls + 1;
+    if (maxPulls === 0 || maxPulls < minPulls) return `${firstSpin}+`;
+
+    const lastSpin = maxPulls + 1;
+    return firstSpin === lastSpin
+        ? String(lastSpin)
+        : `${firstSpin}-${lastSpin}`;
+}
+
 function setupSelectors() {
     const eventSelect = document.getElementById("eventSelect");
     const setSelect = document.getElementById("setSelect");
@@ -465,9 +482,16 @@ function updateLevelOptions() {
     }
 
     uniqueLevels.forEach(level => {
+        const gachaEvent = gachaEvents.find(e => {
+            const eventMatch = String(getProp(e, ["eventID", "eventId", "eventid"])) === String(eventId);
+            const setMatch = String(getProp(e, ["rewardSetID", "rewardSetId", "rewardsetid"]) || "") === String(setId);
+            const levelMatch = Number(getProp(e, ["gachaLevel", "gachaLevelID", "gachalevel"])) === level;
+            return eventMatch && setMatch && levelMatch;
+        });
         const option = document.createElement("option");
         option.value = String(level);
-        option.textContent = `${UI_LANG.level} ${level}`;
+        const spinRange = getGachaSpinRange(gachaEvent);
+        option.textContent = spinRange ? `${spinRange} ${UI_LANG.spins}` : UI_LANG.spins;
         levelSelect.appendChild(option);
     });
 
