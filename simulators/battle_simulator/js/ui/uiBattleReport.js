@@ -189,27 +189,20 @@ function isWallAbilityScheduled(flag, owner, side, waveIndex) {
 function matchesPreviousAttackWave(wave, previousWaveResult) {
   const previousWave = previousWaveResult?.sourceWave;
   if (!previousWave) return false;
-  const ratiosMatch = (currentItems = [], previousItems = []) => {
-    const aggregate = items => items.reduce((result, item) => {
-      const type = String(item?.type || '');
-      const count = Math.max(0, Number(item?.count) || 0);
-      if (type && count) result.set(type, (result.get(type) || 0) + count);
-      return result;
-    }, new Map());
-    const current = aggregate(currentItems);
-    const previous = aggregate(previousItems);
-    if (current.size !== previous.size) return false;
-    if (!current.size) return true;
 
-    const currentTotal = sumMapValues(current);
-    const previousTotal = sumMapValues(previous);
-    return [...current].every(([type, count]) =>
-      previous.has(type) && count * previousTotal === previous.get(type) * currentTotal
-    );
-  };
+  const totalCount = items => (items || []).reduce((total, item) => {
+  const count = Math.max(0, Number(item?.count) || 0);
+  return total + count;
+  }, 0);
 
-  return ratiosMatch(wave?.slots, previousWave?.slots) &&
-    ratiosMatch(wave?.tools, previousWave?.tools);
+  const currentUnitCount = totalCount(wave?.slots);
+  const previousUnitCount = totalCount(previousWave?.slots);
+
+  const currentToolCount = totalCount(wave?.tools);
+  const previousToolCount = totalCount(previousWave?.tools);
+
+  return currentUnitCount === previousUnitCount &&
+  currentToolCount === previousToolCount;
 }
 
 function pureDefenseUnitType(defenseUnits) {
@@ -757,6 +750,10 @@ function buildAttackUnits(slots = []) {
 function computeAttackTotals(attackUnits = []) {
   let rangedBase = 0;
   let meleeBase = 0;
+  let rangedUnitRangedBase = 0;
+  let rangedUnitMeleeBase = 0;
+  let meleeUnitRangedBase = 0;
+  let meleeUnitMeleeBase = 0;
 
   attackUnits.forEach(unit => {
     let ranged = unit.count * unit.rangedCombatStrength;
@@ -769,6 +766,7 @@ function computeAttackTotals(attackUnits = []) {
         : unit.strengthGroup === 'horror'
           ? commanderStats.horrorStrength
           : 0;
+
     if (unit.rangedCombatStrength > unit.meleeCombatStrength) {
       ranged += unit.count * (groupStrength || 0);
     } else {
@@ -777,9 +775,24 @@ function computeAttackTotals(attackUnits = []) {
 
     rangedBase += ranged;
     meleeBase += melee;
+
+    if (unit.type2 === 'ranged') {
+      rangedUnitRangedBase += ranged;
+      rangedUnitMeleeBase += melee;
+    } else {
+      meleeUnitRangedBase += ranged;
+      meleeUnitMeleeBase += melee;
+    }
   });
 
-  return { rangedBase, meleeBase };
+  return {
+    rangedBase,
+    meleeBase,
+    rangedUnitRangedBase,
+    rangedUnitMeleeBase,
+    meleeUnitRangedBase,
+    meleeUnitMeleeBase
+  };
 }
 
 function strongestAttackBase(attackUnits = []) {
@@ -846,6 +859,7 @@ function computeWaveBattle(
   defenseTotalMultiplier = 1,
   attackStrengthBonusPercent = 0,
   previousWaveResult = null,
+  wayOfPerfectionWaveMatch = false,
   wallDefenderCounts = null,
   wallAttackerCounts = null,
   previousWallWaveResults = null,
@@ -1024,12 +1038,12 @@ function computeWaveBattle(
   );
 
   const defenseStrength = computeDefenseStrengthBonuses(side, waveIndex, defenseToolScale);
-  let attackMeleeAbilityMultiplier = 1;
+    let attackMeleeAbilityMultiplier = 1;
   let attackRangedAbilityMultiplier = 1;
   let defenseMeleeAbilityMultiplier = 1;
   let defenseRangedAbilityMultiplier = 1;
-  let attackWayOfPerfectionMultiplier = 1;
-  let defenseWayOfPerfectionMultiplier = 1;
+  let attackWingsRangedUnitMultiplier = 1;
+  let defenseWingsRangedUnitMultiplier = 1;
   let defenseEndlessPracticeMultiplier = 1;
   let defensePowerSurgeMultiplier = 1;
   let defenseLongbowsMultiplier = 1;
@@ -1174,35 +1188,49 @@ function computeWaveBattle(
       attackRangedAbilityMultiplier *= 1 - reduction / 100;
     }
     if (isAttackAbilityActive('wingsWhirlwind', side, waveIndex)) {
-      const ownBonus = 21;
+      const ownBonus = 21 * attackWallAbilityScale(side, waveIndex);
       const enemyReduction = 21 * attackGeneralDebuffScale(side, waveIndex, { ranged: true });
       markAttackAbility('wingsWhirlwind', [enemyReduction, ownBonus]);
-      attackBonus.rangedMult += 0.21 * attackWallAbilityScale(side, waveIndex);
-      defenseRangedAbilityMultiplier *= 1 - enemyReduction / 100;
+      attackWingsRangedUnitMultiplier *= 1 + ownBonus / 100;
+      defenseWingsRangedUnitMultiplier *= 1 - enemyReduction / 100;
     }
     if (isDefenseAbilityActive('wingsWhirlwind', side, waveIndex)) {
-      const ownBonus = 21;
+      const ownBonus = 21 * defenseWallAbilityScale(side, waveIndex);
       const enemyReduction = 21 * defenseGeneralDebuffScale(side, waveIndex, { ranged: true });
       markDefenseAbility('wingsWhirlwind', [enemyReduction, ownBonus]);
-      defenseStrength.ranged += 21 * defenseWallAbilityScale(side, waveIndex);
-      attackRangedAbilityMultiplier *= 1 - enemyReduction / 100;
+      defenseWingsRangedUnitMultiplier *= 1 + ownBonus / 100;
+      attackWingsRangedUnitMultiplier *= 1 - enemyReduction / 100;
+    }
+  }
+  if (side !== 'cy' && waveIndex % 3 === 0) {
+    if (isAttackAbilityActive('toweringShield', side, waveIndex)) {
+      const reduction = 14 * attackGeneralDebuffScale(side, waveIndex, { ranged: true });
+      markAttackAbility('toweringShield', reduction);
+      defenseWingsRangedUnitMultiplier *= 1 - reduction / 100;
+    }
+    if (isDefenseAbilityActive('toweringShield', side, waveIndex)) {
+      const reduction = 14 * defenseGeneralDebuffScale(side, waveIndex, { ranged: true });
+      markDefenseAbility('toweringShield', reduction);
+      attackWingsRangedUnitMultiplier *= 1 - reduction / 100;
     }
   }
 
   if (side !== 'cy') {
     if (isAttackAbilityActive('wayOfPerfection', side, waveIndex) &&
         waveIndex > 1 &&
-        matchesPreviousAttackWave(wave, previousWaveResult)) {
-      const bonus = 0.5 * attackWallAbilityScale(side, waveIndex);
-      markAttackAbility('wayOfPerfection', bonus * 100);
-      attackWayOfPerfectionMultiplier += bonus;
+        wayOfPerfectionWaveMatch) {
+      const bonus = 50 * attackWallAbilityScale(side, waveIndex);
+      markAttackAbility('wayOfPerfection', bonus);
+      attackBonus.rangedMult += bonus / 100;
+      attackBonus.meleeMult += bonus / 100;
     }
     if (isDefenseAbilityActive('wayOfPerfection', side, waveIndex)) {
       const bonus = 50 * defenseWallAbilityScale(side, waveIndex);
       const defenseType = pureDefenseUnitType(defenseUnits);
       if (defenseType) {
         markDefenseAbility('wayOfPerfection', bonus);
-        defenseWayOfPerfectionMultiplier += bonus / 100;
+        defenseStrength.ranged += bonus;
+        defenseStrength.melee += bonus;
       }
     }
   }
@@ -1243,24 +1271,31 @@ function computeWaveBattle(
     defenseMeleeMult += defenseWallAbilityScale(side, waveIndex);
   }
 
-  let totalAttackRanged = attackTotals.rangedBase
+  let totalAttackRanged = (
+    attackTotals.meleeUnitRangedBase +
+    attackTotals.rangedUnitRangedBase * attackWingsRangedUnitMultiplier
+  )
     * attackBonus.rangedMult
     * attackTotalMultiplier
     * attackRangedAbilityMultiplier
     * attackLongbowsMultiplier;
-  let totalAttackMelee = attackTotals.meleeBase
+
+  let totalAttackMelee = (
+    attackTotals.meleeUnitMeleeBase +
+    attackTotals.rangedUnitMeleeBase * attackWingsRangedUnitMultiplier
+  )
     * attackBonus.meleeMult
     * attackTotalMultiplier
     * attackMeleeAbilityMultiplier;
 
   let totalDefenseRanged = (
     defenseTotals.meleeRangedBase * defenseMeleeMult +
-    defenseTotals.rangedRangedBase * defenseRangedMult
+    defenseTotals.rangedRangedBase * defenseRangedMult * defenseWingsRangedUnitMultiplier
   ) * defenseBonusMult * defenseRangedAbilityMultiplier;
 
   let totalDefenseMelee = (
     defenseTotals.meleeMeleeBase * defenseMeleeMult +
-    defenseTotals.rangedMeleeBase * defenseRangedMult
+    defenseTotals.rangedMeleeBase * defenseRangedMult * defenseWingsRangedUnitMultiplier
   ) * defenseBonusMult * defenseMeleeAbilityMultiplier;
 
   let heartAttackRangedBonus = 0;
@@ -1358,31 +1393,6 @@ function computeWaveBattle(
   let attackRangedForDefenderCasualties = totalAttackRanged;
   let attackMeleeForDefenderCasualties = totalAttackMelee;
 
-  if (side !== 'cy' && waveIndex % 3 === 0) {
-    if (isAttackAbilityActive('toweringShield', side, waveIndex)) {
-      const reduction = 14 * attackGeneralDebuffScale(side, waveIndex, { ranged: true });
-      markAttackAbility('toweringShield', reduction);
-      const reducedDefenseRangedMult = Math.max((defenseRangedPercent - reduction) / 100, 0) * defenseLongbowsMultiplier;
-      defenseRangedForAttackerCasualties = (
-        defenseTotals.meleeRangedBase * defenseMeleeMult +
-        defenseTotals.rangedRangedBase * reducedDefenseRangedMult
-      ) * defenseBonusMult + heartDefenseRangedBonus;
-      defenseMeleeForAttackerCasualties = (
-        defenseTotals.meleeMeleeBase * defenseMeleeMult +
-        defenseTotals.rangedMeleeBase * reducedDefenseRangedMult
-      ) * defenseBonusMult + heartDefenseMeleeBonus;
-    }
-    if (isDefenseAbilityActive('toweringShield', side, waveIndex)) {
-      const reduction = 0.14 * defenseGeneralDebuffScale(side, waveIndex, { ranged: true });
-      markDefenseAbility('toweringShield', reduction * 100);
-      const reducedAttackRangedMult =
-      Math.max(attackBonus.rangedMult - reduction, 0) * attackLongbowsMultiplier;
-      attackRangedForDefenderCasualties =
-        attackTotals.rangedBase * reducedAttackRangedMult * attackTotalMultiplier +
-        heartAttackRangedBonus;
-    }
-  }
-
   if (side !== 'cy' && waveIndex % 2 === 0) {
     const riseAttackBase = strongestAttackBase(attackUnits);
     const riseDefenseBase = strongestDefenseBase(defenseUnits);
@@ -1445,18 +1455,6 @@ function computeWaveBattle(
     totalDefenseMelee *= defensePowerSurgeMultiplier;
     defenseRangedForAttackerCasualties *= defensePowerSurgeMultiplier;
     defenseMeleeForAttackerCasualties *= defensePowerSurgeMultiplier;
-  }
-  if (attackWayOfPerfectionMultiplier !== 1) {
-    totalAttackRanged *= attackWayOfPerfectionMultiplier;
-    totalAttackMelee *= attackWayOfPerfectionMultiplier;
-    attackRangedForDefenderCasualties *= attackWayOfPerfectionMultiplier;
-    attackMeleeForDefenderCasualties *= attackWayOfPerfectionMultiplier;
-  }
-  if (defenseWayOfPerfectionMultiplier !== 1) {
-    totalDefenseRanged *= defenseWayOfPerfectionMultiplier;
-    totalDefenseMelee *= defenseWayOfPerfectionMultiplier;
-    defenseRangedForAttackerCasualties *= defenseWayOfPerfectionMultiplier;
-    defenseMeleeForAttackerCasualties *= defenseWayOfPerfectionMultiplier;
   }
   if (attackFinalMultiplier !== 1) {
     totalAttackRanged *= attackFinalMultiplier;
@@ -1699,6 +1697,14 @@ function simulateWallSides() {
     const previousWallWaveResults = wallSides
       .map(side => state[side].previousWaveResult)
       .filter(Boolean);
+    const wayOfPerfectionWaveMatch = waveOffset > 0 &&
+    wallSides.every(side => {
+      const currentWave = waves[side]?.[waveOffset] || { slots: [], tools: [] };
+      return matchesPreviousAttackWave(
+        currentWave,
+        state[side].previousWaveResult
+      );
+    });
     const adjustedAttackUnits = Object.fromEntries(wallSides.map(side => {
       const unitsForWave = buildAttackUnits(waves[side]?.[waveOffset]?.slots || []);
       applyMappedKills(
@@ -1761,6 +1767,7 @@ function simulateWallSides() {
         1,
         0,
         sideState.previousWaveResult,
+        wayOfPerfectionWaveMatch,
         wallDefenderCounts,
         wallAttackerCounts,
         previousWallWaveResults,
@@ -2079,6 +2086,7 @@ function computeBattleResults(side) {
     defenseTotalMultiplier,
     attackStrengthBonusPercent,
     null,
+    false,
     null,
     null,
     null,
