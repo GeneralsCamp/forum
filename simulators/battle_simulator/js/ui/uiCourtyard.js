@@ -1,6 +1,7 @@
 import * as variables from '../data/variables.js';
 import { saveAttackState } from '../data/attackState.js';
 import { createUnitIcon, openUnitModal } from './uiUnits.js';
+import { formatGroupedNumber } from './editableCount.js';
 
 export function createCourtyardAssaultCard(onClear) {
   if (!variables.waves['CY']) {
@@ -188,7 +189,7 @@ export function summarizeCourtyardUnitBonuses() {
   result.sort((a, b) => b.value - a.value);
 
   return result.length
-    ? `<div class="row">${result.map(stat => `<div class="col-12 effect-slot"><img src="${stat.icon}" alt="${stat.type}" /> +${new Intl.NumberFormat().format(stat.value)}</div>`).join('')}</div>`
+    ? `<div class="row">${result.map(stat => `<div class="col-12 effect-slot"><img src="${stat.icon}" alt="${stat.type}" /> +${formatGroupedNumber(stat.value, 0)}</div>`).join('')}</div>`
     : '';
 }
 

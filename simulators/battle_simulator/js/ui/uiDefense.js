@@ -3,6 +3,7 @@ import { imageUrl } from '../data/imagePaths.js';
 import { openDefenseToolsModal } from './modals/defenseToolsModal.js';
 import { openDefenseUnitsModal } from './modals/defenseUnitsModal.js';
 import { itemLevelBadge, runtimeItem } from './itemLevelBadge.js';
+import { formatGroupedNumber } from './editableCount.js';
 
 export function createDefenseUnitIcon(slot) {
   const unitIconContainer = document.createElement('div');
@@ -406,17 +407,15 @@ export function calculateTroopDefenseStrength(side) {
   document.getElementById('leftPercentage').textContent = `${Math.round(leftPercentage)}%`;
   document.getElementById('rightPercentage').textContent = `${Math.round(rightPercentage)}%`;
 
-  const formatter = new Intl.NumberFormat('en-US');
-
   const defenseStrengthDisplay = `
     <div class="defense-effect-row">
       <div class="defense-effect-cell">
         <img src="../../img_base/battle_simulator/castellan-modal1.png" alt="Melee Defense" class="combat-icon" />
-        <span class="me-1">+${formatter.format(totalMeleeDefense)}</span>
+        <span class="me-1">+${formatGroupedNumber(totalMeleeDefense, 0)}</span>
       </div>
       <div class="defense-effect-cell">
         <img src="../../img_base/battle_simulator/castellan-modal2.png" alt="Ranged Defense" class="combat-icon" />
-        <span class="me-1">+${formatter.format(totalRangedDefense)}</span>
+        <span class="me-1">+${formatGroupedNumber(totalRangedDefense, 0)}</span>
       </div>
     </div>
   `;

@@ -1,4 +1,4 @@
-import { BATTLE_CATALOG_GROUPS, cloneBattleCatalog } from '../../data/catalog.js';
+import { BATTLE_CATALOG_GROUPS, BATTLE_CATALOG_PRESETS, cloneBattleCatalog } from '../../data/catalog.js';
 import { getBattleCatalog, saveBattleCatalog } from '../../data/battleCatalogState.js';
 import { loadData, resolveCatalogItem, resolveCatalogPreview } from '../../data/dataLoader.js';
 import { saveAttackState } from '../../data/attackState.js';
@@ -16,6 +16,12 @@ const escapeHtml = value => String(value ?? '').replace(/[&<>'"]/g, char => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
 }[char]));
 const removeIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v3H4V5h4l1-2Zm-2 6h10l-1 12H8L7 9Z"></path></svg>';
+
+function isDefaultEntry(groupKey, entry) {
+  return (BATTLE_CATALOG_PRESETS.default[groupKey] || []).some(defaultEntry =>
+    String(defaultEntry.wodID) === String(entry?.wodID)
+  );
+}
 
 function levelControlHtml(levelsInput, selectedLevel, index = '') {
   const levels = [...levelsInput].map(Number).sort((a, b) => a - b);
@@ -72,11 +78,15 @@ async function renderCatalogEntries() {
   list.innerHTML = '<div class="catalog-loading">Loading...</div>';
   const rows = await Promise.all(entries.map((entry, index) => describeEntry(group, entry, index)));
   list.innerHTML = rows.length ? rows.map(({ entry, index, preview }) => {
+    const removable = !isDefaultEntry(activeGroupKey, entry);
+    const removeButton = removable
+      ? `<button type="button" class="catalog-remove" aria-label="Remove">${removeIcon}</button>`
+      : '';
     if (!preview) return `<div class="catalog-entry invalid" data-catalog-index="${index}">
       <h6 class="card-title wave-editor-name">Unknown item</h6>
       <div class="catalog-entry-editor">
         <div class="catalog-entry-error">Item could not be loaded.</div>
-        <button type="button" class="catalog-remove catalog-remove-invalid" aria-label="Remove">${removeIcon}</button>
+        ${removable ? `<button type="button" class="catalog-remove catalog-remove-invalid" aria-label="Remove">${removeIcon}</button>` : ''}
       </div>
     </div>`;
     const levels = preview.availableLevels || [];
@@ -85,7 +95,7 @@ async function renderCatalogEntries() {
       <div class="catalog-entry-editor d-flex align-items-stretch">
         <div class="catalog-entry-image-wrap">
           <img src="${escapeHtml(imageUrl(preview.image))}" alt="" class="modal-image">
-          <button type="button" class="catalog-remove" aria-label="Remove">${removeIcon}</button>
+          ${removeButton}
         </div>
         <div class="modal-input-main">${levelControlHtml(levels, preview.level, index)}</div>
       </div>
@@ -94,7 +104,9 @@ async function renderCatalogEntries() {
 
   list.querySelectorAll('.catalog-remove').forEach(button => {
     button.onclick = () => {
-      draftCatalog[activeGroupKey].splice(Number(button.closest('[data-catalog-index]').dataset.catalogIndex), 1);
+      const index = Number(button.closest('[data-catalog-index]').dataset.catalogIndex);
+      if (isDefaultEntry(activeGroupKey, draftCatalog[activeGroupKey][index])) return;
+      draftCatalog[activeGroupKey].splice(index, 1);
       renderCatalogEntries();
     };
   });
@@ -119,12 +131,13 @@ async function loadCustomId() {
     const entry = { wodID };
     if (preview.level != null) entry.level = preview.level;
     const entries = draftCatalog[activeGroupKey] || [];
-    const duplicateIndex = entries.findIndex(existing =>
-      String(existing.wodID) === String(entry.wodID)
-      && Number(existing.level ?? preview.level) === Number(entry.level ?? preview.level)
-    );
-    if (duplicateIndex >= 0) entries.unshift(...entries.splice(duplicateIndex, 1));
-    else entries.unshift(entry);
+    const alreadyIncluded = entries.some(existing => String(existing.wodID) === String(entry.wodID));
+    if (alreadyIncluded) {
+      input.setCustomValidity('This item is already included.');
+      input.reportValidity();
+      return;
+    }
+    entries.unshift(entry);
     input.value = '';
     await renderCatalogEntries();
     const list = document.getElementById('battle-catalog-list');

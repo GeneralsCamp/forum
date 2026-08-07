@@ -1,4 +1,4 @@
-import { restrictNumericEntry } from '../editableCount.js';
+import { formatGroupedNumber, restrictNumericEntry } from '../editableCount.js';
 
 export function bindSlider(sliderId, valueId, {
   value = 0,
@@ -12,15 +12,24 @@ export function bindSlider(sliderId, valueId, {
   const valueEl = document.getElementById(valueId);
   if (!slider || !valueEl) return;
 
-  const formatNumber = v => (Number.isInteger(v) ? `${v}` : v.toFixed(1));
+  const formatNumber = v => formatGroupedNumber(v);
   const formatCurrentValue = v => (v < 0
     ? `-${formatNumber(Math.abs(v))}`
     : `${prefix}${formatNumber(v)}`);
+  const formatWhileTyping = inputValue => {
+    const normalized = String(inputValue).replace(/\s/g, '');
+    if (!normalized) return '';
+    const [integerPart, decimalPart] = normalized.split('.');
+    const groupedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return allowDecimal && normalized.includes('.')
+      ? `${groupedInteger}.${decimalPart || ''}`
+      : groupedInteger;
+  };
   const card = slider.closest('.modal-card-body');
   const minusButton = card?.querySelector(`.modal-slider-minus[data-slider-id="${sliderId}"]`);
   const plusButton = card?.querySelector(`.modal-slider-plus[data-slider-id="${sliderId}"]`);
   const setValue = nextValue => {
-    const numericValue = Number(String(nextValue).trim());
+    const numericValue = Number(String(nextValue).replace(/\s/g, '').trim().replace(',', '.'));
     const parsed = allowDecimal
       ? Math.round(numericValue * 10) / 10
       : Math.trunc(numericValue);
@@ -37,6 +46,17 @@ export function bindSlider(sliderId, valueId, {
   if (allowDecimal) slider.step = 'any';
   valueEl.inputMode = allowDecimal ? 'decimal' : 'numeric';
   restrictNumericEntry(valueEl, allowDecimal);
+  valueEl.addEventListener('input', () => {
+    const formattedValue = formatWhileTyping(valueEl.textContent);
+    if (valueEl.textContent === formattedValue) return;
+    valueEl.textContent = formattedValue;
+    const selection = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(valueEl);
+    range.collapse(false);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  });
   setValue(value);
 
   slider.oninput = () => setValue(allowDecimal ? Math.round(Number(slider.value)) : slider.value);

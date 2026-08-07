@@ -1286,7 +1286,6 @@ body {
     overflow-x: hidden;
 }
 
-#waveCopyModal .modal-body,
 #defenseBasicsModal .modal-body {
     max-height: none;
     min-height: 0;
@@ -1373,10 +1372,40 @@ body {
 #defenseGeneralModal .modal-body,
 #basicsModal .modal-body,
 #commanderStatsModal .modal-body,
-#castellanStatsModal .modal-body {
+#castellanStatsModal .modal-body,
+#waveCopyModal .modal-body {
     height: 68vh;
     max-height: 68vh;
     min-height: 68vh;
+}
+
+#waveCopyModal .modal-body {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#waveCopyModal .preset-modal-content {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+}
+
+#waveCopyModal .preset-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 0 5px 5px;
+    scrollbar-width: none;
+}
+
+#waveCopyModal .preset-list::-webkit-scrollbar {
+    display: none;
+}
+
+#waveCopyModal .modal-inline-actions {
+    flex: 0 0 auto;
 }
 
 .wave-editor-sticky {

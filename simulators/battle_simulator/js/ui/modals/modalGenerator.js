@@ -1,4 +1,5 @@
 import { modalsData } from './modalsData.js';
+import { formatGroupedNumber } from '../editableCount.js';
 
 let modalCleanupInitialized = false;
 
@@ -59,6 +60,8 @@ export function generateInputCard(title, imageSrc, altText, sliderId, min, max, 
   const percentageValue = /\s*\(%\)\s*$/.test(title);
   const displayTitle = percentageValue ? title.replace(/\s*\(%\)\s*$/, '') : title;
   const valueSuffix = percentageValue ? '%' : '';
+  const displayValue = formatGroupedNumber(value);
+  const displayMaximum = formatGroupedNumber(max);
   return `
     <div class="col-12">
       <div class="modal-card-body mt-1">
@@ -69,8 +72,8 @@ export function generateInputCard(title, imageSrc, altText, sliderId, min, max, 
             <div class="wave-editor-controls">
               <button type="button" class="wave-editor-step modal-slider-minus" data-slider-id="${sliderId}" aria-label="Decrease">&minus;</button>
               <div class="wave-editor-value-wrap">
-                <strong class="wave-editor-value"><span id="${valueId}" class="wave-editor-current-value" data-value-suffix="${valueSuffix}" contenteditable="true" inputmode="numeric" spellcheck="false">${value}</span>${maximumVisible
-                  ? `<span class="modal-slider-limit"> / ${max}${valueSuffix}</span>`
+                <strong class="wave-editor-value"><span id="${valueId}" class="wave-editor-current-value" data-value-suffix="${valueSuffix}" contenteditable="true" inputmode="numeric" spellcheck="false">${displayValue}</span>${maximumVisible
+                  ? `<span class="modal-slider-limit"> / ${displayMaximum}${valueSuffix}</span>`
                   : `<span class="wave-editor-current-suffix">${valueSuffix}</span>`}</strong>
                 <input type="range" id="${sliderId}" min="${min}" max="${max}" value="${value}" class="wave-editor-range">
               </div>

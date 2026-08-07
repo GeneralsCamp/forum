@@ -31,13 +31,14 @@ export const modalsData = [
     id: 'waveCopyModal',
     title: 'Presets',
     body: `
-        <div class="wave-navigation mb-2" id="waveNavigation">
-            <button class="nav-btn" id="prevWaveBtn">&#9664;</button>
-            <span id="currentWaveText">Wave 1 / X</span>
-            <button class="nav-btn" id="nextWaveBtn">&#9654;</button>
-        </div>
-        <div class="preset-list" id="presetList">
-            ${[...Array(8)].map(
+        <div class="preset-modal-content">
+          <div class="wave-navigation mb-2" id="waveNavigation">
+              <button class="nav-btn" id="prevWaveBtn">&#9664;</button>
+              <span id="currentWaveText">Wave 1 / X</span>
+              <button class="nav-btn" id="nextWaveBtn">&#9654;</button>
+          </div>
+          <div class="preset-list" id="presetList">
+            ${[...Array(20)].map(
       (_, i) => `
                 <div class="preset-item" data-preset="${i + 1}">
                     <input type="radio" name="preset" id="preset${i + 1}">
@@ -45,6 +46,7 @@ export const modalsData = [
                 </div>
             `
     ).join('')}
+          </div>
         </div>
     `,
     footer: `
@@ -85,6 +87,7 @@ export const modalsData = [
                 </button>
             </div>
             <span id="current-defense-flank">Front</span>
+          </div>
         </div>
         <div class="col-12">
             <div class="card w-100">

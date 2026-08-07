@@ -2,7 +2,7 @@ import * as variables from '../data/variables.js';
 import { imageUrl } from '../data/imagePaths.js';
 import { switchSide, updateHeaderColor} from './uiWaves.js';
 import { itemLevelBadge, runtimeItem } from './itemLevelBadge.js';
-import { bindEditableCounts, renderEditableCount } from './editableCount.js';
+import { bindEditableCounts, formatGroupedNumber, renderEditableCount } from './editableCount.js';
 
 let unitEditorState = null;
 
@@ -291,7 +291,7 @@ export function summarizeUnitBonuses(slots) {
 
   const rows = result.map(stat => {
     const icon = stat.type === 'ranged' ? '../../img_base/battle_simulator/ranged-icon.png' : '../../img_base/battle_simulator/melee-icon.png';
-    const formattedValue = new Intl.NumberFormat().format(stat.value);
+    const formattedValue = formatGroupedNumber(stat.value, 0);
     return `<div class="col-6 effect-slot"><img src="${icon}" alt="${stat.type.charAt(0).toUpperCase() + stat.type.slice(1)}" /> +${formattedValue}</div>`;
   }).join('');
 

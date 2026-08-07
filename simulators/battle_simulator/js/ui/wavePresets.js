@@ -76,7 +76,7 @@ export function saveToPreset() {
 export function loadPresets() {
     const storedPresets = readStoredJson('variables.presets');
     if (storedPresets) {
-        setPresets(storedPresets);
+        setPresets({ ...presets, ...storedPresets });
     }
 }
 

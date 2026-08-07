@@ -1,5 +1,18 @@
 const MAX_NUMERIC_DIGITS = 12;
 
+export function formatGroupedNumber(value, decimalPlaces = 1) {
+  const numericValue = Number(value);
+  if (!Number.isFinite(numericValue)) return '0';
+  const sign = numericValue < 0 ? '-' : '';
+  const absoluteValue = Math.abs(numericValue);
+  const numberText = Number.isInteger(absoluteValue)
+    ? String(absoluteValue)
+    : absoluteValue.toFixed(decimalPlaces);
+  const [integerPart, decimalPart] = numberText.split('.');
+  const groupedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return `${sign}${groupedInteger}${decimalPart ? `.${decimalPart}` : ''}`;
+}
+
 function sanitizedNumberText(text, allowDecimal, maxDigits) {
   let result = '';
   let hasDecimalPoint = false;
@@ -85,7 +98,7 @@ export function bindEditableCounts(container, getIndex, setValue) {
     } else if (event.key === 'Escape') {
       event.preventDefault();
       const row = valueElement.closest('.wave-editor-row');
-      valueElement.textContent = row?.querySelector('.wave-editor-range')?.value || '0';
+      valueElement.textContent = formatGroupedNumber(row?.querySelector('.wave-editor-range')?.value || 0, 0);
       valueElement.blur();
     }
   });
@@ -95,7 +108,7 @@ export function bindEditableCounts(container, getIndex, setValue) {
     if (!valueElement) return;
     const row = valueElement.closest('.wave-editor-row');
     if (!row) return;
-    const numericValue = Number(String(valueElement.textContent).trim().replace(',', '.'));
+    const numericValue = Number(String(valueElement.textContent).replace(/\s/g, '').replace(',', '.'));
     setValue(getIndex(row), Number.isFinite(numericValue) ? Math.trunc(numericValue) : 0);
   });
 }
@@ -103,6 +116,6 @@ export function bindEditableCounts(container, getIndex, setValue) {
 export function renderEditableCount(row, value, maximum) {
   const valueElement = row.querySelector('.wave-editor-current-value');
   const maximumElement = row.querySelector('.wave-editor-maximum');
-  if (valueElement) valueElement.textContent = value;
-  if (maximumElement) maximumElement.textContent = maximum;
+  if (valueElement) valueElement.textContent = formatGroupedNumber(value, 0);
+  if (maximumElement) maximumElement.textContent = formatGroupedNumber(maximum, 0);
 }
