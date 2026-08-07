@@ -223,7 +223,7 @@ function applyPercentageKills(units = [], predicate, rate = 0) {
   const eligibleCount = sumCounts(eligibleUnits);
   if (eligibleCount <= 0 || rate <= 0) return new Map();
 
-  const killCount = Math.min(Math.ceil(eligibleCount * rate), eligibleCount);
+  const killCount = Math.min(Math.floor(eligibleCount * rate), eligibleCount);
   const losses = distributeLossesByUnit(eligibleUnits, killCount);
   eligibleUnits.forEach(unit => {
     unit.count = Math.max(0, unit.count - (losses.get(toUnitKey(unit.type)) || 0));
@@ -626,8 +626,8 @@ export function combineDefenseProtectionMultipliers(moatBonus, wallBonus, gateBo
 
 export function getCourtyardEntryMultiplier(enteredWallSides) {
   const enteredCount = enteredWallSides.filter(Boolean).length;
-  if (enteredCount === 3) return 1.2217885;
-  if (enteredCount === 1) return 0.7883735;
+  if (enteredCount === 3) return 1.3;
+  if (enteredCount === 1) return 0.7;
   return 1;
 }
 
@@ -910,10 +910,23 @@ function computeWaveBattle(
         (wallArmyCounts?.attacker ?? totalPlannedWallAttackers()) >
           (wallArmyCounts?.defender ?? totalWallDefenders())) {
       markAttackAbility('tailwhip', 2.5);
-      const tailwhipLosses = applyPercentageKills(
-        defenseUnits,
-        unit => unit.type2 === 'melee',
-        0.025
+      const meleeDefenders = defenseUnits.filter(
+        unit => unit.type2 === 'melee' && unit.count > 0
+      );
+
+      const meleeDefenderCount = sumCounts(meleeDefenders);
+      const killCount = Math.min(
+        Math.floor(meleeDefenderCount * 0.025),
+        meleeDefenderCount
+      );
+
+      const tailwhipLosses = applyStrongestKills(
+        meleeDefenders,
+        killCount,
+        unit => Math.max(
+          unit.meleeDefenseStrength || 0,
+          unit.rangedDefenseStrength || 0
+        )
       );
       wavePreCombatDefenderLosses = mergeLossMaps(
         wavePreCombatDefenderLosses,
@@ -922,10 +935,23 @@ function computeWaveBattle(
     }
     if (isDefenseAbilityActive('tailwhip', side, waveIndex, 'preCombat')) {
       markDefenseAbility('tailwhip', 32);
-      const tailwhipLosses = applyPercentageKills(
-        attackUnits,
-        unit => unit.type2 === 'melee',
-        0.32
+      const meleeAttackers = attackUnits.filter(
+        unit => unit.type2 === 'melee' && unit.count > 0
+      );
+
+      const meleeAttackerCount = sumCounts(meleeAttackers);
+      const killCount = Math.min(
+        Math.floor(meleeAttackerCount * 0.32),
+        meleeAttackerCount
+      );
+
+      const tailwhipLosses = applyStrongestKills(
+        meleeAttackers,
+        killCount,
+        unit => Math.max(
+          unit.meleeCombatStrength || 0,
+          unit.rangedCombatStrength || 0
+        )
       );
       wavePreCombatAttackerLosses = mergeLossMaps(
         wavePreCombatAttackerLosses,
@@ -942,12 +968,15 @@ function computeWaveBattle(
     markDefenseAbility('toolFoulUp', 30 * defenseWallAbilityScale(side, waveIndex));
     const toolEffectScale = 1 - 0.3 * defenseWallAbilityScale(side, waveIndex);
     Object.keys(toolTotals).forEach(key => {
-      toolTotals[key] *= toolEffectScale;
+      if (key !== 'shield') {
+        toolTotals[key] *= toolEffectScale;
+      }
     });
   }
   const attackBonus = computeAttackBonusesPercent(side, toolTotals, waveIndex);
   let attackEndlessPracticeMultiplier = 1;
   let attackPowerSurgeMultiplier = 1;
+  let attackLongbowsMultiplier = 1;
   if (side !== 'cy' && isAttackAbilityActive('endlessPractice', side, waveIndex) && waveIndex) {
     const bonus = waveIndex * 4 * attackWallAbilityScale(side, waveIndex);
     attackEndlessPracticeMultiplier += bonus / 100;
@@ -1003,6 +1032,7 @@ function computeWaveBattle(
   let defenseWayOfPerfectionMultiplier = 1;
   let defenseEndlessPracticeMultiplier = 1;
   let defensePowerSurgeMultiplier = 1;
+  let defenseLongbowsMultiplier = 1;
   if (side !== 'cy' && isDefenseAbilityActive('endlessPractice', side, waveIndex) && waveIndex) {
     const bonus = waveIndex * 4 * defenseWallAbilityScale(side, waveIndex);
     defenseEndlessPracticeMultiplier += bonus / 100;
@@ -1056,8 +1086,8 @@ function computeWaveBattle(
         (total, wallSide) => total + (Number(wallDefenderCounts?.[wallSide]) || 0),
         0
       );
-      const bonusPercent = Math.floor(allWallDefenders / 100)
-        * attackWallAbilityScale(side, waveIndex);
+      const bonusPercent = Math.min( 100, Math.floor(allWallDefenders / 100)
+      ) * attackWallAbilityScale(side, waveIndex);
       markAttackAbility('hordebreaker', bonusPercent);
       attackBonus.rangedMult += bonusPercent / 100;
       attackBonus.meleeMult += bonusPercent / 100;
@@ -1075,22 +1105,31 @@ function computeWaveBattle(
     }
   }
 
-  if (side !== 'cy' && waveIndex % 2 === 0) {
+    if (side !== 'cy' && waveIndex % 2 === 0) {
     const hasRangedAttackers = attackUnits.some(unit => unit.type2 === 'ranged' && unit.count > 0);
     if (hasRangedAttackers && isAttackAbilityActive('longbows', side, waveIndex)) {
       const scale = attackWallAbilityScale(side, waveIndex);
       const minimumPercent = 100 + 50 * scale;
       const bonusPercent = 15 * scale;
-      attackBonus.rangedMult += (minimumPercent - 100 + bonusPercent) / 100;
+      attackBonus.rangedMult = Math.max(attackBonus.rangedMult, minimumPercent / 100);
+      attackLongbowsMultiplier = 1 + bonusPercent / 100;
       markAttackAbility('longbows', [minimumPercent, bonusPercent]);
     }
 
     const hasRangedDefenders = defenseUnits.some(unit => unit.type2 === 'ranged' && unit.count > 0);
-    if (hasRangedDefenders && isDefenseAbilityActive('longbows', side, waveIndex)) {
+  if (
+    hasRangedDefenders && isDefenseAbilityActive('longbows', side, waveIndex)
+  ) {
       const scale = defenseWallAbilityScale(side, waveIndex);
       const minimumPercent = 100 + 40 * scale;
       const bonusPercent = 14 * scale;
-      defenseStrength.ranged += minimumPercent - 100 + bonusPercent;
+
+      defenseStrength.ranged = Math.max(
+        defenseStrength.ranged,
+        minimumPercent
+      );
+
+      defenseLongbowsMultiplier = 1 + bonusPercent / 100;
       markDefenseAbility('longbows', [minimumPercent, bonusPercent]);
     }
   }
@@ -1185,7 +1224,7 @@ function computeWaveBattle(
 
   const defenseRangedPercent = Math.max(defenseStrength.ranged - shieldPercent, 0);
   const defenseMeleePercent = defenseStrength.melee;
-  const defenseRangedMult = defenseRangedPercent / 100;
+  const defenseRangedMult = (defenseRangedPercent / 100) * defenseLongbowsMultiplier;
   let defenseMeleeMult = defenseMeleePercent / 100;
 
   const defenseTotals = computeDefenseTotals(defenseUnits);
@@ -1207,7 +1246,8 @@ function computeWaveBattle(
   let totalAttackRanged = attackTotals.rangedBase
     * attackBonus.rangedMult
     * attackTotalMultiplier
-    * attackRangedAbilityMultiplier;
+    * attackRangedAbilityMultiplier
+    * attackLongbowsMultiplier;
   let totalAttackMelee = attackTotals.meleeBase
     * attackBonus.meleeMult
     * attackTotalMultiplier
@@ -1322,7 +1362,7 @@ function computeWaveBattle(
     if (isAttackAbilityActive('toweringShield', side, waveIndex)) {
       const reduction = 14 * attackGeneralDebuffScale(side, waveIndex, { ranged: true });
       markAttackAbility('toweringShield', reduction);
-      const reducedDefenseRangedMult = Math.max((defenseRangedPercent - reduction) / 100, 0);
+      const reducedDefenseRangedMult = Math.max((defenseRangedPercent - reduction) / 100, 0) * defenseLongbowsMultiplier;
       defenseRangedForAttackerCasualties = (
         defenseTotals.meleeRangedBase * defenseMeleeMult +
         defenseTotals.rangedRangedBase * reducedDefenseRangedMult
@@ -1335,7 +1375,8 @@ function computeWaveBattle(
     if (isDefenseAbilityActive('toweringShield', side, waveIndex)) {
       const reduction = 0.14 * defenseGeneralDebuffScale(side, waveIndex, { ranged: true });
       markDefenseAbility('toweringShield', reduction * 100);
-      const reducedAttackRangedMult = Math.max(attackBonus.rangedMult - reduction, 0);
+      const reducedAttackRangedMult =
+      Math.max(attackBonus.rangedMult - reduction, 0) * attackLongbowsMultiplier;
       attackRangedForDefenderCasualties =
         attackTotals.rangedBase * reducedAttackRangedMult * attackTotalMultiplier +
         heartAttackRangedBonus;
