@@ -12,6 +12,21 @@ import { openDefenseGeneralModal } from './ui/modals/defenseGeneralModal.js';
 import { readStoredJson } from './data/storage.js';
 import { openBattleCatalogModal } from './ui/modals/battleCatalogModal.js';
 
+const OPEN_BETA_ACKNOWLEDGEMENT_KEY = 'battleSimulatorOpenBetaAcknowledged';
+
+function showOpenBetaModal() {
+  if (localStorage.getItem(OPEN_BETA_ACKNOWLEDGEMENT_KEY) === 'true') return;
+  const modalElement = document.getElementById('openBetaModal');
+  const confirmButton = document.getElementById('confirmOpenBeta');
+  if (!modalElement || !confirmButton) return;
+  const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+  confirmButton.onclick = () => {
+    localStorage.setItem(OPEN_BETA_ACKNOWLEDGEMENT_KEY, 'true');
+    modal.hide();
+  };
+  modal.show();
+}
+
 function getFullscreenElement() {
   return document.fullscreenElement || document.webkitFullscreenElement || null;
 }
@@ -36,6 +51,7 @@ async function toggleFullscreen() {
 }
 
 window.addEventListener('load', () => {
+  showOpenBetaModal();
   const savedCommanderStats = readStoredJson('commanderStats');
   const savedCastellanStats = readStoredJson('castellanStats');
   const savedAttackBasics = readStoredJson('attackBasics');

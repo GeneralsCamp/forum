@@ -3123,3 +3123,134 @@ input[type="number"] {
 #waveCopyModal .modal-inline-actions {
     padding: 0 5px 5px;
 }
+
+
+#openBetaModal .modal-dialog {
+    max-width: min(var(--battle-panel-max-width), calc(100% - 20px));
+    margin-right: auto;
+    margin-left: auto;
+}
+
+#openBetaModal .open-beta-modal-content {
+    overflow: hidden;
+}
+
+#openBetaModal .open-beta-modal-body {
+    min-height: 0;
+    max-height: none;
+    padding: 0;
+    overflow: visible;
+}
+
+#openBetaModal .open-beta-modal-body p {
+    margin: 0;
+    padding: 20px 24px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.open-beta-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px;
+    padding: 5px;
+}
+
+.open-beta-action {
+    display: inline-flex;
+    min-width: 0;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 6px 10px;
+    border: 2px solid rgb(67, 51, 38) !important;
+    border-radius: 0 !important;
+    background: rgb(88, 117, 114);
+    color: #fff;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 900;
+    line-height: 1;
+    text-align: center;
+    text-decoration: none;
+    box-shadow:
+        inset 2px 2px 0 rgba(184, 211, 207, 0.48),
+        inset -2px -2px 0 rgba(37, 61, 61, 0.78);
+    transition: filter 80ms ease;
+}
+
+.open-beta-action:hover,
+.open-beta-action:focus {
+    background: rgb(101, 132, 141);
+    color: #fff;
+    border-color: rgb(67, 51, 38) !important;
+    filter: brightness(1.08);
+    box-shadow:
+        inset 2px 2px 0 rgba(184, 211, 207, 0.48),
+        inset -2px -2px 0 rgba(37, 61, 61, 0.78);
+}
+
+.open-beta-action:focus-visible {
+    outline: 2px solid rgb(243, 194, 74);
+    outline-offset: -4px;
+}
+
+.open-beta-action:active {
+    background: rgb(88, 117, 114) !important;
+    color: #fff !important;
+    transform: none !important;
+    filter: none;
+    box-shadow:
+        inset 2px 2px 0 rgba(37, 61, 61, 0.78),
+        inset -1px -1px 0 rgba(184, 211, 207, 0.28);
+}
+
+.open-beta-continue {
+    grid-column: 1 / -1;
+    min-height: 44px;
+    background: #3f760b;
+    box-shadow:
+        inset 2px 2px 0 rgba(121, 184, 50, 0.58),
+        inset -2px -2px 0 rgba(33, 74, 6, 0.92);
+}
+
+.open-beta-continue:hover,
+.open-beta-continue:focus {
+    background: #4c900e;
+    color: #fff;
+    box-shadow:
+        inset 2px 2px 0 rgba(121, 184, 50, 0.58),
+        inset -2px -2px 0 rgba(33, 74, 6, 0.92);
+}
+
+.open-beta-continue:active {
+    background: #3f760b !important;
+    box-shadow:
+        inset 2px 2px 0 rgba(33, 74, 6, 0.92),
+        inset -1px -1px 0 rgba(121, 184, 50, 0.32);
+}
+
+@media (max-width: 430px) {
+    #openBetaModal .modal-dialog {
+        max-width: calc(100% - 12px);
+    }
+
+    #openBetaModal .open-beta-modal-body p {
+        padding: 16px 14px;
+        font-size: 13px;
+    }
+
+    .open-beta-actions {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 4px;
+        padding: 4px;
+    }
+
+    .open-beta-continue {
+        grid-column: 1 / -1;
+    }
+}
