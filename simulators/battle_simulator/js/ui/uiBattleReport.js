@@ -1271,12 +1271,26 @@ function computeWaveBattle(
     defenseMeleeMult += defenseWallAbilityScale(side, waveIndex);
   }
 
+  const courtyardEntryPercent =
+    side === 'cy'
+      ? (attackTotalMultiplier - 1) * 100
+      : 0;
+
+  const rangedEntryMult =
+    side === 'cy'
+      ? Math.max(0, attackBonus.rangedMult + courtyardEntryPercent / 100)
+      : attackBonus.rangedMult;
+
+  const meleeEntryMult =
+    side === 'cy'
+      ? attackBonus.meleeMult * attackTotalMultiplier
+      : attackBonus.meleeMult;
+
   let totalAttackRanged = (
     attackTotals.meleeUnitRangedBase +
     attackTotals.rangedUnitRangedBase * attackWingsRangedUnitMultiplier
   )
-    * attackBonus.rangedMult
-    * attackTotalMultiplier
+    * rangedEntryMult
     * attackRangedAbilityMultiplier
     * attackLongbowsMultiplier;
 
@@ -1284,8 +1298,7 @@ function computeWaveBattle(
     attackTotals.meleeUnitMeleeBase +
     attackTotals.rangedUnitMeleeBase * attackWingsRangedUnitMultiplier
   )
-    * attackBonus.meleeMult
-    * attackTotalMultiplier
+    * meleeEntryMult
     * attackMeleeAbilityMultiplier;
 
   let totalDefenseRanged = (
@@ -1548,38 +1561,45 @@ function computeWaveBattle(
   const rangedLoss = Math.min(roundCasualties(attackRangedCount * rangedKillRatio), attackRangedCount);
   const meleeLoss = Math.min(roundCasualties(attackMeleeCount * meleeKillRatio), attackMeleeCount);
   const attackerTotalLoss = Math.min(rangedLoss + meleeLoss, attackerTotalCount);
-  let defenderTotalLoss = attackerTotalCount <= 0
-    ? 0
-    : Math.min(Math.round(defenderTotalCount * defendersKilledRatio), defenderTotalCount);
-
-  const defenderCountTotal = defenderRangedCount + defenderMeleeCount;
-  const defenderRangedShare = defenderCountTotal > 0 ? defenderRangedCount / defenderCountTotal : 0;
-  let defenderRangedLoss = Math.round(defenderTotalLoss * defenderRangedShare);
-  defenderRangedLoss = Math.min(defenderRangedLoss, defenderRangedCount);
-  let defenderMeleeLoss = Math.min(defenderTotalLoss - defenderRangedLoss, defenderMeleeCount);
-  const defenderMissing = defenderTotalLoss - (defenderRangedLoss + defenderMeleeLoss);
-  if (defenderMissing > 0) {
-    const rangedCapacity = defenderRangedCount - defenderRangedLoss;
-    const extraRanged = Math.min(defenderMissing, Math.max(0, rangedCapacity));
-    defenderRangedLoss += extraRanged;
-    defenderMeleeLoss += Math.max(0, defenderMissing - extraRanged);
-  }
-
   const combatAttackerLosses = new Map();
-  const rangedLosses = distributeLossesByUnit(attackUnits.filter(u => u.type2 === 'ranged'), rangedLoss);
-  const meleeLosses = distributeLossesByUnit(attackUnits.filter(u => u.type2 === 'melee'), meleeLoss);
+
+  const rangedLosses = distributeLossesByUnit(
+    attackUnits.filter(u => u.type2 === 'ranged'),
+    rangedLoss
+  );
+
+  const meleeLosses = distributeLossesByUnit(
+    attackUnits.filter(u => u.type2 === 'melee'),
+    meleeLoss
+  );
+
   attackUnits.forEach(unit => {
     const key = toUnitKey(unit.type);
-    combatAttackerLosses.set(key, (rangedLosses.get(key) || 0) + (meleeLosses.get(key) || 0));
+    combatAttackerLosses.set(
+      key,
+      (rangedLosses.get(key) || 0) + (meleeLosses.get(key) || 0)
+    );
   });
 
   const combatDefenderLosses = new Map();
-  const rangedDefenderLosses = distributeLossesByUnit(defenseUnits.filter(u => u.type2 === 'ranged'), defenderRangedLoss);
-  const meleeDefenderLosses = distributeLossesByUnit(defenseUnits.filter(u => u.type2 === 'melee'), defenderMeleeLoss);
+
   defenseUnits.forEach(unit => {
     const key = toUnitKey(unit.type);
-    combatDefenderLosses.set(key, (rangedDefenderLosses.get(key) || 0) + (meleeDefenderLosses.get(key) || 0));
+
+    const loss = attackerTotalCount <= 0
+      ? 0
+      : Math.min(
+          Math.round(unit.count * defendersKilledRatio),
+          unit.count
+        );
+
+    combatDefenderLosses.set(
+      key,
+      (combatDefenderLosses.get(key) || 0) + loss
+    );
   });
+
+  const defenderTotalLoss = sumMapValues(combatDefenderLosses);
 
   defenseUnits.forEach(unit => {
     const loss = combatDefenderLosses.get(toUnitKey(unit.type)) || 0;
