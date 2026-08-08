@@ -38,6 +38,7 @@ const ABILITY_GROUP_BY_FLAG = {
   powerSurge: '1001',
   riseToTheTask: '1002',
   giantSlayer: '1003',
+  intimidate: '1005',
   hordebreaker: '1007',
   endlessPractice: '1010',
   wayOfTheSword: '1011',
@@ -174,7 +175,7 @@ function isWallAbilityScheduled(flag, owner, side, waveIndex) {
     'wingsWhirlwind', 'dragonscaleArmor', 'aspectOfTheDragon', 'yourCut'].includes(flag)) {
     return waveIndex % 2 === 0;
   }
-  if (['hordebreaker', 'toolFoulUp', 'tailwhip', 'toweringShield'].includes(flag)) {
+  if (['intimidate', 'hordebreaker', 'toolFoulUp', 'tailwhip', 'toweringShield'].includes(flag)) {
     return waveIndex % 3 === 0;
   }
   if (flag === 'lastingWounds') return waveIndex >= 4 && waveIndex % 3 !== 0;
@@ -850,6 +851,24 @@ function aspectDragonReductionPercent(owner, strengths, side, waveIndex) {
   return Math.min(30, difference * abilityValue * 100 * ironWillScale);
 }
 
+function intimidateReductionPercent(owner, strengths, side, waveIndex) {
+  const attackerStrength = Number(strengths?.attacker) || 0;
+  const defenderStrength = Number(strengths?.defender) || 0;
+  if (attackerStrength <= 0 || defenderStrength <= 0) return 0;
+
+  const ownStrength = owner === 'attack' ? attackerStrength : defenderStrength;
+  const enemyStrength = owner === 'attack' ? defenderStrength : attackerStrength;
+  if (ownStrength <= enemyStrength) return 0;
+
+  const superiority = Math.floor((ownStrength / enemyStrength - 1) * 100) / 100;
+  const abilityValue = generalAbilityEffectValue('1005', owner, owner === 'attack' ? 1.4 : 1.8);
+  const ironWillScale = owner === 'attack'
+    ? attackGeneralDebuffScale(side, waveIndex)
+    : defenseGeneralDebuffScale(side, waveIndex);
+
+  return Math.min(30, superiority * abilityValue * 100 * ironWillScale);
+}
+
 function computeWaveBattle(
   side,
   wave,
@@ -865,6 +884,7 @@ function computeWaveBattle(
   previousWallWaveResults = null,
   wallYourCutBonuses = null,
   aspectDragonStrengths = null,
+  intimidateStrengths = null,
   allocatedPreBattleLosses = null,
   wallArmyCounts = null,
   attackFinalMultiplier = 1,
@@ -1162,6 +1182,31 @@ function computeWaveBattle(
     markDefenseAbility('lastingWounds', meleeReduction);
     attackMeleeAbilityMultiplier *= 1 - meleeReduction / 100;
     attackRangedAbilityMultiplier *= 1 - rangedReduction / 100;
+  }
+
+  if (side !== 'cy' && waveIndex % 3 === 0) {
+    if (isAttackAbilityActive('intimidate', side, waveIndex)) {
+      const reduction = intimidateReductionPercent(
+        'attack',
+        intimidateStrengths,
+        side,
+        waveIndex
+      );
+      markAttackAbility('intimidate', reduction);
+      defenseMeleeAbilityMultiplier *= 1 - reduction / 100;
+      defenseRangedAbilityMultiplier *= 1 - reduction / 100;
+    }
+    if (isDefenseAbilityActive('intimidate', side, waveIndex)) {
+      const reduction = intimidateReductionPercent(
+        'defense',
+        intimidateStrengths,
+        side,
+        waveIndex
+      );
+      markDefenseAbility('intimidate', reduction);
+      attackMeleeAbilityMultiplier *= 1 - reduction / 100;
+      attackRangedAbilityMultiplier *= 1 - reduction / 100;
+    }
   }
 
   if (waveIndex % 2 === 0) {
@@ -1775,6 +1820,11 @@ function simulateWallSides() {
       )
     };
 
+    const intimidateStrengths = {
+      attacker: strongestAttackBase(currentAndFutureAttackUnits).total,
+      defender: strongestDefenseBase(wallDefenseUnits)
+    };
+
     wallSides.forEach(side => {
       const sideState = state[side];
       const wave = waves[side]?.[waveOffset] || { slots: [], tools: [] };
@@ -1793,6 +1843,7 @@ function simulateWallSides() {
         previousWallWaveResults,
         wallYourCutBonuses,
         aspectDragonStrengths,
+        intimidateStrengths,
         {
           attacker: attackerPreBattleLosses.get(`${side}:${waveOffset}`) || new Map(),
           defender: waveOffset === 0
@@ -2107,6 +2158,7 @@ function computeBattleResults(side) {
     attackStrengthBonusPercent,
     null,
     false,
+    null,
     null,
     null,
     null,

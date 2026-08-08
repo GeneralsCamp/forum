@@ -5,6 +5,7 @@ const SUPPORTED_ABILITY_FLAGS = {
   '1001': 'powerSurge',
   '1002': 'riseToTheTask',
   '1003': 'giantSlayer',
+  '1005': 'intimidate',
   '1007': 'hordebreaker',
   '1010': 'endlessPractice',
   '1011': 'wayOfTheSword',
@@ -30,7 +31,6 @@ const SUPPORTED_ABILITY_FLAGS = {
 };
 
 const SKIPPED_ABILITY_GROUPS = new Set([
-  '1005', // Intimidate
   '1016', // Wall Amount
   '1026', // Battlefield Plunder
   '1028'  // Hidden Treasures
